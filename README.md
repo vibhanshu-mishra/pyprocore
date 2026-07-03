@@ -4,7 +4,7 @@
 
 [![PyPI](https://img.shields.io/pypi/v/pyprocore.svg)](https://pypi.org/project/pyprocore/)
 ![Python](https://img.shields.io/badge/python-3.12%2B-blue.svg)
-![License](https://img.shields.io/badge/license-MIT-yellow.svg)
+[![License](https://img.shields.io/pypi/l/pyprocore.svg)](LICENSE)
 [![Tests](https://github.com/vibhanshu-mishra/pyprocore/actions/workflows/tests.yml/badge.svg)](https://github.com/vibhanshu-mishra/pyprocore/actions/workflows/tests.yml)
 ![Coverage](https://img.shields.io/badge/coverage-96%25-brightgreen.svg)
 
