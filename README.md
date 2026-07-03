@@ -29,7 +29,7 @@ PyProcore does that once, correctly, behind a clean interface. You call a servic
 - Automatic pagination via Procore response headers
 - Request retries and structured logging with secret redaction
 
-**API coverage (v1.0)**
+**API coverage**
 
 - Companies
 - Projects
@@ -41,7 +41,7 @@ PyProcore does that once, correctly, behind a clean interface. You call a servic
 
 - Typed Pydantic response models
 - Command-line interface
-- 73 unit tests at 94% coverage, mocked with no live Procore dependency
+- 114 unit tests at 96% coverage, mocked with no live Procore dependency
 
 ---
 
@@ -313,7 +313,7 @@ Request logs record method, endpoint, status, elapsed time, and retry count. Exc
 
 ---
 
-## Implemented Endpoints (v1.0)
+## Implemented Endpoints
 
 ```text
 GET /rest/v1.0/companies
