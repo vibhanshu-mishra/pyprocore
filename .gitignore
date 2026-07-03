@@ -1,0 +1,48 @@
+# Byte-compiled
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment variables
+.env
+
+# Token storage
+token_store.json
+auth/token_store.json
+
+# Logs
+logs/
+*.log
+
+# Coverage
+.coverage
+htmlcov/
+.coveragerc
+
+# Pytest
+.pytest_cache/
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+
+# Build
+dist/
+build/
+*.egg-info/
+
+# Mypy
+.mypy_cache/
+
+# Ruff
+.ruff_cache/
