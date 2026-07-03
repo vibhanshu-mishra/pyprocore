@@ -13,8 +13,13 @@ from pyprocore.core.config import ProcoreSettings
 from pyprocore.core.exceptions import ResourceNotFoundError, ValidationError
 from pyprocore.services.companies import CompaniesService, list_companies
 from pyprocore.services.projects import ProjectsService, get_project, list_projects
-from pyprocore.services.rfis import RFIsService
-from pyprocore.services.submittals import SubmittalsService
+from pyprocore.services.rfis import RFIsService, download_rfi_attachments, get_rfi, list_rfis
+from pyprocore.services.submittals import (
+    SubmittalsService,
+    download_submittal_attachments,
+    get_submittal,
+    list_submittals,
+)
 
 
 def settings() -> ProcoreSettings:
@@ -182,6 +187,26 @@ class RFIsServiceTestCase(unittest.TestCase):
     def test_extract_question_attachments_handles_invalid_questions(self) -> None:
         """Invalid question payloads produce no attachments."""
         self.assertEqual(RFIsService._extract_question_attachments({"questions": "bad"}), [])
+        self.assertEqual(
+            RFIsService._extract_question_attachments({"questions": [1, {"attachments": "bad"}]}),
+            [],
+        )
+
+    def test_rfi_convenience_functions_delegate_to_service(self) -> None:
+        """Module-level RFI helpers delegate to RFIsService."""
+        with patch("pyprocore.services.rfis.RFIsService") as service_class:
+            service = Mock()
+            service.list_rfis.return_value = ["rfi-list"]
+            service.get_rfi.return_value = "rfi"
+            service.download_rfi_attachments.return_value = [Path("rfi.pdf")]
+            service_class.return_value = service
+
+            self.assertEqual(list_rfis(99, client=Mock()), ["rfi-list"])
+            self.assertEqual(get_rfi(99, 7, client=Mock()), "rfi")
+            self.assertEqual(
+                download_rfi_attachments(99, 7, "downloads", client=Mock()),
+                [Path("rfi.pdf")],
+            )
 
 
 class SubmittalsServiceTestCase(unittest.TestCase):
@@ -246,6 +271,22 @@ class SubmittalsServiceTestCase(unittest.TestCase):
         """Invalid attachment payloads produce no attachments."""
         self.assertEqual(SubmittalsService._extract_attachments({"attachments": "bad"}), [])
         self.assertEqual(SubmittalsService._extract_attachments({"attachments": [1]}), [])
+
+    def test_submittal_convenience_functions_delegate_to_service(self) -> None:
+        """Module-level submittal helpers delegate to SubmittalsService."""
+        with patch("pyprocore.services.submittals.SubmittalsService") as service_class:
+            service = Mock()
+            service.list_submittals.return_value = ["submittal-list"]
+            service.get_submittal.return_value = "submittal"
+            service.download_submittal_attachments.return_value = [Path("submittal.pdf")]
+            service_class.return_value = service
+
+            self.assertEqual(list_submittals(99, client=Mock()), ["submittal-list"])
+            self.assertEqual(get_submittal(99, 8, client=Mock()), "submittal")
+            self.assertEqual(
+                download_submittal_attachments(99, 8, "downloads", client=Mock()),
+                [Path("submittal.pdf")],
+            )
 
 
 if __name__ == "__main__":

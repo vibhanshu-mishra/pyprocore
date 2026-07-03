@@ -195,6 +195,7 @@ class TokenStoreTestCase(unittest.TestCase):
         with TemporaryDirectory() as temporary_directory:
             path = Path(temporary_directory) / "token.json"
             store = TokenStore(path)
+            self.assertEqual(store.path, path)
 
             path.write_text("{bad-json", encoding="utf-8")
             with self.assertRaises(AuthenticationError):
@@ -203,6 +204,31 @@ class TokenStoreTestCase(unittest.TestCase):
             path.write_text('{"access_token": "token"}', encoding="utf-8")
             with self.assertRaises(AuthenticationError):
                 store.load()
+
+    def test_token_store_io_errors_raise_authentication_error(self) -> None:
+        """Token store read, write, and clear IO errors are normalized."""
+        token = StoredToken(
+            access_token="access-token",
+            refresh_token=None,
+            expires_at=int(time.time()) + 3600,
+        )
+
+        with TemporaryDirectory() as temporary_directory:
+            path = Path(temporary_directory) / "token.json"
+            path.write_text("{}", encoding="utf-8")
+            store = TokenStore(path)
+
+            with patch.object(Path, "read_text", side_effect=OSError("read failed")):
+                with self.assertRaises(AuthenticationError):
+                    store.load()
+
+            with patch.object(Path, "write_text", side_effect=OSError("write failed")):
+                with self.assertRaises(AuthenticationError):
+                    store.save(token)
+
+            with patch.object(Path, "unlink", side_effect=OSError("clear failed")):
+                with self.assertRaises(AuthenticationError):
+                    store.clear()
 
     def test_token_expiry_and_public_serialization(self) -> None:
         """StoredToken handles expiry skew and plain JSON persistence."""
@@ -311,6 +337,23 @@ class EmailParserTestCase(unittest.TestCase):
             self.assertEqual(EmailParser().parse_file(path).subject, "From File")
             self.assertEqual(parse_email_file(path).subject, "From File")
             self.assertEqual(parse_email_text("Subject: From Text\n\nBody").subject, "From Text")
+
+    def test_parse_html_only_email_and_unnamed_attachment(self) -> None:
+        """HTML-only bodies and unnamed attachments are parsed safely."""
+        message = EmailMessage()
+        message["Subject"] = "HTML"
+        message.set_content("<p>HTML only</p>", subtype="html")
+        message.add_attachment(
+            b"bytes",
+            maintype="application",
+            subtype="octet-stream",
+        )
+
+        parsed = EmailParser().parse_bytes(message.as_bytes())
+
+        self.assertIsNone(parsed.text_body)
+        self.assertIn("HTML only", parsed.html_body or "")
+        self.assertEqual(parsed.attachments[0].filename, "attachment")
 
 
 class PackageInitTestCase(unittest.TestCase):

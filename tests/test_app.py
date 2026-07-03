@@ -28,11 +28,21 @@ class AppTestCase(unittest.TestCase):
         parser = app.build_parser()
 
         self.assertEqual(parser.parse_args(["companies"]).command, "companies")
+        self.assertEqual(parser.parse_args(["find-company", "Tracker"]).name, "Tracker")
         self.assertEqual(parser.parse_args(["projects", "--company-id", "123"]).company_id, 123)
+        self.assertEqual(parser.parse_args(["find-project", "Hospital"]).query, "Hospital")
+        self.assertEqual(
+            parser.parse_args(["find-project", "--number", "001"]).number,
+            "001",
+        )
         self.assertEqual(parser.parse_args(["rfis", "--project", "10"]).project_id, 10)
         self.assertEqual(
             parser.parse_args(["rfi", "--project", "10", "--id", "20"]).rfi_id,
             20,
+        )
+        self.assertEqual(
+            parser.parse_args(["find-rfi", "--project", "10", "--number", "15"]).number,
+            "15",
         )
         self.assertEqual(
             parser.parse_args(["submittals", "--project-id", "10"]).project_id,
@@ -41,6 +51,10 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(
             parser.parse_args(["submittal", "--project", "10", "--id", "30"]).submittal_id,
             30,
+        )
+        self.assertEqual(
+            parser.parse_args(["find-submittal", "--project", "10", "--number", "27"]).number,
+            "27",
         )
 
     def test_download_command_aliases_are_supported(self) -> None:
@@ -62,6 +76,12 @@ class AppTestCase(unittest.TestCase):
         cases = [
             (argparse.Namespace(command="companies"), "list_companies", (), {}),
             (
+                argparse.Namespace(command="find-company", name="Tracker"),
+                "find_company",
+                ("Tracker",),
+                {},
+            ),
+            (
                 argparse.Namespace(command="rfis", project_id=10),
                 "list_rfis",
                 (10,),
@@ -74,6 +94,12 @@ class AppTestCase(unittest.TestCase):
                 {},
             ),
             (
+                argparse.Namespace(command="find-rfi", project_id=10, number="15"),
+                "find_rfi",
+                (10,),
+                {"number": "15"},
+            ),
+            (
                 argparse.Namespace(command="submittals", project_id=10),
                 "list_submittals",
                 (10,),
@@ -84,6 +110,12 @@ class AppTestCase(unittest.TestCase):
                 "get_submittal",
                 (10, 30),
                 {},
+            ),
+            (
+                argparse.Namespace(command="find-submittal", project_id=10, number="27"),
+                "find_submittal",
+                (10,),
+                {"number": "27"},
             ),
         ]
 
@@ -113,6 +145,21 @@ class AppTestCase(unittest.TestCase):
 
         self.assertEqual(result, "projects")
         list_projects.assert_called_once_with(123)
+
+    def test_run_find_project_passes_query_number_and_company_id(self) -> None:
+        """Project resolver CLI forwards query options."""
+        with patch.object(app, "find_project", return_value="project") as find_project:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="find-project",
+                    query="Hospital",
+                    number=None,
+                    company_id=123,
+                )
+            )
+
+        self.assertEqual(result, "project")
+        find_project.assert_called_once_with("Hospital", number=None, company_id=123)
 
     def test_run_download_commands_return_string_paths(self) -> None:
         """Download command output is converted to path strings."""

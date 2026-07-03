@@ -13,6 +13,10 @@ from pyprocore.core.config import get_settings
 from pyprocore.services import (
     download_rfi_attachments,
     download_submittal_attachments,
+    find_company,
+    find_project,
+    find_rfi,
+    find_submittal,
     get_rfi,
     get_submittal,
     list_companies,
@@ -29,8 +33,16 @@ def build_parser() -> argparse.ArgumentParser:
 
     subcommands.add_parser("companies", help="List companies")
 
+    find_company_parser = subcommands.add_parser("find-company", help="Find one company")
+    find_company_parser.add_argument("name")
+
     projects_parser = subcommands.add_parser("projects", help="List projects")
     projects_parser.add_argument("--company-id", type=int, default=None)
+
+    find_project_parser = subcommands.add_parser("find-project", help="Find one project")
+    find_project_parser.add_argument("query", nargs="?")
+    find_project_parser.add_argument("--number", default=None)
+    find_project_parser.add_argument("--company-id", type=int, default=None)
 
     rfis_parser = subcommands.add_parser("rfis", help="List RFIs for a project")
     rfis_parser.add_argument(
@@ -40,6 +52,12 @@ def build_parser() -> argparse.ArgumentParser:
     rfi_parser = subcommands.add_parser("rfi", help="Get one RFI")
     rfi_parser.add_argument("--project", "--project-id", dest="project_id", type=int, required=True)
     rfi_parser.add_argument("--id", "--rfi-id", dest="rfi_id", type=int, required=True)
+
+    find_rfi_parser = subcommands.add_parser("find-rfi", help="Find one RFI by number")
+    find_rfi_parser.add_argument(
+        "--project", "--project-id", dest="project_id", type=int, required=True
+    )
+    find_rfi_parser.add_argument("--number", required=True)
 
     rfi_download_parser = _add_alias_parser(
         subcommands,
@@ -69,6 +87,15 @@ def build_parser() -> argparse.ArgumentParser:
     submittal_parser.add_argument(
         "--id", "--submittal-id", dest="submittal_id", type=int, required=True
     )
+
+    find_submittal_parser = subcommands.add_parser(
+        "find-submittal",
+        help="Find one submittal by number",
+    )
+    find_submittal_parser.add_argument(
+        "--project", "--project-id", dest="project_id", type=int, required=True
+    )
+    find_submittal_parser.add_argument("--number", required=True)
 
     submittal_download_parser = _add_alias_parser(
         subcommands,
@@ -106,15 +133,24 @@ def run_command(args: argparse.Namespace) -> Any:
     if args.command == "companies":
         return list_companies()
 
+    if args.command == "find-company":
+        return find_company(args.name)
+
     if args.command == "projects":
         company_id = args.company_id or get_settings().company_id
         return list_projects(company_id)
+
+    if args.command == "find-project":
+        return find_project(args.query, number=args.number, company_id=args.company_id)
 
     if args.command == "rfis":
         return list_rfis(args.project_id)
 
     if args.command == "rfi":
         return get_rfi(args.project_id, args.rfi_id)
+
+    if args.command == "find-rfi":
+        return find_rfi(args.project_id, number=args.number)
 
     if args.command == "download-rfi":
         return [
@@ -131,6 +167,9 @@ def run_command(args: argparse.Namespace) -> Any:
 
     if args.command == "submittal":
         return get_submittal(args.project_id, args.submittal_id)
+
+    if args.command == "find-submittal":
+        return find_submittal(args.project_id, number=args.number)
 
     if args.command == "download-submittal":
         return [

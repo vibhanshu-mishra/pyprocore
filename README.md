@@ -174,6 +174,23 @@ submittals = list_submittals(project_id=352338)
 submittal = get_submittal(project_id=352338, submittal_id=309641)
 ```
 
+Human-friendly resolvers are available when you do not already know Procore IDs:
+
+```python
+from pyprocore import find_company, find_project, find_rfi, find_submittal
+from pyprocore.services import find_project_contains
+
+company = find_company("Tracker")
+project = find_project("Sandbox Test Project")
+project_by_number = find_project(number="001")
+hospital_project = find_project_contains("Hospital")
+
+rfi = find_rfi(project_id=352338, number="15")
+submittal = find_submittal(project_id=352338, number="27")
+```
+
+Resolvers use case-insensitive exact matching first, then partial matching. They raise `NotFoundError`, `DuplicateMatchError`, or `MultipleResultsError` when a lookup cannot produce exactly one typed result.
+
 Every typed model serializes back to JSON:
 
 ```python
@@ -221,11 +238,16 @@ files = FileDownloadService().download_attachments(
 
 ```bash
 procore-sdk companies
+procore-sdk find-company Tracker
 procore-sdk projects
+procore-sdk find-project Hospital
+procore-sdk find-project --number 001
 procore-sdk rfis --project 352338
 procore-sdk rfi --project 352338 --id 102784
+procore-sdk find-rfi --project 352338 --number 15
 procore-sdk submittals --project 352338
 procore-sdk submittal --project 352338 --id 309641
+procore-sdk find-submittal --project 352338 --number 27
 procore-sdk download-rfi --project 352338 --id 102784
 procore-sdk download-submittal --project 352338 --id 309641
 ```

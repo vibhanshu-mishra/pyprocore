@@ -50,6 +50,18 @@ class ResourceNotFoundError(ProcoreAPIError):
     """Raised when a requested Procore resource cannot be found."""
 
 
+class NotFoundError(ResourceNotFoundError):
+    """Raised when a resolver cannot find a matching Procore resource."""
+
+
+class DuplicateMatchError(ProcoreError):
+    """Raised when multiple exact resolver matches are found."""
+
+
+class MultipleResultsError(ProcoreError):
+    """Raised when a resolver search is ambiguous."""
+
+
 class RateLimitError(ProcoreAPIError):
     """Raised when Procore rate-limits a request."""
 
