@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Secrets / tokens
+.env
+*.env
+auth/token_store.json
+pyprocore/auth/token_store.json
+token_store.json
+
+# Logs
+logs/
+*.log
+
+# Coverage / tests
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# OS / IDE
+.DS_Store
+.vscode/
+.idea/

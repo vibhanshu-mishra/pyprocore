@@ -1,0 +1,17 @@
+[run]
+source =
+    pyprocore
+branch = True
+omit =
+    */__pycache__/*
+    .venv/*
+    tests/*
+
+[report]
+fail_under = 90
+show_missing = True
+skip_covered = False
+exclude_lines =
+    pragma: no cover
+    if __name__ == .__main__.:
+    raise NotImplementedError
