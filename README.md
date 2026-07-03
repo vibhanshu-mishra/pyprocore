@@ -191,6 +191,40 @@ submittal = find_submittal(project_id=352338, number="27")
 
 Resolvers use case-insensitive exact matching first, then partial matching. They raise `NotFoundError`, `DuplicateMatchError`, or `MultipleResultsError` when a lookup cannot produce exactly one typed result.
 
+## Automation Layer
+
+The automation layer builds a single typed package for downstream workflows. It resolves project and item identifiers, fetches full metadata, optionally downloads attachments, and returns one JSON-serializable `WorkflowPackage`.
+
+```python
+from pyprocore.automation import AutomationInput, build_workflow_package
+
+package = build_workflow_package(
+    AutomationInput(
+        project_name="Sandbox Test Project",
+        item_type="rfi",
+        item_number="15",
+    )
+)
+
+print(package.title)
+print(package.attachments)
+```
+
+Convenience builders are available when you already know the workflow type:
+
+```python
+from pyprocore.automation import build_rfi_package, build_submittal_package
+
+rfi_package = build_rfi_package(project_id=352338, rfi_id=102784)
+submittal_package = build_submittal_package(
+    project_name="Sandbox Test Project",
+    number="27",
+    download_attachments=False,
+)
+```
+
+Default attachment output directories are created under `downloads/`, for example `downloads/rfi_15/` or `downloads/submittal_27/`. Pass `output_dir` to choose a custom destination.
+
 Every typed model serializes back to JSON:
 
 ```python
@@ -250,6 +284,10 @@ procore-sdk submittal --project 352338 --id 309641
 procore-sdk find-submittal --project 352338 --number 27
 procore-sdk download-rfi --project 352338 --id 102784
 procore-sdk download-submittal --project 352338 --id 309641
+procore-sdk package-rfi --project 352338 --id 102784
+procore-sdk package-rfi --project-name "Sandbox Test Project" --number 15
+procore-sdk package-submittal --project 352338 --id 309641
+procore-sdk package-submittal --project-name "Sandbox Test Project" --number 27
 ```
 
 The CLI prints formatted JSON. Typed models are serialized with `model_dump(mode="json")`.

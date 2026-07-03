@@ -5,10 +5,11 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel
 
+from pyprocore.automation import AutomationInput, build_workflow_package
 from pyprocore.core.config import get_settings
 from pyprocore.services import (
     download_rfi_attachments,
@@ -112,6 +113,18 @@ def build_parser() -> argparse.ArgumentParser:
     )
     submittal_download_parser.add_argument("--destination-dir", type=Path, default=None)
 
+    package_rfi_parser = subcommands.add_parser(
+        "package-rfi",
+        help="Build an automation package for one RFI",
+    )
+    _add_package_options(package_rfi_parser)
+
+    package_submittal_parser = subcommands.add_parser(
+        "package-submittal",
+        help="Build an automation package for one submittal",
+    )
+    _add_package_options(package_submittal_parser)
+
     return parser
 
 
@@ -126,6 +139,23 @@ def _add_alias_parser(
     parser = subcommands.add_parser(name, aliases=aliases, **kwargs)
     parser.set_defaults(command=name, legacy_command=legacy_name)
     return parser
+
+
+def _add_package_options(parser: argparse.ArgumentParser) -> None:
+    """Add shared automation package command options."""
+    parser.add_argument("--company", dest="company_id", type=int, default=None)
+    parser.add_argument("--project", "--project-id", dest="project_id", type=int, default=None)
+    parser.add_argument("--project-name", default=None)
+    parser.add_argument("--project-number", default=None)
+    parser.add_argument("--id", dest="item_id", type=int, default=None)
+    parser.add_argument("--number", dest="item_number", default=None)
+    parser.add_argument("--output-dir", type=Path, default=None)
+    parser.add_argument(
+        "--no-downloads",
+        dest="download_attachments",
+        action="store_false",
+        default=True,
+    )
 
 
 def run_command(args: argparse.Namespace) -> Any:
@@ -181,7 +211,32 @@ def run_command(args: argparse.Namespace) -> Any:
             )
         ]
 
+    if args.command == "package-rfi":
+        return build_workflow_package(_automation_input(args, item_type="rfi"))
+
+    if args.command == "package-submittal":
+        return build_workflow_package(_automation_input(args, item_type="submittal"))
+
     raise ValueError(f"Unsupported command: {args.command}")
+
+
+def _automation_input(
+    args: argparse.Namespace,
+    *,
+    item_type: Literal["rfi", "submittal"],
+) -> AutomationInput:
+    """Build automation workflow input from CLI arguments."""
+    return AutomationInput(
+        company_id=args.company_id,
+        project_id=args.project_id,
+        project_name=args.project_name,
+        project_number=args.project_number,
+        item_type=item_type,
+        item_id=args.item_id,
+        item_number=args.item_number,
+        download_attachments=args.download_attachments,
+        output_dir=args.output_dir,
+    )
 
 
 def to_serializable(value: Any) -> Any:

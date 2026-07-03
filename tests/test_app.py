@@ -56,6 +56,30 @@ class AppTestCase(unittest.TestCase):
             parser.parse_args(["find-submittal", "--project", "10", "--number", "27"]).number,
             "27",
         )
+        package_rfi = parser.parse_args(
+            [
+                "package-rfi",
+                "--project-name",
+                "Sandbox Test Project",
+                "--number",
+                "15",
+                "--output-dir",
+                "downloads/rfi",
+                "--no-downloads",
+            ]
+        )
+        self.assertEqual(package_rfi.command, "package-rfi")
+        self.assertEqual(package_rfi.project_name, "Sandbox Test Project")
+        self.assertEqual(package_rfi.item_number, "15")
+        self.assertFalse(package_rfi.download_attachments)
+
+        package_submittal = parser.parse_args(
+            ["package-submittal", "--project", "10", "--id", "30", "--company", "123"]
+        )
+        self.assertEqual(package_submittal.command, "package-submittal")
+        self.assertEqual(package_submittal.project_id, 10)
+        self.assertEqual(package_submittal.item_id, 30)
+        self.assertEqual(package_submittal.company_id, 123)
 
     def test_download_command_aliases_are_supported(self) -> None:
         """Legacy attachment command aliases still parse to the canonical command."""
@@ -196,6 +220,52 @@ class AppTestCase(unittest.TestCase):
 
         self.assertEqual(result, ["submittal.pdf"])
         download_submittal.assert_called_once_with(10, 30, Path("downloads"))
+
+    def test_run_package_commands_build_workflow_packages(self) -> None:
+        """Automation package commands build workflow inputs and return packages."""
+        with patch.object(app, "build_workflow_package", return_value="package") as builder:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="package-rfi",
+                    company_id=123,
+                    project_id=None,
+                    project_name="Sandbox",
+                    project_number=None,
+                    item_id=None,
+                    item_number="15",
+                    output_dir=Path("downloads/rfi"),
+                    download_attachments=False,
+                )
+            )
+
+        self.assertEqual(result, "package")
+        automation_input = builder.call_args.args[0]
+        self.assertEqual(automation_input.item_type, "rfi")
+        self.assertEqual(automation_input.company_id, 123)
+        self.assertEqual(automation_input.project_name, "Sandbox")
+        self.assertEqual(automation_input.item_number, "15")
+        self.assertFalse(automation_input.download_attachments)
+
+        with patch.object(app, "build_workflow_package", return_value="package") as builder:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="package-submittal",
+                    company_id=None,
+                    project_id=10,
+                    project_name=None,
+                    project_number=None,
+                    item_id=30,
+                    item_number=None,
+                    output_dir=None,
+                    download_attachments=True,
+                )
+            )
+
+        self.assertEqual(result, "package")
+        automation_input = builder.call_args.args[0]
+        self.assertEqual(automation_input.item_type, "submittal")
+        self.assertEqual(automation_input.project_id, 10)
+        self.assertEqual(automation_input.item_id, 30)
 
     def test_run_command_rejects_unknown_command(self) -> None:
         """Unsupported commands fail clearly."""
