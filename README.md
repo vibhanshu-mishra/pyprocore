@@ -313,6 +313,37 @@ Run coverage:
 
 ---
 
+## Development
+
+Clone the repository and install the package in editable mode:
+
+```bash
+git clone https://github.com/vibhanshu-mishra/pyprocore.git
+cd pyprocore
+
+python3 -m venv .venv
+source .venv/bin/activate
+
+pip install -e ".[dev]"
+```
+
+If you're working in a restricted environment where build isolation cannot access PyPI, install with:
+
+```bash
+pip install --no-build-isolation -e ".[dev]"
+```
+
+Useful development commands:
+
+```bash
+make lint
+make typecheck
+make test
+make coverage
+```
+
+---
+
 ## Supported Environments
 
 - Procore Production
