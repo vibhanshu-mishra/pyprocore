@@ -1,6 +1,6 @@
 .PHONY: test coverage lint format typecheck clean
 
-PYTHON ?= .venv/bin/python
+PYTHON ?= python
 
 test:
 	$(PYTHON) -m unittest discover -s tests
