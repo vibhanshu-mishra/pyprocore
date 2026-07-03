@@ -404,6 +404,17 @@ make coverage
 
 ---
 
+## Project Resources
+
+- [Changelog](CHANGELOG.md)
+- [Contributing](CONTRIBUTING.md)
+- [Security](SECURITY.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Architecture notes](docs/architecture.md)
+- [Roadmap](docs/roadmap.md)
+
+---
+
 ## Supported Environments
 
 - Procore Production
