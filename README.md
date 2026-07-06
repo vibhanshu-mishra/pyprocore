@@ -1,6 +1,6 @@
 # PyProcore
 
-> A production-ready Python SDK for building automation, integrations, and AI workflows on top of the Procore REST API.
+> PyProcore is the open-source automation layer for Procore built for developers, consultants, and construction teams who want typed API access, reliable file downloads, project exports, and AI-ready workflow packages without rebuilding OAuth, pagination, retries, and Procore-specific plumbing.
 
 [![PyPI](https://img.shields.io/pypi/v/pyprocore.svg)](https://pypi.org/project/pyprocore/)
 ![Python](https://img.shields.io/badge/python-3.12%2B-blue.svg)
@@ -328,19 +328,47 @@ GET /rest/v1.1/projects/{project_id}/submittals/{submittal_id}
 
 ## Roadmap
 
-**Planned endpoints**
+### Phase 1: Workflow Automation
+- RFI Excel export
+- Submittal Excel export
+- RFI folder sync
+- Submittal folder sync
+- Incremental sync state
+- Markdown exports
+- AI-ready workflow packages
 
-- Drawings
+### Phase 2: Expanded API Coverage
 - Documents
+- Drawings
 - Specifications
-- Daily Logs
 - Photos
-- Correspondence
+- Daily Logs
 - Observations
+- Correspondence
 
-**Planned capabilities**
+### Phase 3: AI and Review Workflows
+- RFI review packages
+- Submittal review packages
+- Drawing/spec context packages
+- LLM-safe JSON exports
+- Vector database examples
+- Engineering assistant examples
 
-- AI workflow examples built on the SDK
+### Phase 4: Developer Platform
+- Client object interface
+- Async client
+- Webhook helpers
+- Rate-limit handling
+- Advanced filter models
+- Plugin architecture
+
+### Phase 5: Production Tooling
+- CLI doctor command
+- Sync logs
+- Manifest files
+- Retry reports
+- Scheduled sync examples
+- Docker example
 
 ---
 
