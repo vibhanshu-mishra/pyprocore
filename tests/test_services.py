@@ -138,8 +138,34 @@ class RFIsServiceTestCase(unittest.TestCase):
 
         self.assertEqual(service.list_rfis(99)[0].id, 1)
         self.assertEqual(service.get_rfi(99, 2).id, 2)
-        client.get_all.assert_called_once_with("/rest/v1.1/projects/99/rfis")
+        client.get_all.assert_called_once_with("/rest/v1.1/projects/99/rfis", params=None)
         client.get.assert_called_once_with("/rest/v1.1/projects/99/rfis/2")
+
+    def test_list_rfis_passes_filter_params(self) -> None:
+        """RFI list filters are passed as query parameters."""
+        client = Mock()
+        client.get_all.return_value = [{"id": 1}]
+        service = RFIsService(client=client, file_service=Mock())
+
+        result = service.list_rfis(
+            99,
+            status="open",
+            updated_after="2026-07-01",
+            updated_before=None,
+            params={"per_page": 100, "status": "draft", "ignored": None},
+            sort="number",
+        )
+
+        self.assertEqual(result[0].id, 1)
+        client.get_all.assert_called_once_with(
+            "/rest/v1.1/projects/99/rfis",
+            params={
+                "per_page": 100,
+                "sort": "number",
+                "status": "open",
+                "updated_after": "2026-07-01",
+            },
+        )
 
     def test_rfi_validation_and_bad_response(self) -> None:
         """RFI service validates IDs and response shape."""
@@ -202,10 +228,23 @@ class RFIsServiceTestCase(unittest.TestCase):
             service_class.return_value = service
 
             self.assertEqual(list_rfis(99, client=Mock()), ["rfi-list"])
+            self.assertEqual(
+                list_rfis(99, client=Mock(), status="open", updated_after="2026-07-01"),
+                ["rfi-list"],
+            )
             self.assertEqual(get_rfi(99, 7, client=Mock()), "rfi")
             self.assertEqual(
                 download_rfi_attachments(99, 7, "downloads", client=Mock()),
                 [Path("rfi.pdf")],
+            )
+            service.list_rfis.assert_called_with(
+                99,
+                status="open",
+                updated_after="2026-07-01",
+                updated_before=None,
+                created_after=None,
+                created_before=None,
+                params=None,
             )
 
 
@@ -221,8 +260,35 @@ class SubmittalsServiceTestCase(unittest.TestCase):
 
         self.assertEqual(service.list_submittals(99)[0].id, 1)
         self.assertEqual(service.get_submittal(99, 2).id, 2)
-        client.get_all.assert_called_once_with("/rest/v1.1/projects/99/submittals")
+        client.get_all.assert_called_once_with("/rest/v1.1/projects/99/submittals", params=None)
         client.get.assert_called_once_with("/rest/v1.1/projects/99/submittals/2")
+
+    def test_list_submittals_passes_filter_params(self) -> None:
+        """Submittal list filters are passed as query parameters."""
+        client = Mock()
+        client.get_all.return_value = [{"id": 1}]
+        service = SubmittalsService(client=client, file_service=Mock())
+
+        result = service.list_submittals(
+            99,
+            status="pending",
+            created_after="2026-01-01",
+            created_before="2026-07-01",
+            params={"per_page": 100, "status": "draft", "ignored": None},
+            sort="number",
+        )
+
+        self.assertEqual(result[0].id, 1)
+        client.get_all.assert_called_once_with(
+            "/rest/v1.1/projects/99/submittals",
+            params={
+                "per_page": 100,
+                "sort": "number",
+                "status": "pending",
+                "created_after": "2026-01-01",
+                "created_before": "2026-07-01",
+            },
+        )
 
     def test_submittal_validation_and_bad_response(self) -> None:
         """Submittal service validates IDs and response shape."""
@@ -282,10 +348,28 @@ class SubmittalsServiceTestCase(unittest.TestCase):
             service_class.return_value = service
 
             self.assertEqual(list_submittals(99, client=Mock()), ["submittal-list"])
+            self.assertEqual(
+                list_submittals(
+                    99,
+                    client=Mock(),
+                    status="pending",
+                    created_after="2026-01-01",
+                ),
+                ["submittal-list"],
+            )
             self.assertEqual(get_submittal(99, 8, client=Mock()), "submittal")
             self.assertEqual(
                 download_submittal_attachments(99, 8, "downloads", client=Mock()),
                 [Path("submittal.pdf")],
+            )
+            service.list_submittals.assert_called_with(
+                99,
+                status="pending",
+                updated_after=None,
+                updated_before=None,
+                created_after="2026-01-01",
+                created_before=None,
+                params=None,
             )
 
 

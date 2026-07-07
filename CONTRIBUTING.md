@@ -12,7 +12,7 @@ git clone https://github.com/vibhanshu-mishra/pyprocore.git
 cd pyprocore
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install --upgrade pip
+python3 -m pip install --upgrade pip
 ```
 
 Install development dependencies:

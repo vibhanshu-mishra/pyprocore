@@ -6,7 +6,7 @@
 ![Python](https://img.shields.io/badge/python-3.12%2B-blue.svg)
 [![License](https://img.shields.io/pypi/l/pyprocore.svg)](LICENSE)
 [![Tests](https://github.com/vibhanshu-mishra/pyprocore/actions/workflows/tests.yml/badge.svg)](https://github.com/vibhanshu-mishra/pyprocore/actions/workflows/tests.yml)
-![Coverage](https://img.shields.io/badge/coverage-96%25-brightgreen.svg)
+![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen.svg)
 
 PyProcore handles the parts of a Procore integration that are tedious and easy to get wrong — OAuth, token refresh, pagination, retries, typed responses, structured logging, and attachment downloads — so you work with Python objects instead of raw JSON and API plumbing.
 
@@ -41,7 +41,7 @@ PyProcore does that once, correctly, behind a clean interface. You call a servic
 
 - Typed Pydantic response models
 - Command-line interface
-- 114 unit tests at 96% coverage, mocked with no live Procore dependency
+- Mocked unit tests with no live Procore dependency
 
 ---
 
@@ -72,18 +72,32 @@ For local development:
 git clone https://github.com/vibhanshu-mishra/pyprocore.git
 cd pyprocore
 python3 -m venv .venv
-.venv/bin/python -m pip install --upgrade pip
-.venv/bin/python -m pip install -e .
+python3 -m pip install --upgrade pip
+python3 -m pip install -e .
 ```
 
 ---
 
 ## Quick Example
 
+Function style:
+
 ```python
 from pyprocore.services import list_projects
 
 projects = list_projects(company_id=123456)
+
+for project in projects:
+    print(project.name)
+```
+
+Client style:
+
+```python
+from pyprocore import Procore
+
+client = Procore()
+projects = client.projects.list(company_id=123456)
 
 for project in projects:
     print(project.name)
@@ -115,6 +129,14 @@ Secrets, tokens, URLs, and company IDs are never hardcoded in source.
 ---
 
 ## Authentication
+
+Use the auth helper commands to inspect and repair local setup:
+
+```bash
+procore-sdk auth status
+procore-sdk auth login-url
+procore-sdk auth refresh
+```
 
 Exchange the first authorization code and save the token locally:
 
@@ -149,6 +171,20 @@ for project in list_projects(company_id=123456):
     print(project.name)
 ```
 
+You can also use the object-oriented client interface:
+
+```python
+from pyprocore import Procore
+
+client = Procore()
+
+companies = client.companies.list()
+projects = client.projects.list(company_id=123456)
+rfi = client.rfis.get(project_id=352338, rfi_id=102784)
+open_rfis = client.rfis.list(project_id=352338, status="open")
+pending_submittals = client.submittals.list(project_id=352338, status="pending")
+```
+
 Full service surface:
 
 ```python
@@ -167,11 +203,23 @@ companies = list_companies()
 projects = list_projects(company_id=123456)
 
 rfis = list_rfis(project_id=352338)
+open_rfis = list_rfis(project_id=352338, status="open")
 rfi = get_rfi(project_id=352338, rfi_id=102784)
 first_attachment_url = rfi.questions[0].attachments[0].url
 
 submittals = list_submittals(project_id=352338)
+pending_submittals = list_submittals(project_id=352338, status="pending")
 submittal = get_submittal(project_id=352338, submittal_id=309641)
+```
+
+RFI and submittal list calls also accept optional date filters:
+
+```python
+recent_rfis = list_rfis(project_id=352338, updated_after="2026-07-01")
+recent_submittals = client.submittals.list(
+    project_id=352338,
+    updated_after="2026-07-01",
+)
 ```
 
 Human-friendly resolvers are available when you do not already know Procore IDs:
@@ -277,9 +325,13 @@ procore-sdk projects
 procore-sdk find-project Hospital
 procore-sdk find-project --number 001
 procore-sdk rfis --project 352338
+procore-sdk rfis --project 352338 --status open
+procore-sdk rfis --project 352338 --updated-after 2026-07-01
 procore-sdk rfi --project 352338 --id 102784
 procore-sdk find-rfi --project 352338 --number 15
 procore-sdk submittals --project 352338
+procore-sdk submittals --project 352338 --status pending
+procore-sdk submittals --project 352338 --updated-after 2026-07-01
 procore-sdk submittal --project 352338 --id 309641
 procore-sdk find-submittal --project 352338 --number 27
 procore-sdk download-rfi --project 352338 --id 102784
@@ -288,9 +340,30 @@ procore-sdk package-rfi --project 352338 --id 102784
 procore-sdk package-rfi --project-name "Sandbox Test Project" --number 15
 procore-sdk package-submittal --project 352338 --id 309641
 procore-sdk package-submittal --project-name "Sandbox Test Project" --number 27
+procore-sdk auth status
+procore-sdk auth login-url
+procore-sdk auth refresh
 ```
 
 The CLI prints formatted JSON. Typed models are serialized with `model_dump(mode="json")`.
+
+---
+
+## Examples and Recipes
+
+Runnable example scripts live in [examples/](examples/README.md). They show
+common SDK tasks such as listing projects, fetching RFIs, downloading
+attachments, and building workflow packages.
+
+Examples can be syntax-checked without credentials or live Procore access:
+
+```bash
+make examples-check
+```
+
+Task-based guides live in [docs/recipes/](docs/recipes/). Recipes explain when
+to use each pattern, which environment variables are needed, what output to
+expect, and how to troubleshoot beginner-friendly issues.
 
 ---
 
@@ -372,6 +445,25 @@ GET /rest/v1.1/projects/{project_id}/submittals/{submittal_id}
 
 ---
 
+## Diagnostics
+
+Run:
+
+```bash
+procore-sdk doctor
+```
+
+This checks local configuration, token storage, Python version, and writable SDK
+folders without making live Procore calls.
+
+For an authenticated Procore connectivity check:
+
+```bash
+procore-sdk doctor --live
+```
+
+---
+
 ## Troubleshooting
 
 | Error                       | Likely cause and fix                                                                                           |
@@ -389,14 +481,13 @@ GET /rest/v1.1/projects/{project_id}/submittals/{submittal_id}
 Run unit tests:
 
 ```bash
-.venv/bin/python -m unittest discover -s tests
+make test
 ```
 
 Run coverage:
 
 ```bash
-.venv/bin/python -m coverage run -m unittest discover -s tests
-.venv/bin/python -m coverage report
+make coverage
 ```
 
 ---
@@ -440,6 +531,8 @@ make coverage
 - [Code of Conduct](CODE_OF_CONDUCT.md)
 - [Architecture notes](docs/architecture.md)
 - [Roadmap](docs/roadmap.md)
+- [Examples](examples/README.md)
+- [Recipes](docs/recipes/)
 
 ---
 

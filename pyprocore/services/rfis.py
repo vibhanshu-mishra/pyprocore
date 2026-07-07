@@ -11,6 +11,7 @@ from pyprocore.core.client import ProcoreClient
 from pyprocore.core.exceptions import ValidationError
 from pyprocore.models import RFI
 from pyprocore.services.files import FileDownloadService
+from pyprocore.services.query_params import build_query_params
 
 DEFAULT_DOWNLOAD_DIR = Path(__file__).resolve().parents[1] / "downloads" / "rfis"
 
@@ -32,11 +33,45 @@ class RFIsService:
         self._client = client or ProcoreClient()
         self._file_service = file_service or FileDownloadService()
 
-    def list_rfis(self, project_id: int) -> list[RFI]:
-        """Return RFIs for a Procore project."""
-        self._validate_positive_id(project_id, "project_id")
+    def list_rfis(
+        self,
+        project_id: int,
+        *,
+        status: str | None = None,
+        updated_after: str | None = None,
+        updated_before: str | None = None,
+        created_after: str | None = None,
+        created_before: str | None = None,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[RFI]:
+        """Return RFIs for a Procore project.
 
-        response = self._client.get_all(endpoints.rfis(project_id))
+        Args:
+            project_id: Procore project ID.
+            status: Optional RFI status filter.
+            updated_after: Optional lower bound for updated date filtering.
+            updated_before: Optional upper bound for updated date filtering.
+            created_after: Optional lower bound for created date filtering.
+            created_before: Optional upper bound for created date filtering.
+            params: Optional additional query parameters.
+            **extra_params: Additional query parameters passed to Procore.
+
+        Returns:
+            A list of typed RFI models.
+        """
+        self._validate_positive_id(project_id, "project_id")
+        query_params = build_query_params(
+            params=params,
+            extra_params=extra_params,
+            status=status,
+            updated_after=updated_after,
+            updated_before=updated_before,
+            created_after=created_after,
+            created_before=created_before,
+        )
+
+        response = self._client.get_all(endpoints.rfis(project_id), params=query_params)
         return [RFI.model_validate(rfi) for rfi in response]
 
     def get_rfi(self, project_id: int, rfi_id: int) -> RFI:
@@ -54,6 +89,8 @@ class RFIsService:
         project_id: int,
         rfi_id: int,
         destination_dir: Path | str | None = None,
+        *,
+        overwrite: bool = False,
     ) -> list[Path]:
         """Download all attachments from an RFI's questions.
 
@@ -64,6 +101,7 @@ class RFIsService:
             rfi_id: Procore RFI ID.
             destination_dir: Optional directory to save files. Defaults to
                 ``downloads/rfis/{rfi_id}``.
+            overwrite: Whether to overwrite existing files.
 
         Returns:
             Paths to downloaded files.
@@ -79,6 +117,7 @@ class RFIsService:
             attachments,
             output_dir,
             fallback_prefix=f"rfi-{rfi_id}",
+            overwrite=overwrite,
         )
 
     @staticmethod
@@ -115,9 +154,29 @@ class RFIsService:
             raise ValidationError(f"{name} must be a positive integer.")
 
 
-def list_rfis(project_id: int, client: ProcoreClient | None = None) -> list[RFI]:
+def list_rfis(
+    project_id: int,
+    client: ProcoreClient | None = None,
+    *,
+    status: str | None = None,
+    updated_after: str | None = None,
+    updated_before: str | None = None,
+    created_after: str | None = None,
+    created_before: str | None = None,
+    params: Mapping[str, Any] | None = None,
+    **extra_params: Any,
+) -> list[RFI]:
     """Return RFIs for a Procore project."""
-    return RFIsService(client=client).list_rfis(project_id)
+    return RFIsService(client=client).list_rfis(
+        project_id,
+        status=status,
+        updated_after=updated_after,
+        updated_before=updated_before,
+        created_after=created_after,
+        created_before=created_before,
+        params=params,
+        **extra_params,
+    )
 
 
 def get_rfi(
@@ -134,10 +193,13 @@ def download_rfi_attachments(
     rfi_id: int,
     destination_dir: Path | str | None = None,
     client: ProcoreClient | None = None,
+    *,
+    overwrite: bool = False,
 ) -> list[Path]:
     """Download all attachments from an RFI's questions."""
     return RFIsService(client=client).download_rfi_attachments(
         project_id,
         rfi_id,
         destination_dir,
+        overwrite=overwrite,
     )

@@ -9,8 +9,20 @@ from typing import Any, Literal
 
 from pydantic import BaseModel
 
+from pyprocore.auth.diagnostics import (
+    AuthLoginUrlResult,
+    AuthRefreshResult,
+    AuthStatusReport,
+    build_authorization_url,
+    format_auth_refresh,
+    format_auth_status,
+    format_login_url,
+    get_auth_status,
+    refresh_auth_token,
+)
 from pyprocore.automation import AutomationInput, build_workflow_package
 from pyprocore.core.config import get_settings
+from pyprocore.core.doctor import DoctorReport, format_doctor_report, run_doctor
 from pyprocore.services import (
     download_rfi_attachments,
     download_submittal_attachments,
@@ -32,6 +44,33 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Procore SDK utility commands")
     subcommands = parser.add_subparsers(dest="command", required=True)
 
+    doctor_parser = subcommands.add_parser("doctor", help="Check local SDK setup")
+    doctor_parser.add_argument(
+        "--json",
+        dest="json_output",
+        action="store_true",
+        help="Print structured JSON output",
+    )
+    doctor_parser.add_argument(
+        "--live",
+        action="store_true",
+        help="Run one authenticated Procore API check",
+    )
+
+    auth_parser = subcommands.add_parser("auth", help="Authentication helper commands")
+    auth_subcommands = auth_parser.add_subparsers(dest="auth_command", required=True)
+
+    auth_status_parser = auth_subcommands.add_parser("status", help="Show local auth status")
+    auth_status_parser.add_argument(
+        "--json",
+        dest="json_output",
+        action="store_true",
+        help="Print structured JSON output",
+    )
+
+    auth_subcommands.add_parser("refresh", help="Refresh the stored access token")
+    auth_subcommands.add_parser("login-url", help="Print the OAuth authorization URL")
+
     subcommands.add_parser("companies", help="List companies")
 
     find_company_parser = subcommands.add_parser("find-company", help="Find one company")
@@ -49,6 +88,7 @@ def build_parser() -> argparse.ArgumentParser:
     rfis_parser.add_argument(
         "--project", "--project-id", dest="project_id", type=int, required=True
     )
+    _add_filter_options(rfis_parser)
 
     rfi_parser = subcommands.add_parser("rfi", help="Get one RFI")
     rfi_parser.add_argument("--project", "--project-id", dest="project_id", type=int, required=True)
@@ -80,6 +120,7 @@ def build_parser() -> argparse.ArgumentParser:
     submittals_parser.add_argument(
         "--project", "--project-id", dest="project_id", type=int, required=True
     )
+    _add_filter_options(submittals_parser)
 
     submittal_parser = subcommands.add_parser("submittal", help="Get one submittal")
     submittal_parser.add_argument(
@@ -158,8 +199,29 @@ def _add_package_options(parser: argparse.ArgumentParser) -> None:
     )
 
 
+def _add_filter_options(parser: argparse.ArgumentParser) -> None:
+    """Add shared list filter options."""
+    parser.add_argument("--status", default=None)
+    parser.add_argument("--updated-after", default=None)
+    parser.add_argument("--updated-before", default=None)
+    parser.add_argument("--created-after", default=None)
+    parser.add_argument("--created-before", default=None)
+
+
 def run_command(args: argparse.Namespace) -> Any:
     """Run a parsed CLI command and return serializable output."""
+    if args.command == "doctor":
+        return run_doctor(live=args.live)
+
+    if args.command == "auth":
+        if args.auth_command == "status":
+            return get_auth_status()
+        if args.auth_command == "refresh":
+            return refresh_auth_token()
+        if args.auth_command == "login-url":
+            return build_authorization_url()
+        raise ValueError(f"Unsupported auth command: {args.auth_command}")
+
     if args.command == "companies":
         return list_companies()
 
@@ -174,7 +236,14 @@ def run_command(args: argparse.Namespace) -> Any:
         return find_project(args.query, number=args.number, company_id=args.company_id)
 
     if args.command == "rfis":
-        return list_rfis(args.project_id)
+        return list_rfis(
+            args.project_id,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
 
     if args.command == "rfi":
         return get_rfi(args.project_id, args.rfi_id)
@@ -193,7 +262,14 @@ def run_command(args: argparse.Namespace) -> Any:
         ]
 
     if args.command == "submittals":
-        return list_submittals(args.project_id)
+        return list_submittals(
+            args.project_id,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
 
     if args.command == "submittal":
         return get_submittal(args.project_id, args.submittal_id)
@@ -259,6 +335,28 @@ def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
     result = run_command(args)
+    if isinstance(result, DoctorReport):
+        if args.json_output:
+            print(json.dumps(to_serializable(result), indent=2, default=str))
+        else:
+            print(format_doctor_report(result))
+        raise SystemExit(result.exit_code)
+
+    if isinstance(result, AuthStatusReport):
+        if args.json_output:
+            print(json.dumps(to_serializable(result), indent=2, default=str))
+        else:
+            print(format_auth_status(result))
+        raise SystemExit(result.exit_code)
+
+    if isinstance(result, AuthRefreshResult):
+        print(format_auth_refresh(result))
+        raise SystemExit(result.exit_code)
+
+    if isinstance(result, AuthLoginUrlResult):
+        print(format_login_url(result))
+        raise SystemExit(0)
+
     print(json.dumps(to_serializable(result), indent=2, default=str))
 
 

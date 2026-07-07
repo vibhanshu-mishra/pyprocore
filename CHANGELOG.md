@@ -10,6 +10,24 @@ and this project follows semantic versioning.
 ### Added
 
 - Open-source repository support files, including contribution, security, issue, and pull request guidance.
+- Phase 7 examples and recipe documentation.
+- Runnable `examples/` scripts for common company, project, RFI, submittal, attachment, and workflow package tasks.
+- `docs/recipes/` task-based guides.
+- `scripts/check_examples.py` and `make examples-check` for validating example syntax and main guards without live Procore access.
+- CI validation for example syntax and main-guard checks.
+- `procore-sdk doctor` diagnostics command with human-readable and JSON output.
+- Optional `procore-sdk doctor --live` authenticated connectivity check.
+- Auth helper commands: `procore-sdk auth status`, `procore-sdk auth status --json`, `procore-sdk auth login-url`, and `procore-sdk auth refresh`.
+- Global `Procore` client interface with grouped service clients for companies, projects, RFIs, and submittals.
+- Client-interface example and documentation.
+- Optional filter/query parameters for RFI and submittal list operations.
+- Optional CLI filter flags for RFI and submittal listing.
+
+### Changed
+
+- Standardized the Makefile Python command default to `python3` while preserving `PYTHON=...` override support.
+- Updated README and troubleshooting docs for examples, recipes, diagnostics, and auth helper workflows.
+- Updated client interface, examples, and docs for filtered list workflows.
 
 ## [2.0.0] - 2026-07-03
 

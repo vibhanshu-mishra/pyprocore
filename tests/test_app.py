@@ -11,6 +11,8 @@ from unittest.mock import Mock, patch
 from pydantic import BaseModel
 
 from pyprocore import app
+from pyprocore.auth.diagnostics import AuthRefreshResult, AuthStatusReport
+from pyprocore.core.doctor import DoctorReport, DoctorSummary
 
 
 class SampleModel(BaseModel):
@@ -28,6 +30,16 @@ class AppTestCase(unittest.TestCase):
         parser = app.build_parser()
 
         self.assertEqual(parser.parse_args(["companies"]).command, "companies")
+        doctor_args = parser.parse_args(["doctor", "--json", "--live"])
+        self.assertEqual(doctor_args.command, "doctor")
+        self.assertTrue(doctor_args.json_output)
+        self.assertTrue(doctor_args.live)
+        auth_status_args = parser.parse_args(["auth", "status", "--json"])
+        self.assertEqual(auth_status_args.command, "auth")
+        self.assertEqual(auth_status_args.auth_command, "status")
+        self.assertTrue(auth_status_args.json_output)
+        self.assertEqual(parser.parse_args(["auth", "refresh"]).auth_command, "refresh")
+        self.assertEqual(parser.parse_args(["auth", "login-url"]).auth_command, "login-url")
         self.assertEqual(parser.parse_args(["find-company", "Tracker"]).name, "Tracker")
         self.assertEqual(parser.parse_args(["projects", "--company-id", "123"]).company_id, 123)
         self.assertEqual(parser.parse_args(["find-project", "Hospital"]).query, "Hospital")
@@ -35,7 +47,20 @@ class AppTestCase(unittest.TestCase):
             parser.parse_args(["find-project", "--number", "001"]).number,
             "001",
         )
-        self.assertEqual(parser.parse_args(["rfis", "--project", "10"]).project_id, 10)
+        rfi_list_args = parser.parse_args(
+            [
+                "rfis",
+                "--project",
+                "10",
+                "--status",
+                "open",
+                "--updated-after",
+                "2026-07-01",
+            ]
+        )
+        self.assertEqual(rfi_list_args.project_id, 10)
+        self.assertEqual(rfi_list_args.status, "open")
+        self.assertEqual(rfi_list_args.updated_after, "2026-07-01")
         self.assertEqual(
             parser.parse_args(["rfi", "--project", "10", "--id", "20"]).rfi_id,
             20,
@@ -44,10 +69,20 @@ class AppTestCase(unittest.TestCase):
             parser.parse_args(["find-rfi", "--project", "10", "--number", "15"]).number,
             "15",
         )
-        self.assertEqual(
-            parser.parse_args(["submittals", "--project-id", "10"]).project_id,
-            10,
+        submittal_list_args = parser.parse_args(
+            [
+                "submittals",
+                "--project-id",
+                "10",
+                "--status",
+                "pending",
+                "--updated-after",
+                "2026-07-01",
+            ]
         )
+        self.assertEqual(submittal_list_args.project_id, 10)
+        self.assertEqual(submittal_list_args.status, "pending")
+        self.assertEqual(submittal_list_args.updated_after, "2026-07-01")
         self.assertEqual(
             parser.parse_args(["submittal", "--project", "10", "--id", "30"]).submittal_id,
             30,
@@ -106,10 +141,24 @@ class AppTestCase(unittest.TestCase):
                 {},
             ),
             (
-                argparse.Namespace(command="rfis", project_id=10),
+                argparse.Namespace(
+                    command="rfis",
+                    project_id=10,
+                    status=None,
+                    updated_after=None,
+                    updated_before=None,
+                    created_after=None,
+                    created_before=None,
+                ),
                 "list_rfis",
                 (10,),
-                {},
+                {
+                    "status": None,
+                    "updated_after": None,
+                    "updated_before": None,
+                    "created_after": None,
+                    "created_before": None,
+                },
             ),
             (
                 argparse.Namespace(command="rfi", project_id=10, rfi_id=20),
@@ -124,10 +173,24 @@ class AppTestCase(unittest.TestCase):
                 {"number": "15"},
             ),
             (
-                argparse.Namespace(command="submittals", project_id=10),
+                argparse.Namespace(
+                    command="submittals",
+                    project_id=10,
+                    status=None,
+                    updated_after=None,
+                    updated_before=None,
+                    created_after=None,
+                    created_before=None,
+                ),
                 "list_submittals",
                 (10,),
-                {},
+                {
+                    "status": None,
+                    "updated_after": None,
+                    "updated_before": None,
+                    "created_after": None,
+                    "created_before": None,
+                },
             ),
             (
                 argparse.Namespace(command="submittal", project_id=10, submittal_id=30),
@@ -148,6 +211,80 @@ class AppTestCase(unittest.TestCase):
                 with patch.object(app, function_name, return_value="result") as function:
                     self.assertEqual(app.run_command(args), "result")
                     function.assert_called_once_with(*expected_args, **expected_kwargs)
+
+    def test_run_command_passes_list_filters(self) -> None:
+        """RFI and submittal list commands pass optional filter flags."""
+        with patch.object(app, "list_rfis", return_value="rfis") as list_rfis:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="rfis",
+                    project_id=10,
+                    status="open",
+                    updated_after="2026-07-01",
+                    updated_before="2026-07-31",
+                    created_after=None,
+                    created_before=None,
+                )
+            )
+        self.assertEqual(result, "rfis")
+        list_rfis.assert_called_once_with(
+            10,
+            status="open",
+            updated_after="2026-07-01",
+            updated_before="2026-07-31",
+            created_after=None,
+            created_before=None,
+        )
+
+        with patch.object(app, "list_submittals", return_value="submittals") as list_submittals:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="submittals",
+                    project_id=10,
+                    status="pending",
+                    updated_after="2026-07-01",
+                    updated_before=None,
+                    created_after="2026-01-01",
+                    created_before=None,
+                )
+            )
+        self.assertEqual(result, "submittals")
+        list_submittals.assert_called_once_with(
+            10,
+            status="pending",
+            updated_after="2026-07-01",
+            updated_before=None,
+            created_after="2026-01-01",
+            created_before=None,
+        )
+
+    def test_run_doctor_dispatches_diagnostics(self) -> None:
+        """Doctor command dispatches to diagnostics without live checks by default."""
+        with patch.object(app, "run_doctor", return_value="report") as doctor:
+            result = app.run_command(argparse.Namespace(command="doctor", live=False))
+
+        self.assertEqual(result, "report")
+        doctor.assert_called_once_with(live=False)
+
+    def test_run_auth_commands_dispatch_to_helpers(self) -> None:
+        """Auth command group dispatches to the matching helper."""
+        with patch.object(app, "get_auth_status", return_value="status") as helper:
+            result = app.run_command(argparse.Namespace(command="auth", auth_command="status"))
+        self.assertEqual(result, "status")
+        helper.assert_called_once_with()
+
+        with patch.object(app, "refresh_auth_token", return_value="refresh") as helper:
+            result = app.run_command(argparse.Namespace(command="auth", auth_command="refresh"))
+        self.assertEqual(result, "refresh")
+        helper.assert_called_once_with()
+
+        with patch.object(app, "build_authorization_url", return_value="login") as helper:
+            result = app.run_command(argparse.Namespace(command="auth", auth_command="login-url"))
+        self.assertEqual(result, "login")
+        helper.assert_called_once_with()
+
+        with self.assertRaises(ValueError):
+            app.run_command(argparse.Namespace(command="auth", auth_command="unknown"))
 
     def test_run_projects_uses_configured_company_when_omitted(self) -> None:
         """Project listing defaults to the configured company ID."""
@@ -303,6 +440,146 @@ class AppTestCase(unittest.TestCase):
         print_function.assert_called_once()
         printed = print_function.call_args.args[0]
         self.assertEqual(json.loads(printed), {"ok": True})
+
+    def test_main_prints_doctor_report_and_exits_with_report_code(self) -> None:
+        """Doctor output controls CLI exit code."""
+        report = DoctorReport(checks=[], summary=DoctorSummary(passed=1, warnings=0, failed=0))
+
+        with (
+            patch.object(app, "build_parser") as build_parser,
+            patch.object(app, "run_command", return_value=report),
+            patch.object(app, "format_doctor_report", return_value="doctor output"),
+            patch("builtins.print") as print_function,
+        ):
+            parser = Mock()
+            parser.parse_args.return_value = argparse.Namespace(
+                command="doctor",
+                json_output=False,
+            )
+            build_parser.return_value = parser
+
+            with self.assertRaises(SystemExit) as context:
+                app.main()
+
+        self.assertEqual(context.exception.code, 0)
+        print_function.assert_called_once_with("doctor output")
+
+    def test_main_prints_auth_status_and_exits_with_report_code(self) -> None:
+        """Auth status output controls CLI exit code."""
+        report = AuthStatusReport(
+            token_store_path="token.json",
+            token_store_exists=True,
+            token_store_readable=True,
+            access_token_present=True,
+            refresh_token_present=True,
+            token_status="Valid",
+            missing_configuration=[],
+            errors=[],
+            warnings=[],
+        )
+
+        with (
+            patch.object(app, "build_parser") as build_parser,
+            patch.object(app, "run_command", return_value=report),
+            patch.object(app, "format_auth_status", return_value="auth status"),
+            patch("builtins.print") as print_function,
+        ):
+            parser = Mock()
+            parser.parse_args.return_value = argparse.Namespace(
+                command="auth",
+                auth_command="status",
+                json_output=False,
+            )
+            build_parser.return_value = parser
+
+            with self.assertRaises(SystemExit) as context:
+                app.main()
+
+        self.assertEqual(context.exception.code, 0)
+        print_function.assert_called_once_with("auth status")
+
+    def test_main_prints_auth_status_json(self) -> None:
+        """Auth status can print JSON output."""
+        report = AuthStatusReport(
+            token_store_path="token.json",
+            token_store_exists=False,
+            token_store_readable=False,
+            access_token_present=False,
+            refresh_token_present=False,
+            token_status="Missing",
+            missing_configuration=[],
+            errors=["Token store is missing."],
+            warnings=[],
+        )
+
+        with (
+            patch.object(app, "build_parser") as build_parser,
+            patch.object(app, "run_command", return_value=report),
+            patch("builtins.print") as print_function,
+        ):
+            parser = Mock()
+            parser.parse_args.return_value = argparse.Namespace(
+                command="auth",
+                auth_command="status",
+                json_output=True,
+            )
+            build_parser.return_value = parser
+
+            with self.assertRaises(SystemExit) as context:
+                app.main()
+
+        self.assertEqual(context.exception.code, 1)
+        printed = json.loads(print_function.call_args.args[0])
+        self.assertEqual(printed["token_status"], "Missing")
+
+    def test_main_prints_auth_refresh_and_exits_with_result_code(self) -> None:
+        """Auth refresh output controls CLI exit code."""
+        result = AuthRefreshResult(success=False, message="failed", error="bad token")
+
+        with (
+            patch.object(app, "build_parser") as build_parser,
+            patch.object(app, "run_command", return_value=result),
+            patch.object(app, "format_auth_refresh", return_value="refresh failed"),
+            patch("builtins.print") as print_function,
+        ):
+            parser = Mock()
+            parser.parse_args.return_value = argparse.Namespace(
+                command="auth",
+                auth_command="refresh",
+            )
+            build_parser.return_value = parser
+
+            with self.assertRaises(SystemExit) as context:
+                app.main()
+
+        self.assertEqual(context.exception.code, 1)
+        print_function.assert_called_once_with("refresh failed")
+
+    def test_main_prints_auth_login_url(self) -> None:
+        """Auth login URL output exits successfully."""
+        result = app.AuthLoginUrlResult(
+            authorization_url="https://login.example/oauth/authorize?response_type=code",
+            redirect_uri="http://localhost/callback",
+        )
+
+        with (
+            patch.object(app, "build_parser") as build_parser,
+            patch.object(app, "run_command", return_value=result),
+            patch.object(app, "format_login_url", return_value="login url"),
+            patch("builtins.print") as print_function,
+        ):
+            parser = Mock()
+            parser.parse_args.return_value = argparse.Namespace(
+                command="auth",
+                auth_command="login-url",
+            )
+            build_parser.return_value = parser
+
+            with self.assertRaises(SystemExit) as context:
+                app.main()
+
+        self.assertEqual(context.exception.code, 0)
+        print_function.assert_called_once_with("login url")
 
 
 if __name__ == "__main__":

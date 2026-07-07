@@ -8,6 +8,7 @@ from pyprocore.automation import (
     build_submittal_package,
     build_workflow_package,
 )
+from pyprocore.client import Procore
 from pyprocore.core.exceptions import DuplicateMatchError, MultipleResultsError, NotFoundError
 from pyprocore.services.search import (
     find_company,
@@ -25,6 +26,7 @@ __all__ = [
     "DownloadedFile",
     "MultipleResultsError",
     "NotFoundError",
+    "Procore",
     "WorkflowPackage",
     "__version__",
     "build_rfi_package",

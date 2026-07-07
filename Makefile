@@ -1,6 +1,6 @@
-.PHONY: test coverage lint format typecheck clean
+.PHONY: test coverage examples-check lint format typecheck clean
 
-PYTHON ?= python
+PYTHON ?= python3
 
 test:
 	$(PYTHON) -m unittest discover -s tests
@@ -9,6 +9,9 @@ coverage:
 	$(PYTHON) -m coverage erase
 	$(PYTHON) -m coverage run -m unittest discover -s tests
 	$(PYTHON) -m coverage report
+
+examples-check:
+	$(PYTHON) scripts/check_examples.py
 
 lint:
 	$(PYTHON) -m black --check pyprocore tests

@@ -21,6 +21,15 @@ coverage priorities.
 - CLI
 - Mocked unit test suite
 
+## Phase 7: Examples and Recipes
+
+Status: Completed
+
+- Runnable examples
+- Task-based recipes
+- Beginner-friendly troubleshooting
+- AI workflow package examples
+
 ## Planned Endpoints
 
 - Drawings
