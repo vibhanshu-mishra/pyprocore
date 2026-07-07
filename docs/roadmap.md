@@ -21,6 +21,44 @@ coverage priorities.
 - CLI
 - Mocked unit test suite
 
+## Phase 1: SDK Foundation
+
+Status: Completed
+
+- OAuth, token refresh, retries, pagination, and structured logging
+- Typed service layers for companies, projects, RFIs, and submittals
+- Attachment downloads
+- Human-friendly search and resolver helpers
+- Object-oriented client interface
+
+## Phase 2: Workflow Automation
+
+Status: Completed
+
+- AI-ready RFI and submittal workflow packages
+- CSV and JSONL exports for RFIs and submittals
+- Local RFI and submittal folder sync
+- Markdown summaries, tracker CSVs, manifests, and attachment downloads
+- Dry-run planning and richer sync manifests
+- Incremental sync state
+- Combined project sync
+- Sync summary reports
+
+## Phase 3: Expanded API Coverage
+
+Status: Planned
+
+Phase 3 will focus on expanded endpoint coverage for project resources such as
+Documents, Drawings, Specifications, Photos, and Daily Logs.
+
+- Documents
+- Drawings
+- Specifications
+- Photos
+- Daily Logs
+- Observations
+- Correspondence
+
 ## Phase 7: Examples and Recipes
 
 Status: Completed
@@ -29,16 +67,6 @@ Status: Completed
 - Task-based recipes
 - Beginner-friendly troubleshooting
 - AI workflow package examples
-
-## Planned Endpoints
-
-- Drawings
-- Documents
-- Specifications
-- Daily Logs
-- Photos
-- Correspondence
-- Observations
 
 ## Planned Capabilities
 

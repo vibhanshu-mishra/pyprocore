@@ -11,6 +11,8 @@ from unittest.mock import Mock
 
 from pyprocore.auth.diagnostics import (
     build_authorization_url,
+    exchange_code_and_save,
+    format_auth_exchange,
     format_auth_refresh,
     format_auth_status,
     format_login_url,
@@ -259,6 +261,84 @@ class AuthDiagnosticsTestCase(unittest.TestCase):
         )
 
         self.assertIn("Next step", formatted)
+
+    def test_exchange_code_success_saves_token_without_printing_secrets(self) -> None:
+        """Authorization code exchange saves tokens and formats safe output."""
+        stored_token = StoredToken(
+            access_token="new-access-token",
+            refresh_token="new-refresh-token",
+            expires_at=int(time.time()) + 7200,
+        )
+        manager = Mock()
+        manager.save_oauth_response.return_value = stored_token
+        exchange = Mock(return_value="oauth-response")
+
+        result = exchange_code_and_save(
+            " authorization-code ",
+            token_manager=manager,
+            exchange_func=exchange,
+        )
+        formatted = format_auth_exchange(result)
+
+        self.assertTrue(result.success)
+        self.assertEqual(result.exit_code, 0)
+        exchange.assert_called_once_with("authorization-code")
+        manager.save_oauth_response.assert_called_once_with("oauth-response")
+        self.assertIn("Token store: Updated", formatted)
+        self.assertIn("Refresh token: Present", formatted)
+        self.assertIn("Access token: Present", formatted)
+        self.assertNotIn("new-access-token", formatted)
+        self.assertNotIn("new-refresh-token", formatted)
+
+    def test_exchange_code_missing_code_returns_failure(self) -> None:
+        """Blank authorization codes fail before OAuth is called."""
+        exchange = Mock()
+        manager = Mock()
+
+        result = exchange_code_and_save("", token_manager=manager, exchange_func=exchange)
+
+        self.assertFalse(result.success)
+        self.assertEqual(result.exit_code, 1)
+        self.assertIn("Authorization code is required", result.error or "")
+        exchange.assert_not_called()
+        manager.save_oauth_response.assert_not_called()
+
+    def test_exchange_code_failure_returns_safe_guidance(self) -> None:
+        """OAuth exchange failures become beginner-friendly messages."""
+        exchange = Mock(
+            side_effect=AuthenticationError("OAuth token request failed with status 401.")
+        )
+        manager = Mock()
+
+        result = exchange_code_and_save(
+            "bad-code",
+            token_manager=manager,
+            exchange_func=exchange,
+        )
+        formatted = format_auth_exchange(result)
+
+        self.assertFalse(result.success)
+        self.assertEqual(result.exit_code, 1)
+        self.assertIn("Authorization code exchange failed", formatted)
+        self.assertIn("auth login-url", formatted)
+        self.assertNotIn("bad-code", formatted)
+        manager.save_oauth_response.assert_not_called()
+
+    def test_exchange_code_save_failure_returns_safe_guidance(self) -> None:
+        """Token save failures are reported without token values."""
+        manager = Mock()
+        manager.save_oauth_response.side_effect = AuthenticationError("Unable to save token store.")
+        exchange = Mock(return_value="oauth-response")
+
+        result = exchange_code_and_save(
+            "authorization-code",
+            token_manager=manager,
+            exchange_func=exchange,
+        )
+
+        self.assertFalse(result.success)
+        self.assertEqual(result.exit_code, 1)
+        self.assertIn("Unable to save token store", result.error or "")
 
 
 if __name__ == "__main__":

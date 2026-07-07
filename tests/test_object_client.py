@@ -7,7 +7,16 @@ from pathlib import Path
 from unittest.mock import Mock, patch
 
 from pyprocore import Procore
-from pyprocore.client import CompaniesClient, ProjectsClient, RFIsClient, SubmittalsClient
+from pyprocore.automation import AutomationInput
+from pyprocore.client import (
+    AutomationClient,
+    CompaniesClient,
+    ProjectsClient,
+    RFIsClient,
+    SubmittalsClient,
+    WorkflowsClient,
+)
+from pyprocore.core.exceptions import ValidationError
 
 
 class ProcoreObjectClientTestCase(unittest.TestCase):
@@ -21,6 +30,8 @@ class ProcoreObjectClientTestCase(unittest.TestCase):
         self.assertIsInstance(client.projects, ProjectsClient)
         self.assertIsInstance(client.rfis, RFIsClient)
         self.assertIsInstance(client.submittals, SubmittalsClient)
+        self.assertIsInstance(client.automation, AutomationClient)
+        self.assertIsInstance(client.workflows, WorkflowsClient)
 
     @patch("pyprocore.client.list_companies")
     def test_companies_list_delegates_to_service(self, list_companies: Mock) -> None:
@@ -271,6 +282,245 @@ class ProcoreObjectClientTestCase(unittest.TestCase):
             submittal_id=309641,
             destination_dir="downloads/submittals",
             overwrite=True,
+        )
+
+    @patch("pyprocore.client.build_workflow_package")
+    def test_automation_build_package_delegates_to_builder(
+        self,
+        build_workflow_package: Mock,
+    ) -> None:
+        """Automation package wrapper delegates to the existing builder."""
+        input_data = AutomationInput(project_id=1, item_type="rfi", item_id=2)
+        build_workflow_package.return_value = "package"
+
+        result = Procore().automation.build_package(input_data)
+
+        self.assertEqual(result, "package")
+        build_workflow_package.assert_called_once_with(input_data)
+
+    @patch("pyprocore.client.build_workflow_package")
+    def test_automation_build_package_accepts_keyword_input(
+        self,
+        build_workflow_package: Mock,
+    ) -> None:
+        """Automation package wrapper can build input from keyword arguments."""
+        build_workflow_package.return_value = "package"
+
+        result = Procore().automation.build_package(
+            project_id=1,
+            item_type="rfi",
+            item_id=2,
+            download_attachments=False,
+        )
+
+        self.assertEqual(result, "package")
+        input_data = build_workflow_package.call_args.args[0]
+        self.assertEqual(input_data.project_id, 1)
+        self.assertEqual(input_data.item_type, "rfi")
+        self.assertEqual(input_data.item_id, 2)
+        self.assertFalse(input_data.download_attachments)
+
+    def test_automation_build_package_requires_item_type_for_keyword_input(self) -> None:
+        """Keyword-style automation package input requires an item type."""
+        with self.assertRaises(ValidationError):
+            Procore().automation.build_package(project_id=1, item_id=2)
+
+    @patch("pyprocore.client.build_rfi_package")
+    def test_automation_build_rfi_package_delegates_to_builder(
+        self,
+        build_rfi_package: Mock,
+    ) -> None:
+        """RFI automation package wrapper passes options through."""
+        build_rfi_package.return_value = "package"
+
+        result = Procore().automation.build_rfi_package(
+            project_id=1,
+            number="15",
+            output_dir=Path("out"),
+            download_attachments=False,
+        )
+
+        self.assertEqual(result, "package")
+        build_rfi_package.assert_called_once_with(
+            company_id=None,
+            project_id=1,
+            project_name=None,
+            project_number=None,
+            rfi_id=None,
+            number="15",
+            download_attachments=False,
+            output_dir=Path("out"),
+        )
+
+    @patch("pyprocore.client.build_submittal_package")
+    def test_automation_build_submittal_package_delegates_to_builder(
+        self,
+        build_submittal_package: Mock,
+    ) -> None:
+        """Submittal automation package wrapper passes options through."""
+        build_submittal_package.return_value = "package"
+
+        result = Procore().automation.build_submittal_package(project_id=1, submittal_id=2)
+
+        self.assertEqual(result, "package")
+        build_submittal_package.assert_called_once_with(
+            company_id=None,
+            project_id=1,
+            project_name=None,
+            project_number=None,
+            submittal_id=2,
+            number=None,
+            download_attachments=True,
+            output_dir=None,
+        )
+
+    @patch("pyprocore.client.export_rfis_to_csv")
+    def test_workflows_export_rfis_delegates_to_helper(self, export_rfis_to_csv: Mock) -> None:
+        """Workflow RFI CSV exports delegate to the workflow helper."""
+        export_rfis_to_csv.return_value = Path("rfis.csv")
+
+        result = Procore().workflows.export_rfis_to_csv(
+            1,
+            "rfis.csv",
+            status="open",
+            params={"per_page": 100},
+        )
+
+        self.assertEqual(result, Path("rfis.csv"))
+        export_rfis_to_csv.assert_called_once_with(
+            1,
+            "rfis.csv",
+            status="open",
+            updated_after=None,
+            updated_before=None,
+            created_after=None,
+            created_before=None,
+            params={"per_page": 100},
+        )
+
+    @patch("pyprocore.client.export_submittals_to_csv")
+    def test_workflows_export_submittals_delegates_to_helper(
+        self,
+        export_submittals_to_csv: Mock,
+    ) -> None:
+        """Workflow submittal CSV exports delegate to the workflow helper."""
+        export_submittals_to_csv.return_value = Path("submittals.csv")
+
+        result = Procore().workflows.export_submittals_to_csv(1, "submittals.csv")
+
+        self.assertEqual(result, Path("submittals.csv"))
+        export_submittals_to_csv.assert_called_once()
+
+    @patch("pyprocore.client.export_rfis_to_jsonl")
+    def test_workflows_export_rfis_jsonl_delegates_to_helper(
+        self,
+        export_rfis_to_jsonl: Mock,
+    ) -> None:
+        """Workflow RFI JSONL exports delegate to the workflow helper."""
+        export_rfis_to_jsonl.return_value = Path("rfis.jsonl")
+
+        result = Procore().workflows.export_rfis_to_jsonl(1, "rfis.jsonl", status="open")
+
+        self.assertEqual(result, Path("rfis.jsonl"))
+        export_rfis_to_jsonl.assert_called_once_with(1, "rfis.jsonl", status="open")
+
+    @patch("pyprocore.client.export_submittals_to_jsonl")
+    def test_workflows_export_submittals_jsonl_delegates_to_helper(
+        self,
+        export_submittals_to_jsonl: Mock,
+    ) -> None:
+        """Workflow submittal JSONL exports delegate to the workflow helper."""
+        export_submittals_to_jsonl.return_value = Path("submittals.jsonl")
+
+        result = Procore().workflows.export_submittals_to_jsonl(
+            1,
+            "submittals.jsonl",
+            status="pending",
+        )
+
+        self.assertEqual(result, Path("submittals.jsonl"))
+        export_submittals_to_jsonl.assert_called_once_with(
+            1,
+            "submittals.jsonl",
+            status="pending",
+        )
+
+    @patch("pyprocore.client.sync_rfis_to_folder")
+    def test_workflows_sync_rfis_delegates_to_helper(self, sync_rfis_to_folder: Mock) -> None:
+        """Workflow RFI sync delegates to the workflow helper."""
+        sync_rfis_to_folder.return_value = "result"
+
+        result = Procore().workflows.sync_rfis_to_folder(
+            1,
+            "out",
+            status="open",
+            download_attachments=False,
+        )
+
+        self.assertEqual(result, "result")
+        sync_rfis_to_folder.assert_called_once_with(
+            1,
+            "out",
+            status="open",
+            download_attachments=False,
+            overwrite=False,
+            create_tracker=True,
+            create_markdown=True,
+            dry_run=False,
+            incremental=False,
+        )
+
+    @patch("pyprocore.client.sync_submittals_to_folder")
+    def test_workflows_sync_submittals_delegates_to_helper(
+        self,
+        sync_submittals_to_folder: Mock,
+    ) -> None:
+        """Workflow submittal sync delegates to the workflow helper."""
+        sync_submittals_to_folder.return_value = "result"
+
+        result = Procore().workflows.sync_submittals_to_folder(1, "out", overwrite=True)
+
+        self.assertEqual(result, "result")
+        sync_submittals_to_folder.assert_called_once_with(
+            1,
+            "out",
+            status=None,
+            download_attachments=True,
+            overwrite=True,
+            create_tracker=True,
+            create_markdown=True,
+            dry_run=False,
+            incremental=False,
+        )
+
+    @patch("pyprocore.client.sync_project_to_folder")
+    def test_workflows_sync_project_delegates_to_helper(
+        self,
+        sync_project_to_folder: Mock,
+    ) -> None:
+        """Workflow project sync delegates to the workflow helper."""
+        sync_project_to_folder.return_value = "result"
+
+        result = Procore().workflows.sync_project_to_folder(
+            1,
+            "out",
+            include_submittals=False,
+            incremental=True,
+        )
+
+        self.assertEqual(result, "result")
+        sync_project_to_folder.assert_called_once_with(
+            1,
+            "out",
+            include_rfis=True,
+            include_submittals=False,
+            status=None,
+            download_attachments=True,
+            overwrite=False,
+            create_tracker=True,
+            create_markdown=True,
+            dry_run=False,
+            incremental=True,
         )
 
 

@@ -22,12 +22,29 @@ and this project follows semantic versioning.
 - Client-interface example and documentation.
 - Optional filter/query parameters for RFI and submittal list operations.
 - Optional CLI filter flags for RFI and submittal listing.
+- `procore-sdk auth exchange-code` to exchange a Procore OAuth authorization code and save tokens locally.
+- `client.automation` object-client wrapper for existing workflow package builders.
+- `client.workflows` object-client wrapper for export and sync workflows.
+- CSV and JSONL workflow exports for RFIs and submittals.
+- Folder sync workflows for RFIs and submittals with item JSON, Markdown summaries, tracker CSVs, manifests, and optional attachment downloads.
+- `procore-sdk export-rfis`, `procore-sdk export-submittals`, `procore-sdk sync-rfis`, and `procore-sdk sync-submittals`.
+- Workflow automation examples and recipes for CSV exports and folder sync.
+- Dry-run support for RFI and submittal folder sync workflows.
+- Richer sync results and manifests with per-item status, JSON path, summary path, attachment counts, warnings, and errors.
+- Incremental sync state for RFI and submittal folder sync.
+- Combined project sync workflow and `procore-sdk sync-project`.
+- Sync summary reports for individual syncs and project syncs.
+- Examples and recipes for incremental sync and project sync.
 
 ### Changed
 
 - Standardized the Makefile Python command default to `python3` while preserving `PYTHON=...` override support.
 - Updated README and troubleshooting docs for examples, recipes, diagnostics, and auth helper workflows.
 - Updated client interface, examples, and docs for filtered list workflows.
+- Updated auth documentation to show the full CLI-based setup flow.
+- Updated README, roadmap, examples, and recipes for workflow automation commands.
+- Improved CLI summaries for workflow export and sync commands.
+- Marked Phase 2 workflow automation complete in the roadmap.
 
 ## [2.0.0] - 2026-07-03
 

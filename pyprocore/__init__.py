@@ -17,6 +17,17 @@ from pyprocore.services.search import (
     find_rfi,
     find_submittal,
 )
+from pyprocore.workflows import (
+    ProjectSyncResult,
+    SyncResult,
+    export_rfis_to_csv,
+    export_rfis_to_jsonl,
+    export_submittals_to_csv,
+    export_submittals_to_jsonl,
+    sync_project_to_folder,
+    sync_rfis_to_folder,
+    sync_submittals_to_folder,
+)
 
 __version__ = "2.0.0"
 
@@ -27,14 +38,23 @@ __all__ = [
     "MultipleResultsError",
     "NotFoundError",
     "Procore",
+    "ProjectSyncResult",
+    "SyncResult",
     "WorkflowPackage",
     "__version__",
     "build_rfi_package",
     "build_submittal_package",
     "build_workflow_package",
+    "export_rfis_to_csv",
+    "export_rfis_to_jsonl",
+    "export_submittals_to_csv",
+    "export_submittals_to_jsonl",
     "find_company",
     "find_project",
     "find_project_contains",
     "find_rfi",
     "find_submittal",
+    "sync_project_to_folder",
+    "sync_rfis_to_folder",
+    "sync_submittals_to_folder",
 ]

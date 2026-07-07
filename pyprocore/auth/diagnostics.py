@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import os
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from datetime import UTC, datetime
 from pathlib import Path
 from urllib.parse import urlencode
 
 from dotenv import dotenv_values
 
+from pyprocore.auth.oauth import OAuthTokenResponse, exchange_authorization_code
 from pyprocore.auth.token_manager import TokenManager
 from pyprocore.auth.token_store import StoredToken, TokenStore
 from pyprocore.core.config import ProcoreSettings, get_settings
@@ -74,6 +75,24 @@ class AuthLoginUrlResult(ProcoreModel):
 
     authorization_url: str
     redirect_uri: str
+
+
+class AuthExchangeResult(ProcoreModel):
+    """Result of exchanging and saving an OAuth authorization code."""
+
+    success: bool
+    message: str
+    token_store_updated: bool = False
+    access_token_present: bool = False
+    refresh_token_present: bool = False
+    expires_at: int | None = None
+    expires_at_utc: str | None = None
+    error: str | None = None
+
+    @property
+    def exit_code(self) -> int:
+        """Return the CLI exit code for this exchange attempt."""
+        return 0 if self.success else 1
 
 
 def get_auth_status(
@@ -179,6 +198,55 @@ def refresh_auth_token(token_manager: TokenManager | None = None) -> AuthRefresh
     )
 
 
+def exchange_code_and_save(
+    authorization_code: str,
+    *,
+    token_manager: TokenManager | None = None,
+    exchange_func: Callable[[str], OAuthTokenResponse] = exchange_authorization_code,
+) -> AuthExchangeResult:
+    """Exchange an authorization code and save the returned token.
+
+    Args:
+        authorization_code: OAuth authorization code copied from Procore.
+        token_manager: Optional token manager, primarily for tests.
+        exchange_func: Optional OAuth exchange function, primarily for tests.
+
+    Returns:
+        A safe exchange result that never exposes token values.
+    """
+    code = authorization_code.strip()
+    if not code:
+        return AuthExchangeResult(
+            success=False,
+            message="Authorization code exchange failed.",
+            error="Authorization code is required.",
+        )
+
+    manager = token_manager or TokenManager()
+    try:
+        token_response = exchange_func(code)
+        stored_token = manager.save_oauth_response(token_response)
+    except AuthenticationError as exc:
+        return AuthExchangeResult(
+            success=False,
+            message="Authorization code exchange failed.",
+            error=str(exc),
+        )
+
+    return AuthExchangeResult(
+        success=True,
+        message="Authorization code exchanged successfully.",
+        token_store_updated=True,
+        access_token_present=bool(stored_token.access_token.get_secret_value()),
+        refresh_token_present=(
+            stored_token.refresh_token is not None
+            and bool(stored_token.refresh_token.get_secret_value())
+        ),
+        expires_at=stored_token.expires_at,
+        expires_at_utc=_format_expiry(stored_token.expires_at),
+    )
+
+
 def build_authorization_url(settings: ProcoreSettings | None = None) -> AuthLoginUrlResult:
     """Build the Procore OAuth authorization URL.
 
@@ -242,6 +310,39 @@ def format_auth_refresh(result: AuthRefreshResult) -> str:
     )
 
 
+def format_auth_exchange(result: AuthExchangeResult) -> str:
+    """Format an auth exchange result for human CLI output."""
+    if result.success:
+        return "\n".join(
+            [
+                result.message,
+                f"Token store: {'Updated' if result.token_store_updated else 'Not updated'}",
+                f"Refresh token: {'Present' if result.refresh_token_present else 'Missing'}",
+                f"Access token: {'Present' if result.access_token_present else 'Missing'}",
+                "Next step:",
+                "Run `procore-sdk auth status` to confirm your setup.",
+            ]
+        )
+
+    lines = [
+        result.message,
+        "Reason:",
+        ("Procore rejected the authorization code, or your OAuth " "configuration is incomplete."),
+    ]
+    if result.error:
+        lines.extend(["Details:", result.error])
+    lines.extend(
+        [
+            "Suggested fixes:",
+            "- Confirm PROCORE_CLIENT_ID is set.",
+            "- Confirm PROCORE_CLIENT_SECRET is set.",
+            "- Confirm PROCORE_REDIRECT_URI matches your Procore app settings.",
+            "- Generate a fresh authorization code with `procore-sdk auth login-url`.",
+        ]
+    )
+    return "\n".join(lines)
+
+
 def format_login_url(result: AuthLoginUrlResult) -> str:
     """Format an authorization URL with beginner-friendly next steps."""
     return "\n".join(
@@ -249,7 +350,7 @@ def format_login_url(result: AuthLoginUrlResult) -> str:
             "Open this URL in your browser to authorize PyProcore:",
             result.authorization_url,
             "After approving access, Procore will redirect to your redirect URI with a code.",
-            "Copy the code value and exchange it with the existing OAuth exchange helper.",
+            "Copy the code value and run `procore-sdk auth exchange-code YOUR_CODE`.",
         ]
     )
 

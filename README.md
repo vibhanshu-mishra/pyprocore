@@ -133,20 +133,17 @@ Secrets, tokens, URLs, and company IDs are never hardcoded in source.
 Use the auth helper commands to inspect and repair local setup:
 
 ```bash
-procore-sdk auth status
+procore-sdk doctor
 procore-sdk auth login-url
+procore-sdk auth exchange-code YOUR_AUTHORIZATION_CODE
+procore-sdk auth status
 procore-sdk auth refresh
 ```
 
-Exchange the first authorization code and save the token locally:
-
-```python
-from pyprocore.auth.oauth import exchange_authorization_code
-from pyprocore.auth.token_manager import TokenManager
-
-token_response = exchange_authorization_code("authorization-code-from-procore")
-TokenManager().save_oauth_response(token_response)
-```
+First, run `procore-sdk auth login-url` and open the printed URL. After you
+approve access, Procore redirects to your redirect URI with a `code` value. Copy
+that value and run `procore-sdk auth exchange-code YOUR_AUTHORIZATION_CODE` to
+save tokens locally.
 
 After that, SDK clients read the token automatically:
 
@@ -157,6 +154,7 @@ access_token = get_access_token()
 ```
 
 Expired access tokens refresh automatically whenever a refresh token is available.
+You can also refresh manually with `procore-sdk auth refresh`.
 
 ---
 
@@ -273,6 +271,86 @@ submittal_package = build_submittal_package(
 
 Default attachment output directories are created under `downloads/`, for example `downloads/rfi_15/` or `downloads/submittal_27/`. Pass `output_dir` to choose a custom destination.
 
+The object client exposes the same builders:
+
+```python
+from pyprocore import Procore
+
+client = Procore()
+package = client.automation.build_rfi_package(project_id=352338, number="15")
+```
+
+## Workflow Automation
+
+Workflow helpers create local files for reporting, handoff, and AI workflows.
+They build on the existing typed services and do not require you to manually
+request additional pages.
+
+```python
+from pyprocore.workflows import export_rfis_to_csv, sync_rfis_to_folder
+
+csv_path = export_rfis_to_csv(
+    project_id=352338,
+    output_path="exports/rfis.csv",
+    status="open",
+)
+
+sync_result = sync_rfis_to_folder(
+    project_id=352338,
+    output_dir="exports/rfi-sync",
+    download_attachments=True,
+)
+
+print(csv_path)
+print(sync_result.manifest_path)
+```
+
+Available helpers:
+
+- `export_rfis_to_csv()`
+- `export_submittals_to_csv()`
+- `export_rfis_to_jsonl()`
+- `export_submittals_to_jsonl()`
+- `sync_rfis_to_folder()`
+- `sync_submittals_to_folder()`
+
+The object client exposes these under `client.workflows`.
+
+CSV exports are best when you want a spreadsheet-friendly tracker. JSONL
+exports are best when another tool should process one complete typed item per
+line. Folder sync creates:
+
+- `rfis/` or `submittals/` item folders
+- `item.json` metadata for each item
+- optional `summary.md` files
+- a tracker CSV when enabled
+- `sync_manifest.json` with project, item, folder, attachment, warning, and error metadata
+- optional downloaded attachments
+
+Attachment downloads skip existing files unless `overwrite=True`. Tracker CSV,
+manifest, item JSON, and Markdown summary files are regenerated when sync runs.
+Use `dry_run=True` or `--dry-run` to list/fetch items and preview paths without
+writing files or downloading attachments.
+
+Incremental sync skips unchanged items by comparing each item ID and
+`updated_at` value against a local state file:
+
+```python
+from pyprocore.workflows import sync_project_to_folder
+
+result = sync_project_to_folder(
+    project_id=352338,
+    output_dir="exports/project-sync",
+    incremental=True,
+)
+
+print(result.synced_count)
+print(result.skipped_count)
+```
+
+Project sync combines RFIs and submittals into one output folder and writes
+`project_sync_manifest.json` plus `project_sync_summary.md`.
+
 Every typed model serializes back to JSON:
 
 ```python
@@ -340,12 +418,21 @@ procore-sdk package-rfi --project 352338 --id 102784
 procore-sdk package-rfi --project-name "Sandbox Test Project" --number 15
 procore-sdk package-submittal --project 352338 --id 309641
 procore-sdk package-submittal --project-name "Sandbox Test Project" --number 27
+procore-sdk export-rfis --project 352338 --output ./rfis.csv
+procore-sdk export-submittals --project 352338 --output ./submittals.csv
+procore-sdk sync-rfis --project 352338 --output ./rfi-sync
+procore-sdk sync-rfis --project 352338 --output ./rfi-sync --dry-run
+procore-sdk sync-rfis --project 352338 --output ./rfi-sync --incremental
+procore-sdk sync-submittals --project 352338 --output ./submittal-sync
+procore-sdk sync-project --project 352338 --output ./project-sync
+procore-sdk sync-project --project 352338 --output ./project-sync --incremental
 procore-sdk auth status
 procore-sdk auth login-url
 procore-sdk auth refresh
 ```
 
-The CLI prints formatted JSON. Typed models are serialized with `model_dump(mode="json")`.
+Most CLI commands print formatted JSON. Export and sync workflow commands print
+short human-readable summaries.
 
 ---
 
@@ -353,7 +440,8 @@ The CLI prints formatted JSON. Typed models are serialized with `model_dump(mode
 
 Runnable example scripts live in [examples/](examples/README.md). They show
 common SDK tasks such as listing projects, fetching RFIs, downloading
-attachments, and building workflow packages.
+attachments, building workflow packages, exporting CSVs, and syncing local
+review folders.
 
 Examples can be syntax-checked without credentials or live Procore access:
 
@@ -401,16 +489,26 @@ GET /rest/v1.1/projects/{project_id}/submittals/{submittal_id}
 
 ## Roadmap
 
-### Phase 1: Workflow Automation
-- RFI Excel export
-- Submittal Excel export
-- RFI folder sync
-- Submittal folder sync
+### Phase 1: SDK Foundation
+- OAuth and token refresh
+- Reusable HTTP client with retries and pagination
+- Companies, projects, RFIs, and submittals
+- Typed models and attachment downloads
+- Search/resolver helpers
+- Object-oriented client interface
+
+### Phase 2: Workflow Automation
+- RFI CSV and JSONL export
+- Submittal CSV and JSONL export
+- RFI folder sync with JSON, Markdown, tracker CSV, manifest, and attachments
+- Submittal folder sync with JSON, Markdown, tracker CSV, manifest, and attachments
+- Dry-run folder sync planning
 - Incremental sync state
-- Markdown exports
+- Combined project folder sync
+- Sync summary reports
 - AI-ready workflow packages
 
-### Phase 2: Expanded API Coverage
+### Phase 3: Expanded API Coverage
 - Documents
 - Drawings
 - Specifications
@@ -419,7 +517,7 @@ GET /rest/v1.1/projects/{project_id}/submittals/{submittal_id}
 - Observations
 - Correspondence
 
-### Phase 3: AI and Review Workflows
+### Phase 4: AI and Review Workflows
 - RFI review packages
 - Submittal review packages
 - Drawing/spec context packages
@@ -427,7 +525,7 @@ GET /rest/v1.1/projects/{project_id}/submittals/{submittal_id}
 - Vector database examples
 - Engineering assistant examples
 
-### Phase 4: Developer Platform
+### Phase 5: Developer Platform
 - Client object interface
 - Async client
 - Webhook helpers
@@ -435,7 +533,7 @@ GET /rest/v1.1/projects/{project_id}/submittals/{submittal_id}
 - Advanced filter models
 - Plugin architecture
 
-### Phase 5: Production Tooling
+### Phase 6: Production Tooling
 - CLI doctor command
 - Sync logs
 - Manifest files

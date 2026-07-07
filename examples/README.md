@@ -37,6 +37,8 @@ export PROCORE_SUBMITTAL_ID=your_submittal_id
 export PROCORE_SUBMITTAL_NUMBER=your_submittal_number
 export PROCORE_SUBMITTAL_STATUS=pending
 export PROCORE_OUTPUT_DIR=downloads/examples
+export PROCORE_DRY_RUN=1
+export PROCORE_STATUS=open
 ```
 
 Use placeholder values while learning. Do not commit real IDs, tokens, secrets,
@@ -51,6 +53,8 @@ python3 examples/01_list_companies.py
 python3 examples/02_list_projects.py
 python3 examples/05_get_rfi.py
 python3 examples/13_client_interface.py
+python3 examples/14_export_rfis_to_csv.py
+python3 examples/18_incremental_sync.py
 ```
 
 Each script prints helpful messages when required environment variables are
@@ -81,6 +85,12 @@ make examples-check
 | `11_build_submittal_package.py` | Build an automation package for one submittal |
 | `12_export_typed_model_json.py` | Export a typed model as JSON |
 | `13_client_interface.py` | Use the object-oriented `Procore` client interface |
+| `14_export_rfis_to_csv.py` | Export project RFIs to a CSV file |
+| `15_export_submittals_to_csv.py` | Export project submittals to a CSV file |
+| `16_sync_rfis_to_folder.py` | Sync project RFIs into local folders |
+| `17_sync_submittals_to_folder.py` | Sync project submittals into local folders |
+| `18_incremental_sync.py` | Run an incremental RFI sync with local state |
+| `19_sync_project_to_folder.py` | Sync RFIs and submittals into one project folder |
 
 ## Safety Notes
 

@@ -5,9 +5,17 @@ from __future__ import annotations
 import builtins
 from collections.abc import Mapping
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
+from pyprocore.automation import (
+    AutomationInput,
+    WorkflowPackage,
+    build_rfi_package,
+    build_submittal_package,
+    build_workflow_package,
+)
 from pyprocore.core.config import get_settings
+from pyprocore.core.exceptions import ValidationError
 from pyprocore.models import RFI, Company, Project, Submittal
 from pyprocore.services import (
     download_rfi_attachments,
@@ -24,6 +32,17 @@ from pyprocore.services import (
     list_projects,
     list_rfis,
     list_submittals,
+)
+from pyprocore.workflows import (
+    ProjectSyncResult,
+    SyncResult,
+    export_rfis_to_csv,
+    export_rfis_to_jsonl,
+    export_submittals_to_csv,
+    export_submittals_to_jsonl,
+    sync_project_to_folder,
+    sync_rfis_to_folder,
+    sync_submittals_to_folder,
 )
 
 
@@ -293,6 +312,332 @@ class SubmittalsClient:
         )
 
 
+class AutomationClient:
+    """Convenience methods for AI-ready automation workflow packages."""
+
+    def build_package(
+        self,
+        input_data: AutomationInput | None = None,
+        *,
+        company_id: int | None = None,
+        project_id: int | None = None,
+        project_name: str | None = None,
+        project_number: str | None = None,
+        item_type: Literal["rfi", "submittal"] | None = None,
+        item_id: int | None = None,
+        item_number: str | None = None,
+        download_attachments: bool = True,
+        output_dir: Path | str | None = None,
+    ) -> WorkflowPackage:
+        """Build an automation package from a typed input model.
+
+        Args:
+            input_data: Optional workflow package input. When omitted, keyword
+                arguments are used to build one.
+            company_id: Optional company ID used for project search.
+            project_id: Optional project ID.
+            project_name: Optional project name or name fragment.
+            project_number: Optional project number.
+            item_type: Workflow target type, such as ``rfi`` or ``submittal``.
+            item_id: Optional item ID.
+            item_number: Optional item number.
+            download_attachments: Whether to download attachments.
+            output_dir: Optional attachment output directory.
+
+        Returns:
+            A resolved workflow package.
+        """
+        if input_data is None:
+            if item_type is None:
+                raise ValidationError(
+                    "item_type is required when build_package is called without input_data."
+                )
+            input_data = AutomationInput(
+                company_id=company_id,
+                project_id=project_id,
+                project_name=project_name,
+                project_number=project_number,
+                item_type=item_type,
+                item_id=item_id,
+                item_number=item_number,
+                download_attachments=download_attachments,
+                output_dir=output_dir,
+            )
+        return build_workflow_package(input_data)
+
+    def build_rfi_package(
+        self,
+        *,
+        company_id: int | None = None,
+        project_id: int | None = None,
+        project_name: str | None = None,
+        project_number: str | None = None,
+        rfi_id: int | None = None,
+        number: str | None = None,
+        download_attachments: bool = True,
+        output_dir: Path | str | None = None,
+    ) -> WorkflowPackage:
+        """Build an automation package for one RFI.
+
+        Args:
+            company_id: Optional company ID used for project search.
+            project_id: Optional project ID.
+            project_name: Optional project name or name fragment.
+            project_number: Optional project number.
+            rfi_id: Optional RFI ID.
+            number: Optional RFI number.
+            download_attachments: Whether to download attachments.
+            output_dir: Optional attachment output directory.
+
+        Returns:
+            A resolved RFI workflow package.
+        """
+        return build_rfi_package(
+            company_id=company_id,
+            project_id=project_id,
+            project_name=project_name,
+            project_number=project_number,
+            rfi_id=rfi_id,
+            number=number,
+            download_attachments=download_attachments,
+            output_dir=output_dir,
+        )
+
+    def build_submittal_package(
+        self,
+        *,
+        company_id: int | None = None,
+        project_id: int | None = None,
+        project_name: str | None = None,
+        project_number: str | None = None,
+        submittal_id: int | None = None,
+        number: str | None = None,
+        download_attachments: bool = True,
+        output_dir: Path | str | None = None,
+    ) -> WorkflowPackage:
+        """Build an automation package for one submittal.
+
+        Args:
+            company_id: Optional company ID used for project search.
+            project_id: Optional project ID.
+            project_name: Optional project name or name fragment.
+            project_number: Optional project number.
+            submittal_id: Optional submittal ID.
+            number: Optional submittal number.
+            download_attachments: Whether to download attachments.
+            output_dir: Optional attachment output directory.
+
+        Returns:
+            A resolved submittal workflow package.
+        """
+        return build_submittal_package(
+            company_id=company_id,
+            project_id=project_id,
+            project_name=project_name,
+            project_number=project_number,
+            submittal_id=submittal_id,
+            number=number,
+            download_attachments=download_attachments,
+            output_dir=output_dir,
+        )
+
+
+class WorkflowsClient:
+    """Convenience methods for local exports and folder sync workflows."""
+
+    def export_rfis_to_csv(
+        self,
+        project_id: int,
+        output_path: Path | str,
+        *,
+        status: str | None = None,
+        updated_after: str | None = None,
+        updated_before: str | None = None,
+        created_after: str | None = None,
+        created_before: str | None = None,
+        params: dict[str, object] | None = None,
+        **extra_params: Any,
+    ) -> Path:
+        """Export RFIs to CSV.
+
+        Args:
+            project_id: Procore project ID.
+            output_path: CSV path to create.
+            status: Optional status filter.
+            updated_after: Optional lower bound for updated date filtering.
+            updated_before: Optional upper bound for updated date filtering.
+            created_after: Optional lower bound for created date filtering.
+            created_before: Optional upper bound for created date filtering.
+            params: Optional additional query parameters.
+            **extra_params: Additional Procore query parameters.
+
+        Returns:
+            The created CSV path.
+        """
+        return export_rfis_to_csv(
+            project_id,
+            output_path,
+            status=status,
+            updated_after=updated_after,
+            updated_before=updated_before,
+            created_after=created_after,
+            created_before=created_before,
+            params=params,
+            **extra_params,
+        )
+
+    def export_submittals_to_csv(
+        self,
+        project_id: int,
+        output_path: Path | str,
+        *,
+        status: str | None = None,
+        updated_after: str | None = None,
+        updated_before: str | None = None,
+        created_after: str | None = None,
+        created_before: str | None = None,
+        params: dict[str, object] | None = None,
+        **extra_params: Any,
+    ) -> Path:
+        """Export submittals to CSV.
+
+        Args:
+            project_id: Procore project ID.
+            output_path: CSV path to create.
+            status: Optional status filter.
+            updated_after: Optional lower bound for updated date filtering.
+            updated_before: Optional upper bound for updated date filtering.
+            created_after: Optional lower bound for created date filtering.
+            created_before: Optional upper bound for created date filtering.
+            params: Optional additional query parameters.
+            **extra_params: Additional Procore query parameters.
+
+        Returns:
+            The created CSV path.
+        """
+        return export_submittals_to_csv(
+            project_id,
+            output_path,
+            status=status,
+            updated_after=updated_after,
+            updated_before=updated_before,
+            created_after=created_after,
+            created_before=created_before,
+            params=params,
+            **extra_params,
+        )
+
+    def export_rfis_to_jsonl(
+        self,
+        project_id: int,
+        output_path: Path | str,
+        *,
+        status: str | None = None,
+        **filters: Any,
+    ) -> Path:
+        """Export RFIs to newline-delimited JSON."""
+        return export_rfis_to_jsonl(project_id, output_path, status=status, **filters)
+
+    def export_submittals_to_jsonl(
+        self,
+        project_id: int,
+        output_path: Path | str,
+        *,
+        status: str | None = None,
+        **filters: Any,
+    ) -> Path:
+        """Export submittals to newline-delimited JSON."""
+        return export_submittals_to_jsonl(project_id, output_path, status=status, **filters)
+
+    def sync_rfis_to_folder(
+        self,
+        project_id: int,
+        output_dir: Path | str,
+        *,
+        status: str | None = None,
+        download_attachments: bool = True,
+        overwrite: bool = False,
+        create_tracker: bool = True,
+        create_markdown: bool = True,
+        dry_run: bool = False,
+        incremental: bool = False,
+        **filters: Any,
+    ) -> SyncResult:
+        """Sync RFIs into a local folder tree."""
+        return sync_rfis_to_folder(
+            project_id,
+            output_dir,
+            status=status,
+            download_attachments=download_attachments,
+            overwrite=overwrite,
+            create_tracker=create_tracker,
+            create_markdown=create_markdown,
+            dry_run=dry_run,
+            incremental=incremental,
+            **filters,
+        )
+
+    def sync_submittals_to_folder(
+        self,
+        project_id: int,
+        output_dir: Path | str,
+        *,
+        status: str | None = None,
+        download_attachments: bool = True,
+        overwrite: bool = False,
+        create_tracker: bool = True,
+        create_markdown: bool = True,
+        dry_run: bool = False,
+        incremental: bool = False,
+        **filters: Any,
+    ) -> SyncResult:
+        """Sync submittals into a local folder tree."""
+        return sync_submittals_to_folder(
+            project_id,
+            output_dir,
+            status=status,
+            download_attachments=download_attachments,
+            overwrite=overwrite,
+            create_tracker=create_tracker,
+            create_markdown=create_markdown,
+            dry_run=dry_run,
+            incremental=incremental,
+            **filters,
+        )
+
+    def sync_project_to_folder(
+        self,
+        project_id: int,
+        output_dir: Path | str,
+        *,
+        include_rfis: bool = True,
+        include_submittals: bool = True,
+        status: str | None = None,
+        download_attachments: bool = True,
+        overwrite: bool = False,
+        create_tracker: bool = True,
+        create_markdown: bool = True,
+        dry_run: bool = False,
+        incremental: bool = False,
+        **filters: Any,
+    ) -> ProjectSyncResult:
+        """Sync RFIs and/or submittals into one project folder."""
+        return sync_project_to_folder(
+            project_id,
+            output_dir,
+            include_rfis=include_rfis,
+            include_submittals=include_submittals,
+            status=status,
+            download_attachments=download_attachments,
+            overwrite=overwrite,
+            create_tracker=create_tracker,
+            create_markdown=create_markdown,
+            dry_run=dry_run,
+            incremental=incremental,
+            **filters,
+        )
+
+
 class Procore:
     """Beginner-friendly object-oriented entry point for PyProcore.
 
@@ -307,12 +652,16 @@ class Procore:
         self.projects = ProjectsClient()
         self.rfis = RFIsClient()
         self.submittals = SubmittalsClient()
+        self.automation = AutomationClient()
+        self.workflows = WorkflowsClient()
 
 
 __all__ = [
+    "AutomationClient",
     "CompaniesClient",
     "Procore",
     "ProjectsClient",
     "RFIsClient",
     "SubmittalsClient",
+    "WorkflowsClient",
 ]

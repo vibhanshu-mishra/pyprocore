@@ -10,10 +10,13 @@ from typing import Any, Literal
 from pydantic import BaseModel
 
 from pyprocore.auth.diagnostics import (
+    AuthExchangeResult,
     AuthLoginUrlResult,
     AuthRefreshResult,
     AuthStatusReport,
     build_authorization_url,
+    exchange_code_and_save,
+    format_auth_exchange,
     format_auth_refresh,
     format_auth_status,
     format_login_url,
@@ -36,6 +39,15 @@ from pyprocore.services import (
     list_projects,
     list_rfis,
     list_submittals,
+)
+from pyprocore.workflows import (
+    ProjectSyncResult,
+    SyncResult,
+    export_rfis_to_csv,
+    export_submittals_to_csv,
+    sync_project_to_folder,
+    sync_rfis_to_folder,
+    sync_submittals_to_folder,
 )
 
 
@@ -70,6 +82,13 @@ def build_parser() -> argparse.ArgumentParser:
 
     auth_subcommands.add_parser("refresh", help="Refresh the stored access token")
     auth_subcommands.add_parser("login-url", help="Print the OAuth authorization URL")
+    auth_exchange_parser = auth_subcommands.add_parser(
+        "exchange-code",
+        aliases=["exchange"],
+        help="Exchange an OAuth authorization code and save tokens",
+    )
+    auth_exchange_parser.set_defaults(auth_command="exchange-code")
+    auth_exchange_parser.add_argument("code", help="Authorization code returned by Procore")
 
     subcommands.add_parser("companies", help="List companies")
 
@@ -166,6 +185,54 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_package_options(package_submittal_parser)
 
+    export_rfis_parser = subcommands.add_parser(
+        "export-rfis",
+        help="Export project RFIs to CSV",
+    )
+    _add_project_output_options(export_rfis_parser, output_help="CSV output path")
+    _add_filter_options(export_rfis_parser)
+
+    export_submittals_parser = subcommands.add_parser(
+        "export-submittals",
+        help="Export project submittals to CSV",
+    )
+    _add_project_output_options(export_submittals_parser, output_help="CSV output path")
+    _add_filter_options(export_submittals_parser)
+
+    sync_rfis_parser = subcommands.add_parser(
+        "sync-rfis",
+        help="Sync project RFIs to a local folder",
+    )
+    _add_project_output_options(sync_rfis_parser, output_help="Output folder")
+    _add_filter_options(sync_rfis_parser)
+    _add_sync_options(sync_rfis_parser)
+
+    sync_submittals_parser = subcommands.add_parser(
+        "sync-submittals",
+        help="Sync project submittals to a local folder",
+    )
+    _add_project_output_options(sync_submittals_parser, output_help="Output folder")
+    _add_filter_options(sync_submittals_parser)
+    _add_sync_options(sync_submittals_parser)
+
+    sync_project_parser = subcommands.add_parser(
+        "sync-project",
+        help="Sync project RFIs and submittals to a local folder",
+    )
+    _add_project_output_options(sync_project_parser, output_help="Output folder")
+    _add_filter_options(sync_project_parser)
+    _add_sync_options(sync_project_parser)
+    sync_project_parser.add_argument(
+        "--rfis-only",
+        action="store_true",
+        help="Sync only RFIs",
+    )
+    sync_project_parser.add_argument(
+        "--submittals-only",
+        action="store_true",
+        help="Sync only submittals",
+    )
+
     return parser
 
 
@@ -208,6 +275,52 @@ def _add_filter_options(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--created-before", default=None)
 
 
+def _add_project_output_options(parser: argparse.ArgumentParser, *, output_help: str) -> None:
+    """Add shared project and output options."""
+    parser.add_argument("--project", "--project-id", dest="project_id", type=int, required=True)
+    parser.add_argument("--output", dest="output_path", type=Path, required=True, help=output_help)
+
+
+def _add_sync_options(parser: argparse.ArgumentParser) -> None:
+    """Add shared local folder sync options."""
+    parser.add_argument(
+        "--no-attachments",
+        dest="download_attachments",
+        action="store_false",
+        default=True,
+        help="Skip attachment downloads",
+    )
+    parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Overwrite existing downloaded attachments",
+    )
+    parser.add_argument(
+        "--no-tracker",
+        dest="create_tracker",
+        action="store_false",
+        default=True,
+        help="Skip tracker CSV creation",
+    )
+    parser.add_argument(
+        "--no-markdown",
+        dest="create_markdown",
+        action="store_false",
+        default=True,
+        help="Skip per-item Markdown summaries",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Plan the sync without writing files or downloading attachments",
+    )
+    parser.add_argument(
+        "--incremental",
+        action="store_true",
+        help="Skip unchanged items using local sync state",
+    )
+
+
 def run_command(args: argparse.Namespace) -> Any:
     """Run a parsed CLI command and return serializable output."""
     if args.command == "doctor":
@@ -220,6 +333,8 @@ def run_command(args: argparse.Namespace) -> Any:
             return refresh_auth_token()
         if args.auth_command == "login-url":
             return build_authorization_url()
+        if args.auth_command == "exchange-code":
+            return exchange_code_and_save(args.code)
         raise ValueError(f"Unsupported auth command: {args.auth_command}")
 
     if args.command == "companies":
@@ -293,6 +408,83 @@ def run_command(args: argparse.Namespace) -> Any:
     if args.command == "package-submittal":
         return build_workflow_package(_automation_input(args, item_type="submittal"))
 
+    if args.command == "export-rfis":
+        return export_rfis_to_csv(
+            args.project_id,
+            args.output_path,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "export-submittals":
+        return export_submittals_to_csv(
+            args.project_id,
+            args.output_path,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "sync-rfis":
+        return sync_rfis_to_folder(
+            args.project_id,
+            args.output_path,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+            download_attachments=args.download_attachments,
+            overwrite=args.overwrite,
+            create_tracker=args.create_tracker,
+            create_markdown=args.create_markdown,
+            dry_run=args.dry_run,
+            incremental=getattr(args, "incremental", False),
+        )
+
+    if args.command == "sync-submittals":
+        return sync_submittals_to_folder(
+            args.project_id,
+            args.output_path,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+            download_attachments=args.download_attachments,
+            overwrite=args.overwrite,
+            create_tracker=args.create_tracker,
+            create_markdown=args.create_markdown,
+            dry_run=args.dry_run,
+            incremental=getattr(args, "incremental", False),
+        )
+
+    if args.command == "sync-project":
+        if args.rfis_only and args.submittals_only:
+            raise ValueError("Use either --rfis-only or --submittals-only, not both.")
+        return sync_project_to_folder(
+            args.project_id,
+            args.output_path,
+            include_rfis=not args.submittals_only,
+            include_submittals=not args.rfis_only,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+            download_attachments=args.download_attachments,
+            overwrite=args.overwrite,
+            create_tracker=args.create_tracker,
+            create_markdown=args.create_markdown,
+            dry_run=args.dry_run,
+            incremental=args.incremental,
+        )
+
     raise ValueError(f"Unsupported command: {args.command}")
 
 
@@ -330,6 +522,56 @@ def to_serializable(value: Any) -> Any:
     return value
 
 
+def format_export_summary(path: Path) -> str:
+    """Return a human-readable export summary."""
+    return f"Export complete.\nOutput: {path}"
+
+
+def format_sync_summary(result: SyncResult) -> str:
+    """Return a human-readable folder sync summary."""
+    action = "planned" if result.dry_run else "complete"
+    item_word = "planned" if result.dry_run else "synced"
+    lines = [
+        f"{result.item_type.upper()} sync {action}.",
+        f"Project: {result.project_id}",
+        f"Items {item_word}: {result.item_count}",
+        f"Output: {result.output_dir}",
+    ]
+    if result.tracker_path is not None:
+        tracker_label = "Tracker (planned)" if result.dry_run else "Tracker"
+        lines.append(f"{tracker_label}: {result.tracker_path}")
+    if result.manifest_path is not None:
+        lines.append(f"Manifest: {result.manifest_path}")
+    elif result.dry_run:
+        lines.append("Manifest: not written during dry run")
+    lines.append(f"Attachments downloaded: {len(result.downloaded_files)}")
+    if result.warnings:
+        lines.append("Warnings:")
+        lines.extend(f"- {warning}" for warning in result.warnings)
+    if result.errors:
+        lines.append("Errors:")
+        lines.extend(f"- {error}" for error in result.errors)
+    return "\n".join(lines)
+
+
+def format_project_sync_summary(result: ProjectSyncResult) -> str:
+    """Return a human-readable project sync summary."""
+    action = "planned" if result.dry_run else "complete"
+    return "\n".join(
+        [
+            f"Project sync {action}.",
+            f"Project: {result.project_id}",
+            f"Items synced: {result.synced_count}",
+            f"Items skipped: {result.skipped_count}",
+            f"Output: {result.output_dir}",
+            f"Manifest: {result.manifest_path or 'not written during dry run'}",
+            f"Summary: {result.summary_path or 'not written during dry run'}",
+            f"Warnings: {result.warning_count}",
+            f"Errors: {result.error_count}",
+        ]
+    )
+
+
 def main() -> None:
     """Run the CLI entrypoint."""
     parser = build_parser()
@@ -353,9 +595,25 @@ def main() -> None:
         print(format_auth_refresh(result))
         raise SystemExit(result.exit_code)
 
+    if isinstance(result, AuthExchangeResult):
+        print(format_auth_exchange(result))
+        raise SystemExit(result.exit_code)
+
     if isinstance(result, AuthLoginUrlResult):
         print(format_login_url(result))
         raise SystemExit(0)
+
+    if isinstance(result, SyncResult):
+        print(format_sync_summary(result))
+        return
+
+    if isinstance(result, ProjectSyncResult):
+        print(format_project_sync_summary(result))
+        return
+
+    if isinstance(result, Path) and args.command in {"export-rfis", "export-submittals"}:
+        print(format_export_summary(result))
+        return
 
     print(json.dumps(to_serializable(result), indent=2, default=str))
 

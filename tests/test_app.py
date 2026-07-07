@@ -11,7 +11,7 @@ from unittest.mock import Mock, patch
 from pydantic import BaseModel
 
 from pyprocore import app
-from pyprocore.auth.diagnostics import AuthRefreshResult, AuthStatusReport
+from pyprocore.auth.diagnostics import AuthExchangeResult, AuthRefreshResult, AuthStatusReport
 from pyprocore.core.doctor import DoctorReport, DoctorSummary
 
 
@@ -40,6 +40,12 @@ class AppTestCase(unittest.TestCase):
         self.assertTrue(auth_status_args.json_output)
         self.assertEqual(parser.parse_args(["auth", "refresh"]).auth_command, "refresh")
         self.assertEqual(parser.parse_args(["auth", "login-url"]).auth_command, "login-url")
+        exchange_args = parser.parse_args(["auth", "exchange-code", "code-123"])
+        self.assertEqual(exchange_args.auth_command, "exchange-code")
+        self.assertEqual(exchange_args.code, "code-123")
+        exchange_alias_args = parser.parse_args(["auth", "exchange", "code-123"])
+        self.assertEqual(exchange_alias_args.auth_command, "exchange-code")
+        self.assertEqual(exchange_alias_args.code, "code-123")
         self.assertEqual(parser.parse_args(["find-company", "Tracker"]).name, "Tracker")
         self.assertEqual(parser.parse_args(["projects", "--company-id", "123"]).company_id, 123)
         self.assertEqual(parser.parse_args(["find-project", "Hospital"]).query, "Hospital")
@@ -115,6 +121,59 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(package_submittal.project_id, 10)
         self.assertEqual(package_submittal.item_id, 30)
         self.assertEqual(package_submittal.company_id, 123)
+
+        export_rfis = parser.parse_args(
+            [
+                "export-rfis",
+                "--project",
+                "10",
+                "--output",
+                "rfis.csv",
+                "--status",
+                "open",
+            ]
+        )
+        self.assertEqual(export_rfis.command, "export-rfis")
+        self.assertEqual(export_rfis.project_id, 10)
+        self.assertEqual(export_rfis.output_path, Path("rfis.csv"))
+        self.assertEqual(export_rfis.status, "open")
+
+        sync_submittals = parser.parse_args(
+            [
+                "sync-submittals",
+                "--project",
+                "10",
+                "--output",
+                "out",
+                "--no-attachments",
+                "--overwrite",
+                "--no-tracker",
+                "--no-markdown",
+                "--dry-run",
+            ]
+        )
+        self.assertEqual(sync_submittals.command, "sync-submittals")
+        self.assertFalse(sync_submittals.download_attachments)
+        self.assertTrue(sync_submittals.overwrite)
+        self.assertFalse(sync_submittals.create_tracker)
+        self.assertFalse(sync_submittals.create_markdown)
+        self.assertTrue(sync_submittals.dry_run)
+
+        sync_project = parser.parse_args(
+            [
+                "sync-project",
+                "--project",
+                "10",
+                "--output",
+                "project-out",
+                "--rfis-only",
+                "--incremental",
+            ]
+        )
+        self.assertEqual(sync_project.command, "sync-project")
+        self.assertTrue(sync_project.rfis_only)
+        self.assertFalse(sync_project.submittals_only)
+        self.assertTrue(sync_project.incremental)
 
     def test_download_command_aliases_are_supported(self) -> None:
         """Legacy attachment command aliases still parse to the canonical command."""
@@ -283,6 +342,17 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(result, "login")
         helper.assert_called_once_with()
 
+        with patch.object(app, "exchange_code_and_save", return_value="exchange") as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="auth",
+                    auth_command="exchange-code",
+                    code="code-123",
+                )
+            )
+        self.assertEqual(result, "exchange")
+        helper.assert_called_once_with("code-123")
+
         with self.assertRaises(ValueError):
             app.run_command(argparse.Namespace(command="auth", auth_command="unknown"))
 
@@ -404,6 +474,188 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(automation_input.project_id, 10)
         self.assertEqual(automation_input.item_id, 30)
 
+    def test_run_workflow_export_commands_dispatch_to_helpers(self) -> None:
+        """Workflow export commands call CSV helpers with filters."""
+        with patch.object(app, "export_rfis_to_csv", return_value=Path("rfis.csv")) as export:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="export-rfis",
+                    project_id=10,
+                    output_path=Path("rfis.csv"),
+                    status="open",
+                    updated_after="2026-07-01",
+                    updated_before=None,
+                    created_after=None,
+                    created_before=None,
+                )
+            )
+
+        self.assertEqual(result, Path("rfis.csv"))
+        export.assert_called_once_with(
+            10,
+            Path("rfis.csv"),
+            status="open",
+            updated_after="2026-07-01",
+            updated_before=None,
+            created_after=None,
+            created_before=None,
+        )
+
+        with patch.object(
+            app,
+            "export_submittals_to_csv",
+            return_value=Path("submittals.csv"),
+        ) as export:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="export-submittals",
+                    project_id=10,
+                    output_path=Path("submittals.csv"),
+                    status=None,
+                    updated_after=None,
+                    updated_before=None,
+                    created_after="2026-01-01",
+                    created_before=None,
+                )
+            )
+
+        self.assertEqual(result, Path("submittals.csv"))
+        export.assert_called_once_with(
+            10,
+            Path("submittals.csv"),
+            status=None,
+            updated_after=None,
+            updated_before=None,
+            created_after="2026-01-01",
+            created_before=None,
+        )
+
+    def test_run_workflow_sync_commands_dispatch_to_helpers(self) -> None:
+        """Workflow sync commands call folder sync helpers with options."""
+        with patch.object(app, "sync_rfis_to_folder", return_value="sync") as sync:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="sync-rfis",
+                    project_id=10,
+                    output_path=Path("rfis"),
+                    status="open",
+                    updated_after=None,
+                    updated_before=None,
+                    created_after=None,
+                    created_before=None,
+                    download_attachments=False,
+                    overwrite=True,
+                    create_tracker=False,
+                    create_markdown=False,
+                    dry_run=True,
+                )
+            )
+
+        self.assertEqual(result, "sync")
+        sync.assert_called_once_with(
+            10,
+            Path("rfis"),
+            status="open",
+            updated_after=None,
+            updated_before=None,
+            created_after=None,
+            created_before=None,
+            download_attachments=False,
+            overwrite=True,
+            create_tracker=False,
+            create_markdown=False,
+            dry_run=True,
+            incremental=False,
+        )
+
+    def test_run_project_sync_command_dispatches_to_helper(self) -> None:
+        """Project sync command validates flags and calls the workflow helper."""
+        with patch.object(app, "sync_project_to_folder", return_value="project-sync") as sync:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="sync-project",
+                    project_id=10,
+                    output_path=Path("project"),
+                    status="open",
+                    updated_after="2026-07-01",
+                    updated_before=None,
+                    created_after=None,
+                    created_before=None,
+                    download_attachments=False,
+                    overwrite=True,
+                    create_tracker=True,
+                    create_markdown=True,
+                    dry_run=True,
+                    incremental=True,
+                    rfis_only=True,
+                    submittals_only=False,
+                )
+            )
+
+        self.assertEqual(result, "project-sync")
+        sync.assert_called_once_with(
+            10,
+            Path("project"),
+            include_rfis=True,
+            include_submittals=False,
+            status="open",
+            updated_after="2026-07-01",
+            updated_before=None,
+            created_after=None,
+            created_before=None,
+            download_attachments=False,
+            overwrite=True,
+            create_tracker=True,
+            create_markdown=True,
+            dry_run=True,
+            incremental=True,
+        )
+
+        with self.assertRaisesRegex(ValueError, "either --rfis-only or --submittals-only"):
+            app.run_command(
+                argparse.Namespace(
+                    command="sync-project",
+                    rfis_only=True,
+                    submittals_only=True,
+                )
+            )
+
+        with patch.object(app, "sync_submittals_to_folder", return_value="sync") as sync:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="sync-submittals",
+                    project_id=10,
+                    output_path=Path("submittals"),
+                    status=None,
+                    updated_after="2026-07-01",
+                    updated_before=None,
+                    created_after=None,
+                    created_before=None,
+                    download_attachments=True,
+                    overwrite=False,
+                    create_tracker=True,
+                    create_markdown=True,
+                    dry_run=False,
+                )
+            )
+
+        self.assertEqual(result, "sync")
+        sync.assert_called_once_with(
+            10,
+            Path("submittals"),
+            status=None,
+            updated_after="2026-07-01",
+            updated_before=None,
+            created_after=None,
+            created_before=None,
+            download_attachments=True,
+            overwrite=False,
+            create_tracker=True,
+            create_markdown=True,
+            dry_run=False,
+            incremental=False,
+        )
+
     def test_run_command_rejects_unknown_command(self) -> None:
         """Unsupported commands fail clearly."""
         with self.assertRaises(ValueError):
@@ -424,6 +676,54 @@ class AppTestCase(unittest.TestCase):
             },
         )
 
+    def test_format_export_and_sync_summaries(self) -> None:
+        """Workflow CLI summaries are beginner-friendly."""
+        export_summary = app.format_export_summary(Path("rfis.csv"))
+        self.assertIn("Export complete.", export_summary)
+        self.assertIn("Output: rfis.csv", export_summary)
+
+        sync_result = app.SyncResult(
+            output_dir=Path("out"),
+            item_type="rfi",
+            project_id=352338,
+            item_count=2,
+            tracker_path=Path("out/rfi_tracker.csv"),
+            manifest_path=Path("out/sync_manifest.json"),
+            downloaded_files=[Path("a.pdf"), Path("b.pdf")],
+        )
+        sync_summary = app.format_sync_summary(sync_result)
+        self.assertIn("RFI sync complete.", sync_summary)
+        self.assertIn("Items synced: 2", sync_summary)
+        self.assertIn("Attachments downloaded: 2", sync_summary)
+
+        dry_run_result = app.SyncResult(
+            output_dir=Path("out"),
+            item_type="submittal",
+            project_id=352338,
+            item_count=1,
+            tracker_path=Path("out/submittal_tracker.csv"),
+            dry_run=True,
+            warnings=["Dry run: no files were written."],
+        )
+        dry_run_summary = app.format_sync_summary(dry_run_result)
+        self.assertIn("SUBMITTAL sync planned.", dry_run_summary)
+        self.assertIn("Manifest: not written during dry run", dry_run_summary)
+        self.assertIn("Dry run: no files were written.", dry_run_summary)
+
+        project_summary = app.format_project_sync_summary(
+            app.ProjectSyncResult(
+                output_dir=Path("out"),
+                project_id=352338,
+                item_count=3,
+                synced_count=2,
+                skipped_count=1,
+                warning_count=0,
+                error_count=0,
+            )
+        )
+        self.assertIn("Project sync complete.", project_summary)
+        self.assertIn("Items skipped: 1", project_summary)
+
     def test_main_prints_serialized_json(self) -> None:
         """main parses arguments, runs a command, and prints formatted JSON."""
         with (
@@ -440,6 +740,41 @@ class AppTestCase(unittest.TestCase):
         print_function.assert_called_once()
         printed = print_function.call_args.args[0]
         self.assertEqual(json.loads(printed), {"ok": True})
+
+    def test_main_prints_workflow_summaries(self) -> None:
+        """Workflow commands print human-readable summaries."""
+        with (
+            patch.object(app, "build_parser") as build_parser,
+            patch.object(app, "run_command", return_value=Path("rfis.csv")),
+            patch("builtins.print") as print_function,
+        ):
+            parser = Mock()
+            parser.parse_args.return_value = argparse.Namespace(command="export-rfis")
+            build_parser.return_value = parser
+
+            app.main()
+
+        self.assertIn("Export complete.", print_function.call_args.args[0])
+
+        sync_result = app.SyncResult(
+            output_dir=Path("out"),
+            item_type="rfi",
+            project_id=352338,
+            item_count=1,
+            dry_run=True,
+        )
+        with (
+            patch.object(app, "build_parser") as build_parser,
+            patch.object(app, "run_command", return_value=sync_result),
+            patch("builtins.print") as print_function,
+        ):
+            parser = Mock()
+            parser.parse_args.return_value = argparse.Namespace(command="sync-rfis")
+            build_parser.return_value = parser
+
+            app.main()
+
+        self.assertIn("RFI sync planned.", print_function.call_args.args[0])
 
     def test_main_prints_doctor_report_and_exits_with_report_code(self) -> None:
         """Doctor output controls CLI exit code."""
@@ -554,6 +889,64 @@ class AppTestCase(unittest.TestCase):
 
         self.assertEqual(context.exception.code, 1)
         print_function.assert_called_once_with("refresh failed")
+
+    def test_main_prints_auth_exchange_and_exits_with_result_code(self) -> None:
+        """Auth exchange output controls CLI exit code."""
+        result = AuthExchangeResult(
+            success=True,
+            message="Authorization code exchanged successfully.",
+            token_store_updated=True,
+            access_token_present=True,
+            refresh_token_present=True,
+        )
+
+        with (
+            patch.object(app, "build_parser") as build_parser,
+            patch.object(app, "run_command", return_value=result),
+            patch.object(app, "format_auth_exchange", return_value="exchange ok"),
+            patch("builtins.print") as print_function,
+        ):
+            parser = Mock()
+            parser.parse_args.return_value = argparse.Namespace(
+                command="auth",
+                auth_command="exchange-code",
+                code="code-123",
+            )
+            build_parser.return_value = parser
+
+            with self.assertRaises(SystemExit) as context:
+                app.main()
+
+        self.assertEqual(context.exception.code, 0)
+        print_function.assert_called_once_with("exchange ok")
+
+    def test_main_prints_auth_exchange_failure(self) -> None:
+        """Auth exchange failures exit with code 1."""
+        result = AuthExchangeResult(
+            success=False,
+            message="Authorization code exchange failed.",
+            error="bad code",
+        )
+
+        with (
+            patch.object(app, "build_parser") as build_parser,
+            patch.object(app, "run_command", return_value=result),
+            patch.object(app, "format_auth_exchange", return_value="exchange failed"),
+            patch("builtins.print") as print_function,
+        ):
+            parser = Mock()
+            parser.parse_args.return_value = argparse.Namespace(
+                command="auth",
+                auth_command="exchange-code",
+                code="bad-code",
+            )
+            build_parser.return_value = parser
+
+            with self.assertRaises(SystemExit) as context:
+                app.main()
+
+        self.assertEqual(context.exception.code, 1)
+        print_function.assert_called_once_with("exchange failed")
 
     def test_main_prints_auth_login_url(self) -> None:
         """Auth login URL output exits successfully."""
