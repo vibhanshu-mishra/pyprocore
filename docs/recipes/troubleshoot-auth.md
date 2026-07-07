@@ -40,27 +40,28 @@ ideally, a refresh token.
 1. Run `procore-sdk doctor`.
 2. Run `procore-sdk auth status`.
 3. If no token is stored, run `procore-sdk auth login-url` and open the URL.
-4. Exchange the returned authorization code with the existing Python helper.
+4. Copy the returned authorization code and run:
+
+   ```bash
+   procore-sdk auth exchange-code YOUR_AUTHORIZATION_CODE
+   ```
+
 5. Run `procore-sdk auth refresh` to confirm refresh tokens work.
 
 ## Code
 
-```python
-from pyprocore.auth.token_manager import get_access_token
-from pyprocore.core.exceptions import ProcoreError
-
-try:
-    token = get_access_token()
-except ProcoreError as error:
-    print(f"Authentication is not ready: {error}")
-else:
-    print(f"Authentication works. Token length: {len(token)}")
+```bash
+procore-sdk doctor
+procore-sdk auth login-url
+procore-sdk auth exchange-code YOUR_AUTHORIZATION_CODE
+procore-sdk auth status
 ```
 
 ## Expected output
 
-If authentication is ready, you should see a token length. The token value is
-not printed.
+If authentication is ready, `procore-sdk auth status` should show that the
+token store exists, the access token is present, and the refresh token is
+present. Token values are never printed.
 
 For a real authenticated connectivity check, run:
 
@@ -72,6 +73,8 @@ procore-sdk doctor --live
 ## Common issues
 
 - Missing `.env` values cause configuration errors.
+- Authorization codes are short-lived. Generate a fresh code with
+  `procore-sdk auth login-url` if exchange fails.
 - Expired access tokens require a valid refresh token.
 - If refresh fails, repeat the OAuth authorization-code flow.
 - Never paste client secrets, access tokens, refresh tokens, `.env` files, or
