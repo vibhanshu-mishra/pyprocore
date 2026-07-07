@@ -555,4 +555,4 @@ Released under the MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
-> **Disclaimer** — PyProcore is an independent open-source project and is not affiliated with or endorsed by Procore Technologies.
+> **Disclaimer** : PyProcore is an independent open-source project and is not affiliated with or endorsed by Procore Technologies.
