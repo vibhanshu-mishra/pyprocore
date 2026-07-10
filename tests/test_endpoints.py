@@ -67,6 +67,41 @@ class EndpointsTestCase(unittest.TestCase):
             "/rest/v1.0/projects/456/drawing_revisions",
         )
 
+    def test_specification_endpoints(self) -> None:
+        """Specification endpoints use verified company/project scoped routes."""
+        self.assertEqual(
+            endpoints.specification_sets(company_id=123, project_id=456),
+            "/rest/v2.0/companies/123/projects/456/specification_sets",
+        )
+        self.assertEqual(
+            endpoints.specification_set_v1(project_id=456, specification_set_id=789),
+            "/rest/v1.0/projects/456/specification_sets/789",
+        )
+        self.assertEqual(
+            endpoints.specification_sections(company_id=123, project_id=456),
+            "/rest/v2.1/companies/123/projects/456/specification_sections",
+        )
+        self.assertEqual(
+            endpoints.specification_section_revisions(company_id=123, project_id=456),
+            "/rest/v2.1/companies/123/projects/456/specification_section_revisions",
+        )
+        self.assertEqual(
+            endpoints.specification_section_revision(
+                company_id=123,
+                project_id=456,
+                revision_id=789,
+            ),
+            "/rest/v2.1/companies/123/projects/456/specification_section_revisions/789",
+        )
+        self.assertEqual(
+            endpoints.specification_section_revision_download(
+                company_id=123,
+                project_id=456,
+                revision_id=789,
+            ),
+            "/rest/v2.1/companies/123/projects/456/specification_section_revisions/789/download",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

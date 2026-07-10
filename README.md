@@ -37,6 +37,7 @@ PyProcore does that once, correctly, behind a clean interface. You call a servic
 - Submittals
 - Documents
 - Drawings
+- Specifications
 - Attachment downloads
 
 **Developer experience**
@@ -54,7 +55,7 @@ PyProcore does that once, correctly, behind a clean interface. You call a servic
 | `pyprocore/auth/`     | OAuth exchange, token persistence, token refresh                |
 | `pyprocore/core/`     | Configuration, endpoint paths, HTTP client, logging, exceptions |
 | `pyprocore/models/`   | Pydantic response models                                        |
-| `pyprocore/services/` | Company, project, RFI, submittal, document, drawing, and file services |
+| `pyprocore/services/` | Company, project, RFI, submittal, document, drawing, specification, and file services |
 | `pyprocore/parser/`   | Email parsing utilities for future automation                   |
 | `tests/`              | Mocked unit tests with no live Procore dependency               |
 
@@ -202,6 +203,12 @@ document = client.documents.get(project_id=352338, document_id=456)
 drawing_areas = client.drawings.list_areas(project_id=352338)
 drawings = client.drawings.list(project_id=352338, drawing_area_id=123, current=True)
 drawing = client.drawings.get(project_id=352338, drawing_id=789, drawing_area_id=123)
+specification_sets = client.specifications.list_sets(project_id=352338)
+specification_sections = client.specifications.list_sections(project_id=352338)
+specification_section = client.specifications.find_section(
+    project_id=352338,
+    number="03 3000",
+)
 ```
 
 Full service surface:
@@ -226,6 +233,9 @@ from pyprocore.services import (
     list_drawings,
     list_projects,
     list_rfis,
+    list_specification_section_revisions,
+    list_specification_sections,
+    list_specification_sets,
     list_submittals,
 )
 
@@ -254,6 +264,13 @@ drawings = list_drawings(project_id=352338, current=True)
 area_drawings = list_drawings(project_id=352338, drawing_area_id=123)
 drawing = get_drawing(project_id=352338, drawing_id=789, drawing_area_id=123)
 saved_drawing = download_drawing(project_id=352338, drawing_id=789, drawing_area_id=123)
+
+specification_sets = list_specification_sets(project_id=352338)
+specification_sections = list_specification_sections(project_id=352338, sort="number")
+specification_revisions = list_specification_section_revisions(
+    project_id=352338,
+    per_page=1000,
+)
 ```
 
 Procore Documents are exposed through Project Folders and Files endpoints. PyProcore
@@ -270,6 +287,13 @@ areas for backward compatibility. Drawing downloads require Procore to include a
 direct `url` or `download_url` in the drawing payload. Use
 `PYTHONPATH=. python3 scripts/smoke_drawings.py --project "$PROCORE_PROJECT_ID"`
 to inspect the live sandbox payload before building a drawing download workflow.
+
+Procore Specifications use company/project-scoped V2 endpoints. PyProcore lists
+specification sets and sections through verified collection endpoints, resolves
+individual sections by matching the list locally, and uses the verified revision
+show and download endpoints for revision workflows. Use
+`PROCORE_PROJECT_ID=352338 make smoke-specifications` to inspect live payloads
+before building a specification download workflow.
 
 RFI and submittal list calls also accept optional date filters:
 
@@ -290,6 +314,7 @@ from pyprocore import (
     find_document_folder,
     find_drawing,
     find_drawings_contains,
+    find_specification_section,
     find_project,
     find_rfi,
     find_submittal,
@@ -307,6 +332,7 @@ folder = find_document_folder(project_id=352338, name="Drawings")
 document = find_document(project_id=352338, filename="plan.pdf")
 drawing = find_drawing(project_id=352338, number="S-101")
 stair_drawings = find_drawings_contains(project_id=352338, text="stair")
+spec_section = find_specification_section(project_id=352338, number="03 3000")
 ```
 
 Resolvers use case-insensitive exact matching first, then partial matching. They raise `NotFoundError`, `DuplicateMatchError`, or `MultipleResultsError` when a lookup cannot produce exactly one typed result.
@@ -524,6 +550,13 @@ procore-sdk drawing --project 352338 --area 123 --id 789
 procore-sdk find-drawing --project 352338 --number S-101
 procore-sdk find-drawings --project 352338 --contains stair
 procore-sdk download-drawing --project 352338 --area 123 --id 789 --output ./drawings
+procore-sdk specification-sets --project 352338
+procore-sdk specification-sections --project 352338 --sort number
+procore-sdk specification-section --project 352338 --section 123
+procore-sdk find-specification-section --project 352338 --number "03 3000"
+procore-sdk specification-revisions --project 352338 --section 123 --per-page 1000
+procore-sdk specification-revision --project 352338 --revision 456
+procore-sdk download-specification-revision --project 352338 --revision 456 --output-dir ./specifications
 procore-sdk package-rfi --project 352338 --id 102784
 procore-sdk package-rfi --project-name "Sandbox Test Project" --number 15
 procore-sdk package-submittal --project 352338 --id 309641
@@ -553,8 +586,8 @@ short human-readable summaries.
 
 Runnable example scripts live in [examples/](examples/README.md). They show
 common SDK tasks such as listing projects, fetching RFIs, downloading
-attachments, documents, and drawings, building workflow packages, exporting CSVs, and
-syncing local review folders.
+attachments, documents, drawings, and specification revisions, building workflow
+packages, exporting CSVs, and syncing local review folders.
 
 Examples can be syntax-checked without credentials or live Procore access:
 
@@ -586,6 +619,20 @@ A Drawings 403 usually means authentication succeeded, but Procore rejected the
 project/company context. Confirm the project belongs to the company, production
 vs sandbox is correct, the OAuth user has project access, the Drawings tool is
 enabled, and the user can view Drawings.
+
+Before relying on specification revision downloads in a new Procore environment,
+inspect the live specification payload:
+
+```bash
+PROCORE_PROJECT_ID=352338 make smoke-specifications
+PYTHONPATH=. python3 scripts/smoke_specifications.py --project 352338 --section 123 --revision 456
+```
+
+A Specifications 403 usually means authentication succeeded, but Procore
+rejected the project/company context. Confirm the project belongs to the
+company, the app is connected to that company, production vs sandbox is correct,
+the OAuth user has project access, the Specifications tool is enabled, and the
+user can view Specifications.
 
 ---
 
@@ -627,6 +674,11 @@ GET /rest/v1.0/projects/{project_id}/drawing_disciplines
 GET /rest/v1.0/drawing_areas/{drawing_area_id}/drawings
 GET /rest/v1.0/drawing_areas/{drawing_area_id}/drawings/{drawing_id}
 GET /rest/v1.0/projects/{project_id}/drawing_revisions
+GET /rest/v2.0/companies/{company_id}/projects/{project_id}/specification_sets
+GET /rest/v2.1/companies/{company_id}/projects/{project_id}/specification_sections
+GET /rest/v2.1/companies/{company_id}/projects/{project_id}/specification_section_revisions
+GET /rest/v2.1/companies/{company_id}/projects/{project_id}/specification_section_revisions/{revision_id}
+GET /rest/v2.1/companies/{company_id}/projects/{project_id}/specification_section_revisions/{revision_id}/download
 ```
 
 ---
@@ -659,7 +711,12 @@ GET /rest/v1.0/projects/{project_id}/drawing_revisions
   - Drawing disciplines
   - Drawing list/get/find/download helpers
   - Manual smoke-test validation
-- Specifications
+- Specifications: In Progress
+  - Specification sets
+  - Specification sections
+  - Specification section revisions
+  - Specification revision downloads
+  - Manual smoke-test validation
 - Photos
 - Daily Logs
 - Observations

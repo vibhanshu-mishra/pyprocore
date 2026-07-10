@@ -16,6 +16,7 @@ coverage priorities.
 - Submittals
 - Documents
 - Drawings
+- Specifications
 - Attachment downloads
 - Typed models
 - Search and resolver helpers
@@ -61,7 +62,12 @@ Documents, Drawings, Specifications, Photos, and Daily Logs.
   - Download drawings when Procore provides a direct URL
   - Manual smoke test for sandbox endpoint and payload validation
   - Folder sync planned after live download behavior is confirmed
-- Specifications
+- Specifications: In Progress
+  - List specification sets
+  - List/get/find specification sections
+  - List/get specification section revisions
+  - Download specification section revisions
+  - Manual smoke test for sandbox endpoint and payload validation
 - Photos
 - Daily Logs
 - Observations

@@ -41,6 +41,9 @@ export PROCORE_DOCUMENT_FOLDER_ID=your_document_folder_id
 export PROCORE_DRAWING_ID=your_drawing_id
 export PROCORE_DRAWING_AREA_ID=your_drawing_area_id
 export PROCORE_DRAWING_DISCIPLINE_ID=your_drawing_discipline_id
+export PROCORE_SPECIFICATION_SET_ID=your_specification_set_id
+export PROCORE_SPECIFICATION_SECTION_ID=your_specification_section_id
+export PROCORE_SPECIFICATION_REVISION_ID=your_specification_revision_id
 export PROCORE_OUTPUT_DIR=downloads/examples
 export PROCORE_DRY_RUN=1
 export PROCORE_STATUS=open
@@ -62,6 +65,7 @@ python3 examples/14_export_rfis_to_csv.py
 python3 examples/18_incremental_sync.py
 python3 examples/20_list_documents.py
 python3 examples/23_list_drawings.py
+python3 examples/26_list_specification_sections.py
 ```
 
 Documents use Procore's Project Folders and Files endpoints internally. Before a
@@ -78,6 +82,13 @@ in a new sandbox, inspect the live payload shape with:
 
 ```bash
 PROCORE_PROJECT_ID=352338 make smoke-drawings
+```
+
+Specifications use Procore's company/project-scoped V2 endpoints. Before
+building automation around a new project, inspect the live payload shape with:
+
+```bash
+PROCORE_PROJECT_ID=352338 make smoke-specifications
 ```
 
 Each script prints helpful messages when required environment variables are
@@ -119,6 +130,11 @@ make examples-check
 | `22_sync_documents_to_folder.py` | Sync project documents into local folders |
 | `23_list_drawings.py` | List drawings for a project, optionally filtered by drawing area or discipline |
 | `24_download_drawing.py` | Download one drawing by ID and optional drawing area when Procore provides a direct URL |
+| `25_list_specification_sets.py` | List specification sets for a project |
+| `26_list_specification_sections.py` | List specification sections for a project, optionally filtered by set, area, or division |
+| `27_get_specification_section.py` | Fetch one specification section by ID using the verified list endpoint |
+| `28_list_specification_revisions.py` | List specification section revisions for a project or section |
+| `29_download_specification_revision.py` | Download one specification section revision PDF |
 
 ## Safety Notes
 

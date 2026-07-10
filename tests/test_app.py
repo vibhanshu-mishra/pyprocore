@@ -215,6 +215,75 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(download_drawing.output_dir, Path("drawings"))
         self.assertTrue(download_drawing.overwrite)
 
+        specification_sets = parser.parse_args(
+            ["specification-sets", "--project", "10", "--company", "123"]
+        )
+        self.assertEqual(specification_sets.command, "specification-sets")
+        self.assertEqual(specification_sets.project_id, 10)
+        self.assertEqual(specification_sets.company_id, 123)
+        specification_sections = parser.parse_args(
+            [
+                "specification-sections",
+                "--project",
+                "10",
+                "--specification-set-id",
+                "7",
+                "--division-id",
+                "3",
+                "--sort",
+                "number",
+            ]
+        )
+        self.assertEqual(specification_sections.command, "specification-sections")
+        self.assertEqual(specification_sections.specification_set_id, 7)
+        self.assertEqual(specification_sections.division_id, 3)
+        self.assertEqual(specification_sections.sort, "number")
+        self.assertEqual(
+            parser.parse_args(
+                ["specification-section", "--project", "10", "--section", "20"]
+            ).specification_section_id,
+            20,
+        )
+        self.assertEqual(
+            parser.parse_args(
+                ["find-specification-section", "--project", "10", "--number", "03 3000"]
+            ).number,
+            "03 3000",
+        )
+        specification_revisions = parser.parse_args(
+            [
+                "specification-revisions",
+                "--project",
+                "10",
+                "--section-id",
+                "20",
+                "--per-page",
+                "1000",
+            ]
+        )
+        self.assertEqual(specification_revisions.specification_section_id, 20)
+        self.assertEqual(specification_revisions.per_page, 1000)
+        self.assertEqual(
+            parser.parse_args(
+                ["specification-revision", "--project", "10", "--revision", "30"]
+            ).revision_id,
+            30,
+        )
+        download_specification_revision = parser.parse_args(
+            [
+                "download-specification-revision",
+                "--project",
+                "10",
+                "--revision",
+                "30",
+                "--output-dir",
+                "specs",
+                "--overwrite",
+            ]
+        )
+        self.assertEqual(download_specification_revision.output_dir, Path("specs"))
+        self.assertTrue(download_specification_revision.overwrite)
+
         package_rfi = parser.parse_args(
             [
                 "package-rfi",
@@ -770,6 +839,131 @@ class AppTestCase(unittest.TestCase):
             company_id=123,
             overwrite=True,
             drawing_area_id=5,
+        )
+
+        with patch.object(app, "list_specification_sets", return_value="sets") as helper:
+            result = app.run_command(
+                argparse.Namespace(command="specification-sets", project_id=10, company_id=123)
+            )
+        self.assertEqual(result, "sets")
+        helper.assert_called_once_with(10, company_id=123)
+
+        with patch.object(app, "list_specification_sections", return_value="sections") as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="specification-sections",
+                    project_id=10,
+                    company_id=123,
+                    specification_area_id=2,
+                    specification_set_id=3,
+                    division_id=4,
+                    sort="number",
+                )
+            )
+        self.assertEqual(result, "sections")
+        helper.assert_called_once_with(
+            10,
+            company_id=123,
+            specification_area_id=2,
+            specification_set_id=3,
+            division_id=4,
+            sort="number",
+        )
+
+        with patch.object(app, "get_specification_section", return_value="section") as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="specification-section",
+                    project_id=10,
+                    specification_section_id=20,
+                    company_id=123,
+                )
+            )
+        self.assertEqual(result, "section")
+        helper.assert_called_once_with(10, 20, company_id=123)
+
+        with patch.object(app, "find_specification_section", return_value="section") as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="find-specification-section",
+                    project_id=10,
+                    number="03 3000",
+                    title=None,
+                    query=None,
+                    company_id=123,
+                )
+            )
+        self.assertEqual(result, "section")
+        helper.assert_called_once_with(
+            10,
+            number="03 3000",
+            title=None,
+            query=None,
+            company_id=123,
+        )
+
+        with patch.object(
+            app,
+            "list_specification_section_revisions",
+            return_value="revisions",
+        ) as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="specification-revisions",
+                    project_id=10,
+                    specification_section_id=20,
+                    page=1,
+                    per_page=1000,
+                    company_id=123,
+                )
+            )
+        self.assertEqual(result, "revisions")
+        helper.assert_called_once_with(
+            10,
+            company_id=123,
+            specification_section_id=20,
+            page=1,
+            per_page=1000,
+        )
+
+        with patch.object(
+            app,
+            "get_specification_section_revision",
+            return_value="revision",
+        ) as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="specification-revision",
+                    project_id=10,
+                    revision_id=30,
+                    company_id=123,
+                )
+            )
+        self.assertEqual(result, "revision")
+        helper.assert_called_once_with(10, 30, company_id=123)
+
+        with patch.object(
+            app,
+            "download_specification_section_revision",
+            return_value=Path("spec.pdf"),
+        ) as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="download-specification-revision",
+                    project_id=10,
+                    revision_id=30,
+                    output_dir=Path("specs"),
+                    company_id=123,
+                    overwrite=True,
+                )
+            )
+        self.assertEqual(result, Path("spec.pdf"))
+        helper.assert_called_once_with(
+            10,
+            30,
+            output_dir=Path("specs"),
+            company_id=123,
+            overwrite=True,
         )
 
     def test_run_package_commands_build_workflow_packages(self) -> None:

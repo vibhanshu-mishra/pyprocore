@@ -4,6 +4,8 @@ from __future__ import annotations
 
 API_V1 = "/rest/v1.0"
 API_V1_1 = "/rest/v1.1"
+API_V2 = "/rest/v2.0"
+API_V2_1 = "/rest/v2.1"
 
 COMPANIES = f"{API_V1}/companies"
 PROJECTS = f"{API_V1}/companies/{{company_id}}/projects"
@@ -26,6 +28,25 @@ DRAWING_DISCIPLINES = f"{API_V1}/projects/{{project_id}}/drawing_disciplines"
 DRAWINGS = f"{API_V1}/drawing_areas/{{drawing_area_id}}/drawings"
 DRAWING = f"{API_V1}/drawing_areas/{{drawing_area_id}}/drawings/{{drawing_id}}"
 DRAWING_REVISIONS = f"{API_V1}/projects/{{project_id}}/drawing_revisions"
+SPECIFICATION_SETS = f"{API_V2}/companies/{{company_id}}/projects/{{project_id}}/specification_sets"
+SPECIFICATION_SET_V1 = (
+    f"{API_V1}/projects/{{project_id}}/specification_sets/{{specification_set_id}}"
+)
+SPECIFICATION_SECTIONS = (
+    f"{API_V2_1}/companies/{{company_id}}/projects/{{project_id}}/specification_sections"
+)
+SPECIFICATION_SECTION_REVISIONS = (
+    f"{API_V2_1}/companies/{{company_id}}/projects/{{project_id}}"
+    "/specification_section_revisions"
+)
+SPECIFICATION_SECTION_REVISION = (
+    f"{API_V2_1}/companies/{{company_id}}/projects/{{project_id}}"
+    "/specification_section_revisions/{revision_id}"
+)
+SPECIFICATION_SECTION_REVISION_DOWNLOAD = (
+    f"{API_V2_1}/companies/{{company_id}}/projects/{{project_id}}"
+    "/specification_section_revisions/{revision_id}/download"
+)
 
 
 def companies() -> str:
@@ -120,6 +141,54 @@ def drawing_revisions(project_id: int) -> str:
     return DRAWING_REVISIONS.format(project_id=project_id)
 
 
+def specification_sets(company_id: int, project_id: int) -> str:
+    """Return the specification sets collection endpoint for a project."""
+    return SPECIFICATION_SETS.format(company_id=company_id, project_id=project_id)
+
+
+def specification_set_v1(project_id: int, specification_set_id: int) -> str:
+    """Return the legacy v1 specification set show endpoint."""
+    return SPECIFICATION_SET_V1.format(
+        project_id=project_id,
+        specification_set_id=specification_set_id,
+    )
+
+
+def specification_sections(company_id: int, project_id: int) -> str:
+    """Return the specification sections collection endpoint for a project."""
+    return SPECIFICATION_SECTIONS.format(company_id=company_id, project_id=project_id)
+
+
+def specification_section_revisions(company_id: int, project_id: int) -> str:
+    """Return the specification section revisions collection endpoint."""
+    return SPECIFICATION_SECTION_REVISIONS.format(
+        company_id=company_id,
+        project_id=project_id,
+    )
+
+
+def specification_section_revision(company_id: int, project_id: int, revision_id: int) -> str:
+    """Return the endpoint for one specification section revision."""
+    return SPECIFICATION_SECTION_REVISION.format(
+        company_id=company_id,
+        project_id=project_id,
+        revision_id=revision_id,
+    )
+
+
+def specification_section_revision_download(
+    company_id: int,
+    project_id: int,
+    revision_id: int,
+) -> str:
+    """Return the download-info endpoint for one specification revision."""
+    return SPECIFICATION_SECTION_REVISION_DOWNLOAD.format(
+        company_id=company_id,
+        project_id=project_id,
+        revision_id=revision_id,
+    )
+
+
 class Endpoints:
     """Backward-compatible namespace for endpoint path templates."""
 
@@ -139,3 +208,9 @@ class Endpoints:
     DRAWING_AREA = DRAWING_AREA
     DRAWING_DISCIPLINES = DRAWING_DISCIPLINES
     DRAWING_REVISIONS = DRAWING_REVISIONS
+    SPECIFICATION_SETS = SPECIFICATION_SETS
+    SPECIFICATION_SET_V1 = SPECIFICATION_SET_V1
+    SPECIFICATION_SECTIONS = SPECIFICATION_SECTIONS
+    SPECIFICATION_SECTION_REVISIONS = SPECIFICATION_SECTION_REVISIONS
+    SPECIFICATION_SECTION_REVISION = SPECIFICATION_SECTION_REVISION
+    SPECIFICATION_SECTION_REVISION_DOWNLOAD = SPECIFICATION_SECTION_REVISION_DOWNLOAD

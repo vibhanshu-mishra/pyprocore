@@ -15,6 +15,7 @@ from pyprocore.client import (
     DrawingsClient,
     ProjectsClient,
     RFIsClient,
+    SpecificationsClient,
     SubmittalsClient,
     WorkflowsClient,
 )
@@ -34,6 +35,7 @@ class ProcoreObjectClientTestCase(unittest.TestCase):
         self.assertIsInstance(client.submittals, SubmittalsClient)
         self.assertIsInstance(client.documents, DocumentsClient)
         self.assertIsInstance(client.drawings, DrawingsClient)
+        self.assertIsInstance(client.specifications, SpecificationsClient)
         self.assertIsInstance(client.automation, AutomationClient)
         self.assertIsInstance(client.workflows, WorkflowsClient)
 
@@ -550,6 +552,146 @@ class ProcoreObjectClientTestCase(unittest.TestCase):
             overwrite=True,
             company_id=123,
             drawing_area_id=5,
+        )
+
+    @patch("pyprocore.client.list_specification_sets")
+    def test_specifications_list_sets_delegates_to_service(
+        self,
+        list_specification_sets: Mock,
+    ) -> None:
+        """Specification set listing delegates to the service."""
+        list_specification_sets.return_value = ["set"]
+
+        result = Procore().specifications.list_sets(352338, company_id=123, sort="name")
+
+        self.assertEqual(result, ["set"])
+        list_specification_sets.assert_called_once_with(352338, company_id=123, sort="name")
+
+    @patch("pyprocore.client.list_specification_sections")
+    def test_specifications_list_sections_delegates_to_service(
+        self,
+        list_specification_sections: Mock,
+    ) -> None:
+        """Specification section listing delegates to the service."""
+        list_specification_sections.return_value = ["section"]
+
+        result = Procore().specifications.list_sections(
+            352338,
+            company_id=123,
+            specification_set_id=7,
+            sort="number",
+        )
+
+        self.assertEqual(result, ["section"])
+        list_specification_sections.assert_called_once_with(
+            352338,
+            company_id=123,
+            specification_area_id=None,
+            specification_set_id=7,
+            division_id=None,
+            sort="number",
+        )
+
+    @patch("pyprocore.client.get_specification_section")
+    def test_specifications_get_section_delegates_to_service(
+        self,
+        get_specification_section: Mock,
+    ) -> None:
+        """Specification section retrieval delegates to the service."""
+        get_specification_section.return_value = "section"
+
+        result = Procore().specifications.get_section(352338, 10, company_id=123)
+
+        self.assertEqual(result, "section")
+        get_specification_section.assert_called_once_with(352338, 10, company_id=123)
+
+    @patch("pyprocore.client.find_specification_section")
+    def test_specifications_find_section_delegates_to_service(
+        self,
+        find_specification_section: Mock,
+    ) -> None:
+        """Specification section lookup delegates to the service."""
+        find_specification_section.return_value = "section"
+
+        result = Procore().specifications.find_section(
+            352338,
+            number="03 3000",
+            company_id=123,
+        )
+
+        self.assertEqual(result, "section")
+        find_specification_section.assert_called_once_with(
+            352338,
+            number="03 3000",
+            title=None,
+            query=None,
+            company_id=123,
+        )
+
+    @patch("pyprocore.client.list_specification_section_revisions")
+    def test_specifications_list_revisions_delegates_to_service(
+        self,
+        list_specification_section_revisions: Mock,
+    ) -> None:
+        """Specification revision listing delegates to the service."""
+        list_specification_section_revisions.return_value = ["revision"]
+
+        result = Procore().specifications.list_revisions(
+            352338,
+            company_id=123,
+            specification_section_id=10,
+            per_page=1000,
+        )
+
+        self.assertEqual(result, ["revision"])
+        list_specification_section_revisions.assert_called_once_with(
+            352338,
+            company_id=123,
+            specification_section_id=10,
+            page=None,
+            per_page=1000,
+        )
+
+    @patch("pyprocore.client.get_specification_section_revision")
+    def test_specifications_get_revision_delegates_to_service(
+        self,
+        get_specification_section_revision: Mock,
+    ) -> None:
+        """Specification revision retrieval delegates to the service."""
+        get_specification_section_revision.return_value = "revision"
+
+        result = Procore().specifications.get_revision(352338, 20, company_id=123)
+
+        self.assertEqual(result, "revision")
+        get_specification_section_revision.assert_called_once_with(
+            352338,
+            20,
+            company_id=123,
+        )
+
+    @patch("pyprocore.client.download_specification_section_revision")
+    def test_specifications_download_revision_delegates_to_service(
+        self,
+        download_specification_section_revision: Mock,
+    ) -> None:
+        """Specification revision downloads delegate to the service."""
+        download_specification_section_revision.return_value = Path("spec.pdf")
+
+        result = Procore().specifications.download_revision(
+            352338,
+            20,
+            output_dir="downloads/specifications",
+            company_id=123,
+            overwrite=True,
+        )
+
+        self.assertEqual(result, Path("spec.pdf"))
+        download_specification_section_revision.assert_called_once_with(
+            352338,
+            20,
+            output_dir="downloads/specifications",
+            company_id=123,
+            overwrite=True,
         )
 
     @patch("pyprocore.client.build_workflow_package")

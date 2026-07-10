@@ -160,3 +160,65 @@ class Drawing(ProcoreModel):
     updated_at: str | None = None
     url: str | HttpUrl | None = None
     download_url: str | HttpUrl | None = None
+
+
+class SpecificationSet(ProcoreModel):
+    """Procore specification set resource."""
+
+    id: int | None = None
+    name: str | None = None
+    description: str | None = None
+    issue_date: str | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class SpecificationSection(ProcoreModel):
+    """Procore specification section resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    title: str | None = None
+    description: str | None = None
+    specification_set_id: int | None = None
+    specification_area_id: int | None = None
+    division_id: int | None = None
+    current_revision_id: int | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class SpecificationSectionRevision(ProcoreModel):
+    """Procore specification section revision resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    title: str | None = None
+    description: str | None = None
+    revision_number: str | int | None = None
+    specification_section_id: int | None = None
+    specification_set_id: int | None = None
+    specification_area_id: int | None = None
+    division_id: int | None = None
+    filename: str | None = None
+    file_name: str | None = None
+    url: str | HttpUrl | None = None
+    download_url: str | HttpUrl | None = None
+    file_url: str | HttpUrl | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class SpecificationRevisionDownload(ProcoreModel):
+    """Download metadata for a Procore specification section revision."""
+
+    id: int | None = None
+    number: str | int | None = None
+    title: str | None = None
+    revision_number: str | int | None = None
+    filename: str | None = None
+    file_name: str | None = None
+    name: str | None = None
+    url: str | HttpUrl | None = None
+    download_url: str | HttpUrl | None = None
+    file_url: str | HttpUrl | None = None

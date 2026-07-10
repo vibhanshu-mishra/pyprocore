@@ -36,6 +36,7 @@ from pyprocore.services import (
     download_document,
     download_drawing,
     download_rfi_attachments,
+    download_specification_section_revision,
     download_submittal_attachments,
     find_company,
     find_document,
@@ -44,12 +45,15 @@ from pyprocore.services import (
     find_drawings_contains,
     find_project,
     find_rfi,
+    find_specification_section,
     find_submittal,
     get_document,
     get_document_folder,
     get_drawing,
     get_drawing_area,
     get_rfi,
+    get_specification_section,
+    get_specification_section_revision,
     get_submittal,
     list_companies,
     list_document_folders,
@@ -59,6 +63,9 @@ from pyprocore.services import (
     list_drawings,
     list_projects,
     list_rfis,
+    list_specification_section_revisions,
+    list_specification_sections,
+    list_specification_sets,
     list_submittals,
 )
 from pyprocore.workflows import (
@@ -369,6 +376,96 @@ def build_parser() -> argparse.ArgumentParser:
         help="Overwrite the local drawing file if it exists",
     )
 
+    specification_sets_parser = subcommands.add_parser(
+        "specification-sets",
+        help="List specification sets for a project",
+    )
+    _add_spec_project_company_options(specification_sets_parser)
+
+    specification_sections_parser = subcommands.add_parser(
+        "specification-sections",
+        help="List specification sections for a project",
+    )
+    _add_spec_project_company_options(specification_sections_parser)
+    specification_sections_parser.add_argument("--specification-area-id", type=int)
+    specification_sections_parser.add_argument("--specification-set-id", type=int)
+    specification_sections_parser.add_argument("--division-id", type=int)
+    specification_sections_parser.add_argument("--sort", default=None)
+
+    specification_section_parser = subcommands.add_parser(
+        "specification-section",
+        help="Get one specification section",
+    )
+    _add_spec_project_company_options(specification_section_parser)
+    specification_section_parser.add_argument(
+        "--section",
+        "--section-id",
+        dest="specification_section_id",
+        type=int,
+        required=True,
+    )
+
+    find_specification_section_parser = subcommands.add_parser(
+        "find-specification-section",
+        help="Find one specification section by number, title, or text",
+    )
+    _add_spec_project_company_options(find_specification_section_parser)
+    find_specification_section_parser.add_argument("--number", default=None)
+    find_specification_section_parser.add_argument("--title", default=None)
+    find_specification_section_parser.add_argument("--query", default=None)
+
+    specification_revisions_parser = subcommands.add_parser(
+        "specification-revisions",
+        help="List specification section revisions for a project",
+    )
+    _add_spec_project_company_options(specification_revisions_parser)
+    specification_revisions_parser.add_argument(
+        "--section",
+        "--section-id",
+        dest="specification_section_id",
+        type=int,
+    )
+    specification_revisions_parser.add_argument("--page", type=int)
+    specification_revisions_parser.add_argument("--per-page", type=int)
+
+    specification_revision_parser = subcommands.add_parser(
+        "specification-revision",
+        help="Get one specification section revision",
+    )
+    _add_spec_project_company_options(specification_revision_parser)
+    specification_revision_parser.add_argument(
+        "--revision",
+        "--revision-id",
+        dest="revision_id",
+        type=int,
+        required=True,
+    )
+
+    download_specification_revision_parser = subcommands.add_parser(
+        "download-specification-revision",
+        help="Download one specification section revision",
+    )
+    _add_spec_project_company_options(download_specification_revision_parser)
+    download_specification_revision_parser.add_argument(
+        "--revision",
+        "--revision-id",
+        dest="revision_id",
+        type=int,
+        required=True,
+    )
+    download_specification_revision_parser.add_argument(
+        "--output-dir",
+        "--output",
+        dest="output_dir",
+        type=Path,
+        default=None,
+    )
+    download_specification_revision_parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Overwrite the local specification file if it exists",
+    )
+
     package_rfi_parser = subcommands.add_parser(
         "package-rfi",
         help="Build an automation package for one RFI",
@@ -510,6 +607,12 @@ def _add_filter_options(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--updated-before", default=None)
     parser.add_argument("--created-after", default=None)
     parser.add_argument("--created-before", default=None)
+
+
+def _add_spec_project_company_options(parser: argparse.ArgumentParser) -> None:
+    """Add shared Specifications command options."""
+    parser.add_argument("--project", "--project-id", dest="project_id", type=int, required=True)
+    parser.add_argument("--company-id", "--company", dest="company_id", type=int, default=None)
 
 
 def _add_project_output_options(parser: argparse.ArgumentParser, *, output_help: str) -> None:
@@ -732,6 +835,61 @@ def run_command(args: argparse.Namespace) -> Any:
             company_id=args.company_id,
             overwrite=args.overwrite,
             drawing_area_id=args.drawing_area_id,
+        )
+
+    if args.command == "specification-sets":
+        return list_specification_sets(args.project_id, company_id=args.company_id)
+
+    if args.command == "specification-sections":
+        return list_specification_sections(
+            args.project_id,
+            company_id=args.company_id,
+            specification_area_id=args.specification_area_id,
+            specification_set_id=args.specification_set_id,
+            division_id=args.division_id,
+            sort=args.sort,
+        )
+
+    if args.command == "specification-section":
+        return get_specification_section(
+            args.project_id,
+            args.specification_section_id,
+            company_id=args.company_id,
+        )
+
+    if args.command == "find-specification-section":
+        return find_specification_section(
+            args.project_id,
+            number=args.number,
+            title=args.title,
+            query=args.query,
+            company_id=args.company_id,
+        )
+
+    if args.command == "specification-revisions":
+        return list_specification_section_revisions(
+            args.project_id,
+            company_id=args.company_id,
+            specification_section_id=args.specification_section_id,
+            page=args.page,
+            per_page=args.per_page,
+        )
+
+    if args.command == "specification-revision":
+        return get_specification_section_revision(
+            args.project_id,
+            args.revision_id,
+            company_id=args.company_id,
+        )
+
+    if args.command == "download-specification-revision":
+        output_dir = args.output_dir if args.output_dir is not None else "downloads/specifications"
+        return download_specification_section_revision(
+            args.project_id,
+            args.revision_id,
+            output_dir=output_dir,
+            company_id=args.company_id,
+            overwrite=args.overwrite,
         )
 
     if args.command == "package-rfi":
@@ -967,7 +1125,11 @@ def main() -> None:
         print(format_export_summary(result))
         return
 
-    if isinstance(result, Path) and args.command in {"download-document", "download-drawing"}:
+    if isinstance(result, Path) and args.command in {
+        "download-document",
+        "download-drawing",
+        "download-specification-revision",
+    }:
         print(f"Download complete.\nOutput: {result}")
         return
 

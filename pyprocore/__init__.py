@@ -21,6 +21,15 @@ from pyprocore.services.search import (
     find_rfi,
     find_submittal,
 )
+from pyprocore.services.specifications import (
+    download_specification_section_revision,
+    find_specification_section,
+    get_specification_section,
+    get_specification_section_revision,
+    list_specification_section_revisions,
+    list_specification_sections,
+    list_specification_sets,
+)
 from pyprocore.workflows import (
     ProjectSyncResult,
     SyncResult,
@@ -62,7 +71,14 @@ __all__ = [
     "find_project",
     "find_project_contains",
     "find_rfi",
+    "find_specification_section",
     "find_submittal",
+    "download_specification_section_revision",
+    "get_specification_section",
+    "get_specification_section_revision",
+    "list_specification_section_revisions",
+    "list_specification_sections",
+    "list_specification_sets",
     "sync_project_to_folder",
     "sync_documents_to_folder",
     "sync_rfis_to_folder",

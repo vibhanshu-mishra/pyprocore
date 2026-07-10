@@ -25,12 +25,16 @@ from pyprocore.models import (
     DrawingArea,
     DrawingDiscipline,
     Project,
+    SpecificationSection,
+    SpecificationSectionRevision,
+    SpecificationSet,
     Submittal,
 )
 from pyprocore.services import (
     download_document,
     download_drawing,
     download_rfi_attachments,
+    download_specification_section_revision,
     download_submittal_attachments,
     find_company,
     find_document,
@@ -40,6 +44,7 @@ from pyprocore.services import (
     find_project,
     find_project_contains,
     find_rfi,
+    find_specification_section,
     find_submittal,
     get_document,
     get_document_folder,
@@ -47,6 +52,8 @@ from pyprocore.services import (
     get_drawing_area,
     get_project,
     get_rfi,
+    get_specification_section,
+    get_specification_section_revision,
     get_submittal,
     list_companies,
     list_document_folders,
@@ -56,6 +63,9 @@ from pyprocore.services import (
     list_drawings,
     list_projects,
     list_rfis,
+    list_specification_section_revisions,
+    list_specification_sections,
+    list_specification_sets,
     list_submittals,
 )
 from pyprocore.workflows import (
@@ -702,6 +712,121 @@ class DrawingsClient:
         )
 
 
+class SpecificationsClient:
+    """Convenience methods for Procore specification resources."""
+
+    def list_sets(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> list[SpecificationSet]:
+        """List specification sets for a Procore project."""
+        return list_specification_sets(project_id, company_id=company_id, **filters)
+
+    def list_sections(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        specification_area_id: int | None = None,
+        specification_set_id: int | None = None,
+        division_id: int | None = None,
+        sort: str | None = None,
+        **filters: Any,
+    ) -> list[SpecificationSection]:
+        """List specification sections for a Procore project."""
+        return list_specification_sections(
+            project_id,
+            company_id=company_id,
+            specification_area_id=specification_area_id,
+            specification_set_id=specification_set_id,
+            division_id=division_id,
+            sort=sort,
+            **filters,
+        )
+
+    def get_section(
+        self,
+        project_id: int,
+        specification_section_id: int,
+        company_id: int | None = None,
+    ) -> SpecificationSection:
+        """Get one specification section."""
+        return get_specification_section(
+            project_id,
+            specification_section_id,
+            company_id=company_id,
+        )
+
+    def find_section(
+        self,
+        project_id: int,
+        *,
+        number: str | int | None = None,
+        title: str | None = None,
+        query: str | None = None,
+        company_id: int | None = None,
+    ) -> SpecificationSection:
+        """Find one specification section by number, title, or search text."""
+        return find_specification_section(
+            project_id,
+            number=number,
+            title=title,
+            query=query,
+            company_id=company_id,
+        )
+
+    def list_revisions(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        specification_section_id: int | None = None,
+        page: int | None = None,
+        per_page: int | None = None,
+        **filters: Any,
+    ) -> list[SpecificationSectionRevision]:
+        """List specification section revisions for a Procore project."""
+        return list_specification_section_revisions(
+            project_id,
+            company_id=company_id,
+            specification_section_id=specification_section_id,
+            page=page,
+            per_page=per_page,
+            **filters,
+        )
+
+    def get_revision(
+        self,
+        project_id: int,
+        revision_id: int,
+        company_id: int | None = None,
+    ) -> SpecificationSectionRevision:
+        """Get one specification section revision."""
+        return get_specification_section_revision(
+            project_id,
+            revision_id,
+            company_id=company_id,
+        )
+
+    def download_revision(
+        self,
+        project_id: int,
+        revision_id: int,
+        output_dir: Path | str = "downloads/specifications",
+        *,
+        company_id: int | None = None,
+        overwrite: bool = False,
+    ) -> Path:
+        """Download one specification section revision."""
+        return download_specification_section_revision(
+            project_id,
+            revision_id,
+            output_dir=output_dir,
+            company_id=company_id,
+            overwrite=overwrite,
+        )
+
+
 class AutomationClient:
     """Convenience methods for AI-ready automation workflow packages."""
 
@@ -1072,6 +1197,7 @@ class Procore:
         self.submittals = SubmittalsClient()
         self.documents = DocumentsClient()
         self.drawings = DrawingsClient()
+        self.specifications = SpecificationsClient()
         self.automation = AutomationClient()
         self.workflows = WorkflowsClient()
 
@@ -1084,6 +1210,7 @@ __all__ = [
     "Procore",
     "ProjectsClient",
     "RFIsClient",
+    "SpecificationsClient",
     "SubmittalsClient",
     "WorkflowsClient",
 ]

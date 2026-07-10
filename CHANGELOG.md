@@ -50,6 +50,12 @@ and this project follows semantic versioning.
 - Drawing CLI commands for areas, disciplines, drawing listing, drawing retrieval, drawing lookup, and drawing download.
 - Drawing examples and recipes.
 - Manual Drawings smoke-test helper for validating sandbox endpoint and payload behavior.
+- Specifications API models and services.
+- Specification set, section, section lookup, revision, and revision download helpers.
+- `client.specifications` object-client wrapper.
+- Specification CLI commands for sets, sections, section lookup, revisions, and revision downloads.
+- Specification examples and recipes.
+- Manual Specifications smoke-test helper for validating sandbox endpoint and payload behavior.
 
 ### Changed
 
@@ -64,6 +70,7 @@ and this project follows semantic versioning.
 - Corrected Documents implementation to align with Procore Project Folders and Files endpoint structure.
 - Updated Documents docs to explain folder/file endpoint behavior and direct download URL requirements.
 - Updated Documents smoke-test docs to recommend `PYTHONPATH=.` for local checkout validation.
+- Updated README, roadmap, examples, and recipes for Specifications support.
 
 ## [2.0.0] - 2026-07-03
 
