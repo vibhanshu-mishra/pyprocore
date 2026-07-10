@@ -11,7 +11,7 @@ Before running the examples:
 1. Install PyProcore.
 
    ```bash
-   pip install pyprocore
+   pip3 install pyprocore
    ```
 
 2. Configure your `.env` file with Procore OAuth and API settings.
