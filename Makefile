@@ -1,4 +1,4 @@
-.PHONY: test coverage examples-check smoke-documents lint format typecheck clean
+.PHONY: test coverage examples-check smoke-documents smoke-drawings lint format typecheck clean
 
 PYTHON ?= python3
 
@@ -14,7 +14,27 @@ examples-check:
 	$(PYTHON) scripts/check_examples.py
 
 smoke-documents:
-	$(PYTHON) scripts/smoke_documents.py
+	@if [ -z "$$PROCORE_PROJECT_ID" ]; then \
+		echo "Documents smoke test needs PROCORE_PROJECT_ID."; \
+		echo "Example: PROCORE_PROJECT_ID=352338 make smoke-documents"; \
+		exit 1; \
+	fi
+	@args="--project $$PROCORE_PROJECT_ID"; \
+	if [ -n "$$PROCORE_DOCUMENT_FOLDER_ID" ]; then args="$$args --folder $$PROCORE_DOCUMENT_FOLDER_ID"; fi; \
+	if [ -n "$$PROCORE_COMPANY_ID" ]; then args="$$args --company-id $$PROCORE_COMPANY_ID"; fi; \
+	PYTHONPATH=. $(PYTHON) scripts/smoke_documents.py $$args
+
+smoke-drawings:
+	@if [ -z "$$PROCORE_PROJECT_ID" ]; then \
+		echo "Drawings smoke test needs PROCORE_PROJECT_ID."; \
+		echo "Example: PROCORE_PROJECT_ID=352338 make smoke-drawings"; \
+		exit 1; \
+	fi
+	@args="--project $$PROCORE_PROJECT_ID"; \
+	if [ -n "$$PROCORE_DRAWING_AREA_ID" ]; then args="$$args --area $$PROCORE_DRAWING_AREA_ID"; fi; \
+	if [ -n "$$PROCORE_DRAWING_ID" ]; then args="$$args --drawing $$PROCORE_DRAWING_ID"; fi; \
+	if [ -n "$$PROCORE_COMPANY_ID" ]; then args="$$args --company-id $$PROCORE_COMPANY_ID"; fi; \
+	PYTHONPATH=. $(PYTHON) scripts/smoke_drawings.py $$args
 
 lint:
 	$(PYTHON) -m black --check pyprocore tests

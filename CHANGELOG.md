@@ -43,6 +43,13 @@ and this project follows semantic versioning.
 - Document sync workflow and `procore-sdk sync-documents`.
 - Document examples and recipes.
 - Manual Documents smoke-test helper for validating sandbox folder/file payloads.
+- Beginner-friendly Documents smoke-test setup errors and local import diagnostics.
+- Drawings API models and services.
+- Drawing area, drawing discipline, drawing list/get/find/download helpers.
+- `client.drawings` object-client wrapper.
+- Drawing CLI commands for areas, disciplines, drawing listing, drawing retrieval, drawing lookup, and drawing download.
+- Drawing examples and recipes.
+- Manual Drawings smoke-test helper for validating sandbox endpoint and payload behavior.
 
 ### Changed
 
@@ -56,6 +63,7 @@ and this project follows semantic versioning.
 - Marked Phase 3 expanded API coverage in progress in the roadmap.
 - Corrected Documents implementation to align with Procore Project Folders and Files endpoint structure.
 - Updated Documents docs to explain folder/file endpoint behavior and direct download URL requirements.
+- Updated Documents smoke-test docs to recommend `PYTHONPATH=.` for local checkout validation.
 
 ## [2.0.0] - 2026-07-03
 

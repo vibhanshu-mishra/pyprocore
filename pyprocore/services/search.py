@@ -7,8 +7,10 @@ from typing import TypeVar
 
 from pyprocore.core.config import ProcoreSettings, get_settings
 from pyprocore.core.exceptions import DuplicateMatchError, MultipleResultsError, NotFoundError
-from pyprocore.models import RFI, Company, Project, Submittal
+from pyprocore.models import RFI, Company, Document, DocumentFolder, Drawing, Project, Submittal
 from pyprocore.services.companies import list_companies
+from pyprocore.services.documents import list_document_folders, list_documents
+from pyprocore.services.drawings import list_drawings
 from pyprocore.services.projects import list_projects
 from pyprocore.services.rfis import list_rfis
 from pyprocore.services.submittals import list_submittals
@@ -150,6 +152,125 @@ def find_submittal(project_id: int, *, number: str | int) -> Submittal:
     )
 
 
+def find_document_folder(project_id: int, name: str) -> DocumentFolder:
+    """Find one document folder by name within a project.
+
+    Args:
+        project_id: Procore project ID.
+        name: Folder name or name fragment.
+
+    Returns:
+        The matching document folder.
+
+    Raises:
+        NotFoundError: If no folder matches.
+        DuplicateMatchError: If multiple exact matches are found.
+        MultipleResultsError: If multiple partial matches are found.
+    """
+    query = _normalize_query(name, "name")
+    return _resolve_one(
+        resources=list_document_folders(project_id),
+        query=query,
+        values=lambda folder: [folder.name, folder.path],
+        resource_name="document folder",
+    )
+
+
+def find_document(
+    project_id: int,
+    *,
+    name: str | None = None,
+    filename: str | None = None,
+) -> Document:
+    """Find one document by name or filename within a project.
+
+    Args:
+        project_id: Procore project ID.
+        name: Document name or name fragment.
+        filename: Document filename or filename fragment.
+
+    Returns:
+        The matching document.
+
+    Raises:
+        NotFoundError: If no document matches.
+        DuplicateMatchError: If multiple exact matches are found.
+        MultipleResultsError: If multiple partial matches are found.
+    """
+    query = _document_query(name=name, filename=filename)
+    return _resolve_one(
+        resources=list_documents(project_id),
+        query=query,
+        values=lambda document: [document.name, document.filename, document.file_name],
+        resource_name="document",
+    )
+
+
+def find_drawing(
+    project_id: int,
+    *,
+    number: str | int | None = None,
+    title: str | None = None,
+    company_id: int | None = None,
+) -> Drawing:
+    """Find one drawing by number or title within a project.
+
+    Args:
+        project_id: Procore project ID.
+        number: Drawing number or number fragment.
+        title: Drawing title or title fragment.
+        company_id: Optional company ID sent as ``Procore-Company-Id``.
+
+    Returns:
+        The matching drawing.
+
+    Raises:
+        NotFoundError: If no drawing matches.
+        DuplicateMatchError: If multiple exact matches are found.
+        MultipleResultsError: If multiple partial matches are found.
+    """
+    query = _drawing_query(number=number, title=title)
+    return _resolve_one(
+        resources=list_drawings(project_id, company_id=company_id),
+        query=query,
+        values=lambda drawing: [drawing.number, drawing.title, drawing.name],
+        resource_name="drawing",
+    )
+
+
+def find_drawings_contains(
+    project_id: int,
+    text: str,
+    *,
+    company_id: int | None = None,
+) -> list[Drawing]:
+    """Find drawings whose number, title, or name contains text.
+
+    Args:
+        project_id: Procore project ID.
+        text: Text to search for.
+        company_id: Optional company ID sent as ``Procore-Company-Id``.
+
+    Returns:
+        Matching drawings.
+
+    Raises:
+        NotFoundError: If no drawing contains the text.
+    """
+    query = _normalize_query(text, "text")
+    matches = [
+        drawing
+        for drawing in list_drawings(project_id, company_id=company_id)
+        if any(
+            query in _normalized_value(value)
+            for value in (drawing.number, drawing.title, drawing.name)
+        )
+    ]
+    if not matches:
+        raise NotFoundError(f"No drawing matched {query!r}.")
+    return matches
+
+
 def _resolve_one(
     *,
     resources: Sequence[ResourceT],
@@ -208,6 +329,24 @@ def _project_query(name: str | None, number: str | int | None) -> str:
     if name is None and number is None:
         raise ValueError("Project name or number is required.")
     return _normalize_query(number if number is not None else name, "project")
+
+
+def _document_query(name: str | None, filename: str | None) -> str:
+    """Return the normalized document search query."""
+    if name is not None and filename is not None:
+        raise ValueError("Pass either name or filename, not both.")
+    if name is None and filename is None:
+        raise ValueError("Document name or filename is required.")
+    return _normalize_query(filename if filename is not None else name, "document")
+
+
+def _drawing_query(number: str | int | None, title: str | None) -> str:
+    """Return the normalized drawing search query."""
+    if number is not None and title is not None:
+        raise ValueError("Pass either number or title, not both.")
+    if number is None and title is None:
+        raise ValueError("Drawing number or title is required.")
+    return _normalize_query(number if number is not None else title, "drawing")
 
 
 def _normalize_query(value: object | None, field_name: str) -> str:

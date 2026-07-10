@@ -12,6 +12,7 @@ from pyprocore.client import (
     AutomationClient,
     CompaniesClient,
     DocumentsClient,
+    DrawingsClient,
     ProjectsClient,
     RFIsClient,
     SubmittalsClient,
@@ -32,6 +33,7 @@ class ProcoreObjectClientTestCase(unittest.TestCase):
         self.assertIsInstance(client.rfis, RFIsClient)
         self.assertIsInstance(client.submittals, SubmittalsClient)
         self.assertIsInstance(client.documents, DocumentsClient)
+        self.assertIsInstance(client.drawings, DrawingsClient)
         self.assertIsInstance(client.automation, AutomationClient)
         self.assertIsInstance(client.workflows, WorkflowsClient)
 
@@ -419,6 +421,128 @@ class ProcoreObjectClientTestCase(unittest.TestCase):
             filename="plan.pdf",
             company_id=123,
             overwrite=True,
+        )
+
+    @patch("pyprocore.client.list_drawing_areas")
+    def test_drawings_list_areas_delegates_to_service(
+        self,
+        list_drawing_areas: Mock,
+    ) -> None:
+        """Drawing area listing delegates to the drawing service."""
+        list_drawing_areas.return_value = ["area"]
+
+        result = Procore().drawings.list_areas(352338, company_id=123, sort="name")
+
+        self.assertEqual(result, ["area"])
+        list_drawing_areas.assert_called_once_with(352338, company_id=123, sort="name")
+
+    @patch("pyprocore.client.get_drawing_area")
+    def test_drawings_get_area_delegates_to_service(self, get_drawing_area: Mock) -> None:
+        """Drawing area retrieval delegates to the drawing service."""
+        get_drawing_area.return_value = "area"
+
+        result = Procore().drawings.get_area(352338, 10, company_id=123)
+
+        self.assertEqual(result, "area")
+        get_drawing_area.assert_called_once_with(352338, 10, company_id=123)
+
+    @patch("pyprocore.client.list_drawing_disciplines")
+    def test_drawings_list_disciplines_delegates_to_service(
+        self,
+        list_drawing_disciplines: Mock,
+    ) -> None:
+        """Drawing discipline listing delegates to the drawing service."""
+        list_drawing_disciplines.return_value = ["discipline"]
+
+        result = Procore().drawings.list_disciplines(352338, company_id=123)
+
+        self.assertEqual(result, ["discipline"])
+        list_drawing_disciplines.assert_called_once_with(352338, company_id=123)
+
+    @patch("pyprocore.client.list_drawings")
+    def test_drawings_list_delegates_to_service(self, list_drawings: Mock) -> None:
+        """Drawing listing delegates to the drawing service."""
+        list_drawings.return_value = ["drawing"]
+
+        result = Procore().drawings.list(
+            352338,
+            company_id=123,
+            drawing_area_id=5,
+            discipline_id=6,
+            current=True,
+            sort="number",
+        )
+
+        self.assertEqual(result, ["drawing"])
+        list_drawings.assert_called_once_with(
+            352338,
+            company_id=123,
+            drawing_area_id=5,
+            discipline_id=6,
+            current=True,
+            sort="number",
+        )
+
+    @patch("pyprocore.client.get_drawing")
+    def test_drawings_get_delegates_to_service(self, get_drawing: Mock) -> None:
+        """Drawing retrieval delegates to the drawing service."""
+        get_drawing.return_value = "drawing"
+
+        result = Procore().drawings.get(352338, 99, company_id=123)
+
+        self.assertEqual(result, "drawing")
+        get_drawing.assert_called_once_with(352338, 99, company_id=123)
+
+    @patch("pyprocore.client.find_drawing")
+    def test_drawings_find_delegates_to_resolver(self, find_drawing: Mock) -> None:
+        """Drawing lookup delegates to the drawing resolver."""
+        find_drawing.return_value = "drawing"
+
+        result = Procore().drawings.find(352338, number="S-101", company_id=123)
+
+        self.assertEqual(result, "drawing")
+        find_drawing.assert_called_once_with(
+            352338,
+            number="S-101",
+            title=None,
+            company_id=123,
+        )
+
+    @patch("pyprocore.client.find_drawings_contains")
+    def test_drawings_find_contains_delegates_to_resolver(
+        self,
+        find_drawings_contains: Mock,
+    ) -> None:
+        """Drawing contains search delegates to the drawing resolver."""
+        find_drawings_contains.return_value = ["drawing"]
+
+        result = Procore().drawings.find_contains(352338, "stair", company_id=123)
+
+        self.assertEqual(result, ["drawing"])
+        find_drawings_contains.assert_called_once_with(352338, "stair", company_id=123)
+
+    @patch("pyprocore.client.download_drawing")
+    def test_drawings_download_delegates_to_service(self, download_drawing: Mock) -> None:
+        """Drawing downloads pass output and overwrite options through."""
+        download_drawing.return_value = Path("drawing.pdf")
+
+        result = Procore().drawings.download(
+            352338,
+            99,
+            output_dir="downloads/drawings",
+            filename="S-101.pdf",
+            company_id=123,
+            overwrite=True,
+        )
+
+        self.assertEqual(result, Path("drawing.pdf"))
+        download_drawing.assert_called_once_with(
+            352338,
+            99,
+            output_dir="downloads/drawings",
+            filename="S-101.pdf",
+            overwrite=True,
+            company_id=123,
         )
 
     @patch("pyprocore.client.build_workflow_package")

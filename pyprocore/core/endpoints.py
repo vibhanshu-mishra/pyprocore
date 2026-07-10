@@ -17,6 +17,14 @@ DOCUMENT_FOLDERS = f"{API_V1}/folders"
 DOCUMENT_FOLDER = f"{API_V1}/folders/{{folder_id}}"
 DOCUMENTS = DOCUMENT_FOLDERS
 DOCUMENT = f"{API_V1}/files/{{document_id}}"
+# Procore Drawings endpoints follow the older project-scoped query parameter
+# style in the public API family. Keep these centralized so sandbox smoke
+# testing can validate them without scattering path strings through services.
+DRAWINGS = f"{API_V1}/drawings"
+DRAWING = f"{API_V1}/drawings/{{drawing_id}}"
+DRAWING_AREAS = f"{API_V1}/drawing_areas"
+DRAWING_AREA = f"{API_V1}/drawing_areas/{{drawing_area_id}}"
+DRAWING_DISCIPLINES = f"{API_V1}/drawing_disciplines"
 
 
 def companies() -> str:
@@ -75,6 +83,31 @@ def document(project_id: int, document_id: int) -> str:
     return DOCUMENT.format(document_id=document_id)
 
 
+def drawing_areas(project_id: int) -> str:
+    """Return the drawing areas collection endpoint for a project."""
+    return DRAWING_AREAS
+
+
+def drawing_area(project_id: int, drawing_area_id: int) -> str:
+    """Return the endpoint for a single drawing area."""
+    return DRAWING_AREA.format(drawing_area_id=drawing_area_id)
+
+
+def drawing_disciplines(project_id: int) -> str:
+    """Return the drawing disciplines collection endpoint for a project."""
+    return DRAWING_DISCIPLINES
+
+
+def drawings(project_id: int) -> str:
+    """Return the drawings collection endpoint for a project."""
+    return DRAWINGS
+
+
+def drawing(project_id: int, drawing_id: int) -> str:
+    """Return the endpoint for a single drawing."""
+    return DRAWING.format(drawing_id=drawing_id)
+
+
 class Endpoints:
     """Backward-compatible namespace for endpoint path templates."""
 
@@ -88,3 +121,8 @@ class Endpoints:
     DOCUMENT_FOLDER = DOCUMENT_FOLDER
     DOCUMENTS = DOCUMENTS
     DOCUMENT = DOCUMENT
+    DRAWINGS = DRAWINGS
+    DRAWING = DRAWING
+    DRAWING_AREAS = DRAWING_AREAS
+    DRAWING_AREA = DRAWING_AREA
+    DRAWING_DISCIPLINES = DRAWING_DISCIPLINES

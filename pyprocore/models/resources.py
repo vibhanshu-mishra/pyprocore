@@ -117,3 +117,46 @@ class Document(ProcoreModel):
     file_size: int | None = None
     created_at: str | None = None
     updated_at: str | None = None
+
+
+class DrawingArea(ProcoreModel):
+    """Procore drawing area resource."""
+
+    id: int | None = None
+    name: str | None = None
+    position: int | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class DrawingDiscipline(ProcoreModel):
+    """Procore drawing discipline resource."""
+
+    id: int | None = None
+    name: str | None = None
+    abbreviation: str | None = None
+    position: int | None = None
+
+
+class Drawing(ProcoreModel):
+    """Procore drawing resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    title: str | None = None
+    name: str | None = None
+    filename: str | None = None
+    file_name: str | None = None
+    discipline: str | DrawingDiscipline | None = None
+    discipline_id: int | None = None
+    drawing_area: DrawingArea | str | None = None
+    drawing_area_id: int | None = None
+    revision_number: str | int | None = None
+    current_revision_id: int | None = None
+    status: str | Status | None = None
+    issued_date: str | None = None
+    received_date: str | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+    url: str | HttpUrl | None = None
+    download_url: str | HttpUrl | None = None

@@ -15,6 +15,7 @@ coverage priorities.
 - RFIs
 - Submittals
 - Documents
+- Drawings
 - Attachment downloads
 - Typed models
 - Search and resolver helpers
@@ -53,7 +54,13 @@ Phase 3 will focus on expanded endpoint coverage for project resources such as
 Documents, Drawings, Specifications, Photos, and Daily Logs.
 
 - Documents: In Progress
-- Drawings
+- Drawings: In Progress
+  - List/get drawing areas
+  - List drawing disciplines
+  - List/get/find drawings
+  - Download drawings when Procore provides a direct URL
+  - Manual smoke test for sandbox endpoint and payload validation
+  - Folder sync planned after live download behavior is confirmed
 - Specifications
 - Photos
 - Daily Logs

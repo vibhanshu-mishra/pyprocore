@@ -1,4 +1,4 @@
-"""Manually inspect Procore Documents folder/file endpoint responses.
+"""Manually inspect Procore Drawings endpoint responses.
 
 This script is intentionally not used by unit tests or CI. It makes live
 Procore API calls only when a developer runs it manually with valid sandbox
@@ -35,7 +35,7 @@ REQUIRED_CONFIG = (
 
 def build_parser() -> argparse.ArgumentParser:
     """Build the smoke-test command parser."""
-    parser = argparse.ArgumentParser(description="Smoke-test Procore Documents endpoints")
+    parser = argparse.ArgumentParser(description="Smoke-test Procore Drawings endpoints")
     parser.add_argument(
         "--project",
         "--project-id",
@@ -45,18 +45,26 @@ def build_parser() -> argparse.ArgumentParser:
         help="Procore project ID. Defaults to PROCORE_PROJECT_ID.",
     )
     parser.add_argument(
-        "--folder",
-        "--folder-id",
-        dest="folder_id",
-        type=int,
-        default=_env_int("PROCORE_DOCUMENT_FOLDER_ID"),
-        help="Optional Procore folder ID to inspect.",
-    )
-    parser.add_argument(
         "--company-id",
         type=int,
         default=_env_int("PROCORE_COMPANY_ID"),
         help="Optional Procore company ID sent as Procore-Company-Id.",
+    )
+    parser.add_argument(
+        "--area",
+        "--area-id",
+        dest="drawing_area_id",
+        type=int,
+        default=_env_int("PROCORE_DRAWING_AREA_ID"),
+        help="Optional drawing area ID to filter drawings.",
+    )
+    parser.add_argument(
+        "--drawing",
+        "--drawing-id",
+        dest="drawing_id",
+        type=int,
+        default=_env_int("PROCORE_DRAWING_ID"),
+        help="Optional drawing ID to inspect.",
     )
     parser.add_argument(
         "--verbose",
@@ -67,13 +75,8 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main() -> int:
-    """Run the manual Documents smoke test."""
+    """Run the manual Drawings smoke test."""
     args = build_parser().parse_args()
-    return run(args)
-
-
-def run(args: argparse.Namespace) -> int:
-    """Run the smoke test with friendly setup errors."""
     try:
         return _run(args)
     except ConfigurationError as exc:
@@ -89,14 +92,14 @@ def run(args: argparse.Namespace) -> int:
         _print_api_error(exc)
         return 1
     except Exception as exc:  # pragma: no cover - defensive manual smoke guard
-        print("Documents smoke test failed unexpectedly.")
+        print("Drawings smoke test failed unexpectedly.")
         print(f"Reason: {type(exc).__name__}: {exc}")
         print("\nRun again with --verbose, then check `procore-sdk doctor`.")
         return 1
 
 
 def _run(args: argparse.Namespace) -> int:
-    """Run the manual Documents smoke test implementation."""
+    """Run the manual Drawings smoke test implementation."""
     if args.project_id is None:
         print("Set PROCORE_PROJECT_ID or pass --project before running this smoke test.")
         return 1
@@ -106,39 +109,52 @@ def _run(args: argparse.Namespace) -> int:
 
     client = ProcoreClient()
     headers = _company_headers(args.company_id)
-    collection_params: dict[str, object] = {"project_id": args.project_id}
-    if args.folder_id is not None:
-        collection_params["filters[folder_id]"] = args.folder_id
+    params: dict[str, object] = {"project_id": args.project_id}
+    if args.drawing_area_id is not None:
+        params["drawing_area_id"] = args.drawing_area_id
 
-    print("Request: GET /rest/v1.0/folders")
-    print(f"Params: {_safe_json(collection_params)}")
-    if headers:
-        print("Headers: Procore-Company-Id=<set>")
-    collection = client.get_all(
-        endpoints.document_folders(args.project_id),
-        params=collection_params,
+    print("Request: GET /rest/v1.0/drawing_areas")
+    print(f"Params: {_safe_json({'project_id': args.project_id})}")
+    areas = client.get_all(
+        endpoints.drawing_areas(args.project_id),
+        params={"project_id": args.project_id},
         headers=headers,
     )
-    print("Collection response sample:")
-    print(_safe_json(_sample(collection)))
+    print("Drawing areas sample:")
+    print(_safe_json(_sample(areas)))
 
-    if args.folder_id is not None:
-        print(f"\nRequest: GET /rest/v1.0/folders/{args.folder_id}")
-        folder = client.get(
-            endpoints.document_folder(args.project_id, args.folder_id),
+    print("\nRequest: GET /rest/v1.0/drawing_disciplines")
+    disciplines = client.get_all(
+        endpoints.drawing_disciplines(args.project_id),
+        params={"project_id": args.project_id},
+        headers=headers,
+    )
+    print("Drawing disciplines sample:")
+    print(_safe_json(_sample(disciplines)))
+
+    print("\nRequest: GET /rest/v1.0/drawings")
+    print(f"Params: {_safe_json(params)}")
+    drawings = client.get_all(endpoints.drawings(args.project_id), params=params, headers=headers)
+    print("Drawings sample:")
+    print(_safe_json(_sample(drawings)))
+
+    if args.drawing_id is not None:
+        print(f"\nRequest: GET /rest/v1.0/drawings/{args.drawing_id}")
+        drawing = client.get(
+            endpoints.drawing(args.project_id, args.drawing_id),
             params={"project_id": args.project_id},
             headers=headers,
         )
-        print("Folder response sample:")
-        print(_safe_json(folder))
+        print("Drawing response sample:")
+        print(_safe_json(drawing))
 
-    print("\nReview the payload for folders, files, and any url/download_url fields.")
+    print("\nReview the payload for drawing numbers, titles, url, or download_url fields.")
     return 0
 
 
 def _print_configuration_error(exc: ConfigurationError) -> None:
     """Print a beginner-friendly configuration failure."""
-    print("Documents smoke test cannot run yet.")
+    print("Drawings smoke test cannot run yet.")
     print("\nReason:")
     print("PyProcore configuration is missing or invalid.")
     if str(exc):
@@ -156,24 +172,24 @@ def _print_configuration_error(exc: ConfigurationError) -> None:
 
 def _print_auth_error(kind: str, exc: Exception) -> None:
     """Print a beginner-friendly authentication or authorization failure."""
-    print("Documents smoke test could not authenticate with Procore.")
+    print("Drawings smoke test could not authenticate with Procore.")
     print(f"\nReason: Procore {kind} failed.")
     print(f"Details: {exc}")
     print("\nNext steps:")
     print("1. Run `procore-sdk auth status`")
     print("2. If needed, run `procore-sdk auth refresh`")
-    print("3. Confirm your Procore user can access this company and project")
+    print("3. Confirm your Procore user can access this company's Drawings tool")
 
 
 def _print_api_error(exc: ProcoreAPIError) -> None:
     """Print a safe summary of a Procore API failure."""
-    print("Documents smoke test reached Procore, but the API returned an error.")
+    print("Drawings smoke test reached Procore, but the API returned an error.")
     print(f"\nReason: {type(exc).__name__}")
     print(f"Details: {exc}")
     print("\nNext steps:")
     print("1. Confirm PROCORE_PROJECT_ID is correct")
-    print("2. Confirm your user has access to the project's Documents tool")
-    print("3. If using a folder, confirm PROCORE_DOCUMENT_FOLDER_ID is correct")
+    print("2. Confirm your user has access to the project's Drawings tool")
+    print("3. If filtering by area or drawing, confirm those IDs are correct")
 
 
 def _print_verbose_details(args: argparse.Namespace) -> None:
@@ -181,18 +197,19 @@ def _print_verbose_details(args: argparse.Namespace) -> None:
     print("Verbose diagnostics:")
     print(f"- Imported pyprocore from: {pyprocore.__file__}")
     print(f"- Project ID: {args.project_id}")
-    print(f"- Folder ID: {args.folder_id if args.folder_id is not None else '<not set>'}")
+    print(f"- Drawing area ID: {args.drawing_area_id or '<not set>'}")
+    print(f"- Drawing ID: {args.drawing_id or '<not set>'}")
     print(f"- Company header: {'set' if args.company_id is not None else '<not set>'}")
-    print(f"- Collection endpoint: {endpoints.document_folders(args.project_id or 0)}")
-    if args.folder_id is not None:
-        print(
-            f"- Folder endpoint: {endpoints.document_folder(args.project_id or 0, args.folder_id)}"
-        )
+    print(f"- Areas endpoint: {endpoints.drawing_areas(args.project_id or 0)}")
+    print(f"- Disciplines endpoint: {endpoints.drawing_disciplines(args.project_id or 0)}")
+    print(f"- Drawings endpoint: {endpoints.drawings(args.project_id or 0)}")
+    if args.drawing_id is not None:
+        print(f"- Drawing endpoint: {endpoints.drawing(args.project_id or 0, args.drawing_id)}")
     print()
 
 
 def _company_headers(company_id: int | None) -> dict[str, str] | None:
-    """Return optional company header for Documents endpoints."""
+    """Return optional company header for Drawings endpoints."""
     if company_id is None:
         return None
     return {"Procore-Company-Id": str(company_id)}

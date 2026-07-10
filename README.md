@@ -36,6 +36,7 @@ PyProcore does that once, correctly, behind a clean interface. You call a servic
 - RFIs
 - Submittals
 - Documents
+- Drawings
 - Attachment downloads
 
 **Developer experience**
@@ -53,7 +54,7 @@ PyProcore does that once, correctly, behind a clean interface. You call a servic
 | `pyprocore/auth/`     | OAuth exchange, token persistence, token refresh                |
 | `pyprocore/core/`     | Configuration, endpoint paths, HTTP client, logging, exceptions |
 | `pyprocore/models/`   | Pydantic response models                                        |
-| `pyprocore/services/` | Company, project, RFI, submittal, document, and file services   |
+| `pyprocore/services/` | Company, project, RFI, submittal, document, drawing, and file services |
 | `pyprocore/parser/`   | Email parsing utilities for future automation                   |
 | `tests/`              | Mocked unit tests with no live Procore dependency               |
 
@@ -185,6 +186,8 @@ pending_submittals = client.submittals.list(project_id=352338, status="pending")
 documents = client.documents.list(project_id=352338)
 documents_recursive = client.documents.list(project_id=352338, recursive=True)
 document = client.documents.get(project_id=352338, document_id=456)
+drawings = client.drawings.list(project_id=352338, current=True)
+drawing = client.drawings.get(project_id=352338, drawing_id=789)
 ```
 
 Full service surface:
@@ -194,13 +197,19 @@ from pyprocore.services import (
     download_rfi_attachments,
     download_submittal_attachments,
     download_document,
+    download_drawing,
     get_document,
     get_document_folder,
+    get_drawing,
+    get_drawing_area,
     get_rfi,
     get_submittal,
     list_companies,
     list_document_folders,
     list_documents,
+    list_drawing_areas,
+    list_drawing_disciplines,
+    list_drawings,
     list_projects,
     list_rfis,
     list_submittals,
@@ -224,12 +233,26 @@ folder_documents = list_documents(project_id=352338, folder_id=123)
 all_documents = list_documents(project_id=352338, recursive=True)
 document = get_document(project_id=352338, document_id=456)
 saved_document = download_document(project_id=352338, document_id=456)
+
+drawing_areas = list_drawing_areas(project_id=352338)
+drawing_disciplines = list_drawing_disciplines(project_id=352338)
+drawings = list_drawings(project_id=352338, current=True)
+area_drawings = list_drawings(project_id=352338, drawing_area_id=123)
+drawing = get_drawing(project_id=352338, drawing_id=789)
+saved_drawing = download_drawing(project_id=352338, drawing_id=789)
 ```
 
 Procore Documents are exposed through Project Folders and Files endpoints. PyProcore
 keeps the user-friendly `client.documents` and `list_documents()` names while
 internally sending `project_id` as a query parameter to `/rest/v1.0/folders`.
 Folder scoping uses `filters[folder_id]`.
+
+Procore Drawings are exposed through drawing, drawing area, and drawing
+discipline endpoints. PyProcore sends `project_id` as a query parameter and can
+download a drawing only when Procore includes a direct `url` or `download_url`
+in the drawing payload. Use `PYTHONPATH=. python3 scripts/smoke_drawings.py
+--project "$PROCORE_PROJECT_ID"` to inspect the live sandbox payload before
+building a drawing download workflow.
 
 RFI and submittal list calls also accept optional date filters:
 
@@ -248,6 +271,8 @@ from pyprocore import (
     find_company,
     find_document,
     find_document_folder,
+    find_drawing,
+    find_drawings_contains,
     find_project,
     find_rfi,
     find_submittal,
@@ -263,6 +288,8 @@ rfi = find_rfi(project_id=352338, number="15")
 submittal = find_submittal(project_id=352338, number="27")
 folder = find_document_folder(project_id=352338, name="Drawings")
 document = find_document(project_id=352338, filename="plan.pdf")
+drawing = find_drawing(project_id=352338, number="S-101")
+stair_drawings = find_drawings_contains(project_id=352338, text="stair")
 ```
 
 Resolvers use case-insensitive exact matching first, then partial matching. They raise `NotFoundError`, `DuplicateMatchError`, or `MultipleResultsError` when a lookup cannot produce exactly one typed result.
@@ -472,6 +499,13 @@ procore-sdk find-document --project 352338 --filename plan.pdf
 procore-sdk download-rfi --project 352338 --id 102784
 procore-sdk download-submittal --project 352338 --id 309641
 procore-sdk download-document --project 352338 --id 456 --output ./documents
+procore-sdk drawing-areas --project 352338
+procore-sdk drawing-disciplines --project 352338
+procore-sdk drawings --project 352338 --current
+procore-sdk drawing --project 352338 --id 789
+procore-sdk find-drawing --project 352338 --number S-101
+procore-sdk find-drawings --project 352338 --contains stair
+procore-sdk download-drawing --project 352338 --id 789 --output ./drawings
 procore-sdk package-rfi --project 352338 --id 102784
 procore-sdk package-rfi --project-name "Sandbox Test Project" --number 15
 procore-sdk package-submittal --project 352338 --id 309641
@@ -501,7 +535,7 @@ short human-readable summaries.
 
 Runnable example scripts live in [examples/](examples/README.md). They show
 common SDK tasks such as listing projects, fetching RFIs, downloading
-attachments and documents, building workflow packages, exporting CSVs, and
+attachments, documents, and drawings, building workflow packages, exporting CSVs, and
 syncing local review folders.
 
 Examples can be syntax-checked without credentials or live Procore access:
@@ -519,7 +553,15 @@ manual smoke helper with sandbox credentials:
 
 ```bash
 make smoke-documents
-python3 scripts/smoke_documents.py --project 352338 --folder 123
+PYTHONPATH=. python3 scripts/smoke_documents.py --project 352338 --folder 123
+```
+
+Before relying on drawing downloads in a new Procore environment, inspect the
+live drawing payload:
+
+```bash
+make smoke-drawings
+PYTHONPATH=. python3 scripts/smoke_drawings.py --project 352338 --drawing 789
 ```
 
 ---
@@ -556,6 +598,11 @@ GET /rest/v1.0/folders?project_id={project_id}
 GET /rest/v1.0/folders?project_id={project_id}&filters[folder_id]={folder_id}
 GET /rest/v1.0/folders/{folder_id}?project_id={project_id}
 GET /rest/v1.0/files/{document_id}?project_id={project_id}
+GET /rest/v1.0/drawing_areas?project_id={project_id}
+GET /rest/v1.0/drawing_areas/{drawing_area_id}?project_id={project_id}
+GET /rest/v1.0/drawing_disciplines?project_id={project_id}
+GET /rest/v1.0/drawings?project_id={project_id}
+GET /rest/v1.0/drawings/{drawing_id}?project_id={project_id}
 ```
 
 ---
@@ -583,7 +630,11 @@ GET /rest/v1.0/files/{document_id}?project_id={project_id}
 
 ### Phase 3: Expanded API Coverage
 - Documents: In Progress
-- Drawings
+- Drawings: In Progress
+  - Drawing areas
+  - Drawing disciplines
+  - Drawing list/get/find/download helpers
+  - Manual smoke-test validation
 - Specifications
 - Photos
 - Daily Logs

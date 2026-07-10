@@ -38,6 +38,9 @@ export PROCORE_SUBMITTAL_NUMBER=your_submittal_number
 export PROCORE_SUBMITTAL_STATUS=pending
 export PROCORE_DOCUMENT_ID=your_document_id
 export PROCORE_DOCUMENT_FOLDER_ID=your_document_folder_id
+export PROCORE_DRAWING_ID=your_drawing_id
+export PROCORE_DRAWING_AREA_ID=your_drawing_area_id
+export PROCORE_DRAWING_DISCIPLINE_ID=your_drawing_discipline_id
 export PROCORE_OUTPUT_DIR=downloads/examples
 export PROCORE_DRY_RUN=1
 export PROCORE_STATUS=open
@@ -58,6 +61,7 @@ python3 examples/13_client_interface.py
 python3 examples/14_export_rfis_to_csv.py
 python3 examples/18_incremental_sync.py
 python3 examples/20_list_documents.py
+python3 examples/23_list_drawings.py
 ```
 
 Documents use Procore's Project Folders and Files endpoints internally. Before a
@@ -65,6 +69,13 @@ release or sandbox rollout, inspect the live payload shape with:
 
 ```bash
 make smoke-documents
+```
+
+Drawings support is first-class for list/get/find/download helpers. Before
+relying on downloads in a new sandbox, inspect the live payload shape with:
+
+```bash
+make smoke-drawings
 ```
 
 Each script prints helpful messages when required environment variables are
@@ -104,6 +115,8 @@ make examples-check
 | `20_list_documents.py` | List documents for a project or document folder |
 | `21_download_document.py` | Download one document by ID |
 | `22_sync_documents_to_folder.py` | Sync project documents into local folders |
+| `23_list_drawings.py` | List drawings for a project, optionally filtered by area or discipline |
+| `24_download_drawing.py` | Download one drawing by ID when Procore provides a direct URL |
 
 ## Safety Notes
 

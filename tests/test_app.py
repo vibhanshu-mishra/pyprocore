@@ -149,6 +149,66 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(download_document.output_dir, Path("docs"))
         self.assertTrue(download_document.overwrite)
 
+        drawing_areas = parser.parse_args(
+            ["drawing-areas", "--project", "10", "--company-id", "123"]
+        )
+        self.assertEqual(drawing_areas.command, "drawing-areas")
+        self.assertEqual(drawing_areas.project_id, 10)
+        self.assertEqual(drawing_areas.company_id, 123)
+        self.assertEqual(
+            parser.parse_args(["drawing-area", "--project", "10", "--id", "5"]).drawing_area_id,
+            5,
+        )
+        self.assertEqual(
+            parser.parse_args(["drawing-disciplines", "--project", "10"]).command,
+            "drawing-disciplines",
+        )
+        drawings = parser.parse_args(
+            [
+                "drawings",
+                "--project",
+                "10",
+                "--area",
+                "5",
+                "--discipline",
+                "6",
+                "--current",
+            ]
+        )
+        self.assertEqual(drawings.command, "drawings")
+        self.assertEqual(drawings.drawing_area_id, 5)
+        self.assertEqual(drawings.discipline_id, 6)
+        self.assertTrue(drawings.current)
+        self.assertEqual(
+            parser.parse_args(["drawing", "--project", "10", "--id", "99"]).drawing_id,
+            99,
+        )
+        self.assertEqual(
+            parser.parse_args(["find-drawing", "--project", "10", "--number", "S-101"]).number,
+            "S-101",
+        )
+        self.assertEqual(
+            parser.parse_args(["find-drawings", "--project", "10", "--contains", "stair"]).text,
+            "stair",
+        )
+        download_drawing = parser.parse_args(
+            [
+                "download-drawing",
+                "--project",
+                "10",
+                "--id",
+                "99",
+                "--output",
+                "drawings",
+                "--filename",
+                "S-101.pdf",
+                "--overwrite",
+            ]
+        )
+        self.assertEqual(download_drawing.command, "download-drawing")
+        self.assertEqual(download_drawing.output_dir, Path("drawings"))
+        self.assertTrue(download_drawing.overwrite)
+
         package_rfi = parser.parse_args(
             [
                 "package-rfi",
@@ -592,6 +652,108 @@ class AppTestCase(unittest.TestCase):
             99,
             output_dir=Path("docs"),
             filename="plan.pdf",
+            company_id=123,
+            overwrite=True,
+        )
+
+    def test_run_drawing_commands_dispatch_to_helpers(self) -> None:
+        """Drawing commands call drawing service helpers."""
+        with patch.object(app, "list_drawing_areas", return_value="areas") as helper:
+            result = app.run_command(
+                argparse.Namespace(command="drawing-areas", project_id=10, company_id=123)
+            )
+        self.assertEqual(result, "areas")
+        helper.assert_called_once_with(10, company_id=123)
+
+        with patch.object(app, "get_drawing_area", return_value="area") as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="drawing-area",
+                    project_id=10,
+                    drawing_area_id=5,
+                    company_id=123,
+                )
+            )
+        self.assertEqual(result, "area")
+        helper.assert_called_once_with(10, 5, company_id=123)
+
+        with patch.object(app, "list_drawing_disciplines", return_value="disciplines") as helper:
+            result = app.run_command(
+                argparse.Namespace(command="drawing-disciplines", project_id=10, company_id=123)
+            )
+        self.assertEqual(result, "disciplines")
+        helper.assert_called_once_with(10, company_id=123)
+
+        with patch.object(app, "list_drawings", return_value="drawings") as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="drawings",
+                    project_id=10,
+                    company_id=123,
+                    drawing_area_id=5,
+                    discipline_id=6,
+                    current=True,
+                )
+            )
+        self.assertEqual(result, "drawings")
+        helper.assert_called_once_with(
+            10,
+            company_id=123,
+            drawing_area_id=5,
+            discipline_id=6,
+            current=True,
+        )
+
+        with patch.object(app, "get_drawing", return_value="drawing") as helper:
+            result = app.run_command(
+                argparse.Namespace(command="drawing", project_id=10, drawing_id=99, company_id=123)
+            )
+        self.assertEqual(result, "drawing")
+        helper.assert_called_once_with(10, 99, company_id=123)
+
+        with patch.object(app, "find_drawing", return_value="drawing") as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="find-drawing",
+                    project_id=10,
+                    number="S-101",
+                    title=None,
+                    company_id=123,
+                )
+            )
+        self.assertEqual(result, "drawing")
+        helper.assert_called_once_with(10, number="S-101", title=None, company_id=123)
+
+        with patch.object(app, "find_drawings_contains", return_value=["drawing"]) as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="find-drawings",
+                    project_id=10,
+                    text="stair",
+                    company_id=123,
+                )
+            )
+        self.assertEqual(result, ["drawing"])
+        helper.assert_called_once_with(10, "stair", company_id=123)
+
+        with patch.object(app, "download_drawing", return_value=Path("S-101.pdf")) as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="download-drawing",
+                    project_id=10,
+                    drawing_id=99,
+                    output_dir=Path("drawings"),
+                    filename="S-101.pdf",
+                    company_id=123,
+                    overwrite=True,
+                )
+            )
+        self.assertEqual(result, Path("S-101.pdf"))
+        helper.assert_called_once_with(
+            10,
+            99,
+            output_dir=Path("drawings"),
+            filename="S-101.pdf",
             company_id=123,
             overwrite=True,
         )

@@ -53,4 +53,5 @@ You should see document IDs and names or a formatted JSON list from the CLI.
 - If no documents appear, confirm the project ID and your Procore permissions.
 - If authentication fails, run `procore-sdk auth status`.
 - If a folder filter returns nothing, try listing documents without `--folder` first.
-- Use `python3 scripts/smoke_documents.py --project "$PROCORE_PROJECT_ID"` to inspect the raw folder/file payload in a sandbox.
+- Use `PYTHONPATH=. python3 scripts/smoke_documents.py --project "$PROCORE_PROJECT_ID"` to inspect the raw folder/file payload in a sandbox.
+- `make smoke-documents` also works when `PROCORE_PROJECT_ID` is set.

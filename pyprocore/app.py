@@ -28,21 +28,29 @@ from pyprocore.core.config import get_settings
 from pyprocore.core.doctor import DoctorReport, format_doctor_report, run_doctor
 from pyprocore.services import (
     download_document,
+    download_drawing,
     download_rfi_attachments,
     download_submittal_attachments,
     find_company,
     find_document,
     find_document_folder,
+    find_drawing,
+    find_drawings_contains,
     find_project,
     find_rfi,
     find_submittal,
     get_document,
     get_document_folder,
+    get_drawing,
+    get_drawing_area,
     get_rfi,
     get_submittal,
     list_companies,
     list_document_folders,
     list_documents,
+    list_drawing_areas,
+    list_drawing_disciplines,
+    list_drawings,
     list_projects,
     list_rfis,
     list_submittals,
@@ -260,6 +268,97 @@ def build_parser() -> argparse.ArgumentParser:
         "--overwrite",
         action="store_true",
         help="Overwrite the local document file if it exists",
+    )
+
+    drawing_areas_parser = subcommands.add_parser(
+        "drawing-areas",
+        help="List drawing areas for a project",
+    )
+    drawing_areas_parser.add_argument(
+        "--project", "--project-id", dest="project_id", type=int, required=True
+    )
+    drawing_areas_parser.add_argument("--company-id", type=int, default=None)
+
+    drawing_area_parser = subcommands.add_parser(
+        "drawing-area",
+        help="Get one drawing area",
+    )
+    drawing_area_parser.add_argument(
+        "--project", "--project-id", dest="project_id", type=int, required=True
+    )
+    drawing_area_parser.add_argument(
+        "--id", "--area-id", dest="drawing_area_id", type=int, required=True
+    )
+    drawing_area_parser.add_argument("--company-id", type=int, default=None)
+
+    drawing_disciplines_parser = subcommands.add_parser(
+        "drawing-disciplines",
+        help="List drawing disciplines for a project",
+    )
+    drawing_disciplines_parser.add_argument(
+        "--project", "--project-id", dest="project_id", type=int, required=True
+    )
+    drawing_disciplines_parser.add_argument("--company-id", type=int, default=None)
+
+    drawings_parser = subcommands.add_parser("drawings", help="List drawings for a project")
+    drawings_parser.add_argument(
+        "--project", "--project-id", dest="project_id", type=int, required=True
+    )
+    drawings_parser.add_argument("--area", "--area-id", dest="drawing_area_id", type=int)
+    drawings_parser.add_argument("--discipline", "--discipline-id", dest="discipline_id", type=int)
+    drawings_parser.add_argument(
+        "--current",
+        action="store_true",
+        default=None,
+        help="Request only current drawings when supported by Procore",
+    )
+    drawings_parser.add_argument("--company-id", type=int, default=None)
+
+    drawing_parser = subcommands.add_parser("drawing", help="Get one drawing")
+    drawing_parser.add_argument(
+        "--project", "--project-id", dest="project_id", type=int, required=True
+    )
+    drawing_parser.add_argument("--id", "--drawing-id", dest="drawing_id", type=int, required=True)
+    drawing_parser.add_argument("--company-id", type=int, default=None)
+
+    find_drawing_parser = subcommands.add_parser(
+        "find-drawing",
+        help="Find one drawing by number or title",
+    )
+    find_drawing_parser.add_argument(
+        "--project", "--project-id", dest="project_id", type=int, required=True
+    )
+    find_drawing_parser.add_argument("--number", default=None)
+    find_drawing_parser.add_argument("--title", default=None)
+    find_drawing_parser.add_argument("--company-id", type=int, default=None)
+
+    find_drawings_parser = subcommands.add_parser(
+        "find-drawings",
+        help="Find drawings containing text",
+    )
+    find_drawings_parser.add_argument(
+        "--project", "--project-id", dest="project_id", type=int, required=True
+    )
+    find_drawings_parser.add_argument("--contains", dest="text", required=True)
+    find_drawings_parser.add_argument("--company-id", type=int, default=None)
+
+    download_drawing_parser = subcommands.add_parser(
+        "download-drawing",
+        help="Download one drawing",
+    )
+    download_drawing_parser.add_argument(
+        "--project", "--project-id", dest="project_id", type=int, required=True
+    )
+    download_drawing_parser.add_argument(
+        "--id", "--drawing-id", dest="drawing_id", type=int, required=True
+    )
+    download_drawing_parser.add_argument("--output", dest="output_dir", type=Path, default=None)
+    download_drawing_parser.add_argument("--filename", default=None)
+    download_drawing_parser.add_argument("--company-id", type=int, default=None)
+    download_drawing_parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Overwrite the local drawing file if it exists",
     )
 
     package_rfi_parser = subcommands.add_parser(
@@ -574,6 +673,53 @@ def run_command(args: argparse.Namespace) -> Any:
             overwrite=args.overwrite,
         )
 
+    if args.command == "drawing-areas":
+        return list_drawing_areas(args.project_id, company_id=args.company_id)
+
+    if args.command == "drawing-area":
+        return get_drawing_area(
+            args.project_id,
+            args.drawing_area_id,
+            company_id=args.company_id,
+        )
+
+    if args.command == "drawing-disciplines":
+        return list_drawing_disciplines(args.project_id, company_id=args.company_id)
+
+    if args.command == "drawings":
+        return list_drawings(
+            args.project_id,
+            company_id=args.company_id,
+            drawing_area_id=args.drawing_area_id,
+            discipline_id=args.discipline_id,
+            current=args.current,
+        )
+
+    if args.command == "drawing":
+        return get_drawing(args.project_id, args.drawing_id, company_id=args.company_id)
+
+    if args.command == "find-drawing":
+        return find_drawing(
+            args.project_id,
+            number=args.number,
+            title=args.title,
+            company_id=args.company_id,
+        )
+
+    if args.command == "find-drawings":
+        return find_drawings_contains(args.project_id, args.text, company_id=args.company_id)
+
+    if args.command == "download-drawing":
+        output_dir = args.output_dir if args.output_dir is not None else "downloads/drawings"
+        return download_drawing(
+            args.project_id,
+            args.drawing_id,
+            output_dir=output_dir,
+            filename=args.filename,
+            company_id=args.company_id,
+            overwrite=args.overwrite,
+        )
+
     if args.command == "package-rfi":
         return build_workflow_package(_automation_input(args, item_type="rfi"))
 
@@ -800,7 +946,7 @@ def main() -> None:
         print(format_export_summary(result))
         return
 
-    if isinstance(result, Path) and args.command == "download-document":
+    if isinstance(result, Path) and args.command in {"download-document", "download-drawing"}:
         print(f"Download complete.\nOutput: {result}")
         return
 
