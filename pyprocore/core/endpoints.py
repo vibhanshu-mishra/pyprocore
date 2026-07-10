@@ -17,14 +17,15 @@ DOCUMENT_FOLDERS = f"{API_V1}/folders"
 DOCUMENT_FOLDER = f"{API_V1}/folders/{{folder_id}}"
 DOCUMENTS = DOCUMENT_FOLDERS
 DOCUMENT = f"{API_V1}/files/{{document_id}}"
-# Procore Drawings endpoints follow the older project-scoped query parameter
-# style in the public API family. Keep these centralized so sandbox smoke
-# testing can validate them without scattering path strings through services.
-DRAWINGS = f"{API_V1}/drawings"
-DRAWING = f"{API_V1}/drawings/{{drawing_id}}"
-DRAWING_AREAS = f"{API_V1}/drawing_areas"
-DRAWING_AREA = f"{API_V1}/drawing_areas/{{drawing_area_id}}"
-DRAWING_DISCIPLINES = f"{API_V1}/drawing_disciplines"
+# Procore Drawings are organized by project drawing areas. Drawing list and
+# item endpoints are drawing-area scoped, while area and revision collections
+# are project scoped.
+DRAWING_AREAS = f"{API_V1}/projects/{{project_id}}/drawing_areas"
+DRAWING_AREA = f"{API_V1}/projects/{{project_id}}/drawing_areas/{{drawing_area_id}}"
+DRAWING_DISCIPLINES = f"{API_V1}/projects/{{project_id}}/drawing_disciplines"
+DRAWINGS = f"{API_V1}/drawing_areas/{{drawing_area_id}}/drawings"
+DRAWING = f"{API_V1}/drawing_areas/{{drawing_area_id}}/drawings/{{drawing_id}}"
+DRAWING_REVISIONS = f"{API_V1}/projects/{{project_id}}/drawing_revisions"
 
 
 def companies() -> str:
@@ -85,27 +86,38 @@ def document(project_id: int, document_id: int) -> str:
 
 def drawing_areas(project_id: int) -> str:
     """Return the drawing areas collection endpoint for a project."""
-    return DRAWING_AREAS
+    return DRAWING_AREAS.format(project_id=project_id)
 
 
 def drawing_area(project_id: int, drawing_area_id: int) -> str:
     """Return the endpoint for a single drawing area."""
-    return DRAWING_AREA.format(drawing_area_id=drawing_area_id)
+    return DRAWING_AREA.format(project_id=project_id, drawing_area_id=drawing_area_id)
 
 
 def drawing_disciplines(project_id: int) -> str:
     """Return the drawing disciplines collection endpoint for a project."""
-    return DRAWING_DISCIPLINES
+    return DRAWING_DISCIPLINES.format(project_id=project_id)
 
 
-def drawings(project_id: int) -> str:
-    """Return the drawings collection endpoint for a project."""
-    return DRAWINGS
+def drawings(project_id: int, drawing_area_id: int) -> str:
+    """Return the drawings collection endpoint for a drawing area.
+
+    Args:
+        project_id: Procore project ID. Accepted for consistency with service
+            methods; Procore scopes this endpoint by drawing area.
+        drawing_area_id: Procore drawing area ID.
+    """
+    return DRAWINGS.format(drawing_area_id=drawing_area_id)
 
 
-def drawing(project_id: int, drawing_id: int) -> str:
+def drawing(project_id: int, drawing_area_id: int, drawing_id: int) -> str:
     """Return the endpoint for a single drawing."""
-    return DRAWING.format(drawing_id=drawing_id)
+    return DRAWING.format(drawing_area_id=drawing_area_id, drawing_id=drawing_id)
+
+
+def drawing_revisions(project_id: int) -> str:
+    """Return the drawing revisions collection endpoint for a project."""
+    return DRAWING_REVISIONS.format(project_id=project_id)
 
 
 class Endpoints:
@@ -126,3 +138,4 @@ class Endpoints:
     DRAWING_AREAS = DRAWING_AREAS
     DRAWING_AREA = DRAWING_AREA
     DRAWING_DISCIPLINES = DRAWING_DISCIPLINES
+    DRAWING_REVISIONS = DRAWING_REVISIONS

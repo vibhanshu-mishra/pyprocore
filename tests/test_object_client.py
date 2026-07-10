@@ -488,10 +488,15 @@ class ProcoreObjectClientTestCase(unittest.TestCase):
         """Drawing retrieval delegates to the drawing service."""
         get_drawing.return_value = "drawing"
 
-        result = Procore().drawings.get(352338, 99, company_id=123)
+        result = Procore().drawings.get(352338, 99, company_id=123, drawing_area_id=5)
 
         self.assertEqual(result, "drawing")
-        get_drawing.assert_called_once_with(352338, 99, company_id=123)
+        get_drawing.assert_called_once_with(
+            352338,
+            99,
+            company_id=123,
+            drawing_area_id=5,
+        )
 
     @patch("pyprocore.client.find_drawing")
     def test_drawings_find_delegates_to_resolver(self, find_drawing: Mock) -> None:
@@ -533,6 +538,7 @@ class ProcoreObjectClientTestCase(unittest.TestCase):
             filename="S-101.pdf",
             company_id=123,
             overwrite=True,
+            drawing_area_id=5,
         )
 
         self.assertEqual(result, Path("drawing.pdf"))
@@ -543,6 +549,7 @@ class ProcoreObjectClientTestCase(unittest.TestCase):
             filename="S-101.pdf",
             overwrite=True,
             company_id=123,
+            drawing_area_id=5,
         )
 
     @patch("pyprocore.client.build_workflow_package")

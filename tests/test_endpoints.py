@@ -40,6 +40,33 @@ class EndpointsTestCase(unittest.TestCase):
             "/rest/v1.1/projects/456/submittals/789",
         )
 
+    def test_drawing_endpoints(self) -> None:
+        """Drawing endpoints use project and drawing-area scoped routes."""
+        self.assertEqual(
+            endpoints.drawing_areas(project_id=456),
+            "/rest/v1.0/projects/456/drawing_areas",
+        )
+        self.assertEqual(
+            endpoints.drawing_area(project_id=456, drawing_area_id=12),
+            "/rest/v1.0/projects/456/drawing_areas/12",
+        )
+        self.assertEqual(
+            endpoints.drawing_disciplines(project_id=456),
+            "/rest/v1.0/projects/456/drawing_disciplines",
+        )
+        self.assertEqual(
+            endpoints.drawings(project_id=456, drawing_area_id=12),
+            "/rest/v1.0/drawing_areas/12/drawings",
+        )
+        self.assertEqual(
+            endpoints.drawing(project_id=456, drawing_area_id=12, drawing_id=789),
+            "/rest/v1.0/drawing_areas/12/drawings/789",
+        )
+        self.assertEqual(
+            endpoints.drawing_revisions(project_id=456),
+            "/rest/v1.0/projects/456/drawing_revisions",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

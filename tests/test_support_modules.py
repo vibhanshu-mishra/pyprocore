@@ -82,12 +82,83 @@ class ConfigTestCase(unittest.TestCase):
         self.assertEqual(configured.company_id, 456)
         self.assertEqual(configured.api_base, "https://api.example.com")
 
+    def test_get_settings_reads_dotenv_from_current_working_directory(self) -> None:
+        """get_settings loads a local .env before reading supported variables."""
+        with TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            (root / ".env").write_text(
+                "\n".join(
+                    [
+                        "PROCORE_CLIENT_ID=dotenv-client",
+                        "PROCORE_CLIENT_SECRET=dotenv-secret",
+                        "PROCORE_REDIRECT_URI=http://localhost/dotenv",
+                        "PROCORE_LOGIN_URL=https://login.dotenv.example/",
+                        "PROCORE_API_BASE=https://api.dotenv.example/",
+                        "PROCORE_COMPANY_ID=789",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            with (
+                patch.dict("os.environ", {}, clear=True),
+                patch("pyprocore.core.config.Path.cwd", return_value=root),
+            ):
+                get_settings.cache_clear()
+                configured = get_settings()
+
+        self.assertEqual(configured.client_id, "dotenv-client")
+        self.assertEqual(configured.company_id, 789)
+        self.assertEqual(configured.api_base, "https://api.dotenv.example")
+
+    def test_get_settings_environment_overrides_dotenv(self) -> None:
+        """Existing environment variables take precedence over .env values."""
+        environment = {
+            "PROCORE_CLIENT_ID": "env-client",
+            "PROCORE_CLIENT_SECRET": "env-secret",
+            "PROCORE_REDIRECT_URI": "http://localhost/env",
+            "PROCORE_LOGIN_URL": "https://login.env.example/",
+            "PROCORE_API_BASE": "https://api.env.example/",
+            "PROCORE_COMPANY_ID": "111",
+        }
+        with TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            (root / ".env").write_text(
+                "\n".join(
+                    [
+                        "PROCORE_CLIENT_ID=dotenv-client",
+                        "PROCORE_CLIENT_SECRET=dotenv-secret",
+                        "PROCORE_REDIRECT_URI=http://localhost/dotenv",
+                        "PROCORE_LOGIN_URL=https://login.dotenv.example/",
+                        "PROCORE_API_BASE=https://api.dotenv.example/",
+                        "PROCORE_COMPANY_ID=789",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            with (
+                patch.dict("os.environ", environment, clear=True),
+                patch("pyprocore.core.config.Path.cwd", return_value=root),
+            ):
+                get_settings.cache_clear()
+                configured = get_settings()
+
+        self.assertEqual(configured.client_id, "env-client")
+        self.assertEqual(configured.company_id, 111)
+        self.assertEqual(configured.api_base, "https://api.env.example")
+
     def test_get_settings_raises_clear_error_for_invalid_environment(self) -> None:
         """Invalid configuration becomes ConfigurationError."""
-        with patch.dict("os.environ", {}, clear=True):
-            get_settings.cache_clear()
-            with self.assertRaises(ConfigurationError):
-                get_settings()
+        with TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            with (
+                patch.dict("os.environ", {}, clear=True),
+                patch("pyprocore.core.config.Path.cwd", return_value=root),
+            ):
+                get_settings.cache_clear()
+                with self.assertRaises(ConfigurationError):
+                    get_settings()
 
 
 class OAuthClientTestCase(unittest.TestCase):

@@ -68,14 +68,16 @@ Documents use Procore's Project Folders and Files endpoints internally. Before a
 release or sandbox rollout, inspect the live payload shape with:
 
 ```bash
-make smoke-documents
+PROCORE_PROJECT_ID=352338 make smoke-documents
 ```
 
-Drawings support is first-class for list/get/find/download helpers. Before
-relying on downloads in a new sandbox, inspect the live payload shape with:
+Drawings support is first-class for list/get/find/download helpers. Procore
+organizes drawings by drawing areas, so `PROCORE_DRAWING_AREA_ID` is useful when
+you want to fetch or download one drawing directly. Before relying on downloads
+in a new sandbox, inspect the live payload shape with:
 
 ```bash
-make smoke-drawings
+PROCORE_PROJECT_ID=352338 make smoke-drawings
 ```
 
 Each script prints helpful messages when required environment variables are
@@ -115,8 +117,8 @@ make examples-check
 | `20_list_documents.py` | List documents for a project or document folder |
 | `21_download_document.py` | Download one document by ID |
 | `22_sync_documents_to_folder.py` | Sync project documents into local folders |
-| `23_list_drawings.py` | List drawings for a project, optionally filtered by area or discipline |
-| `24_download_drawing.py` | Download one drawing by ID when Procore provides a direct URL |
+| `23_list_drawings.py` | List drawings for a project, optionally filtered by drawing area or discipline |
+| `24_download_drawing.py` | Download one drawing by ID and optional drawing area when Procore provides a direct URL |
 
 ## Safety Notes
 

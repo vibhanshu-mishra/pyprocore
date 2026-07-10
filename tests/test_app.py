@@ -13,6 +13,7 @@ from pydantic import BaseModel
 from pyprocore import app
 from pyprocore.auth.diagnostics import AuthExchangeResult, AuthRefreshResult, AuthStatusReport
 from pyprocore.core.doctor import DoctorReport, DoctorSummary
+from pyprocore.core.exceptions import AuthorizationError, ConfigurationError, ProcoreAPIError
 
 
 class SampleModel(BaseModel):
@@ -180,7 +181,9 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(drawings.discipline_id, 6)
         self.assertTrue(drawings.current)
         self.assertEqual(
-            parser.parse_args(["drawing", "--project", "10", "--id", "99"]).drawing_id,
+            parser.parse_args(
+                ["drawing", "--project", "10", "--id", "99", "--area", "5"]
+            ).drawing_id,
             99,
         )
         self.assertEqual(
@@ -198,6 +201,8 @@ class AppTestCase(unittest.TestCase):
                 "10",
                 "--id",
                 "99",
+                "--area",
+                "5",
                 "--output",
                 "drawings",
                 "--filename",
@@ -206,6 +211,7 @@ class AppTestCase(unittest.TestCase):
             ]
         )
         self.assertEqual(download_drawing.command, "download-drawing")
+        self.assertEqual(download_drawing.drawing_area_id, 5)
         self.assertEqual(download_drawing.output_dir, Path("drawings"))
         self.assertTrue(download_drawing.overwrite)
 
@@ -706,10 +712,16 @@ class AppTestCase(unittest.TestCase):
 
         with patch.object(app, "get_drawing", return_value="drawing") as helper:
             result = app.run_command(
-                argparse.Namespace(command="drawing", project_id=10, drawing_id=99, company_id=123)
+                argparse.Namespace(
+                    command="drawing",
+                    project_id=10,
+                    drawing_id=99,
+                    drawing_area_id=5,
+                    company_id=123,
+                )
             )
         self.assertEqual(result, "drawing")
-        helper.assert_called_once_with(10, 99, company_id=123)
+        helper.assert_called_once_with(10, 99, company_id=123, drawing_area_id=5)
 
         with patch.object(app, "find_drawing", return_value="drawing") as helper:
             result = app.run_command(
@@ -742,6 +754,7 @@ class AppTestCase(unittest.TestCase):
                     command="download-drawing",
                     project_id=10,
                     drawing_id=99,
+                    drawing_area_id=5,
                     output_dir=Path("drawings"),
                     filename="S-101.pdf",
                     company_id=123,
@@ -756,6 +769,7 @@ class AppTestCase(unittest.TestCase):
             filename="S-101.pdf",
             company_id=123,
             overwrite=True,
+            drawing_area_id=5,
         )
 
     def test_run_package_commands_build_workflow_packages(self) -> None:
@@ -1332,6 +1346,106 @@ class AppTestCase(unittest.TestCase):
 
         self.assertEqual(context.exception.code, 0)
         print_function.assert_called_once_with("login url")
+
+    def test_main_prints_friendly_configuration_errors(self) -> None:
+        """CLI configuration errors are printed without a traceback."""
+        with (
+            patch.object(app, "build_parser") as build_parser,
+            patch.object(
+                app,
+                "run_command",
+                side_effect=ConfigurationError("missing PROCORE_CLIENT_ID"),
+            ),
+            patch("builtins.print") as print_function,
+        ):
+            parser = Mock()
+            parser.parse_args.return_value = argparse.Namespace(
+                command="auth",
+                auth_command="login-url",
+            )
+            build_parser.return_value = parser
+
+            with self.assertRaises(SystemExit) as context:
+                app.main()
+
+        self.assertEqual(context.exception.code, 1)
+        printed = print_function.call_args.args[0]
+        self.assertIn("configuration is missing or invalid", printed)
+        self.assertIn("procore-sdk doctor", printed)
+        self.assertIn("PROCORE_CLIENT_ID", printed)
+
+    def test_projects_authorization_error_prints_no_traceback(self) -> None:
+        """Project-level authorization errors print friendly CLI guidance."""
+        printed = self._run_main_with_error(
+            argparse.Namespace(command="projects", company_id=123),
+            AuthorizationError("App is not connected to this company."),
+        )
+
+        self.assertIn("Procore rejected this request.", printed)
+        self.assertIn("Your OAuth app is not connected to this Procore company.", printed)
+        self.assertIn("Run `procore-sdk companies`", printed)
+        self.assertIn("Connect/install the OAuth app", printed)
+        self.assertNotIn("Traceback", printed)
+
+    def test_drawing_areas_authorization_error_prints_no_traceback(self) -> None:
+        """Drawing area authorization errors print friendly CLI guidance."""
+        printed = self._run_main_with_error(
+            argparse.Namespace(command="drawing-areas", project_id=10, company_id=123),
+            AuthorizationError("App is not connected to this company."),
+        )
+
+        self.assertIn("Your OAuth app is not connected to this Procore company.", printed)
+        self.assertIn("Confirm production vs sandbox environment", printed)
+        self.assertNotIn("Traceback", printed)
+
+    def test_app_not_connected_response_body_prints_specific_guidance(self) -> None:
+        """Disconnected-app errors are detected from Procore response bodies."""
+        printed = app.format_cli_error(
+            ProcoreAPIError(
+                "Forbidden",
+                status_code=403,
+                response_body={"errors": ["App is not connected to this company."]},
+            )
+        )
+
+        self.assertIn("Your OAuth app is not connected to this Procore company.", printed)
+        self.assertIn("Confirm the company ID is correct", printed)
+        self.assertIn("Try again after reconnecting the app", printed)
+        self.assertNotIn("Traceback", printed)
+
+    def test_generic_403_prints_generic_access_guidance(self) -> None:
+        """Generic authorization failures explain access denial."""
+        printed = self._run_main_with_error(
+            argparse.Namespace(command="projects", company_id=123),
+            AuthorizationError("Forbidden"),
+        )
+
+        self.assertIn("Procore rejected this request.", printed)
+        self.assertIn(
+            "Your token is valid, but Procore denied access to this resource.",
+            printed,
+        )
+        self.assertIn("Confirm company_id/project_id are correct", printed)
+        self.assertIn("Confirm the OAuth user has permission", printed)
+        self.assertIn("Confirm the app is connected to the company", printed)
+        self.assertNotIn("Traceback", printed)
+
+    def _run_main_with_error(self, args: argparse.Namespace, exc: Exception) -> str:
+        """Run app.main with a mocked command error and return printed output."""
+        with (
+            patch.object(app, "build_parser") as build_parser,
+            patch.object(app, "run_command", side_effect=exc),
+            patch("builtins.print") as print_function,
+        ):
+            parser = Mock()
+            parser.parse_args.return_value = args
+            build_parser.return_value = parser
+
+            with self.assertRaises(SystemExit) as context:
+                app.main()
+
+        self.assertEqual(context.exception.code, 1)
+        return "\n".join(str(call.args[0]) for call in print_function.call_args_list if call.args)
 
 
 if __name__ == "__main__":

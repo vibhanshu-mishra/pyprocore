@@ -7,7 +7,7 @@ import time
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from pyprocore.auth.diagnostics import (
     build_authorization_url,
@@ -20,8 +20,8 @@ from pyprocore.auth.diagnostics import (
     refresh_auth_token,
 )
 from pyprocore.auth.token_store import StoredToken, TokenStore
-from pyprocore.core.config import ProcoreSettings
-from pyprocore.core.exceptions import AuthenticationError
+from pyprocore.core.config import ProcoreSettings, get_settings
+from pyprocore.core.exceptions import AuthenticationError, ConfigurationError
 
 
 def required_environment() -> dict[str, str]:
@@ -209,6 +209,83 @@ class AuthDiagnosticsTestCase(unittest.TestCase):
         )
         self.assertNotIn("client-secret", result.authorization_url)
         self.assertIn("Open this URL", format_login_url(result))
+
+    def test_login_url_generation_reads_dotenv(self) -> None:
+        """Authorization URL uses the same local .env loading path as settings."""
+        with TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            (root / ".env").write_text(
+                "\n".join(
+                    [
+                        "PROCORE_CLIENT_ID=dotenv-client",
+                        "PROCORE_CLIENT_SECRET=dotenv-secret",
+                        "PROCORE_REDIRECT_URI=http://localhost/dotenv",
+                        "PROCORE_LOGIN_URL=https://login.dotenv.example",
+                        "PROCORE_API_BASE=https://api.dotenv.example",
+                        "PROCORE_COMPANY_ID=123",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            with (
+                patch.dict("os.environ", {}, clear=True),
+                patch("pyprocore.core.config.Path.cwd", return_value=root),
+            ):
+                get_settings.cache_clear()
+                result = build_authorization_url()
+
+        self.assertIn("https://login.dotenv.example/oauth/authorize?", result.authorization_url)
+        self.assertIn("client_id=dotenv-client", result.authorization_url)
+        self.assertEqual(result.redirect_uri, "http://localhost/dotenv")
+
+    def test_login_url_generation_fails_when_config_missing(self) -> None:
+        """Missing local config remains a ConfigurationError for callers."""
+        with TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            with (
+                patch.dict("os.environ", {}, clear=True),
+                patch("pyprocore.core.config.Path.cwd", return_value=root),
+            ):
+                get_settings.cache_clear()
+                with self.assertRaises(ConfigurationError):
+                    build_authorization_url()
+
+    def test_status_and_login_url_read_same_dotenv_config(self) -> None:
+        """Auth status and login-url helpers agree on required .env config."""
+        with TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            token_path = root / "token.json"
+            write_token(token_path)
+            (root / ".env").write_text(
+                "\n".join(
+                    [
+                        "PROCORE_CLIENT_ID=dotenv-client",
+                        "PROCORE_CLIENT_SECRET=dotenv-secret",
+                        "PROCORE_REDIRECT_URI=http://localhost/dotenv",
+                        "PROCORE_LOGIN_URL=https://login.dotenv.example",
+                        "PROCORE_API_BASE=https://api.dotenv.example",
+                        "PROCORE_COMPANY_ID=123",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            with (
+                patch.dict("os.environ", {}, clear=True),
+                patch("pyprocore.core.config.Path.cwd", return_value=root),
+            ):
+                get_settings.cache_clear()
+                status = get_auth_status(
+                    token_store=TokenStore(token_path),
+                    env_path=root / ".env",
+                    environ={},
+                )
+                login_url = build_authorization_url()
+
+        self.assertEqual(status.missing_configuration, [])
+        self.assertEqual(status.login_url, "https://login.dotenv.example")
+        self.assertIn("client_id=dotenv-client", login_url.authorization_url)
 
     def test_refresh_success(self) -> None:
         """Refresh success returns a safe message and expiry."""

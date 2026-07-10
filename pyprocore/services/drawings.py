@@ -8,7 +8,7 @@ from typing import Any
 
 from pyprocore.core import endpoints
 from pyprocore.core.client import ProcoreClient
-from pyprocore.core.exceptions import ValidationError
+from pyprocore.core.exceptions import NotFoundError, ValidationError
 from pyprocore.models import Drawing, DrawingArea, DrawingDiscipline
 from pyprocore.services.files import FileDownloadService, sanitize_filename
 from pyprocore.services.query_params import build_query_params
@@ -57,7 +57,6 @@ class DrawingsService:
             params=build_query_params(
                 params=params,
                 extra_params=extra_params,
-                project_id=project_id,
             ),
             headers=self._company_headers(company_id),
         )
@@ -83,7 +82,6 @@ class DrawingsService:
         self._validate_positive_id(drawing_area_id, "drawing_area_id")
         response = self._client.get(
             endpoints.drawing_area(project_id, drawing_area_id),
-            params={"project_id": project_id},
             headers=self._company_headers(company_id),
         )
         if not isinstance(response, dict):
@@ -114,7 +112,6 @@ class DrawingsService:
             params=build_query_params(
                 params=params,
                 extra_params=extra_params,
-                project_id=project_id,
             ),
             headers=self._company_headers(company_id),
         )
@@ -148,13 +145,21 @@ class DrawingsService:
         self._validate_optional_id(drawing_area_id, "drawing_area_id")
         self._validate_optional_id(discipline_id, "discipline_id")
 
+        if drawing_area_id is None:
+            return self._list_drawings_across_areas(
+                project_id,
+                company_id=company_id,
+                discipline_id=discipline_id,
+                current=current,
+                params=params,
+                **extra_params,
+            )
+
         response = self._client.get_all(
-            endpoints.drawings(project_id),
+            endpoints.drawings(project_id, drawing_area_id),
             params=build_query_params(
                 params=params,
                 extra_params=extra_params,
-                project_id=project_id,
-                drawing_area_id=drawing_area_id,
                 discipline_id=discipline_id,
                 current=current,
             ),
@@ -167,6 +172,7 @@ class DrawingsService:
         project_id: int,
         drawing_id: int,
         company_id: int | None = None,
+        drawing_area_id: int | None = None,
     ) -> Drawing:
         """Return one drawing for a Procore project.
 
@@ -174,15 +180,24 @@ class DrawingsService:
             project_id: Procore project ID.
             drawing_id: Procore drawing ID.
             company_id: Optional company ID sent as ``Procore-Company-Id``.
+            drawing_area_id: Optional drawing area ID. When omitted, the
+                service searches the project's drawing areas first.
 
         Returns:
             The matching typed drawing model.
         """
         self._validate_positive_id(project_id, "project_id")
         self._validate_positive_id(drawing_id, "drawing_id")
+        self._validate_optional_id(drawing_area_id, "drawing_area_id")
+        if drawing_area_id is None:
+            drawing_area_id = self._find_drawing_area_id(
+                project_id,
+                drawing_id,
+                company_id=company_id,
+            )
+
         response = self._client.get(
-            endpoints.drawing(project_id, drawing_id),
-            params={"project_id": project_id},
+            endpoints.drawing(project_id, drawing_area_id, drawing_id),
             headers=self._company_headers(company_id),
         )
         if not isinstance(response, dict):
@@ -197,6 +212,7 @@ class DrawingsService:
         filename: str | None = None,
         overwrite: bool = False,
         company_id: int | None = None,
+        drawing_area_id: int | None = None,
     ) -> Path:
         """Download one Procore drawing when a direct URL is available.
 
@@ -207,6 +223,8 @@ class DrawingsService:
             filename: Optional local filename.
             overwrite: Whether to overwrite an existing file.
             company_id: Optional company ID sent as ``Procore-Company-Id``.
+            drawing_area_id: Optional drawing area ID. When omitted, the
+                service searches drawing areas to locate the drawing.
 
         Returns:
             The saved drawing path.
@@ -214,7 +232,12 @@ class DrawingsService:
         Raises:
             ValidationError: If Procore does not include a downloadable URL.
         """
-        drawing = self.get_drawing(project_id, drawing_id, company_id=company_id)
+        drawing = self.get_drawing(
+            project_id,
+            drawing_id,
+            company_id=company_id,
+            drawing_area_id=drawing_area_id,
+        )
         url = self._drawing_download_url(drawing)
         if url is None:
             raise ValidationError(
@@ -232,6 +255,55 @@ class DrawingsService:
         if self._file_service is None:
             self._file_service = FileDownloadService()
         return self._file_service
+
+    def _list_drawings_across_areas(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        discipline_id: int | None = None,
+        current: bool | None = None,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[Drawing]:
+        """Return drawings from every drawing area in a project."""
+        drawings: list[Drawing] = []
+        for area in self.list_drawing_areas(project_id, company_id=company_id):
+            if area.id is None:
+                continue
+            drawings.extend(
+                self.list_drawings(
+                    project_id,
+                    company_id=company_id,
+                    drawing_area_id=area.id,
+                    discipline_id=discipline_id,
+                    current=current,
+                    params=params,
+                    **extra_params,
+                )
+            )
+        return drawings
+
+    def _find_drawing_area_id(
+        self,
+        project_id: int,
+        drawing_id: int,
+        company_id: int | None = None,
+    ) -> int:
+        """Find the drawing area that contains a drawing ID."""
+        for area in self.list_drawing_areas(project_id, company_id=company_id):
+            if area.id is None:
+                continue
+            for drawing in self.list_drawings(
+                project_id,
+                company_id=company_id,
+                drawing_area_id=area.id,
+            ):
+                if drawing.id == drawing_id:
+                    return area.id
+        raise NotFoundError(
+            f"Drawing {drawing_id} was not found in project {project_id}. "
+            "Pass drawing_area_id when you know the drawing area."
+        )
 
     @staticmethod
     def _drawing_download_url(drawing: Drawing) -> str | None:
@@ -354,12 +426,14 @@ def get_drawing(
     drawing_id: int,
     company_id: int | None = None,
     client: ProcoreClient | None = None,
+    drawing_area_id: int | None = None,
 ) -> Drawing:
     """Return one drawing for a Procore project."""
     return DrawingsService(client=client).get_drawing(
         project_id,
         drawing_id,
         company_id=company_id,
+        drawing_area_id=drawing_area_id,
     )
 
 
@@ -371,6 +445,7 @@ def download_drawing(
     overwrite: bool = False,
     company_id: int | None = None,
     client: ProcoreClient | None = None,
+    drawing_area_id: int | None = None,
 ) -> Path:
     """Download one Procore drawing."""
     return DrawingsService(client=client).download_drawing(
@@ -380,4 +455,5 @@ def download_drawing(
         filename=filename,
         overwrite=overwrite,
         company_id=company_id,
+        drawing_area_id=drawing_area_id,
     )

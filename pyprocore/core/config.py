@@ -63,8 +63,15 @@ def _project_root() -> Path:
 
 
 def _env_path() -> Path:
-    """Return the expected path to the project ``.env`` file."""
-    return _project_root() / ENV_FILE_NAME
+    """Return the expected path to the current working directory ``.env`` file."""
+    return Path.cwd() / ENV_FILE_NAME
+
+
+def _load_dotenv() -> None:
+    """Load ``.env`` configuration without overriding real environment variables."""
+    loaded = load_dotenv(dotenv_path=_env_path(), override=False)
+    if not loaded:
+        load_dotenv(dotenv_path=_project_root() / ENV_FILE_NAME, override=False)
 
 
 def _read_environment() -> dict[str, str | None]:
@@ -89,7 +96,7 @@ def get_settings() -> ProcoreSettings:
     Raises:
         ConfigurationError: If any required setting is missing or invalid.
     """
-    load_dotenv(dotenv_path=_env_path(), override=False)
+    _load_dotenv()
 
     try:
         return ProcoreSettings.model_validate(_read_environment())

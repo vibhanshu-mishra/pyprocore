@@ -78,6 +78,16 @@ python3 -m pip install --upgrade pip
 python3 -m pip install -e .
 ```
 
+When testing unreleased local CLI changes, run commands with `PYTHONPATH=.` so
+Python resolves the local checkout before any installed copy:
+
+```bash
+PYTHONPATH=. procore-sdk --help
+PYTHONPATH=. procore-sdk doctor
+PYTHONPATH=. procore-sdk auth status
+PYTHONPATH=. python3 -m pyprocore.app --help
+```
+
 ---
 
 ## Quick Example
@@ -125,6 +135,9 @@ PROCORE_LOGIN_URL=https://login.procore.com
 PROCORE_API_BASE=https://api.procore.com
 PROCORE_COMPANY_ID=123456
 ```
+
+PyProcore loads `.env` automatically from your current working directory and
+does not override environment variables that are already set.
 
 Secrets, tokens, URLs, and company IDs are never hardcoded in source.
 
@@ -186,8 +199,9 @@ pending_submittals = client.submittals.list(project_id=352338, status="pending")
 documents = client.documents.list(project_id=352338)
 documents_recursive = client.documents.list(project_id=352338, recursive=True)
 document = client.documents.get(project_id=352338, document_id=456)
-drawings = client.drawings.list(project_id=352338, current=True)
-drawing = client.drawings.get(project_id=352338, drawing_id=789)
+drawing_areas = client.drawings.list_areas(project_id=352338)
+drawings = client.drawings.list(project_id=352338, drawing_area_id=123, current=True)
+drawing = client.drawings.get(project_id=352338, drawing_id=789, drawing_area_id=123)
 ```
 
 Full service surface:
@@ -238,8 +252,8 @@ drawing_areas = list_drawing_areas(project_id=352338)
 drawing_disciplines = list_drawing_disciplines(project_id=352338)
 drawings = list_drawings(project_id=352338, current=True)
 area_drawings = list_drawings(project_id=352338, drawing_area_id=123)
-drawing = get_drawing(project_id=352338, drawing_id=789)
-saved_drawing = download_drawing(project_id=352338, drawing_id=789)
+drawing = get_drawing(project_id=352338, drawing_id=789, drawing_area_id=123)
+saved_drawing = download_drawing(project_id=352338, drawing_id=789, drawing_area_id=123)
 ```
 
 Procore Documents are exposed through Project Folders and Files endpoints. PyProcore
@@ -247,12 +261,15 @@ keeps the user-friendly `client.documents` and `list_documents()` names while
 internally sending `project_id` as a query parameter to `/rest/v1.0/folders`.
 Folder scoping uses `filters[folder_id]`.
 
-Procore Drawings are exposed through drawing, drawing area, and drawing
-discipline endpoints. PyProcore sends `project_id` as a query parameter and can
-download a drawing only when Procore includes a direct `url` or `download_url`
-in the drawing payload. Use `PYTHONPATH=. python3 scripts/smoke_drawings.py
---project "$PROCORE_PROJECT_ID"` to inspect the live sandbox payload before
-building a drawing download workflow.
+Procore Drawings are organized by drawing areas. PyProcore lists project
+drawing areas first, then lists drawings from
+`/rest/v1.0/drawing_areas/{drawing_area_id}/drawings`. Passing
+`drawing_area_id` to `get_drawing()` or `download_drawing()` uses the exact
+area-scoped endpoint. If omitted, PyProcore searches the project's drawing
+areas for backward compatibility. Drawing downloads require Procore to include a
+direct `url` or `download_url` in the drawing payload. Use
+`PYTHONPATH=. python3 scripts/smoke_drawings.py --project "$PROCORE_PROJECT_ID"`
+to inspect the live sandbox payload before building a drawing download workflow.
 
 RFI and submittal list calls also accept optional date filters:
 
@@ -502,10 +519,11 @@ procore-sdk download-document --project 352338 --id 456 --output ./documents
 procore-sdk drawing-areas --project 352338
 procore-sdk drawing-disciplines --project 352338
 procore-sdk drawings --project 352338 --current
-procore-sdk drawing --project 352338 --id 789
+procore-sdk drawings --project 352338 --area 123 --current
+procore-sdk drawing --project 352338 --area 123 --id 789
 procore-sdk find-drawing --project 352338 --number S-101
 procore-sdk find-drawings --project 352338 --contains stair
-procore-sdk download-drawing --project 352338 --id 789 --output ./drawings
+procore-sdk download-drawing --project 352338 --area 123 --id 789 --output ./drawings
 procore-sdk package-rfi --project 352338 --id 102784
 procore-sdk package-rfi --project-name "Sandbox Test Project" --number 15
 procore-sdk package-submittal --project 352338 --id 309641
@@ -552,7 +570,7 @@ Before releasing Documents changes against a new Procore environment, run the
 manual smoke helper with sandbox credentials:
 
 ```bash
-make smoke-documents
+PROCORE_PROJECT_ID=352338 make smoke-documents
 PYTHONPATH=. python3 scripts/smoke_documents.py --project 352338 --folder 123
 ```
 
@@ -560,9 +578,14 @@ Before relying on drawing downloads in a new Procore environment, inspect the
 live drawing payload:
 
 ```bash
-make smoke-drawings
-PYTHONPATH=. python3 scripts/smoke_drawings.py --project 352338 --drawing 789
+PROCORE_PROJECT_ID=352338 make smoke-drawings
+PYTHONPATH=. python3 scripts/smoke_drawings.py --project 352338 --area 123 --drawing 789
 ```
+
+A Drawings 403 usually means authentication succeeded, but Procore rejected the
+project/company context. Confirm the project belongs to the company, production
+vs sandbox is correct, the OAuth user has project access, the Drawings tool is
+enabled, and the user can view Drawings.
 
 ---
 
@@ -598,11 +621,12 @@ GET /rest/v1.0/folders?project_id={project_id}
 GET /rest/v1.0/folders?project_id={project_id}&filters[folder_id]={folder_id}
 GET /rest/v1.0/folders/{folder_id}?project_id={project_id}
 GET /rest/v1.0/files/{document_id}?project_id={project_id}
-GET /rest/v1.0/drawing_areas?project_id={project_id}
-GET /rest/v1.0/drawing_areas/{drawing_area_id}?project_id={project_id}
-GET /rest/v1.0/drawing_disciplines?project_id={project_id}
-GET /rest/v1.0/drawings?project_id={project_id}
-GET /rest/v1.0/drawings/{drawing_id}?project_id={project_id}
+GET /rest/v1.0/projects/{project_id}/drawing_areas
+GET /rest/v1.0/projects/{project_id}/drawing_areas/{drawing_area_id}
+GET /rest/v1.0/projects/{project_id}/drawing_disciplines
+GET /rest/v1.0/drawing_areas/{drawing_area_id}/drawings
+GET /rest/v1.0/drawing_areas/{drawing_area_id}/drawings/{drawing_id}
+GET /rest/v1.0/projects/{project_id}/drawing_revisions
 ```
 
 ---
@@ -732,6 +756,16 @@ If you're working in a restricted environment where build isolation cannot acces
 
 ```bash
 pip install --no-build-isolation -e ".[dev]"
+```
+
+When testing unreleased local CLI changes, run commands with `PYTHONPATH=.` so
+Python resolves the local checkout before any installed copy:
+
+```bash
+PYTHONPATH=. procore-sdk --help
+PYTHONPATH=. procore-sdk doctor
+PYTHONPATH=. procore-sdk auth status
+PYTHONPATH=. python3 -m pyprocore.app --help
 ```
 
 Useful development commands:

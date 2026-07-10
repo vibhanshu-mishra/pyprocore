@@ -2,11 +2,19 @@
 
 from __future__ import annotations
 
+import importlib.util
+import sys
 import unittest
 from pathlib import Path
 from unittest.mock import Mock, patch
 
-from pyprocore.core.exceptions import MultipleResultsError, NotFoundError, ValidationError
+from pyprocore.core.exceptions import (
+    AuthorizationError,
+    MultipleResultsError,
+    NotFoundError,
+    ResourceNotFoundError,
+    ValidationError,
+)
 from pyprocore.models import Drawing
 from pyprocore.services.drawings import (
     DrawingsService,
@@ -37,8 +45,8 @@ class DrawingsServiceTestCase(unittest.TestCase):
 
         self.assertEqual(result[0].name, "Area A")
         client.get_all.assert_called_once_with(
-            "/rest/v1.0/drawing_areas",
-            params={"per_page": 50, "sort": "name", "project_id": 10},
+            "/rest/v1.0/projects/10/drawing_areas",
+            params={"per_page": 50, "sort": "name"},
             headers={"Procore-Company-Id": "123"},
         )
 
@@ -51,8 +59,7 @@ class DrawingsServiceTestCase(unittest.TestCase):
 
         self.assertEqual(result.id, 2)
         client.get.assert_called_once_with(
-            "/rest/v1.0/drawing_areas/2",
-            params={"project_id": 10},
+            "/rest/v1.0/projects/10/drawing_areas/2",
             headers=None,
         )
 
@@ -65,8 +72,8 @@ class DrawingsServiceTestCase(unittest.TestCase):
 
         self.assertEqual(result[0].abbreviation, "S")
         client.get_all.assert_called_once_with(
-            "/rest/v1.0/drawing_disciplines",
-            params={"project_id": 10},
+            "/rest/v1.0/projects/10/drawing_disciplines",
+            params=None,
             headers=None,
         )
 
@@ -86,15 +93,35 @@ class DrawingsServiceTestCase(unittest.TestCase):
 
         self.assertEqual(result[0], Drawing(id=4, number="S-101", title="Framing Plan"))
         client.get_all.assert_called_once_with(
-            "/rest/v1.0/drawings",
+            "/rest/v1.0/drawing_areas/5/drawings",
             params={
                 "per_page": 100,
-                "project_id": 10,
-                "drawing_area_id": 5,
                 "discipline_id": 6,
                 "current": True,
             },
             headers={"Procore-Company-Id": "123"},
+        )
+
+    def test_list_drawings_without_area_lists_across_areas(self) -> None:
+        """Project-level drawing listing walks drawing areas internally."""
+        client = Mock()
+        client.get_all.side_effect = [
+            [{"id": 5, "name": "Area A"}, {"id": 6, "name": "Area B"}],
+            [{"id": 4, "number": "S-101"}],
+            [{"id": 7, "number": "A-101"}],
+        ]
+
+        result = DrawingsService(client=client).list_drawings(10, current=True)
+
+        self.assertEqual([drawing.id for drawing in result], [4, 7])
+        self.assertEqual(
+            client.get_all.call_args_list[0].args[0], "/rest/v1.0/projects/10/drawing_areas"
+        )
+        self.assertEqual(
+            client.get_all.call_args_list[1].args[0], "/rest/v1.0/drawing_areas/5/drawings"
+        )
+        self.assertEqual(
+            client.get_all.call_args_list[2].args[0], "/rest/v1.0/drawing_areas/6/drawings"
         )
 
     def test_get_drawing_returns_model(self) -> None:
@@ -102,14 +129,41 @@ class DrawingsServiceTestCase(unittest.TestCase):
         client = Mock()
         client.get.return_value = {"id": 4, "number": "A-101"}
 
-        result = DrawingsService(client=client).get_drawing(10, 4)
+        result = DrawingsService(client=client).get_drawing(10, 4, drawing_area_id=5)
 
         self.assertEqual(result.number, "A-101")
         client.get.assert_called_once_with(
-            "/rest/v1.0/drawings/4",
-            params={"project_id": 10},
+            "/rest/v1.0/drawing_areas/5/drawings/4",
             headers=None,
         )
+
+    def test_get_drawing_without_area_finds_area_first(self) -> None:
+        """Drawing retrieval can preserve the older project-only call style."""
+        client = Mock()
+        client.get_all.side_effect = [
+            [{"id": 5, "name": "Area A"}],
+            [{"id": 4, "number": "A-101"}],
+        ]
+        client.get.return_value = {"id": 4, "number": "A-101"}
+
+        result = DrawingsService(client=client).get_drawing(10, 4)
+
+        self.assertEqual(result.id, 4)
+        client.get.assert_called_once_with(
+            "/rest/v1.0/drawing_areas/5/drawings/4",
+            headers=None,
+        )
+
+    def test_get_drawing_without_area_raises_when_missing(self) -> None:
+        """Project-only drawing lookup raises a clear not-found error."""
+        client = Mock()
+        client.get_all.side_effect = [
+            [{"id": 5, "name": "Area A"}],
+            [{"id": 9, "number": "A-102"}],
+        ]
+
+        with self.assertRaisesRegex(NotFoundError, "Drawing 4 was not found"):
+            DrawingsService(client=client).get_drawing(10, 4)
 
     def test_object_responses_are_required_for_getters(self) -> None:
         """Unexpected single-resource payloads fail clearly."""
@@ -117,7 +171,7 @@ class DrawingsServiceTestCase(unittest.TestCase):
         client.get.return_value = []
 
         with self.assertRaisesRegex(ValidationError, "drawing response"):
-            DrawingsService(client=client).get_drawing(10, 4)
+            DrawingsService(client=client).get_drawing(10, 4, drawing_area_id=5)
         with self.assertRaisesRegex(ValidationError, "drawing area response"):
             DrawingsService(client=client).get_drawing_area(10, 4)
 
@@ -137,6 +191,7 @@ class DrawingsServiceTestCase(unittest.TestCase):
             4,
             output_dir="drawings",
             overwrite=True,
+            drawing_area_id=5,
         )
 
         self.assertEqual(result, Path("drawings/S-101.pdf"))
@@ -157,6 +212,7 @@ class DrawingsServiceTestCase(unittest.TestCase):
             4,
             output_dir="drawings",
             filename="plan?.pdf",
+            drawing_area_id=5,
         )
 
         file_service.download_url.assert_called_once_with(
@@ -172,7 +228,11 @@ class DrawingsServiceTestCase(unittest.TestCase):
         file_service = Mock()
 
         with self.assertRaisesRegex(ValidationError, "download URL"):
-            DrawingsService(client=client, file_service=file_service).download_drawing(10, 4)
+            DrawingsService(client=client, file_service=file_service).download_drawing(
+                10,
+                4,
+                drawing_area_id=5,
+            )
 
         file_service.download_url.assert_not_called()
 
@@ -213,7 +273,12 @@ class DrawingsServiceTestCase(unittest.TestCase):
             current=None,
             params=None,
         )
-        service.get_drawing.assert_called_once_with(10, 3, company_id=None)
+        service.get_drawing.assert_called_once_with(
+            10,
+            3,
+            company_id=None,
+            drawing_area_id=None,
+        )
         service.download_drawing.assert_called_once()
 
     def test_positive_ids_are_validated(self) -> None:
@@ -289,6 +354,71 @@ class DrawingResolverTestCase(unittest.TestCase):
             find_drawing(10)
         with self.assertRaises(ValueError):
             find_drawing(10, number="A-101", title="Floor")
+
+
+class DrawingsSmokeScriptTestCase(unittest.TestCase):
+    """Validate the manual Drawings smoke script without live API access."""
+
+    def test_smoke_script_prints_friendly_404_guidance(self) -> None:
+        """A Procore 404 includes project, tool, and environment guidance."""
+        module = _load_smoke_drawings_module()
+        client = Mock()
+        client.get_all.side_effect = ResourceNotFoundError(
+            "Resource not found",
+            status_code=404,
+        )
+
+        with (
+            patch.object(module, "ProcoreClient", return_value=client),
+            patch.object(sys, "argv", ["smoke_drawings.py", "--project", "10"]),
+            patch("builtins.print") as mocked_print,
+        ):
+            exit_code = module.main()
+
+        output = "\n".join(str(call.args[0]) for call in mocked_print.call_args_list if call.args)
+        self.assertEqual(exit_code, 1)
+        self.assertIn("reached Procore", output)
+        self.assertIn("sandbox vs production API base", output)
+        self.assertIn("Drawings tool", output)
+
+    def test_smoke_script_prints_friendly_403_context_guidance(self) -> None:
+        """A Procore 403 explains project/company context instead of OAuth failure."""
+        module = _load_smoke_drawings_module()
+        client = Mock()
+        client.get_all.side_effect = AuthorizationError(
+            "Procore API request failed with status 403: Invalid Project or Company"
+        )
+
+        with (
+            patch.object(module, "ProcoreClient", return_value=client),
+            patch.object(sys, "argv", ["smoke_drawings.py", "--project", "10"]),
+            patch("builtins.print") as mocked_print,
+        ):
+            exit_code = module.main()
+
+        output = "\n".join(str(call.args[0]) for call in mocked_print.call_args_list if call.args)
+        self.assertEqual(exit_code, 1)
+        self.assertIn(
+            "Authenticated successfully, but Procore rejected the project/company context.",
+            output,
+        )
+        self.assertIn("Confirm project_id belongs to company_id", output)
+        self.assertIn("Confirm production vs sandbox environment", output)
+        self.assertIn("OAuth user has access to the company/project", output)
+        self.assertIn("Drawings tool is enabled", output)
+        self.assertIn("permission to view Drawings", output)
+        self.assertNotIn("could not authenticate with Procore", output)
+
+
+def _load_smoke_drawings_module() -> object:
+    """Load the manual smoke script as a module for safe unit testing."""
+    script_path = Path(__file__).resolve().parents[1] / "scripts" / "smoke_drawings.py"
+    spec = importlib.util.spec_from_file_location("smoke_drawings_test_module", script_path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError("Could not load smoke_drawings.py for testing.")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 if __name__ == "__main__":

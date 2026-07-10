@@ -605,6 +605,7 @@ class DrawingsClient:
         project_id: int,
         drawing_id: int,
         company_id: int | None = None,
+        drawing_area_id: int | None = None,
     ) -> Drawing:
         """Get one drawing.
 
@@ -612,11 +613,18 @@ class DrawingsClient:
             project_id: Procore project ID.
             drawing_id: Procore drawing ID.
             company_id: Optional company ID sent as ``Procore-Company-Id``.
+            drawing_area_id: Optional drawing area ID. When omitted, the
+                service searches drawing areas to locate the drawing.
 
         Returns:
             The matching typed drawing model.
         """
-        return get_drawing(project_id, drawing_id, company_id=company_id)
+        return get_drawing(
+            project_id,
+            drawing_id,
+            company_id=company_id,
+            drawing_area_id=drawing_area_id,
+        )
 
     def find(
         self,
@@ -666,6 +674,7 @@ class DrawingsClient:
         *,
         overwrite: bool = False,
         company_id: int | None = None,
+        drawing_area_id: int | None = None,
     ) -> Path:
         """Download one drawing.
 
@@ -676,6 +685,8 @@ class DrawingsClient:
             filename: Optional local filename.
             overwrite: Whether to overwrite an existing file.
             company_id: Optional company ID sent as ``Procore-Company-Id``.
+            drawing_area_id: Optional drawing area ID. When omitted, the
+                service searches drawing areas to locate the drawing.
 
         Returns:
             The saved drawing path.
@@ -687,6 +698,7 @@ class DrawingsClient:
             filename=filename,
             overwrite=overwrite,
             company_id=company_id,
+            drawing_area_id=drawing_area_id,
         )
 
 

@@ -64,4 +64,4 @@ You should see a sync summary. The output folder contains document folders, `doc
 - Use `--recursive` when you want PyProcore to traverse child folders returned by Procore.
 - Use `--overwrite` only when you intentionally want to replace local files.
 - If downloads fail because no URL is present, inspect the raw payload with `PYTHONPATH=. python3 scripts/smoke_documents.py --project "$PROCORE_PROJECT_ID"`.
-- `make smoke-documents` requires `PROCORE_PROJECT_ID` and can also use `PROCORE_DOCUMENT_FOLDER_ID`.
+- `PROCORE_PROJECT_ID=352338 make smoke-documents` works too. The Makefile sets `PYTHONPATH=.` internally and can also use `PROCORE_DOCUMENT_FOLDER_ID`.

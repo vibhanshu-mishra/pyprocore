@@ -26,6 +26,12 @@ from pyprocore.auth.diagnostics import (
 from pyprocore.automation import AutomationInput, build_workflow_package
 from pyprocore.core.config import get_settings
 from pyprocore.core.doctor import DoctorReport, format_doctor_report, run_doctor
+from pyprocore.core.exceptions import (
+    AuthorizationError,
+    ConfigurationError,
+    ProcoreAPIError,
+    ResourceNotFoundError,
+)
 from pyprocore.services import (
     download_document,
     download_drawing,
@@ -319,6 +325,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--project", "--project-id", dest="project_id", type=int, required=True
     )
     drawing_parser.add_argument("--id", "--drawing-id", dest="drawing_id", type=int, required=True)
+    drawing_parser.add_argument("--area", "--area-id", dest="drawing_area_id", type=int)
     drawing_parser.add_argument("--company-id", type=int, default=None)
 
     find_drawing_parser = subcommands.add_parser(
@@ -352,6 +359,7 @@ def build_parser() -> argparse.ArgumentParser:
     download_drawing_parser.add_argument(
         "--id", "--drawing-id", dest="drawing_id", type=int, required=True
     )
+    download_drawing_parser.add_argument("--area", "--area-id", dest="drawing_area_id", type=int)
     download_drawing_parser.add_argument("--output", dest="output_dir", type=Path, default=None)
     download_drawing_parser.add_argument("--filename", default=None)
     download_drawing_parser.add_argument("--company-id", type=int, default=None)
@@ -696,7 +704,12 @@ def run_command(args: argparse.Namespace) -> Any:
         )
 
     if args.command == "drawing":
-        return get_drawing(args.project_id, args.drawing_id, company_id=args.company_id)
+        return get_drawing(
+            args.project_id,
+            args.drawing_id,
+            company_id=args.company_id,
+            drawing_area_id=args.drawing_area_id,
+        )
 
     if args.command == "find-drawing":
         return find_drawing(
@@ -718,6 +731,7 @@ def run_command(args: argparse.Namespace) -> Any:
             filename=args.filename,
             company_id=args.company_id,
             overwrite=args.overwrite,
+            drawing_area_id=args.drawing_area_id,
         )
 
     if args.command == "package-rfi":
@@ -907,7 +921,14 @@ def main() -> None:
     """Run the CLI entrypoint."""
     parser = build_parser()
     args = parser.parse_args()
-    result = run_command(args)
+    try:
+        result = run_command(args)
+    except ConfigurationError as exc:
+        print(format_configuration_error(exc))
+        raise SystemExit(1) from exc
+    except (AuthorizationError, ResourceNotFoundError, ProcoreAPIError) as exc:
+        print(format_cli_error(exc))
+        raise SystemExit(1) from exc
     if isinstance(result, DoctorReport):
         if args.json_output:
             print(json.dumps(to_serializable(result), indent=2, default=str))
@@ -953,5 +974,126 @@ def main() -> None:
     print(json.dumps(to_serializable(result), indent=2, default=str))
 
 
-if __name__ == "__main__":
+def _main() -> int:
+    """Run the CLI entrypoint and return an operating-system exit code."""
     main()
+    return 0
+
+
+def format_configuration_error(exc: ConfigurationError) -> str:
+    """Format configuration errors without exposing secrets."""
+    return "\n".join(
+        [
+            "PyProcore configuration is missing or invalid.",
+            "",
+            "Next steps:",
+            "1. Confirm `.env` exists in your current working directory.",
+            "2. Run `procore-sdk doctor` to inspect local setup.",
+            "3. Fill in the required Procore OAuth settings.",
+            "4. Run this command again.",
+            "",
+            "Required values:",
+            "- PROCORE_CLIENT_ID",
+            "- PROCORE_CLIENT_SECRET",
+            "- PROCORE_REDIRECT_URI",
+            "- PROCORE_LOGIN_URL",
+            "- PROCORE_API_BASE",
+            "- PROCORE_COMPANY_ID",
+            "",
+            f"Details: {exc}",
+        ]
+    )
+
+
+def format_cli_error(exc: AuthorizationError | ResourceNotFoundError | ProcoreAPIError) -> str:
+    """Format common SDK errors for safe CLI output."""
+    if isinstance(exc, AuthorizationError):
+        return format_authorization_error(exc)
+    if isinstance(exc, ProcoreAPIError) and exc.status_code == 403:
+        return format_authorization_error(exc)
+    if isinstance(exc, ResourceNotFoundError):
+        return format_not_found_error(exc)
+    return format_procore_api_error(exc)
+
+
+def format_authorization_error(exc: AuthorizationError | ProcoreAPIError) -> str:
+    """Format Procore authorization failures without a traceback."""
+    if _is_app_not_connected_error(exc):
+        return "\n".join(
+            [
+                "Procore rejected this request.",
+                "Reason:",
+                "Your OAuth app is not connected to this Procore company.",
+                "",
+                "Suggested fixes:",
+                "- Run `procore-sdk companies` to see companies available to this token",
+                "- Confirm the company ID is correct",
+                "- Connect/install the OAuth app to that Procore company",
+                "- Confirm the OAuth user has access to the company/project",
+                "- Confirm production vs sandbox environment",
+                "- Try again after reconnecting the app",
+            ]
+        )
+
+    return "\n".join(
+        [
+            "Procore rejected this request.",
+            "Reason:",
+            "Your token is valid, but Procore denied access to this resource.",
+            "",
+            "Suggested fixes:",
+            "- Confirm company_id/project_id are correct",
+            "- Confirm the OAuth user has permission",
+            "- Confirm the app is connected to the company",
+            "- Confirm production vs sandbox environment",
+        ]
+    )
+
+
+def format_not_found_error(exc: ResourceNotFoundError) -> str:
+    """Format not-found API errors without a traceback."""
+    return "\n".join(
+        [
+            "Procore could not find this resource.",
+            "Reason:",
+            "The requested company, project, or resource was not found.",
+            "",
+            "Suggested fixes:",
+            "- Confirm the ID values are correct",
+            "- Confirm production vs sandbox environment",
+            "- Confirm the OAuth user has access to the resource",
+            "",
+            f"Details: {exc}",
+        ]
+    )
+
+
+def format_procore_api_error(exc: ProcoreAPIError) -> str:
+    """Format generic Procore API errors without a traceback."""
+    status = f"HTTP status: {exc.status_code}" if exc.status_code is not None else None
+    lines = [
+        "Procore API request failed.",
+        "Reason:",
+        "Procore returned an error for this request.",
+    ]
+    if status is not None:
+        lines.extend(["", status])
+    lines.extend(["", f"Details: {exc}"])
+    return "\n".join(lines)
+
+
+def _is_app_not_connected_error(exc: AuthorizationError | ProcoreAPIError) -> bool:
+    """Return whether Procore reported a disconnected OAuth app."""
+    return "app is not connected to this company" in _error_text(exc).casefold()
+
+
+def _error_text(exc: AuthorizationError | ProcoreAPIError) -> str:
+    """Return searchable error text from an SDK exception."""
+    parts = [str(exc)]
+    if isinstance(exc, ProcoreAPIError) and exc.response_body is not None:
+        parts.append(json.dumps(exc.response_body, default=str))
+    return " ".join(parts)
+
+
+if __name__ == "__main__":
+    raise SystemExit(_main())

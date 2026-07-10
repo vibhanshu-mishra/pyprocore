@@ -1,8 +1,9 @@
-"""List Procore drawings for a project.
+"""List Procore drawings for a project or drawing area.
 
 Set PROCORE_PROJECT_ID in your environment or .env file before running this
 example. Optionally set PROCORE_DRAWING_AREA_ID or PROCORE_DRAWING_DISCIPLINE_ID
-to filter the list.
+to filter the list. Procore drawings are organized by drawing areas; when no
+area is supplied, PyProcore lists areas first and then gathers drawings.
 """
 
 from __future__ import annotations
@@ -36,6 +37,9 @@ def main() -> None:
         return
 
     print(f"Found {len(drawings)} drawing(s).")
+    if not drawings:
+        print("No drawings were returned. Try listing drawing areas first.")
+        return
     for drawing in drawings:
         label = drawing.title or drawing.name or "Untitled drawing"
         print(f"- {drawing.id}: {drawing.number or 'No number'} - {label}")

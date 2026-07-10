@@ -86,7 +86,7 @@ def main() -> int:
         _print_auth_error("authentication", exc)
         return 1
     except AuthorizationError as exc:
-        _print_auth_error("authorization", exc)
+        _print_context_rejected_error(exc)
         return 1
     except ProcoreAPIError as exc:
         _print_api_error(exc)
@@ -109,40 +109,56 @@ def _run(args: argparse.Namespace) -> int:
 
     client = ProcoreClient()
     headers = _company_headers(args.company_id)
-    params: dict[str, object] = {"project_id": args.project_id}
-    if args.drawing_area_id is not None:
-        params["drawing_area_id"] = args.drawing_area_id
 
-    print("Request: GET /rest/v1.0/drawing_areas")
-    print(f"Params: {_safe_json({'project_id': args.project_id})}")
+    print(f"Request: GET /rest/v1.0/projects/{args.project_id}/drawing_areas")
     areas = client.get_all(
         endpoints.drawing_areas(args.project_id),
-        params={"project_id": args.project_id},
         headers=headers,
     )
     print("Drawing areas sample:")
     print(_safe_json(_sample(areas)))
+    if not areas:
+        print(
+            "\nNo drawing areas found. Confirm the project has the Drawings tool "
+            "enabled and published drawings."
+        )
+        return 1
 
-    print("\nRequest: GET /rest/v1.0/drawing_disciplines")
+    drawing_area_id = args.drawing_area_id or _first_id(areas)
+    if drawing_area_id is None:
+        print("\nDrawing areas were returned, but no drawing area ID was found.")
+        return 1
+    print(f"\nUsing drawing area ID: {drawing_area_id}")
+
+    print(f"\nRequest: GET /rest/v1.0/projects/{args.project_id}/drawing_disciplines")
     disciplines = client.get_all(
         endpoints.drawing_disciplines(args.project_id),
-        params={"project_id": args.project_id},
         headers=headers,
     )
     print("Drawing disciplines sample:")
     print(_safe_json(_sample(disciplines)))
 
-    print("\nRequest: GET /rest/v1.0/drawings")
-    print(f"Params: {_safe_json(params)}")
-    drawings = client.get_all(endpoints.drawings(args.project_id), params=params, headers=headers)
+    print(f"\nRequest: GET /rest/v1.0/drawing_areas/{drawing_area_id}/drawings")
+    drawings = client.get_all(
+        endpoints.drawings(args.project_id, drawing_area_id),
+        headers=headers,
+    )
     print("Drawings sample:")
     print(_safe_json(_sample(drawings)))
+    if not drawings:
+        print(
+            f"\nNo drawings found for drawing area {drawing_area_id}. Confirm the area "
+            "has published drawings and your user can access them."
+        )
+        return 1
 
     if args.drawing_id is not None:
-        print(f"\nRequest: GET /rest/v1.0/drawings/{args.drawing_id}")
+        print(
+            f"\nRequest: GET /rest/v1.0/drawing_areas/{drawing_area_id}"
+            f"/drawings/{args.drawing_id}"
+        )
         drawing = client.get(
-            endpoints.drawing(args.project_id, args.drawing_id),
-            params={"project_id": args.project_id},
+            endpoints.drawing(args.project_id, drawing_area_id, args.drawing_id),
             headers=headers,
         )
         print("Drawing response sample:")
@@ -171,7 +187,7 @@ def _print_configuration_error(exc: ConfigurationError) -> None:
 
 
 def _print_auth_error(kind: str, exc: Exception) -> None:
-    """Print a beginner-friendly authentication or authorization failure."""
+    """Print a beginner-friendly authentication failure."""
     print("Drawings smoke test could not authenticate with Procore.")
     print(f"\nReason: Procore {kind} failed.")
     print(f"Details: {exc}")
@@ -179,6 +195,18 @@ def _print_auth_error(kind: str, exc: Exception) -> None:
     print("1. Run `procore-sdk auth status`")
     print("2. If needed, run `procore-sdk auth refresh`")
     print("3. Confirm your Procore user can access this company's Drawings tool")
+
+
+def _print_context_rejected_error(exc: AuthorizationError) -> None:
+    """Print a beginner-friendly project/company authorization failure."""
+    print("Authenticated successfully, but Procore rejected the project/company context.")
+    print(f"\nDetails: {exc}")
+    print("\nNext steps:")
+    print("1. Confirm project_id belongs to company_id")
+    print("2. Confirm production vs sandbox environment")
+    print("3. Confirm the OAuth user has access to the company/project")
+    print("4. Confirm the Drawings tool is enabled for the project")
+    print("5. Confirm the user has permission to view Drawings")
 
 
 def _print_api_error(exc: ProcoreAPIError) -> None:
@@ -190,6 +218,7 @@ def _print_api_error(exc: ProcoreAPIError) -> None:
     print("1. Confirm PROCORE_PROJECT_ID is correct")
     print("2. Confirm your user has access to the project's Drawings tool")
     print("3. If filtering by area or drawing, confirm those IDs are correct")
+    print("4. For 404s, confirm sandbox vs production API base and that drawing areas exist")
 
 
 def _print_verbose_details(args: argparse.Namespace) -> None:
@@ -202,9 +231,13 @@ def _print_verbose_details(args: argparse.Namespace) -> None:
     print(f"- Company header: {'set' if args.company_id is not None else '<not set>'}")
     print(f"- Areas endpoint: {endpoints.drawing_areas(args.project_id or 0)}")
     print(f"- Disciplines endpoint: {endpoints.drawing_disciplines(args.project_id or 0)}")
-    print(f"- Drawings endpoint: {endpoints.drawings(args.project_id or 0)}")
+    area_id = args.drawing_area_id or 0
+    print(f"- Drawings endpoint: {endpoints.drawings(args.project_id or 0, area_id)}")
     if args.drawing_id is not None:
-        print(f"- Drawing endpoint: {endpoints.drawing(args.project_id or 0, args.drawing_id)}")
+        print(
+            "- Drawing endpoint: "
+            f"{endpoints.drawing(args.project_id or 0, area_id, args.drawing_id)}"
+        )
     print()
 
 
@@ -231,6 +264,21 @@ def _sample(value: object) -> object:
     if isinstance(value, list):
         return value[:3]
     return value
+
+
+def _first_id(values: object) -> int | None:
+    """Return the first integer ID from a list-like Procore response."""
+    if not isinstance(values, list):
+        return None
+    for value in values:
+        if not isinstance(value, Mapping):
+            continue
+        raw_id = value.get("id")
+        if isinstance(raw_id, int):
+            return raw_id
+        if isinstance(raw_id, str) and raw_id.isdecimal():
+            return int(raw_id)
+    return None
 
 
 def _safe_json(value: object) -> str:

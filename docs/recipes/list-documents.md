@@ -54,4 +54,4 @@ You should see document IDs and names or a formatted JSON list from the CLI.
 - If authentication fails, run `procore-sdk auth status`.
 - If a folder filter returns nothing, try listing documents without `--folder` first.
 - Use `PYTHONPATH=. python3 scripts/smoke_documents.py --project "$PROCORE_PROJECT_ID"` to inspect the raw folder/file payload in a sandbox.
-- `make smoke-documents` also works when `PROCORE_PROJECT_ID` is set.
+- `PROCORE_PROJECT_ID=352338 make smoke-documents` also works. The Makefile sets `PYTHONPATH=.` internally for local checkout testing.

@@ -52,6 +52,6 @@ The SDK prints the local path where the document was saved.
 
 - If the SDK says the document has no download URL, inspect the document payload with `procore-sdk document`.
 - Run `PYTHONPATH=. python3 scripts/smoke_documents.py --project "$PROCORE_PROJECT_ID" --folder "$PROCORE_DOCUMENT_FOLDER_ID"` to inspect whether Procore is returning `url` or `download_url`.
-- `make smoke-documents` requires `PROCORE_PROJECT_ID` and can also use `PROCORE_DOCUMENT_FOLDER_ID`.
+- `PROCORE_PROJECT_ID=352338 make smoke-documents` works too. The Makefile sets `PYTHONPATH=.` internally and can also use `PROCORE_DOCUMENT_FOLDER_ID`.
 - If the file already exists, it is skipped unless you pass `--overwrite`.
 - If authentication fails, run `procore-sdk auth refresh`.
