@@ -84,3 +84,36 @@ class Submittal(ProcoreModel):
     status: Status | str | None = None
     responsible_contractor: dict[str, Any] | None = None
     attachments: list[Attachment] = Field(default_factory=list)
+
+
+class DocumentFolder(ProcoreModel):
+    """Procore document folder resource."""
+
+    id: int | None = None
+    name: str | None = None
+    type: str | None = None
+    item_type: str | None = None
+    parent_id: int | None = None
+    path: str | None = None
+    folders: list["DocumentFolder"] = Field(default_factory=list)
+    files: list["Document"] = Field(default_factory=list)
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class Document(ProcoreModel):
+    """Procore document resource."""
+
+    id: int | None = None
+    name: str | None = None
+    type: str | None = None
+    item_type: str | None = None
+    filename: str | None = None
+    file_name: str | None = None
+    url: str | HttpUrl | None = None
+    download_url: str | HttpUrl | None = None
+    folder_id: int | None = None
+    content_type: str | None = None
+    file_size: int | None = None
+    created_at: str | None = None
+    updated_at: str | None = None

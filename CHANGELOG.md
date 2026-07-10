@@ -35,6 +35,14 @@ and this project follows semantic versioning.
 - Combined project sync workflow and `procore-sdk sync-project`.
 - Sync summary reports for individual syncs and project syncs.
 - Examples and recipes for incremental sync and project sync.
+- Documents API models and services.
+- Document folder and document list/get/download helpers.
+- Document resolver helpers for finding documents and document folders by name.
+- `client.documents` object-client wrapper.
+- Document CLI commands for folder listing, document listing, document retrieval, document lookup, and document download.
+- Document sync workflow and `procore-sdk sync-documents`.
+- Document examples and recipes.
+- Manual Documents smoke-test helper for validating sandbox folder/file payloads.
 
 ### Changed
 
@@ -45,6 +53,9 @@ and this project follows semantic versioning.
 - Updated README, roadmap, examples, and recipes for workflow automation commands.
 - Improved CLI summaries for workflow export and sync commands.
 - Marked Phase 2 workflow automation complete in the roadmap.
+- Marked Phase 3 expanded API coverage in progress in the roadmap.
+- Corrected Documents implementation to align with Procore Project Folders and Files endpoint structure.
+- Updated Documents docs to explain folder/file endpoint behavior and direct download URL requirements.
 
 ## [2.0.0] - 2026-07-03
 

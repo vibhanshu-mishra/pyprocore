@@ -8,7 +8,7 @@ from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
-from pyprocore.models import RFI, Submittal
+from pyprocore.models import RFI, Document, Submittal
 from pyprocore.services.rfis import list_rfis
 from pyprocore.services.submittals import list_submittals
 from pyprocore.workflows.utils import (
@@ -45,6 +45,18 @@ SUBMITTAL_CSV_HEADERS = [
     "ball_in_court",
     "responsible_contractor",
     "attachment_count",
+]
+
+DOCUMENT_CSV_HEADERS = [
+    "id",
+    "name",
+    "filename",
+    "folder_id",
+    "content_type",
+    "file_size",
+    "created_at",
+    "updated_at",
+    "download_url",
 ]
 
 
@@ -222,6 +234,11 @@ def write_submittals_csv(submittals: Sequence[Submittal], output_path: Path | st
     return _write_csv(submittals, output_path, SUBMITTAL_CSV_HEADERS, _submittal_row)
 
 
+def write_documents_csv(documents: Sequence[Document], output_path: Path | str) -> Path:
+    """Write already-loaded documents to a CSV file."""
+    return _write_csv(documents, output_path, DOCUMENT_CSV_HEADERS, _document_row)
+
+
 def _load_rfis(
     project_id: int,
     *,
@@ -335,4 +352,19 @@ def _submittal_row(submittal: object) -> dict[str, object]:
         "ball_in_court": scalar_text(get_value(submittal, "ball_in_court")),
         "responsible_contractor": scalar_text(get_value(submittal, "responsible_contractor")),
         "attachment_count": attachment_count(submittal, item_type="submittal"),
+    }
+
+
+def _document_row(document: object) -> dict[str, object]:
+    """Convert one document model into a CSV row."""
+    return {
+        "id": scalar_text(get_value(document, "id")),
+        "name": scalar_text(get_value(document, "name")),
+        "filename": scalar_text(get_value(document, "filename", "file_name")),
+        "folder_id": scalar_text(get_value(document, "folder_id")),
+        "content_type": scalar_text(get_value(document, "content_type")),
+        "file_size": scalar_text(get_value(document, "file_size")),
+        "created_at": scalar_text(get_value(document, "created_at")),
+        "updated_at": scalar_text(get_value(document, "updated_at")),
+        "download_url": scalar_text(get_value(document, "download_url", "url")),
     }

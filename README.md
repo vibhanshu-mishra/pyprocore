@@ -35,6 +35,7 @@ PyProcore does that once, correctly, behind a clean interface. You call a servic
 - Projects
 - RFIs
 - Submittals
+- Documents
 - Attachment downloads
 
 **Developer experience**
@@ -52,7 +53,7 @@ PyProcore does that once, correctly, behind a clean interface. You call a servic
 | `pyprocore/auth/`     | OAuth exchange, token persistence, token refresh                |
 | `pyprocore/core/`     | Configuration, endpoint paths, HTTP client, logging, exceptions |
 | `pyprocore/models/`   | Pydantic response models                                        |
-| `pyprocore/services/` | Company, project, RFI, submittal, and file services             |
+| `pyprocore/services/` | Company, project, RFI, submittal, document, and file services   |
 | `pyprocore/parser/`   | Email parsing utilities for future automation                   |
 | `tests/`              | Mocked unit tests with no live Procore dependency               |
 
@@ -181,6 +182,9 @@ projects = client.projects.list(company_id=123456)
 rfi = client.rfis.get(project_id=352338, rfi_id=102784)
 open_rfis = client.rfis.list(project_id=352338, status="open")
 pending_submittals = client.submittals.list(project_id=352338, status="pending")
+documents = client.documents.list(project_id=352338)
+documents_recursive = client.documents.list(project_id=352338, recursive=True)
+document = client.documents.get(project_id=352338, document_id=456)
 ```
 
 Full service surface:
@@ -189,9 +193,14 @@ Full service surface:
 from pyprocore.services import (
     download_rfi_attachments,
     download_submittal_attachments,
+    download_document,
+    get_document,
+    get_document_folder,
     get_rfi,
     get_submittal,
     list_companies,
+    list_document_folders,
+    list_documents,
     list_projects,
     list_rfis,
     list_submittals,
@@ -208,7 +217,19 @@ first_attachment_url = rfi.questions[0].attachments[0].url
 submittals = list_submittals(project_id=352338)
 pending_submittals = list_submittals(project_id=352338, status="pending")
 submittal = get_submittal(project_id=352338, submittal_id=309641)
+
+folders = list_document_folders(project_id=352338)
+documents = list_documents(project_id=352338)
+folder_documents = list_documents(project_id=352338, folder_id=123)
+all_documents = list_documents(project_id=352338, recursive=True)
+document = get_document(project_id=352338, document_id=456)
+saved_document = download_document(project_id=352338, document_id=456)
 ```
+
+Procore Documents are exposed through Project Folders and Files endpoints. PyProcore
+keeps the user-friendly `client.documents` and `list_documents()` names while
+internally sending `project_id` as a query parameter to `/rest/v1.0/folders`.
+Folder scoping uses `filters[folder_id]`.
 
 RFI and submittal list calls also accept optional date filters:
 
@@ -223,7 +244,14 @@ recent_submittals = client.submittals.list(
 Human-friendly resolvers are available when you do not already know Procore IDs:
 
 ```python
-from pyprocore import find_company, find_project, find_rfi, find_submittal
+from pyprocore import (
+    find_company,
+    find_document,
+    find_document_folder,
+    find_project,
+    find_rfi,
+    find_submittal,
+)
 from pyprocore.services import find_project_contains
 
 company = find_company("Tracker")
@@ -233,6 +261,8 @@ hospital_project = find_project_contains("Hospital")
 
 rfi = find_rfi(project_id=352338, number="15")
 submittal = find_submittal(project_id=352338, number="27")
+folder = find_document_folder(project_id=352338, name="Drawings")
+document = find_document(project_id=352338, filename="plan.pdf")
 ```
 
 Resolvers use case-insensitive exact matching first, then partial matching. They raise `NotFoundError`, `DuplicateMatchError`, or `MultipleResultsError` when a lookup cannot produce exactly one typed result.
@@ -313,6 +343,7 @@ Available helpers:
 - `export_submittals_to_jsonl()`
 - `sync_rfis_to_folder()`
 - `sync_submittals_to_folder()`
+- `sync_documents_to_folder()`
 
 The object client exposes these under `client.workflows`.
 
@@ -320,7 +351,7 @@ CSV exports are best when you want a spreadsheet-friendly tracker. JSONL
 exports are best when another tool should process one complete typed item per
 line. Folder sync creates:
 
-- `rfis/` or `submittals/` item folders
+- `rfis/`, `submittals/`, or `documents/` item folders
 - `item.json` metadata for each item
 - optional `summary.md` files
 - a tracker CSV when enabled
@@ -350,6 +381,24 @@ print(result.skipped_count)
 
 Project sync combines RFIs and submittals into one output folder and writes
 `project_sync_manifest.json` plus `project_sync_summary.md`.
+
+Document sync downloads project documents and writes `document_tracker.csv`,
+`document_sync_manifest.json`, and `document_sync_summary.md`:
+
+```python
+from pyprocore.workflows import sync_documents_to_folder
+
+result = sync_documents_to_folder(
+    project_id=352338,
+    output_dir="exports/documents",
+    incremental=True,
+    recursive=True,
+)
+```
+
+Document downloads use `download_url` or `url` fields when Procore includes
+them in the file payload. Some Procore environments may require a separate
+secure file access step before a direct download URL is available.
 
 Every typed model serializes back to JSON:
 
@@ -412,8 +461,17 @@ procore-sdk submittals --project 352338 --status pending
 procore-sdk submittals --project 352338 --updated-after 2026-07-01
 procore-sdk submittal --project 352338 --id 309641
 procore-sdk find-submittal --project 352338 --number 27
+procore-sdk document-folders --project 352338
+procore-sdk document-folder --project 352338 --id 123
+procore-sdk find-document-folder --project 352338 --name Drawings
+procore-sdk documents --project 352338
+procore-sdk documents --project 352338 --folder 123
+procore-sdk documents --project 352338 --recursive
+procore-sdk document --project 352338 --id 456
+procore-sdk find-document --project 352338 --filename plan.pdf
 procore-sdk download-rfi --project 352338 --id 102784
 procore-sdk download-submittal --project 352338 --id 309641
+procore-sdk download-document --project 352338 --id 456 --output ./documents
 procore-sdk package-rfi --project 352338 --id 102784
 procore-sdk package-rfi --project-name "Sandbox Test Project" --number 15
 procore-sdk package-submittal --project 352338 --id 309641
@@ -424,6 +482,9 @@ procore-sdk sync-rfis --project 352338 --output ./rfi-sync
 procore-sdk sync-rfis --project 352338 --output ./rfi-sync --dry-run
 procore-sdk sync-rfis --project 352338 --output ./rfi-sync --incremental
 procore-sdk sync-submittals --project 352338 --output ./submittal-sync
+procore-sdk sync-documents --project 352338 --output ./documents
+procore-sdk sync-documents --project 352338 --output ./documents --incremental
+procore-sdk sync-documents --project 352338 --output ./documents --recursive
 procore-sdk sync-project --project 352338 --output ./project-sync
 procore-sdk sync-project --project 352338 --output ./project-sync --incremental
 procore-sdk auth status
@@ -440,8 +501,8 @@ short human-readable summaries.
 
 Runnable example scripts live in [examples/](examples/README.md). They show
 common SDK tasks such as listing projects, fetching RFIs, downloading
-attachments, building workflow packages, exporting CSVs, and syncing local
-review folders.
+attachments and documents, building workflow packages, exporting CSVs, and
+syncing local review folders.
 
 Examples can be syntax-checked without credentials or live Procore access:
 
@@ -452,6 +513,14 @@ make examples-check
 Task-based guides live in [docs/recipes/](docs/recipes/). Recipes explain when
 to use each pattern, which environment variables are needed, what output to
 expect, and how to troubleshoot beginner-friendly issues.
+
+Before releasing Documents changes against a new Procore environment, run the
+manual smoke helper with sandbox credentials:
+
+```bash
+make smoke-documents
+python3 scripts/smoke_documents.py --project 352338 --folder 123
+```
 
 ---
 
@@ -483,6 +552,10 @@ GET /rest/v1.1/projects/{project_id}/rfis
 GET /rest/v1.1/projects/{project_id}/rfis/{rfi_id}
 GET /rest/v1.1/projects/{project_id}/submittals
 GET /rest/v1.1/projects/{project_id}/submittals/{submittal_id}
+GET /rest/v1.0/folders?project_id={project_id}
+GET /rest/v1.0/folders?project_id={project_id}&filters[folder_id]={folder_id}
+GET /rest/v1.0/folders/{folder_id}?project_id={project_id}
+GET /rest/v1.0/files/{document_id}?project_id={project_id}
 ```
 
 ---
@@ -509,7 +582,7 @@ GET /rest/v1.1/projects/{project_id}/submittals/{submittal_id}
 - AI-ready workflow packages
 
 ### Phase 3: Expanded API Coverage
-- Documents
+- Documents: In Progress
 - Drawings
 - Specifications
 - Photos

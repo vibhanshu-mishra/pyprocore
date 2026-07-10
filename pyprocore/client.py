@@ -16,19 +16,26 @@ from pyprocore.automation import (
 )
 from pyprocore.core.config import get_settings
 from pyprocore.core.exceptions import ValidationError
-from pyprocore.models import RFI, Company, Project, Submittal
+from pyprocore.models import RFI, Company, Document, DocumentFolder, Project, Submittal
 from pyprocore.services import (
+    download_document,
     download_rfi_attachments,
     download_submittal_attachments,
     find_company,
+    find_document,
+    find_document_folder,
     find_project,
     find_project_contains,
     find_rfi,
     find_submittal,
+    get_document,
+    get_document_folder,
     get_project,
     get_rfi,
     get_submittal,
     list_companies,
+    list_document_folders,
+    list_documents,
     list_projects,
     list_rfis,
     list_submittals,
@@ -40,6 +47,7 @@ from pyprocore.workflows import (
     export_rfis_to_jsonl,
     export_submittals_to_csv,
     export_submittals_to_jsonl,
+    sync_documents_to_folder,
     sync_project_to_folder,
     sync_rfis_to_folder,
     sync_submittals_to_folder,
@@ -308,6 +316,180 @@ class SubmittalsClient:
             project_id=project_id,
             submittal_id=submittal_id,
             destination_dir=output_dir,
+            overwrite=overwrite,
+        )
+
+
+class DocumentsClient:
+    """Convenience methods for Procore document resources."""
+
+    def list_folders(
+        self,
+        project_id: int,
+        parent_id: int | None = None,
+        *,
+        params: Mapping[str, Any] | None = None,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> list[DocumentFolder]:
+        """List document folders for a Procore project.
+
+        Args:
+            project_id: Procore project ID.
+            parent_id: Optional parent folder ID filter.
+            params: Optional additional query parameters.
+            company_id: Optional company ID sent as ``Procore-Company-Id``.
+            **filters: Additional query parameters passed to Procore.
+
+        Returns:
+            A list of typed document folder models.
+        """
+        return list_document_folders(
+            project_id=project_id,
+            parent_id=parent_id,
+            params=params,
+            company_id=company_id,
+            **filters,
+        )
+
+    def get_folder(
+        self,
+        project_id: int,
+        folder_id: int,
+        *,
+        company_id: int | None = None,
+    ) -> DocumentFolder:
+        """Get one document folder.
+
+        Args:
+            project_id: Procore project ID.
+            folder_id: Procore document folder ID.
+            company_id: Optional company ID sent as ``Procore-Company-Id``.
+
+        Returns:
+            The matching typed document folder model.
+        """
+        return get_document_folder(
+            project_id=project_id,
+            folder_id=folder_id,
+            company_id=company_id,
+        )
+
+    def find_folder(self, project_id: int, name: str) -> DocumentFolder:
+        """Find one document folder by name.
+
+        Args:
+            project_id: Procore project ID.
+            name: Folder name or name fragment.
+
+        Returns:
+            The matching typed document folder model.
+        """
+        return find_document_folder(project_id=project_id, name=name)
+
+    def list(
+        self,
+        project_id: int,
+        folder_id: int | None = None,
+        *,
+        params: Mapping[str, Any] | None = None,
+        recursive: bool = False,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> list[Document]:
+        """List documents for a Procore project.
+
+        Args:
+            project_id: Procore project ID.
+            folder_id: Optional document folder ID filter.
+            params: Optional additional query parameters.
+            recursive: Whether to traverse discovered child folders.
+            company_id: Optional company ID sent as ``Procore-Company-Id``.
+            **filters: Additional query parameters passed to Procore.
+
+        Returns:
+            A list of typed document models.
+        """
+        return list_documents(
+            project_id=project_id,
+            folder_id=folder_id,
+            params=params,
+            recursive=recursive,
+            company_id=company_id,
+            **filters,
+        )
+
+    def get(
+        self,
+        project_id: int,
+        document_id: int,
+        *,
+        company_id: int | None = None,
+    ) -> Document:
+        """Get one document.
+
+        Args:
+            project_id: Procore project ID.
+            document_id: Procore document ID.
+            company_id: Optional company ID sent as ``Procore-Company-Id``.
+
+        Returns:
+            The matching typed document model.
+        """
+        return get_document(
+            project_id=project_id,
+            document_id=document_id,
+            company_id=company_id,
+        )
+
+    def find(
+        self,
+        project_id: int,
+        *,
+        name: str | None = None,
+        filename: str | None = None,
+    ) -> Document:
+        """Find one document by name or filename.
+
+        Args:
+            project_id: Procore project ID.
+            name: Document name or name fragment.
+            filename: Document filename or filename fragment.
+
+        Returns:
+            The matching typed document model.
+        """
+        return find_document(project_id=project_id, name=name, filename=filename)
+
+    def download(
+        self,
+        project_id: int,
+        document_id: int,
+        output_dir: Path | str = "downloads/documents",
+        filename: str | None = None,
+        *,
+        company_id: int | None = None,
+        overwrite: bool = False,
+    ) -> Path:
+        """Download one document.
+
+        Args:
+            project_id: Procore project ID.
+            document_id: Procore document ID.
+            output_dir: Local folder where the document should be saved.
+            filename: Optional local filename.
+            company_id: Optional company ID sent as ``Procore-Company-Id``.
+            overwrite: Whether to overwrite an existing file.
+
+        Returns:
+            The saved document path.
+        """
+        return download_document(
+            project_id=project_id,
+            document_id=document_id,
+            output_dir=output_dir,
+            filename=filename,
+            company_id=company_id,
             overwrite=overwrite,
         )
 
@@ -605,6 +787,34 @@ class WorkflowsClient:
             **filters,
         )
 
+    def sync_documents_to_folder(
+        self,
+        project_id: int,
+        output_dir: Path | str,
+        *,
+        folder_id: int | None = None,
+        recursive: bool = False,
+        overwrite: bool = False,
+        dry_run: bool = False,
+        incremental: bool = False,
+        create_tracker: bool = True,
+        create_markdown: bool = True,
+        **filters: Any,
+    ) -> SyncResult:
+        """Sync documents into a local folder tree."""
+        return sync_documents_to_folder(
+            project_id,
+            output_dir,
+            folder_id=folder_id,
+            recursive=recursive,
+            overwrite=overwrite,
+            dry_run=dry_run,
+            incremental=incremental,
+            create_tracker=create_tracker,
+            create_markdown=create_markdown,
+            **filters,
+        )
+
     def sync_project_to_folder(
         self,
         project_id: int,
@@ -652,6 +862,7 @@ class Procore:
         self.projects = ProjectsClient()
         self.rfis = RFIsClient()
         self.submittals = SubmittalsClient()
+        self.documents = DocumentsClient()
         self.automation = AutomationClient()
         self.workflows = WorkflowsClient()
 
@@ -659,6 +870,7 @@ class Procore:
 __all__ = [
     "AutomationClient",
     "CompaniesClient",
+    "DocumentsClient",
     "Procore",
     "ProjectsClient",
     "RFIsClient",

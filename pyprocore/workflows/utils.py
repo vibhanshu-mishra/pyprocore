@@ -85,8 +85,11 @@ def item_number(item: object) -> str | None:
 
 
 def item_title(item: object, *, fallback: str = "") -> str:
-    """Return the best available title for an RFI or submittal."""
-    return scalar_text(get_value(item, "subject", "title")) or fallback
+    """Return the best available title for a workflow item."""
+    return (
+        scalar_text(get_value(item, "subject", "title", "name", "filename", "file_name"))
+        or fallback
+    )
 
 
 def attachment_count(item: object, *, item_type: str) -> int:

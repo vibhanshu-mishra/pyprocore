@@ -12,6 +12,8 @@ from pyprocore.client import Procore
 from pyprocore.core.exceptions import DuplicateMatchError, MultipleResultsError, NotFoundError
 from pyprocore.services.search import (
     find_company,
+    find_document,
+    find_document_folder,
     find_project,
     find_project_contains,
     find_rfi,
@@ -24,6 +26,7 @@ from pyprocore.workflows import (
     export_rfis_to_jsonl,
     export_submittals_to_csv,
     export_submittals_to_jsonl,
+    sync_documents_to_folder,
     sync_project_to_folder,
     sync_rfis_to_folder,
     sync_submittals_to_folder,
@@ -50,11 +53,14 @@ __all__ = [
     "export_submittals_to_csv",
     "export_submittals_to_jsonl",
     "find_company",
+    "find_document",
+    "find_document_folder",
     "find_project",
     "find_project_contains",
     "find_rfi",
     "find_submittal",
     "sync_project_to_folder",
+    "sync_documents_to_folder",
     "sync_rfis_to_folder",
     "sync_submittals_to_folder",
 ]

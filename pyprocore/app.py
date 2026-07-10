@@ -27,15 +27,22 @@ from pyprocore.automation import AutomationInput, build_workflow_package
 from pyprocore.core.config import get_settings
 from pyprocore.core.doctor import DoctorReport, format_doctor_report, run_doctor
 from pyprocore.services import (
+    download_document,
     download_rfi_attachments,
     download_submittal_attachments,
     find_company,
+    find_document,
+    find_document_folder,
     find_project,
     find_rfi,
     find_submittal,
+    get_document,
+    get_document_folder,
     get_rfi,
     get_submittal,
     list_companies,
+    list_document_folders,
+    list_documents,
     list_projects,
     list_rfis,
     list_submittals,
@@ -45,6 +52,7 @@ from pyprocore.workflows import (
     SyncResult,
     export_rfis_to_csv,
     export_submittals_to_csv,
+    sync_documents_to_folder,
     sync_project_to_folder,
     sync_rfis_to_folder,
     sync_submittals_to_folder,
@@ -173,6 +181,87 @@ def build_parser() -> argparse.ArgumentParser:
     )
     submittal_download_parser.add_argument("--destination-dir", type=Path, default=None)
 
+    document_folders_parser = subcommands.add_parser(
+        "document-folders",
+        help="List document folders for a project",
+    )
+    document_folders_parser.add_argument(
+        "--project", "--project-id", dest="project_id", type=int, required=True
+    )
+    document_folders_parser.add_argument("--parent", "--parent-id", dest="parent_id", type=int)
+    document_folders_parser.add_argument("--company-id", type=int, default=None)
+
+    document_folder_parser = subcommands.add_parser(
+        "document-folder",
+        help="Get one document folder",
+    )
+    document_folder_parser.add_argument(
+        "--project", "--project-id", dest="project_id", type=int, required=True
+    )
+    document_folder_parser.add_argument(
+        "--id", "--folder-id", dest="folder_id", type=int, required=True
+    )
+    document_folder_parser.add_argument("--company-id", type=int, default=None)
+
+    find_document_folder_parser = subcommands.add_parser(
+        "find-document-folder",
+        help="Find one document folder by name",
+    )
+    find_document_folder_parser.add_argument(
+        "--project", "--project-id", dest="project_id", type=int, required=True
+    )
+    find_document_folder_parser.add_argument("--name", required=True)
+
+    documents_parser = subcommands.add_parser("documents", help="List documents for a project")
+    documents_parser.add_argument(
+        "--project", "--project-id", dest="project_id", type=int, required=True
+    )
+    documents_parser.add_argument("--folder", "--folder-id", dest="folder_id", type=int)
+    documents_parser.add_argument(
+        "--recursive",
+        action="store_true",
+        help="Traverse child folders discovered by the Documents API",
+    )
+    documents_parser.add_argument("--company-id", type=int, default=None)
+
+    document_parser = subcommands.add_parser("document", help="Get one document")
+    document_parser.add_argument(
+        "--project", "--project-id", dest="project_id", type=int, required=True
+    )
+    document_parser.add_argument(
+        "--id", "--document-id", dest="document_id", type=int, required=True
+    )
+    document_parser.add_argument("--company-id", type=int, default=None)
+
+    find_document_parser = subcommands.add_parser(
+        "find-document",
+        help="Find one document by name or filename",
+    )
+    find_document_parser.add_argument(
+        "--project", "--project-id", dest="project_id", type=int, required=True
+    )
+    find_document_parser.add_argument("--name", default=None)
+    find_document_parser.add_argument("--filename", default=None)
+
+    document_download_parser = subcommands.add_parser(
+        "download-document",
+        help="Download one document",
+    )
+    document_download_parser.add_argument(
+        "--project", "--project-id", dest="project_id", type=int, required=True
+    )
+    document_download_parser.add_argument(
+        "--id", "--document-id", dest="document_id", type=int, required=True
+    )
+    document_download_parser.add_argument("--output", dest="output_dir", type=Path, default=None)
+    document_download_parser.add_argument("--filename", default=None)
+    document_download_parser.add_argument("--company-id", type=int, default=None)
+    document_download_parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Overwrite the local document file if it exists",
+    )
+
     package_rfi_parser = subcommands.add_parser(
         "package-rfi",
         help="Build an automation package for one RFI",
@@ -214,6 +303,47 @@ def build_parser() -> argparse.ArgumentParser:
     _add_project_output_options(sync_submittals_parser, output_help="Output folder")
     _add_filter_options(sync_submittals_parser)
     _add_sync_options(sync_submittals_parser)
+
+    sync_documents_parser = subcommands.add_parser(
+        "sync-documents",
+        help="Sync project documents to a local folder",
+    )
+    _add_project_output_options(sync_documents_parser, output_help="Output folder")
+    sync_documents_parser.add_argument("--folder", "--folder-id", dest="folder_id", type=int)
+    sync_documents_parser.add_argument(
+        "--recursive",
+        action="store_true",
+        help="Traverse child folders discovered by the Documents API",
+    )
+    sync_documents_parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Overwrite existing downloaded documents",
+    )
+    sync_documents_parser.add_argument(
+        "--no-tracker",
+        dest="create_tracker",
+        action="store_false",
+        default=True,
+        help="Skip tracker CSV creation",
+    )
+    sync_documents_parser.add_argument(
+        "--no-markdown",
+        dest="create_markdown",
+        action="store_false",
+        default=True,
+        help="Skip per-document Markdown summaries",
+    )
+    sync_documents_parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Plan the sync without writing files or downloading documents",
+    )
+    sync_documents_parser.add_argument(
+        "--incremental",
+        action="store_true",
+        help="Skip unchanged documents using local sync state",
+    )
 
     sync_project_parser = subcommands.add_parser(
         "sync-project",
@@ -402,6 +532,48 @@ def run_command(args: argparse.Namespace) -> Any:
             )
         ]
 
+    if args.command == "document-folders":
+        return list_document_folders(
+            args.project_id,
+            parent_id=args.parent_id,
+            company_id=args.company_id,
+        )
+
+    if args.command == "document-folder":
+        return get_document_folder(
+            args.project_id,
+            args.folder_id,
+            company_id=args.company_id,
+        )
+
+    if args.command == "find-document-folder":
+        return find_document_folder(args.project_id, args.name)
+
+    if args.command == "documents":
+        return list_documents(
+            args.project_id,
+            folder_id=args.folder_id,
+            recursive=args.recursive,
+            company_id=args.company_id,
+        )
+
+    if args.command == "document":
+        return get_document(args.project_id, args.document_id, company_id=args.company_id)
+
+    if args.command == "find-document":
+        return find_document(args.project_id, name=args.name, filename=args.filename)
+
+    if args.command == "download-document":
+        output_dir = args.output_dir if args.output_dir is not None else "downloads/documents"
+        return download_document(
+            args.project_id,
+            args.document_id,
+            output_dir=output_dir,
+            filename=args.filename,
+            company_id=args.company_id,
+            overwrite=args.overwrite,
+        )
+
     if args.command == "package-rfi":
         return build_workflow_package(_automation_input(args, item_type="rfi"))
 
@@ -462,6 +634,19 @@ def run_command(args: argparse.Namespace) -> Any:
             create_markdown=args.create_markdown,
             dry_run=args.dry_run,
             incremental=getattr(args, "incremental", False),
+        )
+
+    if args.command == "sync-documents":
+        return sync_documents_to_folder(
+            args.project_id,
+            args.output_path,
+            folder_id=args.folder_id,
+            recursive=args.recursive,
+            overwrite=args.overwrite,
+            create_tracker=args.create_tracker,
+            create_markdown=args.create_markdown,
+            dry_run=args.dry_run,
+            incremental=args.incremental,
         )
 
     if args.command == "sync-project":
@@ -613,6 +798,10 @@ def main() -> None:
 
     if isinstance(result, Path) and args.command in {"export-rfis", "export-submittals"}:
         print(format_export_summary(result))
+        return
+
+    if isinstance(result, Path) and args.command == "download-document":
+        print(f"Download complete.\nOutput: {result}")
         return
 
     print(json.dumps(to_serializable(result), indent=2, default=str))

@@ -8,10 +8,15 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from pyprocore.models import RFI, Submittal
+from pyprocore.models import RFI, Document, Submittal
+from pyprocore.services.documents import download_document, list_documents
 from pyprocore.services.rfis import download_rfi_attachments, list_rfis
 from pyprocore.services.submittals import download_submittal_attachments, list_submittals
-from pyprocore.workflows.exports import write_rfis_csv, write_submittals_csv
+from pyprocore.workflows.exports import (
+    write_documents_csv,
+    write_rfis_csv,
+    write_submittals_csv,
+)
 from pyprocore.workflows.models import (
     ProjectSyncResult,
     SyncedItem,
@@ -313,6 +318,156 @@ def sync_submittals_to_folder(
     )
 
 
+def sync_documents_to_folder(
+    project_id: int,
+    output_dir: Path | str,
+    *,
+    folder_id: int | None = None,
+    recursive: bool = False,
+    overwrite: bool = False,
+    dry_run: bool = False,
+    incremental: bool = False,
+    create_tracker: bool = True,
+    create_markdown: bool = True,
+    create_summary: bool = True,
+    **filters: Any,
+) -> SyncResult:
+    """Sync project documents into a local folder structure.
+
+    Args:
+        project_id: Procore project ID.
+        output_dir: Root output folder.
+        folder_id: Optional Procore document folder ID filter.
+        recursive: Whether to traverse child folders discovered by Procore.
+        overwrite: Whether document downloads may overwrite existing files.
+        dry_run: Whether to plan the sync without writing files or downloading.
+        incremental: Whether to skip unchanged documents using local sync state.
+        create_tracker: Whether to write a CSV tracker.
+        create_markdown: Whether to write one Markdown summary per document.
+        create_summary: Whether to write a Markdown sync summary.
+        **filters: Additional list filter parameters passed to the document service.
+
+    Returns:
+        A typed sync result with manifest and downloaded document paths.
+    """
+    documents = list_documents(
+        project_id,
+        folder_id=folder_id,
+        recursive=recursive,
+        **filters,
+    )
+    root = Path(output_dir)
+    items_root = root / "documents"
+    if not dry_run:
+        items_root.mkdir(parents=True, exist_ok=True)
+
+    synced_items: list[SyncedItem] = []
+    skipped_items: list[SyncedItem] = []
+    downloaded_files: list[Path] = []
+    warnings = _sync_warnings(dry_run=dry_run, download_attachments=True)
+    state_path = build_sync_state_path(root, "document") if incremental else None
+    previous_state = _load_previous_state(state_path, project_id, "document", warnings)
+    for document in documents:
+        if document.id is None:
+            warnings.append("Skipped a document without an id.")
+            continue
+        folder = _item_folder(items_root, "DOC", document)
+        item_json_path = folder / "item.json"
+        summary_path = folder / "summary.md" if create_markdown else None
+        synced_item = _synced_item(
+            document,
+            folder,
+            item_type="document",
+            item_json_path=item_json_path,
+            summary_path=summary_path,
+        )
+        if _should_skip_item(document, previous_state):
+            skipped_items.append(synced_item)
+            continue
+        if not dry_run:
+            folder.mkdir(parents=True, exist_ok=True)
+            _write_item_json(item_json_path, document)
+            if summary_path is not None:
+                _write_markdown(summary_path, _document_markdown(document))
+            downloaded_files.append(
+                download_document(
+                    project_id,
+                    document.id,
+                    folder,
+                    filename=document.filename or document.file_name or document.name,
+                    overwrite=overwrite,
+                )
+            )
+        synced_items.append(synced_item)
+
+    tracker_path = root / "document_tracker.csv" if create_tracker else None
+    if tracker_path is not None and not dry_run:
+        write_documents_csv(documents, tracker_path)
+    manifest_path = None
+    summary_path = None
+    if not dry_run:
+        manifest_path = _write_manifest(
+            root,
+            item_type="document",
+            project_id=project_id,
+            tracker_path=tracker_path,
+            downloaded_files=downloaded_files,
+            skipped_files=[],
+            errors=[],
+            warnings=warnings,
+            items=synced_items,
+            skipped_items=skipped_items,
+            incremental=incremental,
+            manifest_filename="document_sync_manifest.json",
+        )
+        if incremental and state_path is not None:
+            save_sync_state(
+                _build_state(project_id, "document", documents, items_root),
+                state_path,
+            )
+        if create_summary:
+            summary_path = _write_sync_summary(
+                root / "document_sync_summary.md",
+                _sync_result_for_summary(
+                    root,
+                    "document",
+                    project_id,
+                    len(documents),
+                    tracker_path,
+                    manifest_path,
+                    downloaded_files,
+                    warnings,
+                    dry_run,
+                    incremental,
+                    state_path,
+                    synced_items,
+                    skipped_items,
+                ),
+            )
+    return SyncResult(
+        output_dir=root,
+        item_type="document",
+        project_id=project_id,
+        item_count=len(documents),
+        tracker_path=tracker_path,
+        manifest_path=manifest_path,
+        downloaded_files=downloaded_files,
+        skipped_files=[],
+        errors=[],
+        warnings=warnings,
+        dry_run=dry_run,
+        summary_path=summary_path,
+        synced_count=len(synced_items),
+        skipped_count=len(skipped_items),
+        warning_count=len(warnings),
+        error_count=0,
+        state_path=state_path,
+        incremental=incremental,
+        items=synced_items,
+        skipped_items=skipped_items,
+    )
+
+
 def sync_project_to_folder(
     project_id: int,
     output_dir: Path | str,
@@ -504,6 +659,24 @@ def _submittal_markdown(submittal: Submittal) -> str:
     return "\n".join(lines).rstrip() + "\n"
 
 
+def _document_markdown(document: Document) -> str:
+    """Return a Markdown summary for one document."""
+    lines = [
+        f"# Document: {item_title(document, fallback='Untitled Document')}",
+        "",
+        f"- ID: {scalar_text(document.id)}",
+        f"- Name: {scalar_text(document.name)}",
+        f"- Filename: {scalar_text(document.filename or document.file_name)}",
+        f"- Folder ID: {scalar_text(document.folder_id)}",
+        f"- Content Type: {scalar_text(document.content_type)}",
+        f"- File Size: {scalar_text(document.file_size)}",
+        f"- Created At: {scalar_text(document.created_at)}",
+        f"- Updated At: {scalar_text(document.updated_at)}",
+        "",
+    ]
+    return "\n".join(lines).rstrip() + "\n"
+
+
 def _write_manifest(
     root: Path,
     *,
@@ -517,9 +690,10 @@ def _write_manifest(
     items: Sequence[SyncedItem],
     skipped_items: Sequence[SyncedItem],
     incremental: bool,
+    manifest_filename: str = "sync_manifest.json",
 ) -> Path:
     """Write a sync manifest and return its path."""
-    manifest_path = root / "sync_manifest.json"
+    manifest_path = root / manifest_filename
     payload: Mapping[str, Any] = {
         "item_type": item_type,
         "project_id": project_id,
@@ -577,8 +751,10 @@ def _should_skip_item(item: object, state: SyncState | None) -> bool:
 def _build_state(project_id: int, item_type: str, items: Sequence[object], root: Path) -> SyncState:
     """Build current sync state for all listed items."""
     state_items: dict[str, SyncStateItem] = {}
-    prefix = "RFI" if item_type == "rfi" else "SUB"
+    prefix = {"rfi": "RFI", "submittal": "SUB", "document": "DOC"}.get(item_type, "ITEM")
     for item in items:
+        if get_value(item, "id") is None:
+            continue
         item_id = int(get_value(item, "id"))
         folder = _item_folder(root, prefix, item)
         state_items[str(item_id)] = SyncStateItem(

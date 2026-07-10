@@ -9,7 +9,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import Mock, patch
 
-from pyprocore.models import RFI, RFIQuestion, Status, Submittal
+from pyprocore.models import RFI, Document, RFIQuestion, Status, Submittal
 from pyprocore.workflows import (
     ProjectSyncResult,
     SyncResult,
@@ -17,6 +17,7 @@ from pyprocore.workflows import (
     export_rfis_to_jsonl,
     export_submittals_to_csv,
     export_submittals_to_jsonl,
+    sync_documents_to_folder,
     sync_project_to_folder,
     sync_rfis_to_folder,
     sync_submittals_to_folder,
@@ -449,6 +450,101 @@ class WorkflowSyncTestCase(unittest.TestCase):
         self.assertTrue(any("Could not read sync state" in warning for warning in result.warnings))
         download_rfi_attachments.assert_called_once()
 
+    @patch("pyprocore.workflows.sync.download_document")
+    @patch("pyprocore.workflows.sync.list_documents")
+    def test_sync_documents_to_folder_writes_artifacts(
+        self,
+        list_documents: Mock,
+        download_document: Mock,
+    ) -> None:
+        """Document sync writes document files, tracker, manifest, and summaries."""
+        list_documents.return_value = [
+            Document(
+                id=30,
+                name="Project Plan",
+                filename="plan.pdf",
+                download_url="https://signed.example/plan.pdf",
+                folder_id=5,
+                updated_at="2026-07-01",
+            )
+        ]
+        download_document.return_value = Path("plan.pdf")
+
+        with TemporaryDirectory() as temporary_directory:
+            result = sync_documents_to_folder(
+                352338,
+                temporary_directory,
+                folder_id=5,
+                overwrite=True,
+            )
+            root = Path(temporary_directory)
+            item_folder = root / "documents" / "DOC-30 - Project Plan"
+            manifest = json.loads(
+                (root / "document_sync_manifest.json").read_text(encoding="utf-8")
+            )
+
+            self.assertEqual(result.item_type, "document")
+            self.assertEqual(result.item_count, 1)
+            self.assertTrue((item_folder / "item.json").exists())
+            self.assertTrue((item_folder / "summary.md").exists())
+            self.assertTrue((root / "document_tracker.csv").exists())
+
+        self.assertEqual(manifest["item_type"], "document")
+        self.assertEqual(manifest["synced_count"], 1)
+        list_documents.assert_called_once_with(352338, folder_id=5, recursive=False)
+        download_document.assert_called_once_with(
+            352338,
+            30,
+            item_folder,
+            filename="plan.pdf",
+            overwrite=True,
+        )
+
+    @patch("pyprocore.workflows.sync.download_document")
+    @patch("pyprocore.workflows.sync.list_documents")
+    def test_sync_documents_to_folder_dry_run_does_not_write(
+        self,
+        list_documents: Mock,
+        download_document: Mock,
+    ) -> None:
+        """Document dry-run plans local outputs without writing or downloading."""
+        list_documents.return_value = [Document(id=30, name="Project Plan")]
+
+        with TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory) / "docs"
+            result = sync_documents_to_folder(352338, root, dry_run=True)
+
+            self.assertTrue(result.dry_run)
+            self.assertEqual(result.tracker_path, root / "document_tracker.csv")
+            self.assertFalse(root.exists())
+
+        download_document.assert_not_called()
+
+    @patch("pyprocore.workflows.sync.download_document")
+    @patch("pyprocore.workflows.sync.list_documents")
+    def test_sync_documents_incremental_skips_unchanged(
+        self,
+        list_documents: Mock,
+        download_document: Mock,
+    ) -> None:
+        """Document incremental sync skips unchanged documents on later runs."""
+        list_documents.side_effect = [
+            [Document(id=30, name="Project Plan", updated_at="2026-07-01")],
+            [Document(id=30, name="Project Plan", updated_at="2026-07-01")],
+        ]
+        download_document.return_value = Path("plan.pdf")
+
+        with TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            sync_documents_to_folder(352338, root, incremental=True)
+            result = sync_documents_to_folder(352338, root, incremental=True)
+            state = load_sync_state(build_sync_state_path(root, "document"))
+
+        self.assertEqual(result.synced_count, 0)
+        self.assertEqual(result.skipped_count, 1)
+        self.assertEqual(state.items["30"].updated_at, "2026-07-01")
+        self.assertEqual(download_document.call_count, 1)
+
     @patch("pyprocore.workflows.sync.sync_submittals_to_folder")
     @patch("pyprocore.workflows.sync.sync_rfis_to_folder")
     def test_sync_project_to_folder_combines_child_results(
@@ -533,4 +629,3 @@ class WorkflowSyncTestCase(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-    sync_project_to_folder,

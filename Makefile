@@ -1,4 +1,4 @@
-.PHONY: test coverage examples-check lint format typecheck clean
+.PHONY: test coverage examples-check smoke-documents lint format typecheck clean
 
 PYTHON ?= python3
 
@@ -12,6 +12,9 @@ coverage:
 
 examples-check:
 	$(PYTHON) scripts/check_examples.py
+
+smoke-documents:
+	$(PYTHON) scripts/smoke_documents.py
 
 lint:
 	$(PYTHON) -m black --check pyprocore tests

@@ -14,6 +14,7 @@ coverage priorities.
 - Projects
 - RFIs
 - Submittals
+- Documents
 - Attachment downloads
 - Typed models
 - Search and resolver helpers
@@ -46,12 +47,12 @@ Status: Completed
 
 ## Phase 3: Expanded API Coverage
 
-Status: Planned
+Status: In Progress
 
 Phase 3 will focus on expanded endpoint coverage for project resources such as
 Documents, Drawings, Specifications, Photos, and Daily Logs.
 
-- Documents
+- Documents: In Progress
 - Drawings
 - Specifications
 - Photos

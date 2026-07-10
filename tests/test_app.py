@@ -97,6 +97,58 @@ class AppTestCase(unittest.TestCase):
             parser.parse_args(["find-submittal", "--project", "10", "--number", "27"]).number,
             "27",
         )
+
+        document_folders = parser.parse_args(
+            ["document-folders", "--project", "10", "--parent", "5", "--company-id", "123"]
+        )
+        self.assertEqual(document_folders.command, "document-folders")
+        self.assertEqual(document_folders.project_id, 10)
+        self.assertEqual(document_folders.parent_id, 5)
+        self.assertEqual(document_folders.company_id, 123)
+        self.assertEqual(
+            parser.parse_args(["document-folder", "--project", "10", "--id", "5"]).folder_id,
+            5,
+        )
+        self.assertEqual(
+            parser.parse_args(
+                ["find-document-folder", "--project", "10", "--name", "Drawings"]
+            ).name,
+            "Drawings",
+        )
+        documents = parser.parse_args(
+            ["documents", "--project", "10", "--folder", "5", "--recursive"]
+        )
+        self.assertEqual(documents.command, "documents")
+        self.assertEqual(documents.folder_id, 5)
+        self.assertTrue(documents.recursive)
+        self.assertEqual(
+            parser.parse_args(["document", "--project", "10", "--id", "99"]).document_id,
+            99,
+        )
+        self.assertEqual(
+            parser.parse_args(
+                ["find-document", "--project", "10", "--filename", "plan.pdf"]
+            ).filename,
+            "plan.pdf",
+        )
+        download_document = parser.parse_args(
+            [
+                "download-document",
+                "--project",
+                "10",
+                "--id",
+                "99",
+                "--output",
+                "docs",
+                "--filename",
+                "plan.pdf",
+                "--overwrite",
+            ]
+        )
+        self.assertEqual(download_document.command, "download-document")
+        self.assertEqual(download_document.output_dir, Path("docs"))
+        self.assertTrue(download_document.overwrite)
+
         package_rfi = parser.parse_args(
             [
                 "package-rfi",
@@ -174,6 +226,26 @@ class AppTestCase(unittest.TestCase):
         self.assertTrue(sync_project.rfis_only)
         self.assertFalse(sync_project.submittals_only)
         self.assertTrue(sync_project.incremental)
+
+        sync_documents = parser.parse_args(
+            [
+                "sync-documents",
+                "--project",
+                "10",
+                "--output",
+                "documents",
+                "--folder",
+                "5",
+                "--recursive",
+                "--dry-run",
+                "--incremental",
+            ]
+        )
+        self.assertEqual(sync_documents.command, "sync-documents")
+        self.assertEqual(sync_documents.folder_id, 5)
+        self.assertTrue(sync_documents.recursive)
+        self.assertTrue(sync_documents.dry_run)
+        self.assertTrue(sync_documents.incremental)
 
     def test_download_command_aliases_are_supported(self) -> None:
         """Legacy attachment command aliases still parse to the canonical command."""
@@ -428,6 +500,102 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(result, ["submittal.pdf"])
         download_submittal.assert_called_once_with(10, 30, Path("downloads"))
 
+    def test_run_document_commands_dispatch_to_helpers(self) -> None:
+        """Document commands call document service helpers."""
+        with patch.object(app, "list_document_folders", return_value="folders") as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="document-folders",
+                    project_id=10,
+                    parent_id=5,
+                    company_id=123,
+                )
+            )
+        self.assertEqual(result, "folders")
+        helper.assert_called_once_with(10, parent_id=5, company_id=123)
+
+        with patch.object(app, "get_document_folder", return_value="folder") as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="document-folder",
+                    project_id=10,
+                    folder_id=5,
+                    company_id=123,
+                )
+            )
+        self.assertEqual(result, "folder")
+        helper.assert_called_once_with(10, 5, company_id=123)
+
+        with patch.object(app, "find_document_folder", return_value="folder") as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="find-document-folder",
+                    project_id=10,
+                    name="Drawings",
+                )
+            )
+        self.assertEqual(result, "folder")
+        helper.assert_called_once_with(10, "Drawings")
+
+        with patch.object(app, "list_documents", return_value="documents") as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="documents",
+                    project_id=10,
+                    folder_id=5,
+                    recursive=True,
+                    company_id=123,
+                )
+            )
+        self.assertEqual(result, "documents")
+        helper.assert_called_once_with(10, folder_id=5, recursive=True, company_id=123)
+
+        with patch.object(app, "get_document", return_value="document") as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="document",
+                    project_id=10,
+                    document_id=99,
+                    company_id=123,
+                )
+            )
+        self.assertEqual(result, "document")
+        helper.assert_called_once_with(10, 99, company_id=123)
+
+        with patch.object(app, "find_document", return_value="document") as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="find-document",
+                    project_id=10,
+                    name=None,
+                    filename="plan.pdf",
+                )
+            )
+        self.assertEqual(result, "document")
+        helper.assert_called_once_with(10, name=None, filename="plan.pdf")
+
+        with patch.object(app, "download_document", return_value=Path("plan.pdf")) as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="download-document",
+                    project_id=10,
+                    document_id=99,
+                    output_dir=Path("docs"),
+                    filename="plan.pdf",
+                    company_id=123,
+                    overwrite=True,
+                )
+            )
+        self.assertEqual(result, Path("plan.pdf"))
+        helper.assert_called_once_with(
+            10,
+            99,
+            output_dir=Path("docs"),
+            filename="plan.pdf",
+            company_id=123,
+            overwrite=True,
+        )
+
     def test_run_package_commands_build_workflow_packages(self) -> None:
         """Automation package commands build workflow inputs and return packages."""
         with patch.object(app, "build_workflow_package", return_value="package") as builder:
@@ -566,6 +734,35 @@ class AppTestCase(unittest.TestCase):
             create_markdown=False,
             dry_run=True,
             incremental=False,
+        )
+
+        with patch.object(app, "sync_documents_to_folder", return_value="sync-docs") as sync:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="sync-documents",
+                    project_id=10,
+                    output_path=Path("documents"),
+                    folder_id=5,
+                    recursive=True,
+                    overwrite=True,
+                    create_tracker=False,
+                    create_markdown=False,
+                    dry_run=True,
+                    incremental=True,
+                )
+            )
+
+        self.assertEqual(result, "sync-docs")
+        sync.assert_called_once_with(
+            10,
+            Path("documents"),
+            folder_id=5,
+            recursive=True,
+            overwrite=True,
+            create_tracker=False,
+            create_markdown=False,
+            dry_run=True,
+            incremental=True,
         )
 
     def test_run_project_sync_command_dispatches_to_helper(self) -> None:

@@ -11,6 +11,7 @@ from pyprocore.automation import AutomationInput
 from pyprocore.client import (
     AutomationClient,
     CompaniesClient,
+    DocumentsClient,
     ProjectsClient,
     RFIsClient,
     SubmittalsClient,
@@ -30,6 +31,7 @@ class ProcoreObjectClientTestCase(unittest.TestCase):
         self.assertIsInstance(client.projects, ProjectsClient)
         self.assertIsInstance(client.rfis, RFIsClient)
         self.assertIsInstance(client.submittals, SubmittalsClient)
+        self.assertIsInstance(client.documents, DocumentsClient)
         self.assertIsInstance(client.automation, AutomationClient)
         self.assertIsInstance(client.workflows, WorkflowsClient)
 
@@ -284,6 +286,141 @@ class ProcoreObjectClientTestCase(unittest.TestCase):
             overwrite=True,
         )
 
+    @patch("pyprocore.client.list_document_folders")
+    def test_documents_list_folders_delegates_to_service(
+        self,
+        list_document_folders: Mock,
+    ) -> None:
+        """Document folder listing delegates to the document service."""
+        list_document_folders.return_value = ["folder"]
+
+        result = Procore().documents.list_folders(
+            project_id=352338,
+            parent_id=10,
+            params={"per_page": 100},
+            company_id=123,
+            sort="name",
+        )
+
+        self.assertEqual(result, ["folder"])
+        list_document_folders.assert_called_once_with(
+            project_id=352338,
+            parent_id=10,
+            params={"per_page": 100},
+            company_id=123,
+            sort="name",
+        )
+
+    @patch("pyprocore.client.get_document_folder")
+    def test_documents_get_folder_delegates_to_service(
+        self,
+        get_document_folder: Mock,
+    ) -> None:
+        """Document folder retrieval delegates to the document service."""
+        get_document_folder.return_value = "folder"
+
+        result = Procore().documents.get_folder(
+            project_id=352338,
+            folder_id=10,
+            company_id=123,
+        )
+
+        self.assertEqual(result, "folder")
+        get_document_folder.assert_called_once_with(
+            project_id=352338,
+            folder_id=10,
+            company_id=123,
+        )
+
+    @patch("pyprocore.client.find_document_folder")
+    def test_documents_find_folder_delegates_to_resolver(
+        self,
+        find_document_folder: Mock,
+    ) -> None:
+        """Document folder lookup delegates to the resolver."""
+        find_document_folder.return_value = "folder"
+
+        result = Procore().documents.find_folder(project_id=352338, name="Drawings")
+
+        self.assertEqual(result, "folder")
+        find_document_folder.assert_called_once_with(project_id=352338, name="Drawings")
+
+    @patch("pyprocore.client.list_documents")
+    def test_documents_list_delegates_to_service(self, list_documents: Mock) -> None:
+        """Document listing delegates to the document service."""
+        list_documents.return_value = ["document"]
+
+        result = Procore().documents.list(
+            project_id=352338,
+            folder_id=10,
+            params={"per_page": 100},
+            recursive=True,
+            company_id=123,
+            sort="name",
+        )
+
+        self.assertEqual(result, ["document"])
+        list_documents.assert_called_once_with(
+            project_id=352338,
+            folder_id=10,
+            params={"per_page": 100},
+            recursive=True,
+            company_id=123,
+            sort="name",
+        )
+
+    @patch("pyprocore.client.get_document")
+    def test_documents_get_delegates_to_service(self, get_document: Mock) -> None:
+        """Document retrieval delegates to the document service."""
+        get_document.return_value = "document"
+
+        result = Procore().documents.get(project_id=352338, document_id=99, company_id=123)
+
+        self.assertEqual(result, "document")
+        get_document.assert_called_once_with(
+            project_id=352338,
+            document_id=99,
+            company_id=123,
+        )
+
+    @patch("pyprocore.client.find_document")
+    def test_documents_find_delegates_to_resolver(self, find_document: Mock) -> None:
+        """Document lookup delegates to the resolver."""
+        find_document.return_value = "document"
+
+        result = Procore().documents.find(project_id=352338, filename="plan.pdf")
+
+        self.assertEqual(result, "document")
+        find_document.assert_called_once_with(
+            project_id=352338,
+            name=None,
+            filename="plan.pdf",
+        )
+
+    @patch("pyprocore.client.download_document")
+    def test_documents_download_delegates_to_service(self, download_document: Mock) -> None:
+        """Document downloads pass output and overwrite options through."""
+        download_document.return_value = Path("document.pdf")
+
+        result = Procore().documents.download(
+            project_id=352338,
+            document_id=99,
+            output_dir="downloads/documents",
+            filename="plan.pdf",
+            company_id=123,
+            overwrite=True,
+        )
+
+        self.assertEqual(result, Path("document.pdf"))
+        download_document.assert_called_once_with(
+            project_id=352338,
+            document_id=99,
+            output_dir="downloads/documents",
+            filename="plan.pdf",
+            company_id=123,
+            overwrite=True,
+        )
+
     @patch("pyprocore.client.build_workflow_package")
     def test_automation_build_package_delegates_to_builder(
         self,
@@ -491,6 +628,37 @@ class ProcoreObjectClientTestCase(unittest.TestCase):
             create_markdown=True,
             dry_run=False,
             incremental=False,
+        )
+
+    @patch("pyprocore.client.sync_documents_to_folder")
+    def test_workflows_sync_documents_delegates_to_helper(
+        self,
+        sync_documents_to_folder: Mock,
+    ) -> None:
+        """Workflow document sync delegates to the workflow helper."""
+        sync_documents_to_folder.return_value = "result"
+
+        result = Procore().workflows.sync_documents_to_folder(
+            1,
+            "out",
+            folder_id=5,
+            recursive=True,
+            overwrite=True,
+            dry_run=True,
+            incremental=True,
+        )
+
+        self.assertEqual(result, "result")
+        sync_documents_to_folder.assert_called_once_with(
+            1,
+            "out",
+            folder_id=5,
+            recursive=True,
+            overwrite=True,
+            dry_run=True,
+            incremental=True,
+            create_tracker=True,
+            create_markdown=True,
         )
 
     @patch("pyprocore.client.sync_project_to_folder")

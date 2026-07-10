@@ -36,6 +36,8 @@ export PROCORE_RFI_STATUS=open
 export PROCORE_SUBMITTAL_ID=your_submittal_id
 export PROCORE_SUBMITTAL_NUMBER=your_submittal_number
 export PROCORE_SUBMITTAL_STATUS=pending
+export PROCORE_DOCUMENT_ID=your_document_id
+export PROCORE_DOCUMENT_FOLDER_ID=your_document_folder_id
 export PROCORE_OUTPUT_DIR=downloads/examples
 export PROCORE_DRY_RUN=1
 export PROCORE_STATUS=open
@@ -55,6 +57,14 @@ python3 examples/05_get_rfi.py
 python3 examples/13_client_interface.py
 python3 examples/14_export_rfis_to_csv.py
 python3 examples/18_incremental_sync.py
+python3 examples/20_list_documents.py
+```
+
+Documents use Procore's Project Folders and Files endpoints internally. Before a
+release or sandbox rollout, inspect the live payload shape with:
+
+```bash
+make smoke-documents
 ```
 
 Each script prints helpful messages when required environment variables are
@@ -91,6 +101,9 @@ make examples-check
 | `17_sync_submittals_to_folder.py` | Sync project submittals into local folders |
 | `18_incremental_sync.py` | Run an incremental RFI sync with local state |
 | `19_sync_project_to_folder.py` | Sync RFIs and submittals into one project folder |
+| `20_list_documents.py` | List documents for a project or document folder |
+| `21_download_document.py` | Download one document by ID |
+| `22_sync_documents_to_folder.py` | Sync project documents into local folders |
 
 ## Safety Notes
 
