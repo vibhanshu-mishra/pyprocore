@@ -31,6 +31,7 @@ from pyprocore.core.exceptions import (
     ConfigurationError,
     ProcoreAPIError,
     ResourceNotFoundError,
+    ValidationError,
 )
 from pyprocore.services import (
     download_document,
@@ -93,6 +94,15 @@ from pyprocore.services import (
     list_specification_sets,
     list_submittals,
     list_visitor_logs,
+)
+from pyprocore.webhooks import (
+    WebhookDispatchResult,
+    WebhookEvent,
+    WebhookEventStoreResult,
+    dispatch_webhook_event,
+    list_webhook_events,
+    load_webhook_event,
+    save_webhook_event,
 )
 from pyprocore.workflows import (
     AIExportResult,
@@ -893,6 +903,61 @@ def build_parser() -> argparse.ArgumentParser:
     )
     workflow_plan_run_parser.add_argument("--json", dest="json_output", action="store_true")
 
+    webhook_parser = subcommands.add_parser(
+        "webhook",
+        help="Validate, save, list, or dry-run local webhook event payloads",
+    )
+    webhook_subcommands = webhook_parser.add_subparsers(
+        dest="webhook_command",
+        required=True,
+    )
+
+    webhook_validate_parser = webhook_subcommands.add_parser(
+        "validate",
+        help="Validate and summarize a local webhook event JSON payload",
+    )
+    webhook_validate_parser.add_argument("event_json", type=Path)
+    webhook_validate_parser.add_argument("--json", dest="json_output", action="store_true")
+
+    webhook_save_parser = webhook_subcommands.add_parser(
+        "save",
+        help="Save a local webhook event JSON payload to the event store",
+    )
+    webhook_save_parser.add_argument("event_json", type=Path)
+    webhook_save_parser.add_argument("--event-dir", type=Path)
+    webhook_save_parser.add_argument("--json", dest="json_output", action="store_true")
+
+    webhook_list_parser = webhook_subcommands.add_parser(
+        "list",
+        help="List saved local webhook events",
+    )
+    _add_webhook_filter_options(webhook_list_parser)
+    webhook_list_parser.add_argument("--event-dir", type=Path)
+    webhook_list_parser.add_argument("--json", dest="json_output", action="store_true")
+
+    webhook_dispatch_parser = webhook_subcommands.add_parser(
+        "dispatch",
+        help="Dry-run or dispatch a local webhook event to a workflow plan",
+    )
+    webhook_dispatch_parser.add_argument("event_json", type=Path)
+    webhook_dispatch_parser.add_argument("--workflow-plan", type=Path)
+    webhook_dispatch_parser.add_argument("--output-dir", type=Path)
+    webhook_dispatch_parser.add_argument("--event-dir", type=Path)
+    webhook_dispatch_parser.add_argument(
+        "--dry-run",
+        dest="dry_run",
+        action="store_true",
+        default=True,
+        help="Validate and resolve the workflow plan without live execution",
+    )
+    webhook_dispatch_parser.add_argument(
+        "--no-dry-run",
+        dest="dry_run",
+        action="store_false",
+        help="Allow the workflow plan to execute. Use with care.",
+    )
+    webhook_dispatch_parser.add_argument("--json", dest="json_output", action="store_true")
+
     sync_rfis_parser = subcommands.add_parser(
         "sync-rfis",
         help="Sync project RFIs to a local folder",
@@ -1133,6 +1198,17 @@ def _add_sync_options(parser: argparse.ArgumentParser) -> None:
     )
 
 
+def _add_webhook_filter_options(parser: argparse.ArgumentParser) -> None:
+    """Add common webhook event store filter options to a parser."""
+    parser.add_argument("--company-id")
+    parser.add_argument("--project-id")
+    parser.add_argument("--resource-type")
+    parser.add_argument("--resource-id")
+    parser.add_argument("--event-type")
+    parser.add_argument("--action")
+    parser.add_argument("--date")
+
+
 def run_command(args: argparse.Namespace) -> Any:
     """Run a parsed CLI command and return serializable output."""
     if args.command == "doctor":
@@ -1162,6 +1238,31 @@ def run_command(args: argparse.Namespace) -> Any:
                 continue_on_error=args.continue_on_error,
             )
         raise ValueError(f"Unsupported workflow-plan command: {args.workflow_plan_command}")
+
+    if args.command == "webhook":
+        if args.webhook_command == "validate":
+            return load_webhook_event(args.event_json)
+        if args.webhook_command == "save":
+            return save_webhook_event(
+                load_webhook_event(args.event_json),
+                event_dir=args.event_dir,
+            )
+        if args.webhook_command == "list":
+            return list_webhook_events(
+                event_dir=args.event_dir,
+                filters=_webhook_filters_from_args(args),
+            )
+        if args.webhook_command == "dispatch":
+            event = load_webhook_event(args.event_json)
+            if args.event_dir is not None:
+                save_webhook_event(event, event_dir=args.event_dir)
+            return dispatch_webhook_event(
+                event,
+                workflow_plan=args.workflow_plan,
+                output_dir=args.output_dir,
+                dry_run=args.dry_run,
+            )
+        raise ValueError(f"Unsupported webhook command: {args.webhook_command}")
 
     if args.command == "companies":
         return list_companies()
@@ -1762,6 +1863,19 @@ def to_serializable(value: Any) -> Any:
     return value
 
 
+def _webhook_filters_from_args(args: argparse.Namespace) -> dict[str, str | None]:
+    """Return webhook event store filters from parsed CLI arguments."""
+    return {
+        "company_id": args.company_id,
+        "project_id": args.project_id,
+        "resource_type": args.resource_type,
+        "resource_id": args.resource_id,
+        "event_type": args.event_type,
+        "action": args.action,
+        "date": args.date,
+    }
+
+
 def format_export_summary(path: Path) -> str:
     """Return a human-readable export summary."""
     return f"Export complete.\nOutput: {path}"
@@ -1925,6 +2039,77 @@ def format_workflow_run_summary(result: WorkflowRunResult) -> str:
     )
 
 
+def format_webhook_event_summary(event: WebhookEvent) -> str:
+    """Return a human-readable webhook event summary."""
+    lines = [
+        "Webhook event is valid.",
+        f"Event ID: {event.event_id}",
+        f"Event type: {event.event_type or 'unknown'}",
+        f"Action: {event.action or 'unknown'}",
+        f"Resource: {event.resource_type or 'unknown'} {event.resource_id or ''}".rstrip(),
+        f"Company: {event.company_id or 'unknown'}",
+        f"Project: {event.project_id or 'unknown'}",
+    ]
+    if event.warnings:
+        lines.append("Warnings:")
+        lines.extend(f"- {warning}" for warning in event.warnings)
+    return "\n".join(lines)
+
+
+def format_webhook_store_summary(result: WebhookEventStoreResult) -> str:
+    """Return a human-readable webhook save summary."""
+    return "\n".join(
+        [
+            "Webhook event saved.",
+            f"Event ID: {result.event.event_id}",
+            f"Original payload: {result.original_path}",
+            f"Normalized event: {result.normalized_path}",
+        ]
+    )
+
+
+def format_webhook_events_list(events: list[WebhookEvent]) -> str:
+    """Return a human-readable list of webhook event summaries."""
+    if not events:
+        return "No saved webhook events found."
+    lines = [f"Saved webhook events: {len(events)}"]
+    for event in events:
+        lines.append(
+            " - ".join(
+                [
+                    event.event_id,
+                    event.event_type or "unknown",
+                    event.action or "unknown",
+                    event.resource_type or "unknown",
+                    event.resource_id or "unknown",
+                    f"project={event.project_id or 'unknown'}",
+                ]
+            )
+        )
+    return "\n".join(lines)
+
+
+def format_webhook_dispatch_summary(result: WebhookDispatchResult) -> str:
+    """Return a human-readable webhook dispatch summary."""
+    lines = [
+        "Webhook dispatch complete.",
+        f"Event ID: {result.event.event_id}",
+        f"Dispatched: {result.dispatched}",
+        f"Dry run: {result.dry_run}",
+        f"Message: {result.message}",
+    ]
+    if result.workflow_plan is not None:
+        lines.append(f"Workflow plan: {result.workflow_plan}")
+    if result.workflow_result is not None:
+        lines.extend(
+            [
+                f"Workflow status: {result.workflow_result.status}",
+                f"Workflow output: {result.workflow_result.output_dir}",
+            ]
+        )
+    return "\n".join(lines)
+
+
 def main() -> None:
     """Run the CLI entrypoint."""
     parser = build_parser()
@@ -1933,6 +2118,9 @@ def main() -> None:
         result = run_command(args)
     except ConfigurationError as exc:
         print(format_configuration_error(exc))
+        raise SystemExit(1) from exc
+    except ValidationError as exc:
+        print(f"PyProcore input is invalid.\n\nDetails: {exc}")
         raise SystemExit(1) from exc
     except (AuthorizationError, ResourceNotFoundError, ProcoreAPIError) as exc:
         print(format_cli_error(exc))
@@ -1982,6 +2170,34 @@ def main() -> None:
             print(json.dumps(to_serializable(result), indent=2, default=str))
         else:
             print(format_workflow_run_summary(result))
+        return
+
+    if isinstance(result, WebhookEvent):
+        if args.json_output:
+            print(json.dumps(to_serializable(result), indent=2, default=str))
+        else:
+            print(format_webhook_event_summary(result))
+        return
+
+    if isinstance(result, WebhookEventStoreResult):
+        if args.json_output:
+            print(json.dumps(to_serializable(result), indent=2, default=str))
+        else:
+            print(format_webhook_store_summary(result))
+        return
+
+    if isinstance(result, WebhookDispatchResult):
+        if args.json_output:
+            print(json.dumps(to_serializable(result), indent=2, default=str))
+        else:
+            print(format_webhook_dispatch_summary(result))
+        return
+
+    if isinstance(result, list) and args.command == "webhook" and args.webhook_command == "list":
+        if args.json_output:
+            print(json.dumps(to_serializable(result), indent=2, default=str))
+        else:
+            print(format_webhook_events_list(result))
         return
 
     if isinstance(result, SyncResult):

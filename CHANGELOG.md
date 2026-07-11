@@ -93,6 +93,9 @@ and this project follows semantic versioning.
 - Scheduled workflow plan examples for nightly project context, weekly AI export, RFI/submittal sync, and Daily Logs-focused exports.
 - Local scheduled runner templates for shell, macOS `.command`, PowerShell, macOS launchd, and GitHub Actions.
 - Automation docs for cron, launchd, Windows Task Scheduler, GitHub Actions, and local scheduled workflow plans.
+- Local webhook helpers for parsing, normalizing, redacting, saving, listing, filtering, and dry-run dispatching webhook payloads.
+- `procore-sdk webhook validate`, `procore-sdk webhook save`, `procore-sdk webhook list`, and `procore-sdk webhook dispatch`.
+- Webhook sample payloads, local-only examples, automation docs, and recipes.
 
 ### Changed
 
@@ -116,6 +119,7 @@ and this project follows semantic versioning.
 - Updated README, roadmap, examples, and recipes for local AI review export workflows.
 - Updated README, roadmap, examples, and recipes for local workflow plan automation.
 - Updated README, roadmap, examples, and recipes for scheduled workflow plan automation.
+- Updated README, roadmap, examples, and recipes for local webhook helper workflows.
 
 ## [2.0.0] - 2026-07-03
 

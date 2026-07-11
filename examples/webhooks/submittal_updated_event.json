@@ -1,0 +1,17 @@
+{
+  "id": "evt-example-submittal-updated",
+  "type": "submittal.updated",
+  "data": {
+    "action": "updated",
+    "company_id": 456,
+    "project_id": 123,
+    "user_id": 789,
+    "resource": {
+      "resource_type": "submittal",
+      "resource_id": 2002,
+      "number": "SUB-27",
+      "title": "Door hardware schedule"
+    }
+  },
+  "webhook_secret": "example-secret-that-will-be-redacted"
+}

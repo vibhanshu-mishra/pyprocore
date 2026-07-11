@@ -783,6 +783,13 @@ For scheduled automation, see
 [Windows Task Scheduler](docs/automation/windows-task-scheduler.md), or
 [GitHub Actions](docs/automation/github-actions.md).
 
+Local webhook helpers can validate, redact, save, list, and dry-run dispatch
+sample webhook JSON payloads without running a hosted webhook server. Start with
+[Local Webhook Helpers](docs/automation/webhooks.md),
+[Validate a Webhook Event](docs/recipes/validate-webhook-event.md),
+[Save a Webhook Event](docs/recipes/save-webhook-event.md), or
+[Dispatch a Webhook Event to a Workflow Plan](docs/recipes/dispatch-webhook-to-workflow.md).
+
 Before releasing Documents changes against a new Procore environment, run the
 manual smoke helper with sandbox credentials:
 

@@ -192,6 +192,9 @@ make examples-check
 | `47_build_ai_prompt_pack.py` | Build a local AI prompt pack from an existing package folder |
 | `48_run_workflow_plan.py` | Dry-run or run a local workflow plan JSON file |
 | `49_validate_workflow_plan.py` | Validate a local workflow plan without calling Procore |
+| `50_validate_webhook_event.py` | Validate and normalize a local webhook JSON payload |
+| `51_save_webhook_event.py` | Save a redacted webhook payload and normalized event locally |
+| `52_dispatch_webhook_to_workflow_plan.py` | Dry-run a workflow plan from a local webhook event |
 
 Sample workflow plans live in `examples/workflow_plans/`:
 
@@ -216,11 +219,20 @@ Scheduled automation templates live in `examples/scheduled/` and
 | `com.pyprocore.nightly-project-context.plist` | macOS launchd template |
 | `pyprocore-scheduled-workflow.yml` | GitHub Actions scheduled workflow template |
 
+Sample webhook payloads live in `examples/webhooks/`:
+
+| File | Demonstrates |
+| ---- | ------------ |
+| `rfi_created_event.json` | Simple top-level RFI created event shape |
+| `submittal_updated_event.json` | Nested `data.resource` submittal update event shape |
+| `generic_project_event.json` | Generic project event shape with nested metadata |
+
 ## Safety Notes
 
 - These scripts make live Procore API calls when you run them.
 - Examples `46` and `47` are local-file-only and do not call Procore.
 - Example `49` validates local files only. Example `48` defaults to dry-run.
+- Examples `50`, `51`, and `52` use local webhook JSON files only. Example `52` dispatches in dry-run mode.
 - Scheduled templates should be dry-run tested before use.
 - Unit tests do not run these scripts against Procore.
 - Keep secrets out of code, screenshots, logs, and issue reports.

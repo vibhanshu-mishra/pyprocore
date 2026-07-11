@@ -1,0 +1,16 @@
+{
+  "uuid": "evt-example-generic-project",
+  "topic": "project.changed",
+  "operation": "updated",
+  "metadata": {
+    "companyId": 456,
+    "projectId": 123,
+    "entityType": "project",
+    "entityId": 123,
+    "occurredAt": "2026-07-10T15:00:00Z"
+  },
+  "details": {
+    "message": "Generic project event shape for local testing.",
+    "api_key": "example-api-key-that-will-be-redacted"
+  }
+}

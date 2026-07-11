@@ -115,6 +115,8 @@ Status: In Progress
 - Sample plans for project context, RFI review packages, and lightweight syncs
 - Scheduled sync examples for cron, launchd, Windows Task Scheduler, GitHub Actions, and local scripts
 - Beginner-friendly scheduled automation docs with dry-run-first guidance
+- Local webhook helpers for validating, redacting, saving, listing, filtering, and dry-run dispatching webhook payloads
+- Webhook CLI commands, examples, and recipes for future webhook-triggered workflows
 
 ## Phase 7: Examples and Recipes
 
@@ -129,5 +131,4 @@ Status: Completed
 
 - Async client
 - Richer filtering and search
-- Webhook helpers
 - AI assistant examples outside the core SDK
