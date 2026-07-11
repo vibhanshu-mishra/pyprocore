@@ -24,7 +24,7 @@ PyProcore does that once, correctly, behind a clean interface. You call a servic
 
 **Authentication and transport**
 
-- OAuth 2.0 authorization-code flow
+- OAuth 2.0 authorisation-code flow
 - Automatic access-token refresh
 - Automatic pagination via Procore response headers
 - Request retries and structured logging with secret redaction
@@ -435,8 +435,8 @@ package = client.automation.build_rfi_package(project_id=352338, number="15")
 ## Workflow Automation
 
 Workflow helpers create local files for reporting, handoff, and AI workflows.
-They build on the existing typed services and do not require you to manually
-request additional pages.
+They build on the existing typed services and do not require you to 
+request additional pages manually.
 
 ```python
 from pyprocore.workflows import export_rfis_to_csv, sync_rfis_to_folder
@@ -527,7 +527,7 @@ secure file access step before a direct download URL is available.
 
 Enhanced RFI packages create a read-only, AI-friendly review folder for one RFI.
 They can include keyword-matched related submittals, documents, drawings,
-specifications, photos, and Daily Logs. Downloads are off by default, related
+specifications, photos, and Daily Logs. Downloads are off by default; related
 section failures are recorded by default, and generated risk flags are only
 possible review flags:
 
