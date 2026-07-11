@@ -86,6 +86,10 @@ and this project follows semantic versioning.
 - `client.workflows.build_ai_review_export` and `client.workflows.build_ai_prompt_pack`.
 - `procore-sdk ai-review-export` and `procore-sdk ai-prompt-pack` CLI commands.
 - AI review export examples and recipes for reviewing existing package folders without live Procore or AI calls.
+- Local automation runner for JSON workflow plans with validation, placeholder resolution, dry-run support, run manifests, summaries, warnings, and errors.
+- `client.workflows.load_workflow_plan`, `client.workflows.validate_workflow_plan`, `client.workflows.run_workflow_plan`, and `client.workflows.list_available_workflows`.
+- `procore-sdk workflow-plan list`, `procore-sdk workflow-plan validate`, and `procore-sdk workflow-plan run`.
+- Workflow plan examples and recipes for repeatable project context, RFI review package, and lightweight sync workflows.
 
 ### Changed
 
@@ -107,6 +111,7 @@ and this project follows semantic versioning.
 - Updated README, roadmap, examples, and recipes for enhanced RFI package support.
 - Updated README, roadmap, examples, and recipes for enhanced submittal package support.
 - Updated README, roadmap, examples, and recipes for local AI review export workflows.
+- Updated README, roadmap, examples, and recipes for local workflow plan automation.
 
 ## [2.0.0] - 2026-07-03
 

@@ -1,6 +1,12 @@
 """Higher-level workflow automation helpers for PyProcore."""
 
 from pyprocore.workflows.ai_exports import build_ai_prompt_pack, build_ai_review_export
+from pyprocore.workflows.automation_runner import (
+    list_available_workflows,
+    load_workflow_plan,
+    run_workflow_plan,
+    validate_workflow_plan,
+)
 from pyprocore.workflows.enhanced_rfi import build_enhanced_rfi_package
 from pyprocore.workflows.enhanced_submittal import build_enhanced_submittal_package
 from pyprocore.workflows.exports import (
@@ -30,6 +36,12 @@ from pyprocore.workflows.models import (
     ProjectSyncResult,
     SyncedItem,
     SyncResult,
+    WorkflowPlan,
+    WorkflowRunManifest,
+    WorkflowRunOptions,
+    WorkflowRunResult,
+    WorkflowStep,
+    WorkflowStepResult,
 )
 from pyprocore.workflows.project_context import build_project_context_package
 from pyprocore.workflows.state import build_sync_state_path, load_sync_state, save_sync_state
@@ -61,6 +73,12 @@ __all__ = [
     "ProjectContextSectionResult",
     "SyncedItem",
     "SyncResult",
+    "WorkflowPlan",
+    "WorkflowRunManifest",
+    "WorkflowRunOptions",
+    "WorkflowRunResult",
+    "WorkflowStep",
+    "WorkflowStepResult",
     "build_ai_prompt_pack",
     "build_ai_review_export",
     "build_sync_state_path",
@@ -71,10 +89,14 @@ __all__ = [
     "export_rfis_to_jsonl",
     "export_submittals_to_csv",
     "export_submittals_to_jsonl",
+    "list_available_workflows",
     "load_sync_state",
+    "load_workflow_plan",
+    "run_workflow_plan",
     "save_sync_state",
     "sync_documents_to_folder",
     "sync_project_to_folder",
     "sync_rfis_to_folder",
     "sync_submittals_to_folder",
+    "validate_workflow_plan",
 ]

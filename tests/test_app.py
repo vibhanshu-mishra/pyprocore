@@ -676,6 +676,34 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(ai_prompt_pack.max_chunk_chars, 4000)
         self.assertTrue(ai_prompt_pack.overwrite)
 
+        workflow_plan_list = parser.parse_args(["workflow-plan", "list", "--json"])
+        self.assertEqual(workflow_plan_list.command, "workflow-plan")
+        self.assertEqual(workflow_plan_list.workflow_plan_command, "list")
+        self.assertTrue(workflow_plan_list.json_output)
+
+        workflow_plan_validate = parser.parse_args(["workflow-plan", "validate", "workflow.json"])
+        self.assertEqual(workflow_plan_validate.workflow_plan_command, "validate")
+        self.assertEqual(workflow_plan_validate.plan_path, Path("workflow.json"))
+
+        workflow_plan_run = parser.parse_args(
+            [
+                "workflow-plan",
+                "run",
+                "workflow.json",
+                "--output-dir",
+                "runs",
+                "--dry-run",
+                "--fail-fast",
+                "--json",
+            ]
+        )
+        self.assertEqual(workflow_plan_run.workflow_plan_command, "run")
+        self.assertEqual(workflow_plan_run.plan_path, Path("workflow.json"))
+        self.assertEqual(workflow_plan_run.output_dir, Path("runs"))
+        self.assertTrue(workflow_plan_run.dry_run)
+        self.assertFalse(workflow_plan_run.continue_on_error)
+        self.assertTrue(workflow_plan_run.json_output)
+
     def test_download_command_aliases_are_supported(self) -> None:
         """Legacy attachment command aliases still parse to the canonical command."""
         parser = app.build_parser()
@@ -1971,6 +1999,57 @@ class AppTestCase(unittest.TestCase):
             review_type="submittal",
             max_chunk_chars=4000,
             overwrite=True,
+        )
+
+    def test_run_workflow_plan_list_command_dispatches_to_helper(self) -> None:
+        """Workflow plan list command calls the local runner helper."""
+        with patch.object(app, "list_available_workflows", return_value=["sync_rfis"]) as list_all:
+            result = app.run_command(
+                argparse.Namespace(command="workflow-plan", workflow_plan_command="list")
+            )
+
+        self.assertEqual(result, ["sync_rfis"])
+        list_all.assert_called_once_with()
+
+    def test_run_workflow_plan_validate_command_dispatches_to_helper(self) -> None:
+        """Workflow plan validate command loads and validates a local plan."""
+        loaded_plan = Mock()
+        with (
+            patch.object(app, "load_workflow_plan", return_value=loaded_plan) as load_plan,
+            patch.object(app, "validate_workflow_plan", return_value="valid") as validate_plan,
+        ):
+            result = app.run_command(
+                argparse.Namespace(
+                    command="workflow-plan",
+                    workflow_plan_command="validate",
+                    plan_path=Path("workflow.json"),
+                )
+            )
+
+        self.assertEqual(result, "valid")
+        load_plan.assert_called_once_with(Path("workflow.json"))
+        validate_plan.assert_called_once_with(loaded_plan)
+
+    def test_run_workflow_plan_run_command_dispatches_to_helper(self) -> None:
+        """Workflow plan run command calls the local runner helper."""
+        with patch.object(app, "run_workflow_plan", return_value="run") as run_plan:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="workflow-plan",
+                    workflow_plan_command="run",
+                    plan_path=Path("workflow.json"),
+                    output_dir=Path("runs"),
+                    dry_run=True,
+                    continue_on_error=False,
+                )
+            )
+
+        self.assertEqual(result, "run")
+        run_plan.assert_called_once_with(
+            Path("workflow.json"),
+            output_dir=Path("runs"),
+            dry_run=True,
+            continue_on_error=False,
         )
 
     def test_run_sync_submittals_command_dispatches_to_helper(self) -> None:

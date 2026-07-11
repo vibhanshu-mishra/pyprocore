@@ -1349,6 +1349,69 @@ class ProcoreObjectClientTestCase(unittest.TestCase):
             overwrite=True,
         )
 
+    @patch("pyprocore.client.load_workflow_plan")
+    def test_workflows_load_workflow_plan_delegates_to_helper(
+        self,
+        load_workflow_plan: Mock,
+    ) -> None:
+        """Workflow plan loading delegates to the local runner helper."""
+        load_workflow_plan.return_value = "plan"
+
+        result = Procore().workflows.load_workflow_plan("workflow.json")
+
+        self.assertEqual(result, "plan")
+        load_workflow_plan.assert_called_once_with("workflow.json")
+
+    @patch("pyprocore.client.validate_workflow_plan")
+    def test_workflows_validate_workflow_plan_delegates_to_helper(
+        self,
+        validate_workflow_plan: Mock,
+    ) -> None:
+        """Workflow plan validation delegates to the local runner helper."""
+        validate_workflow_plan.return_value = "valid"
+        plan = {"name": "workflow", "steps": []}
+
+        result = Procore().workflows.validate_workflow_plan(plan)
+
+        self.assertEqual(result, "valid")
+        validate_workflow_plan.assert_called_once_with(plan)
+
+    @patch("pyprocore.client.run_workflow_plan")
+    def test_workflows_run_workflow_plan_delegates_to_helper(
+        self,
+        run_workflow_plan: Mock,
+    ) -> None:
+        """Workflow plan run delegates to the local runner helper."""
+        run_workflow_plan.return_value = "run"
+
+        result = Procore().workflows.run_workflow_plan(
+            "workflow.json",
+            output_dir="runs",
+            dry_run=True,
+            continue_on_error=False,
+        )
+
+        self.assertEqual(result, "run")
+        run_workflow_plan.assert_called_once_with(
+            "workflow.json",
+            output_dir="runs",
+            dry_run=True,
+            continue_on_error=False,
+        )
+
+    @patch("pyprocore.client.list_available_workflows")
+    def test_workflows_list_available_workflows_delegates_to_helper(
+        self,
+        list_available_workflows: Mock,
+    ) -> None:
+        """Available workflow listing delegates to the local runner helper."""
+        list_available_workflows.return_value = ["sync_rfis"]
+
+        result = Procore().workflows.list_available_workflows()
+
+        self.assertEqual(result, ["sync_rfis"])
+        list_available_workflows.assert_called_once_with()
+
 
 if __name__ == "__main__":
     unittest.main()

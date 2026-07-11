@@ -58,6 +58,9 @@ export PACKAGE_DIR=path/to/local/package
 export AI_EXPORT_OUTPUT_DIR=path/to/local/package/ai-export
 export AI_PROMPT_PACK_OUTPUT_DIR=path/to/local/package/ai-prompt-pack
 export AI_REVIEW_TYPE=general
+export WORKFLOW_PLAN_PATH=examples/workflow_plans/project_context_and_ai_export.json
+export WORKFLOW_RUN_OUTPUT_DIR=exports/workflow-run
+export WORKFLOW_DRY_RUN=1
 ```
 
 Use placeholder values while learning. Do not commit real IDs, tokens, secrets,
@@ -84,6 +87,8 @@ python3 examples/42_build_enhanced_rfi_package.py
 python3 examples/44_build_enhanced_submittal_package.py
 python3 examples/46_build_ai_review_export.py
 python3 examples/47_build_ai_prompt_pack.py
+python3 examples/48_run_workflow_plan.py
+python3 examples/49_validate_workflow_plan.py
 ```
 
 Documents use Procore's Project Folders and Files endpoints internally. Before a
@@ -185,10 +190,21 @@ make examples-check
 | `45_build_submittal_ai_review_context.py` | Build focused AI review files for one submittal |
 | `46_build_ai_review_export.py` | Build a local AI review export from an existing package folder |
 | `47_build_ai_prompt_pack.py` | Build a local AI prompt pack from an existing package folder |
+| `48_run_workflow_plan.py` | Dry-run or run a local workflow plan JSON file |
+| `49_validate_workflow_plan.py` | Validate a local workflow plan without calling Procore |
+
+Sample workflow plans live in `examples/workflow_plans/`:
+
+| File | Demonstrates |
+| ---- | ------------ |
+| `project_context_and_ai_export.json` | Build project context, then export it for AI review |
+| `rfi_review_package.json` | Build an enhanced RFI package, then a prompt pack |
+| `lightweight_sync.json` | Sync RFIs and submittals without attachment downloads |
 
 ## Safety Notes
 
 - These scripts make live Procore API calls when you run them.
 - Examples `46` and `47` are local-file-only and do not call Procore.
+- Example `49` validates local files only. Example `48` defaults to dry-run.
 - Unit tests do not run these scripts against Procore.
 - Keep secrets out of code, screenshots, logs, and issue reports.

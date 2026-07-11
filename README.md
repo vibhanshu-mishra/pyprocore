@@ -707,6 +707,10 @@ procore-sdk enhanced-submittal-package --project 352338 --company 4286480 --subm
 procore-sdk enhanced-submittal-package --project 352338 --submittal-id 309641 --related-sections rfis,drawings,specifications
 procore-sdk ai-review-export --package-dir ./rfi-package
 procore-sdk ai-prompt-pack --package-dir ./submittal-package --review-type submittal
+procore-sdk workflow-plan list
+procore-sdk workflow-plan validate ./workflow.json
+procore-sdk workflow-plan run ./workflow.json --dry-run
+procore-sdk workflow-plan run ./workflow.json --output-dir ./runs
 procore-sdk auth status
 procore-sdk auth login-url
 procore-sdk auth refresh
@@ -727,6 +731,17 @@ building AI-ready project context packages, and creating enhanced RFI review
 and submittal review packages. The local AI export examples show how to turn an
 existing package folder into prompt, chunk, source-index, and checklist files
 without calling Procore or an AI service.
+
+Local workflow plans let you repeat existing PyProcore workflows from JSON files
+for scheduled syncs, repeatable exports, and AI review package generation.
+Plans do not execute shell commands and do not mutate Procore data. Validate and
+dry-run plans before scheduling them:
+
+```bash
+procore-sdk workflow-plan list
+procore-sdk workflow-plan validate examples/workflow_plans/project_context_and_ai_export.json
+procore-sdk workflow-plan run examples/workflow_plans/project_context_and_ai_export.json --dry-run
+```
 
 Examples can be syntax-checked without credentials or live Procore access:
 
@@ -750,6 +765,11 @@ For local-file-only AI review exports, start with
 [Build an AI Review Export](docs/recipes/build-ai-review-export.md),
 [Build an AI Prompt Pack](docs/recipes/build-ai-prompt-pack.md), or
 [Review a Procore Package with AI](docs/recipes/review-procore-package-with-ai.md).
+
+For local automation plans, start with
+[Validate a Workflow Plan](docs/recipes/validate-workflow-plan.md),
+[Run a Workflow Plan](docs/recipes/run-workflow-plan.md), or
+[Workflow Plan Examples](docs/recipes/workflow-plan-examples.md).
 
 Before releasing Documents changes against a new Procore environment, run the
 manual smoke helper with sandbox credentials:

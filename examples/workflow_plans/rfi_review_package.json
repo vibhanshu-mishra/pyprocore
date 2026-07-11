@@ -1,0 +1,33 @@
+{
+  "name": "rfi-review-package",
+  "description": "Build an enhanced RFI package and a local AI prompt pack.",
+  "defaults": {
+    "company_id": 456,
+    "project_id": 123,
+    "output_root": "./exports/rfi-review-package"
+  },
+  "continue_on_error": true,
+  "steps": [
+    {
+      "id": "rfi_package",
+      "workflow": "enhanced_rfi_package",
+      "options": {
+        "rfi_number": "15",
+        "output_dir": "{output_root}/rfi-package",
+        "related_sections": ["submittals", "drawings", "specifications"],
+        "max_related_items": 10,
+        "download_files": false
+      }
+    },
+    {
+      "id": "prompt_pack",
+      "workflow": "ai_prompt_pack",
+      "depends_on": ["rfi_package"],
+      "options": {
+        "package_dir": "{steps.rfi_package.output_dir}",
+        "output_dir": "{output_root}/prompt-pack",
+        "review_type": "rfi"
+      }
+    }
+  ]
+}

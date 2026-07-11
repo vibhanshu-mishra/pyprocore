@@ -1,0 +1,29 @@
+{
+  "name": "lightweight-sync",
+  "description": "Sync RFIs and submittals to local folders without downloading attachments.",
+  "defaults": {
+    "project_id": 123,
+    "output_root": "./exports/lightweight-sync"
+  },
+  "continue_on_error": true,
+  "steps": [
+    {
+      "id": "sync_rfis",
+      "workflow": "sync_rfis",
+      "options": {
+        "output_dir": "{output_root}/rfis",
+        "download_attachments": false,
+        "incremental": true
+      }
+    },
+    {
+      "id": "sync_submittals",
+      "workflow": "sync_submittals",
+      "options": {
+        "output_dir": "{output_root}/submittals",
+        "download_attachments": false,
+        "incremental": true
+      }
+    }
+  ]
+}

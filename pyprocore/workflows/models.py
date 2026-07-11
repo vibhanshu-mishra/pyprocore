@@ -437,3 +437,95 @@ class AIExportResult(ProcoreModel):
     warnings_path: Path | None = None
     errors_path: Path | None = None
     manifest: AIExportManifest
+
+
+class WorkflowStep(ProcoreModel):
+    """One step in a local workflow automation plan."""
+
+    model_config = ConfigDict(extra="allow", populate_by_name=True, arbitrary_types_allowed=True)
+
+    id: str
+    workflow: str
+    options: dict[str, object] = Field(default_factory=dict)
+    depends_on: list[str] = Field(default_factory=list)
+    continue_on_error: bool | None = None
+    enabled: bool = True
+
+
+class WorkflowPlan(ProcoreModel):
+    """Local automation plan loaded from JSON or YAML."""
+
+    model_config = ConfigDict(extra="allow", populate_by_name=True, arbitrary_types_allowed=True)
+
+    name: str
+    description: str | None = None
+    defaults: dict[str, object] = Field(default_factory=dict)
+    continue_on_error: bool = True
+    steps: list[WorkflowStep] = Field(default_factory=list)
+
+
+class WorkflowRunOptions(ProcoreModel):
+    """Options used when running a local workflow plan."""
+
+    model_config = ConfigDict(extra="allow", populate_by_name=True, arbitrary_types_allowed=True)
+
+    output_dir: Path
+    dry_run: bool = False
+    continue_on_error: bool = True
+
+
+class WorkflowStepResult(ProcoreModel):
+    """Execution result for one local workflow plan step."""
+
+    model_config = ConfigDict(extra="allow", populate_by_name=True, arbitrary_types_allowed=True)
+
+    id: str
+    workflow: str
+    status: str = "pending"
+    options: dict[str, object] = Field(default_factory=dict)
+    started_at: str | None = None
+    finished_at: str | None = None
+    duration_seconds: float | None = None
+    output_dir: Path | None = None
+    files_written: list[Path] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
+    errors: list[str] = Field(default_factory=list)
+    skip_reason: str | None = None
+
+
+class WorkflowRunManifest(ProcoreModel):
+    """Manifest metadata for a local workflow plan run."""
+
+    model_config = ConfigDict(extra="allow", populate_by_name=True, arbitrary_types_allowed=True)
+
+    run_id: str
+    plan_name: str
+    description: str | None = None
+    status: str
+    started_at: str
+    finished_at: str | None = None
+    duration_seconds: float | None = None
+    dry_run: bool = False
+    continue_on_error: bool = True
+    output_dir: Path
+    steps: list[WorkflowStepResult] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
+    errors: list[str] = Field(default_factory=list)
+
+
+class WorkflowRunResult(ProcoreModel):
+    """Result returned after validating or running a local workflow plan."""
+
+    model_config = ConfigDict(extra="allow", populate_by_name=True, arbitrary_types_allowed=True)
+
+    run_id: str
+    plan: WorkflowPlan
+    output_dir: Path
+    status: str
+    dry_run: bool = False
+    manifest_path: Path
+    summary_path: Path
+    resolved_plan_path: Path
+    errors_path: Path | None = None
+    warnings_path: Path | None = None
+    manifest: WorkflowRunManifest

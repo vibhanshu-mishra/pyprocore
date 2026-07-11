@@ -101,6 +101,8 @@ from pyprocore.workflows import (
     ProjectContextResult,
     ProjectSyncResult,
     SyncResult,
+    WorkflowPlan,
+    WorkflowRunResult,
     build_ai_prompt_pack,
     build_ai_review_export,
     build_enhanced_rfi_package,
@@ -108,10 +110,14 @@ from pyprocore.workflows import (
     build_project_context_package,
     export_rfis_to_csv,
     export_submittals_to_csv,
+    list_available_workflows,
+    load_workflow_plan,
+    run_workflow_plan,
     sync_documents_to_folder,
     sync_project_to_folder,
     sync_rfis_to_folder,
     sync_submittals_to_folder,
+    validate_workflow_plan,
 )
 
 
@@ -844,6 +850,49 @@ def build_parser() -> argparse.ArgumentParser:
     ai_prompt_pack_parser.add_argument("--max-chunk-chars", type=int, default=12000)
     ai_prompt_pack_parser.add_argument("--overwrite", action="store_true")
 
+    workflow_plan_parser = subcommands.add_parser(
+        "workflow-plan",
+        help="Validate or run a local workflow plan",
+    )
+    workflow_plan_subcommands = workflow_plan_parser.add_subparsers(
+        dest="workflow_plan_command",
+        required=True,
+    )
+    workflow_plan_list_parser = workflow_plan_subcommands.add_parser(
+        "list",
+        help="List workflow names supported by local plans",
+    )
+    workflow_plan_list_parser.add_argument("--json", dest="json_output", action="store_true")
+
+    workflow_plan_validate_parser = workflow_plan_subcommands.add_parser(
+        "validate",
+        help="Validate a local workflow plan without running it",
+    )
+    workflow_plan_validate_parser.add_argument("plan_path", type=Path)
+    workflow_plan_validate_parser.add_argument("--json", dest="json_output", action="store_true")
+
+    workflow_plan_run_parser = workflow_plan_subcommands.add_parser(
+        "run",
+        help="Run or dry-run a local workflow plan",
+    )
+    workflow_plan_run_parser.add_argument("plan_path", type=Path)
+    workflow_plan_run_parser.add_argument("--output-dir", type=Path)
+    workflow_plan_run_parser.add_argument("--dry-run", action="store_true")
+    workflow_plan_run_parser.add_argument(
+        "--fail-fast",
+        dest="continue_on_error",
+        action="store_false",
+        default=True,
+        help="Stop after the first failed step",
+    )
+    workflow_plan_run_parser.add_argument(
+        "--continue-on-error",
+        dest="continue_on_error",
+        action="store_true",
+        help="Continue independent steps after failures",
+    )
+    workflow_plan_run_parser.add_argument("--json", dest="json_output", action="store_true")
+
     sync_rfis_parser = subcommands.add_parser(
         "sync-rfis",
         help="Sync project RFIs to a local folder",
@@ -1099,6 +1148,20 @@ def run_command(args: argparse.Namespace) -> Any:
         if args.auth_command == "exchange-code":
             return exchange_code_and_save(args.code)
         raise ValueError(f"Unsupported auth command: {args.auth_command}")
+
+    if args.command == "workflow-plan":
+        if args.workflow_plan_command == "list":
+            return list_available_workflows()
+        if args.workflow_plan_command == "validate":
+            return validate_workflow_plan(load_workflow_plan(args.plan_path))
+        if args.workflow_plan_command == "run":
+            return run_workflow_plan(
+                args.plan_path,
+                output_dir=args.output_dir,
+                dry_run=args.dry_run,
+                continue_on_error=args.continue_on_error,
+            )
+        raise ValueError(f"Unsupported workflow-plan command: {args.workflow_plan_command}")
 
     if args.command == "companies":
         return list_companies()
@@ -1830,6 +1893,38 @@ def format_ai_export_summary(result: AIExportResult) -> str:
     return "\n".join(lines)
 
 
+def format_workflow_plan_validation(plan: WorkflowPlan) -> str:
+    """Return a human-readable workflow plan validation summary."""
+    enabled_count = sum(1 for step in plan.steps if step.enabled)
+    return "\n".join(
+        [
+            "Workflow plan is valid.",
+            f"Name: {plan.name}",
+            f"Steps: {len(plan.steps)}",
+            f"Enabled steps: {enabled_count}",
+        ]
+    )
+
+
+def format_workflow_run_summary(result: WorkflowRunResult) -> str:
+    """Return a human-readable workflow plan run summary."""
+    return "\n".join(
+        [
+            "Workflow plan run complete.",
+            f"Plan: {result.plan.name}",
+            f"Status: {result.status}",
+            f"Dry run: {result.dry_run}",
+            f"Output: {result.output_dir}",
+            f"Manifest: {result.manifest_path}",
+            f"Summary: {result.summary_path}",
+            f"Resolved plan: {result.resolved_plan_path}",
+            f"Steps: {len(result.manifest.steps)}",
+            f"Warnings: {len(result.manifest.warnings)}",
+            f"Errors: {len(result.manifest.errors)}",
+        ]
+    )
+
+
 def main() -> None:
     """Run the CLI entrypoint."""
     parser = build_parser()
@@ -1867,6 +1962,27 @@ def main() -> None:
     if isinstance(result, AuthLoginUrlResult):
         print(format_login_url(result))
         raise SystemExit(0)
+
+    if args.command == "workflow-plan" and args.workflow_plan_command == "list":
+        if args.json_output:
+            print(json.dumps(to_serializable(result), indent=2, default=str))
+        else:
+            print("\n".join(str(item) for item in result))
+        return
+
+    if isinstance(result, WorkflowPlan):
+        if args.json_output:
+            print(json.dumps(to_serializable(result), indent=2, default=str))
+        else:
+            print(format_workflow_plan_validation(result))
+        return
+
+    if isinstance(result, WorkflowRunResult):
+        if args.json_output:
+            print(json.dumps(to_serializable(result), indent=2, default=str))
+        else:
+            print(format_workflow_run_summary(result))
+        return
 
     if isinstance(result, SyncResult):
         print(format_sync_summary(result))

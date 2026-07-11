@@ -103,6 +103,17 @@ Status: In Progress
 - Prompt packs, source indexes, deterministic chunks, and review checklists
 - CLI and client helpers for reviewing existing package folders without live Procore or AI calls
 
+## Phase 5: Local Automation Runner
+
+Status: In Progress
+
+- JSON workflow plan loading and validation
+- Safe placeholder resolution without shell execution
+- Dry-run support for repeatable local automation
+- Run manifests, summaries, resolved plans, warnings, and errors
+- CLI and client helpers for workflow plan list, validate, and run
+- Sample plans for project context, RFI review packages, and lightweight syncs
+
 ## Phase 7: Examples and Recipes
 
 Status: Completed

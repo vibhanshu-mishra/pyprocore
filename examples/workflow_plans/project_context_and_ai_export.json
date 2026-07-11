@@ -1,0 +1,33 @@
+{
+  "name": "project-context-and-ai-export",
+  "description": "Build a lightweight project context package, then create a local AI review export.",
+  "defaults": {
+    "company_id": 456,
+    "project_id": 123,
+    "output_root": "./exports/project-context-and-ai-export"
+  },
+  "continue_on_error": true,
+  "steps": [
+    {
+      "id": "project_context",
+      "workflow": "project_context",
+      "options": {
+        "include": ["project", "rfis", "submittals", "specifications"],
+        "max_items": 25,
+        "download_files": false,
+        "output_dir": "{output_root}/project-context"
+      }
+    },
+    {
+      "id": "ai_export",
+      "workflow": "ai_review_export",
+      "depends_on": ["project_context"],
+      "options": {
+        "package_dir": "{steps.project_context.output_dir}",
+        "output_dir": "{output_root}/ai-export",
+        "include_prompt": true,
+        "include_checklists": true
+      }
+    }
+  ]
+}

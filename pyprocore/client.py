@@ -109,6 +109,8 @@ from pyprocore.workflows import (
     ProjectContextResult,
     ProjectSyncResult,
     SyncResult,
+    WorkflowPlan,
+    WorkflowRunResult,
     build_ai_prompt_pack,
     build_ai_review_export,
     build_enhanced_rfi_package,
@@ -118,10 +120,14 @@ from pyprocore.workflows import (
     export_rfis_to_jsonl,
     export_submittals_to_csv,
     export_submittals_to_jsonl,
+    list_available_workflows,
+    load_workflow_plan,
+    run_workflow_plan,
     sync_documents_to_folder,
     sync_project_to_folder,
     sync_rfis_to_folder,
     sync_submittals_to_folder,
+    validate_workflow_plan,
 )
 
 
@@ -1240,6 +1246,39 @@ class AutomationClient:
 
 class WorkflowsClient:
     """Convenience methods for local exports and folder sync workflows."""
+
+    def load_workflow_plan(self, path: Path | str) -> WorkflowPlan:
+        """Load a local workflow plan from disk."""
+        return load_workflow_plan(path)
+
+    def validate_workflow_plan(
+        self,
+        path_or_plan: Path | str | WorkflowPlan | Mapping[str, object],
+    ) -> WorkflowPlan:
+        """Validate a local workflow plan without executing it."""
+        if isinstance(path_or_plan, (str, Path)):
+            return load_workflow_plan(path_or_plan)
+        return validate_workflow_plan(path_or_plan)
+
+    def run_workflow_plan(
+        self,
+        path_or_plan: Path | str | WorkflowPlan | Mapping[str, object],
+        output_dir: Path | str | None = None,
+        *,
+        dry_run: bool = False,
+        continue_on_error: bool = True,
+    ) -> WorkflowRunResult:
+        """Run or dry-run a local workflow automation plan."""
+        return run_workflow_plan(
+            path_or_plan,
+            output_dir=output_dir,
+            dry_run=dry_run,
+            continue_on_error=continue_on_error,
+        )
+
+    def list_available_workflows(self) -> list[str]:
+        """Return local workflow names supported by the automation runner."""
+        return list_available_workflows()
 
     def build_ai_review_export(
         self,
