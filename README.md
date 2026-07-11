@@ -926,6 +926,37 @@ Request logs record method, endpoint, status, elapsed time, and retry count. Exc
 
 ---
 
+## Security Checks
+
+PyProcore includes local checks to help avoid committing credentials or generated
+project data. Run the secret scanner before opening a pull request:
+
+```bash
+make secret-check
+```
+
+For a broader local quality gate, run:
+
+```bash
+make quality-check
+```
+
+Optional pre-commit hooks are available for whitespace, file format, private-key,
+Black, and isort checks:
+
+```bash
+python3 -m pip install pre-commit
+pre-commit install
+pre-commit run --all-files
+```
+
+Never commit `.env` files, token stores, Authorization headers, access tokens,
+refresh tokens, client secrets, logs containing credentials, downloads, or
+private project data. See [docs/security.md](docs/security.md) and
+[SECURITY.md](SECURITY.md) for details.
+
+---
+
 ## Implemented Endpoints
 
 ```text
@@ -1135,6 +1166,7 @@ make coverage
 - [Roadmap](docs/roadmap.md)
 - [Suggested GitHub labels](docs/github-labels.md)
 - [Documentation site](docs/index.md)
+- [Security guide](docs/security.md)
 - [Examples](examples/README.md)
 - [Recipes](docs/recipes/)
 

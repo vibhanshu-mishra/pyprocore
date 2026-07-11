@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import traceback
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 LOGGER_NAME = "procore_sdk"
 LOG_DIR = Path.cwd() / "logs"
@@ -20,6 +22,16 @@ SENSITIVE_KEYS = {
     "access_token",
     "refresh_token",
     "client_secret",
+}
+SENSITIVE_QUERY_KEYS = {
+    "access_token",
+    "client_secret",
+    "refresh_token",
+    "signature",
+    "token",
+    "x-amz-credential",
+    "x-amz-security-token",
+    "x-amz-signature",
 }
 
 
@@ -76,7 +88,43 @@ def sanitize_log_value(value: Any) -> Any:
         }
     if isinstance(value, list):
         return [sanitize_log_value(item) for item in value]
+    if isinstance(value, str):
+        return _sanitize_log_string(value)
     return value
+
+
+def _sanitize_log_string(value: str) -> str:
+    """Redact sensitive bearer tokens and signed URL query values."""
+    redacted = re.sub(
+        r"(Authorization\s*:\s*Bearer\s+)[A-Za-z0-9._~+/=-]+",
+        r"\1[REDACTED]",
+        value,
+        flags=re.IGNORECASE,
+    )
+    redacted = re.sub(
+        r"(Bearer\s+)[A-Za-z0-9._~+/=-]{16,}",
+        r"\1[REDACTED]",
+        redacted,
+        flags=re.IGNORECASE,
+    )
+    if "?" not in redacted:
+        return redacted
+
+    try:
+        parsed = urlsplit(redacted)
+    except ValueError:
+        return redacted
+    if not parsed.query:
+        return redacted
+
+    safe_query = urlencode(
+        [
+            (key, "[REDACTED]" if key.lower() in SENSITIVE_QUERY_KEYS else item)
+            for key, item in parse_qsl(parsed.query, keep_blank_values=True)
+        ],
+        doseq=True,
+    )
+    return urlunsplit((parsed.scheme, parsed.netloc, parsed.path, safe_query, parsed.fragment))
 
 
 def structured_message(event: str, **fields: Any) -> str:

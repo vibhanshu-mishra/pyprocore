@@ -15,6 +15,7 @@ and this project follows semantic versioning.
 - Phase 6 release readiness metadata, package manifest, release docs, and local release checks.
 - Phase 6B GitHub project polish with contributor, support, security, issue template, pull request template, Dependabot, and label guidance.
 - Phase 6C MkDocs documentation site structure with docs navigation, homepage, getting started, authentication, CLI, API coverage, workflows, AI review, automation, recipes, contributing, release, and changelog pages.
+- Phase 6D security and quality hardening with local secret scanning, stronger log redaction, token-store safety tests, pre-commit configuration, CI quality checks, and security documentation.
 - Open-source repository support files, including contribution, security, issue, and pull request guidance.
 - Phase 7 examples and recipe documentation.
 - Runnable `examples/` scripts for common company, project, RFI, submittal, attachment, and workflow package tasks.
@@ -141,6 +142,7 @@ and this project follows semantic versioning.
 - Added release process documentation with versioning, validation, PyPI checklist, and changelog guidance.
 - Added GitHub/community documentation for contributing, support, security reporting, code of conduct, issue forms, pull requests, Dependabot, and labels.
 - Added MkDocs documentation-site configuration, local docs preview/build targets, and beginner-friendly docs indexes.
+- Added security hardening documentation for OAuth credentials, `.env`, token stores, logs, secret checks, pre-commit, CI, and vulnerability reporting.
 - Polished README release-facing metadata, safety notes, and package-readiness links.
 
 ### Tests
@@ -148,6 +150,7 @@ and this project follows semantic versioning.
 - Added release readiness tests for metadata, docs, Makefile targets, and secret-exclusion hygiene.
 - Added GitHub project file tests for community docs, templates, Dependabot, README links, and no-secrets guidance.
 - Added docs-site structure tests for MkDocs config, key docs pages, README links, optional docs dependency, and Makefile docs targets.
+- Added security hardening tests for secret scanning, logging redaction, token-store-safe CLI diagnostics, pre-commit config, CI quality checks, Makefile targets, and security docs.
 
 ## [2.0.0] - 2026-07-03
 

@@ -26,8 +26,18 @@ make test
 make coverage
 make lint
 make typecheck
+make secret-check
+make quality-check
 python3 -m black --check .
 python3 -m isort --check-only .
+```
+
+Optional pre-commit hooks are available:
+
+```bash
+python3 -m pip install pre-commit
+pre-commit install
+pre-commit run --all-files
 ```
 
 ## Pull Requests
@@ -59,4 +69,5 @@ The full repository-level community docs are available on GitHub:
 - [Code of Conduct](https://github.com/vibhanshu-mishra/pyprocore/blob/main/CODE_OF_CONDUCT.md)
 - [Security policy](https://github.com/vibhanshu-mishra/pyprocore/blob/main/SECURITY.md)
 - [Support guide](https://github.com/vibhanshu-mishra/pyprocore/blob/main/SUPPORT.md)
+- [Security guide](security.md)
 - [Suggested GitHub labels](github-labels.md)

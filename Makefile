@@ -1,4 +1,4 @@
-.PHONY: test coverage examples-check smoke-documents smoke-drawings smoke-specifications smoke-photos smoke-daily-logs lint format typecheck docs-serve docs-build docker-build docker-help docker-run-plan release-check clean
+.PHONY: test coverage examples-check smoke-documents smoke-drawings smoke-specifications smoke-photos smoke-daily-logs lint format typecheck docs-serve docs-build secret-check quality-check docker-build docker-help docker-run-plan release-check clean
 
 PYTHON ?= python3
 PLAN ?= examples/workflow_plans/nightly_project_context.json
@@ -92,6 +92,20 @@ docs-serve:
 docs-build:
 	mkdocs build --strict
 
+secret-check:
+	$(PYTHON) scripts/check_secrets.py
+
+quality-check:
+	$(MAKE) examples-check
+	$(MAKE) test
+	$(MAKE) coverage
+	$(MAKE) lint
+	$(MAKE) typecheck
+	$(PYTHON) -m black --check .
+	$(PYTHON) -m isort --check-only .
+	$(MAKE) release-check
+	$(MAKE) secret-check
+
 docker-build:
 	docker build -t pyprocore:local .
 
@@ -116,6 +130,7 @@ release-check:
 	$(MAKE) typecheck
 	$(PYTHON) -m black --check .
 	$(PYTHON) -m isort --check-only .
+	$(MAKE) secret-check
 
 clean:
 	find . -name "__pycache__" -type d -prune -exec rm -rf {} +

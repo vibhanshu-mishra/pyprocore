@@ -30,6 +30,7 @@ locally. The current workflow examples do not mutate Procore data.
 - [API Coverage](api-coverage.md)
 - [Workflows](workflows.md)
 - [AI Review](ai-review.md)
+- [Security](security.md)
 - [Automation](automation.md)
 - [Recipes](recipes/index.md)
 - [Contributing](contributing.md)

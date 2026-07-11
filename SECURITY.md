@@ -39,6 +39,38 @@ PyProcore stores OAuth tokens locally for development workflows. Treat token
 store files as secrets. Do not commit them, attach them to issues, or upload them
 to CI artifacts.
 
+The default local token store path is:
+
+```text
+pyprocore/auth/token_store.json
+```
+
+CLI commands such as `procore-sdk auth status` and `procore-sdk doctor` report
+whether token values are present or missing. They must not print the token
+values themselves.
+
+## Local Security Checks
+
+Run the local secret scanner before opening pull requests:
+
+```bash
+make secret-check
+```
+
+Run the broader local quality gate when preparing release-facing changes:
+
+```bash
+make quality-check
+```
+
+Optional pre-commit hooks are available:
+
+```bash
+python3 -m pip install pre-commit
+pre-commit install
+pre-commit run --all-files
+```
+
 ## Procore OAuth Credential Warning
 
 If a Procore OAuth client secret, refresh token, or access token is exposed,

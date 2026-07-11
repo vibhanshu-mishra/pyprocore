@@ -128,6 +128,17 @@ Status: Completed
 - Beginner-friendly troubleshooting
 - AI workflow package examples
 
+## Phase 6D: Security and Quality Hardening
+
+Status: Completed
+
+- Local secret scanning for likely committed credentials
+- Logging redaction checks for tokens, Authorization headers, client secrets, and signed URL query values
+- Token-store safety tests and documentation
+- Optional pre-commit configuration
+- CI quality workflow coverage for examples, tests, coverage, lint, typecheck, formatting, release readiness, secret checks, and docs build
+- Security guide for OAuth credentials, `.env`, token stores, logs, and reporting security issues
+
 ## Planned Capabilities
 
 - Async client
