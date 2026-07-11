@@ -35,6 +35,7 @@ locally. The current workflow examples do not mutate Procore data.
 - [Recipes](recipes/index.md)
 - [Contributing](contributing.md)
 - [Release Guide](release.md)
+- [Final Release Readiness](final-release-readiness.md)
 
 ## Important Notice
 

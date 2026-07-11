@@ -10,6 +10,10 @@
 
 PyProcore handles the parts of a Procore integration that are tedious and easy to get wrong — OAuth, token refresh, pagination, retries, typed responses, structured logging, and attachment downloads - so you work with Python objects instead of raw JSON and API plumbing.
 
+It is built for safe read-oriented automation: project exports, local syncs,
+workflow packages, AI-ready review folders, and CLI-driven diagnostics without
+hardcoding credentials or requiring live Procore calls in tests.
+
 ---
 
 ## Why PyProcore
@@ -820,7 +824,8 @@ generated outputs. Start with [Docker Automation](docs/automation/docker.md),
 
 Release readiness guidance lives in [docs/release.md](docs/release.md). It
 covers versioning, validation, changelog updates, and the future PyPI publishing
-checklist.
+checklist. The current pre-release audit is captured in
+[docs/final-release-readiness.md](docs/final-release-readiness.md).
 
 ---
 
@@ -1167,6 +1172,7 @@ make coverage
 - [Suggested GitHub labels](docs/github-labels.md)
 - [Documentation site](docs/index.md)
 - [Security guide](docs/security.md)
+- [Final release readiness](docs/final-release-readiness.md)
 - [Examples](examples/README.md)
 - [Recipes](docs/recipes/)
 

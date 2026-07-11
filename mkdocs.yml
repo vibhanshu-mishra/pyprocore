@@ -34,4 +34,5 @@ nav:
       - Schedule Workflow Plan: recipes/schedule-workflow-plan.md
   - Contributing: contributing.md
   - Release Guide: release.md
+  - Final Release Readiness: final-release-readiness.md
   - Changelog: changelog.md

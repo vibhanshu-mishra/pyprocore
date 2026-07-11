@@ -77,6 +77,10 @@ procore-sdk workflow-plan validate examples/workflow_plans/nightly_project_conte
 procore-sdk workflow-plan run examples/workflow_plans/nightly_project_context.json --dry-run
 ```
 
+The main workflow and AI commands currently exposed by the CLI include
+`project-context`, `enhanced-rfi-package`, `enhanced-submittal-package`,
+`ai-review-export`, `ai-prompt-pack`, `workflow-plan`, and `webhook`.
+
 ## Webhooks
 
 Webhook helpers are local utilities for validating, redacting, saving, listing,

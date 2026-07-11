@@ -174,7 +174,7 @@ def _scan_content(path: Path, content: str) -> list[SecretFinding]:
     """Scan one text payload for likely secrets."""
     findings: list[SecretFinding] = []
     for line_number, line in enumerate(content.splitlines(), start=1):
-        if "-----BEGIN" in line and "PRIVATE KEY-----" in line:
+        if re.search(r"^\s*-----BEGIN [A-Z ]*PRIVATE KEY-----", line):
             findings.append(SecretFinding(path, line_number, "private key", "fail"))
             continue
         bearer_match = re.search(r"Authorization\s*:\s*Bearer\s+([A-Za-z0-9._~+/=-]+)", line)

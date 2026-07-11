@@ -35,6 +35,9 @@ Or run the combined target:
 make release-check
 ```
 
+For the final repository-level readiness summary, see
+[Final Release Readiness](final-release-readiness.md).
+
 ## Release Checklist
 
 Before publishing:
@@ -50,7 +53,8 @@ Before publishing:
 
 ## PyPI Publishing Checklist
 
-Publishing is intentionally manual for now.
+Publishing is intentionally manual for now. Running the release checks does not
+publish to PyPI and does not create a GitHub release.
 
 When the project is ready:
 

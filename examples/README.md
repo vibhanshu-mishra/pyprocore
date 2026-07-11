@@ -141,6 +141,9 @@ make examples-check
 
 ## Example Index
 
+The current example set runs from `01_list_companies.py` through
+`52_dispatch_webhook_to_workflow_plan.py`.
+
 | File | Demonstrates |
 | ---- | ------------ |
 | `01_list_companies.py` | List companies available to the authenticated user |
