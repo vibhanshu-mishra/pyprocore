@@ -200,11 +200,27 @@ Sample workflow plans live in `examples/workflow_plans/`:
 | `project_context_and_ai_export.json` | Build project context, then export it for AI review |
 | `rfi_review_package.json` | Build an enhanced RFI package, then a prompt pack |
 | `lightweight_sync.json` | Sync RFIs and submittals without attachment downloads |
+| `nightly_project_context.json` | Nightly project context package plan |
+| `weekly_ai_export.json` | Weekly AI review export from an existing local package |
+| `rfi_submittal_sync.json` | Incremental RFI and submittal sync plan |
+| `lightweight_daily_logs_export.json` | Daily Logs-focused project context export |
+
+Scheduled automation templates live in `examples/scheduled/` and
+`examples/github-actions/`:
+
+| File | Demonstrates |
+| ---- | ------------ |
+| `run_workflow_plan.sh` | macOS/Linux shell runner for cron or Terminal |
+| `run_workflow_plan.command` | macOS double-click friendly runner |
+| `run_workflow_plan.ps1` | Windows PowerShell runner |
+| `com.pyprocore.nightly-project-context.plist` | macOS launchd template |
+| `pyprocore-scheduled-workflow.yml` | GitHub Actions scheduled workflow template |
 
 ## Safety Notes
 
 - These scripts make live Procore API calls when you run them.
 - Examples `46` and `47` are local-file-only and do not call Procore.
 - Example `49` validates local files only. Example `48` defaults to dry-run.
+- Scheduled templates should be dry-run tested before use.
 - Unit tests do not run these scripts against Procore.
 - Keep secrets out of code, screenshots, logs, and issue reports.

@@ -1,0 +1,24 @@
+{
+  "name": "lightweight-daily-logs-export",
+  "description": "Export a small Daily Logs-focused project context package.",
+  "defaults": {
+    "company_id": 456,
+    "project_id": 123,
+    "output_root": "./exports/lightweight-daily-logs-export",
+    "log_date": "2026-07-10"
+  },
+  "continue_on_error": true,
+  "steps": [
+    {
+      "id": "daily_logs_context",
+      "workflow": "project_context",
+      "options": {
+        "output_dir": "{output_root}/daily-logs-context",
+        "include": ["project", "daily_logs"],
+        "log_date": "{log_date}",
+        "max_items": 25,
+        "download_files": false
+      }
+    }
+  ]
+}

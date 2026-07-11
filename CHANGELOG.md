@@ -90,6 +90,9 @@ and this project follows semantic versioning.
 - `client.workflows.load_workflow_plan`, `client.workflows.validate_workflow_plan`, `client.workflows.run_workflow_plan`, and `client.workflows.list_available_workflows`.
 - `procore-sdk workflow-plan list`, `procore-sdk workflow-plan validate`, and `procore-sdk workflow-plan run`.
 - Workflow plan examples and recipes for repeatable project context, RFI review package, and lightweight sync workflows.
+- Scheduled workflow plan examples for nightly project context, weekly AI export, RFI/submittal sync, and Daily Logs-focused exports.
+- Local scheduled runner templates for shell, macOS `.command`, PowerShell, macOS launchd, and GitHub Actions.
+- Automation docs for cron, launchd, Windows Task Scheduler, GitHub Actions, and local scheduled workflow plans.
 
 ### Changed
 
@@ -112,6 +115,7 @@ and this project follows semantic versioning.
 - Updated README, roadmap, examples, and recipes for enhanced submittal package support.
 - Updated README, roadmap, examples, and recipes for local AI review export workflows.
 - Updated README, roadmap, examples, and recipes for local workflow plan automation.
+- Updated README, roadmap, examples, and recipes for scheduled workflow plan automation.
 
 ## [2.0.0] - 2026-07-03
 

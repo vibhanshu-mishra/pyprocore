@@ -1,0 +1,23 @@
+{
+  "name": "weekly-ai-export",
+  "description": "Build a weekly AI review export from an existing local project package.",
+  "defaults": {
+    "package_dir": "./exports/nightly-project-context/project-context",
+    "output_root": "./exports/weekly-ai-export"
+  },
+  "continue_on_error": true,
+  "steps": [
+    {
+      "id": "ai_review_export",
+      "workflow": "ai_review_export",
+      "options": {
+        "package_dir": "{package_dir}",
+        "output_dir": "{output_root}/ai-export",
+        "include_json": true,
+        "include_prompt": true,
+        "include_checklists": true,
+        "overwrite": true
+      }
+    }
+  ]
+}

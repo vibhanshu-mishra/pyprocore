@@ -1,0 +1,51 @@
+name: PyProcore Scheduled Workflow
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Runs every day at 2:00 AM UTC. Adjust for your project/team.
+    - cron: "0 2 * * *"
+
+jobs:
+  run-pyprocore-workflow:
+    runs-on: ubuntu-latest
+
+    env:
+      PROCORE_CLIENT_ID: ${{ secrets.PROCORE_CLIENT_ID }}
+      PROCORE_CLIENT_SECRET: ${{ secrets.PROCORE_CLIENT_SECRET }}
+      PROCORE_REDIRECT_URI: ${{ secrets.PROCORE_REDIRECT_URI }}
+      PROCORE_LOGIN_URL: ${{ secrets.PROCORE_LOGIN_URL }}
+      PROCORE_API_BASE: ${{ secrets.PROCORE_API_BASE }}
+      PROCORE_COMPANY_ID: ${{ secrets.PROCORE_COMPANY_ID }}
+      WORKFLOW_PLAN_PATH: examples/workflow_plans/nightly_project_context.json
+      WORKFLOW_OUTPUT_DIR: runs/nightly-project-context
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PyProcore
+        run: python3 -m pip install -e .
+
+      - name: Validate workflow plan
+        run: procore-sdk workflow-plan validate "$WORKFLOW_PLAN_PATH"
+
+      # Token store note:
+      # Scheduled GitHub Actions runs need a valid token-store strategy before
+      # live Procore calls can refresh OAuth tokens. Store only encrypted
+      # GitHub secrets, never print token values, and confirm your organization
+      # permits this use before enabling a real scheduled run.
+      - name: Run workflow plan
+        run: procore-sdk workflow-plan run "$WORKFLOW_PLAN_PATH" --output-dir "$WORKFLOW_OUTPUT_DIR"
+
+      - name: Upload workflow output
+        uses: actions/upload-artifact@v4
+        with:
+          name: pyprocore-workflow-output
+          path: ${{ env.WORKFLOW_OUTPUT_DIR }}
+          if-no-files-found: warn

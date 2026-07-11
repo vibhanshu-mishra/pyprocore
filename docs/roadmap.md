@@ -113,6 +113,8 @@ Status: In Progress
 - Run manifests, summaries, resolved plans, warnings, and errors
 - CLI and client helpers for workflow plan list, validate, and run
 - Sample plans for project context, RFI review packages, and lightweight syncs
+- Scheduled sync examples for cron, launchd, Windows Task Scheduler, GitHub Actions, and local scripts
+- Beginner-friendly scheduled automation docs with dry-run-first guidance
 
 ## Phase 7: Examples and Recipes
 

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.pyprocore.nightly-project-context</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>/absolute/path/to/pyprocore/examples/scheduled/run_workflow_plan.sh</string>
+    <string>/absolute/path/to/pyprocore/examples/workflow_plans/nightly_project_context.json</string>
+    <string>/absolute/path/to/pyprocore/runs/nightly-project-context</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>/absolute/path/to/pyprocore</string>
+
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>2</integer>
+    <key>Minute</key>
+    <integer>0</integer>
+  </dict>
+
+  <key>StandardOutPath</key>
+  <string>/absolute/path/to/pyprocore/logs/launchd-nightly-project-context.log</string>
+
+  <key>StandardErrorPath</key>
+  <string>/absolute/path/to/pyprocore/logs/launchd-nightly-project-context.err</string>
+</dict>
+</plist>

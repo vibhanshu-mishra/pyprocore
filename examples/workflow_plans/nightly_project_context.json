@@ -1,0 +1,22 @@
+{
+  "name": "nightly-project-context",
+  "description": "Build a lightweight project context package every night for review.",
+  "defaults": {
+    "company_id": 456,
+    "project_id": 123,
+    "output_root": "./exports/nightly-project-context"
+  },
+  "continue_on_error": true,
+  "steps": [
+    {
+      "id": "project_context",
+      "workflow": "project_context",
+      "options": {
+        "output_dir": "{output_root}/project-context",
+        "include": ["project", "rfis", "submittals", "documents", "specifications"],
+        "max_items": 50,
+        "download_files": false
+      }
+    }
+  ]
+}

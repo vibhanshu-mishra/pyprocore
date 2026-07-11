@@ -743,6 +743,11 @@ procore-sdk workflow-plan validate examples/workflow_plans/project_context_and_a
 procore-sdk workflow-plan run examples/workflow_plans/project_context_and_ai_export.json --dry-run
 ```
 
+Scheduled automation examples are available for cron, macOS launchd, Windows
+Task Scheduler, GitHub Actions, and local shell/PowerShell runners. Start with
+the templates in `examples/scheduled/`, `examples/github-actions/`, and the
+[Schedule a Workflow Plan](docs/recipes/schedule-workflow-plan.md) recipe.
+
 Examples can be syntax-checked without credentials or live Procore access:
 
 ```bash
@@ -770,6 +775,13 @@ For local automation plans, start with
 [Validate a Workflow Plan](docs/recipes/validate-workflow-plan.md),
 [Run a Workflow Plan](docs/recipes/run-workflow-plan.md), or
 [Workflow Plan Examples](docs/recipes/workflow-plan-examples.md).
+
+For scheduled automation, see
+[Schedule a Workflow Plan](docs/recipes/schedule-workflow-plan.md),
+[Cron](docs/automation/cron.md),
+[macOS launchd](docs/automation/launchd.md),
+[Windows Task Scheduler](docs/automation/windows-task-scheduler.md), or
+[GitHub Actions](docs/automation/github-actions.md).
 
 Before releasing Documents changes against a new Procore environment, run the
 manual smoke helper with sandbox credentials:
