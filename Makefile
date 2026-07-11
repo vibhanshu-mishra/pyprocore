@@ -1,4 +1,4 @@
-.PHONY: test coverage examples-check smoke-documents smoke-drawings smoke-specifications smoke-photos smoke-daily-logs lint format typecheck docs-serve docs-build secret-check quality-check docker-build docker-help docker-run-plan release-check clean
+.PHONY: test coverage examples-check smoke-documents smoke-drawings smoke-specifications smoke-photos smoke-daily-logs lint format typecheck docs-serve docs-build secret-check quality-check docker-build docker-help docker-run-plan release-check release-candidate-check build-package clean
 
 PYTHON ?= python3
 PLAN ?= examples/workflow_plans/nightly_project_context.json
@@ -131,6 +131,12 @@ release-check:
 	$(PYTHON) -m black --check .
 	$(PYTHON) -m isort --check-only .
 	$(MAKE) secret-check
+
+release-candidate-check:
+	$(PYTHON) scripts/check_release_candidate.py
+
+build-package:
+	$(PYTHON) -m build
 
 clean:
 	find . -name "__pycache__" -type d -prune -exec rm -rf {} +

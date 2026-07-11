@@ -51,6 +51,51 @@ Before publishing:
   are accurate.
 - Confirm package imports and CLI imports work locally.
 
+## Release Candidate Validation
+
+Before publishing to TestPyPI or PyPI, build and inspect release artifacts
+locally:
+
+```bash
+python3 -m pip install build twine
+make release-candidate-check
+```
+
+The release-candidate checker:
+
+- Removes stale local `dist/`, `build/`, and `*.egg-info/` artifacts.
+- Builds the source distribution and wheel with `python3 -m build`.
+- Falls back to `python3 -m build --no-isolation` with a warning when an
+  offline environment cannot fetch isolated build dependencies.
+- Verifies that both `.tar.gz` and `.whl` artifacts exist.
+- Inspects package metadata such as name, version, summary, Python requirement,
+  license metadata, and dependencies.
+- Runs `twine check` when `twine` is installed.
+- Installs the built wheel into a clean temporary virtual environment.
+- Falls back to a local-dependency install check with a warning when an offline
+  environment cannot resolve runtime dependencies.
+- Verifies `import pyprocore`, important public exports, and
+  `procore-sdk --help`.
+
+If `twine` is not installed, the checker warns by default. Use strict mode when
+you want missing optional release tooling to fail the check:
+
+```bash
+python3 scripts/check_release_candidate.py --strict
+```
+
+To inspect the generated artifacts manually, keep them after validation:
+
+```bash
+python3 scripts/check_release_candidate.py --keep-artifacts
+ls dist/
+```
+
+Do not commit `dist/`, `build/`, `*.egg-info/`, temporary virtual
+environments, credentials, token stores, logs, downloads, or generated workflow
+outputs. The release-candidate check does not publish anything and does not
+create a GitHub release.
+
 ## PyPI Publishing Checklist
 
 Publishing is intentionally manual for now. Running the release checks does not

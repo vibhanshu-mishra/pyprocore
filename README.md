@@ -827,6 +827,18 @@ covers versioning, validation, changelog updates, and the future PyPI publishing
 checklist. The current pre-release audit is captured in
 [docs/final-release-readiness.md](docs/final-release-readiness.md).
 
+Maintainers can also run a local release-candidate package check before any
+manual publishing step:
+
+```bash
+make release-candidate-check
+```
+
+This builds local artifacts, inspects package metadata, installs the wheel in a
+temporary environment, and checks package exports plus `procore-sdk --help`.
+Publishing is not automatic; see [docs/release.md](docs/release.md) before
+using TestPyPI or PyPI.
+
 ---
 
 ## Documentation Site

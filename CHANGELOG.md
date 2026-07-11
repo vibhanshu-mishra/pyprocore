@@ -17,6 +17,7 @@ and this project follows semantic versioning.
 - Phase 6C MkDocs documentation site structure with docs navigation, homepage, getting started, authentication, CLI, API coverage, workflows, AI review, automation, recipes, contributing, release, and changelog pages.
 - Phase 6D security and quality hardening with local secret scanning, stronger log redaction, token-store safety tests, pre-commit configuration, CI quality checks, and security documentation.
 - Phase 6E final release polish and readiness audit across README, docs, examples, changelog, CLI discoverability, and release-readiness reporting.
+- Release-candidate validation tooling for local source distribution, wheel, metadata, clean-install, CLI, and package-export checks.
 - Open-source repository support files, including contribution, security, issue, and pull request guidance.
 - Phase 7 examples and recipe documentation.
 - Runnable `examples/` scripts for common company, project, RFI, submittal, attachment, and workflow package tasks.
@@ -149,6 +150,7 @@ and this project follows semantic versioning.
 - Added MkDocs documentation-site configuration, local docs preview/build targets, and beginner-friendly docs indexes.
 - Added security hardening documentation for OAuth credentials, `.env`, token stores, logs, secret checks, pre-commit, CI, and vulnerability reporting.
 - Added final release readiness report covering capabilities, validation commands, known limitations, live verification limits, GitHub workflow token limits, and publishing status.
+- Added release-candidate validation documentation for local artifact builds, metadata checks, clean wheel installs, and manual publishing safeguards.
 - Polished README release-facing metadata, safety notes, and package-readiness links.
 
 ### Tests
@@ -158,6 +160,7 @@ and this project follows semantic versioning.
 - Added docs-site structure tests for MkDocs config, key docs pages, README links, optional docs dependency, and Makefile docs targets.
 - Added security hardening tests for secret scanning, logging redaction, token-store-safe CLI diagnostics, pre-commit config, CI quality checks, Makefile targets, and security docs.
 - Added final release polish tests for README feature coverage, changelog phase summaries, docs presence, examples coverage, and release-readiness claims.
+- Added release-candidate tests for package-check tooling, Makefile targets, documentation, ignored artifacts, and no-publish/no-live-call safeguards.
 
 ## [2.0.0] - 2026-07-03
 

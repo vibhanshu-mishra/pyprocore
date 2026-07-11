@@ -56,6 +56,16 @@ make quality-check
 
 These commands do not require live Procore credentials.
 
+The next release-candidate validation step is to build and inspect local package
+artifacts, then install the wheel into a clean temporary environment:
+
+```bash
+make release-candidate-check
+```
+
+This check verifies the source distribution, wheel, package metadata, installed
+CLI, and important public exports without publishing to PyPI.
+
 ## Known Limitations
 
 - The SDK is read-oriented and does not currently provide broad create/update/delete coverage.
@@ -89,7 +99,7 @@ Before publishing:
 1. Review `CHANGELOG.md`.
 2. Confirm the intended version in `pyproject.toml` and `pyprocore/__init__.py`.
 3. Run all validation commands above.
-4. Build artifacts in a clean environment.
+4. Run `make release-candidate-check`.
 5. Inspect artifacts for secrets, token stores, logs, downloads, and generated outputs.
 6. Test with TestPyPI or a fresh local install.
 7. Publish only after the clean install check succeeds.
