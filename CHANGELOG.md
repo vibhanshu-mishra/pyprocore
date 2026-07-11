@@ -96,6 +96,8 @@ and this project follows semantic versioning.
 - Local webhook helpers for parsing, normalizing, redacting, saving, listing, filtering, and dry-run dispatching webhook payloads.
 - `procore-sdk webhook validate`, `procore-sdk webhook save`, `procore-sdk webhook list`, and `procore-sdk webhook dispatch`.
 - Webhook sample payloads, local-only examples, automation docs, and recipes.
+- Dockerfile, `.dockerignore`, Docker Compose template, Docker helper scripts, and Docker CI workflow example.
+- Automation docs for Docker and CI usage with dry-run-first guidance.
 
 ### Changed
 
@@ -120,6 +122,7 @@ and this project follows semantic versioning.
 - Updated README, roadmap, examples, and recipes for local workflow plan automation.
 - Updated README, roadmap, examples, and recipes for scheduled workflow plan automation.
 - Updated README, roadmap, examples, and recipes for local webhook helper workflows.
+- Updated README, roadmap, examples, and automation docs for Docker and CI templates.
 
 ## [2.0.0] - 2026-07-03
 

@@ -1,0 +1,22 @@
+services:
+  pyprocore:
+    build:
+      context: .
+    image: pyprocore:local
+    working_dir: /app
+    environment:
+      PROCORE_CLIENT_ID: ${PROCORE_CLIENT_ID:-}
+      PROCORE_CLIENT_SECRET: ${PROCORE_CLIENT_SECRET:-}
+      PROCORE_REDIRECT_URI: ${PROCORE_REDIRECT_URI:-}
+      PROCORE_LOGIN_URL: ${PROCORE_LOGIN_URL:-}
+      PROCORE_API_BASE: ${PROCORE_API_BASE:-}
+      PROCORE_COMPANY_ID: ${PROCORE_COMPANY_ID:-}
+    volumes:
+      - ./exports:/app/exports
+      - ./webhook-events:/app/webhook-events
+    command: ["procore-sdk", "--help"]
+
+    # Safe local examples:
+    # command: ["procore-sdk", "workflow-plan", "validate", "examples/workflow_plans/lightweight_sync.json"]
+    # command: ["procore-sdk", "workflow-plan", "run", "examples/workflow_plans/lightweight_sync.json", "--output-dir", "exports/docker-dry-run", "--dry-run"]
+    # command: ["procore-sdk", "webhook", "validate", "examples/webhooks/rfi_created_event.json"]

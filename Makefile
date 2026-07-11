@@ -1,6 +1,8 @@
-.PHONY: test coverage examples-check smoke-documents smoke-drawings smoke-specifications smoke-photos smoke-daily-logs lint format typecheck clean
+.PHONY: test coverage examples-check smoke-documents smoke-drawings smoke-specifications smoke-photos smoke-daily-logs lint format typecheck docker-build docker-help docker-run-plan clean
 
 PYTHON ?= python3
+PLAN ?= examples/workflow_plans/nightly_project_context.json
+OUTPUT_DIR ?= exports/docker-plan-dry-run
 
 test:
 	$(PYTHON) -m unittest discover -s tests
@@ -83,6 +85,21 @@ format:
 
 typecheck:
 	$(PYTHON) -m mypy pyprocore
+
+docker-build:
+	docker build -t pyprocore:local .
+
+docker-help:
+	docker run --rm pyprocore:local procore-sdk --help
+
+docker-run-plan:
+	@if [ ! -f "$(PLAN)" ]; then \
+		echo "Workflow plan not found: $(PLAN)"; \
+		echo "Example: make docker-run-plan PLAN=examples/workflow_plans/lightweight_sync.json"; \
+		exit 1; \
+	fi
+	mkdir -p "$(OUTPUT_DIR)"
+	docker run --rm -v "$(CURDIR)/exports:/app/exports" pyprocore:local procore-sdk workflow-plan run "$(PLAN)" --output-dir "$(OUTPUT_DIR)" --dry-run
 
 clean:
 	find . -name "__pycache__" -type d -prune -exec rm -rf {} +

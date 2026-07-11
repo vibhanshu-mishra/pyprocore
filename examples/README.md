@@ -218,6 +218,16 @@ Scheduled automation templates live in `examples/scheduled/` and
 | `run_workflow_plan.ps1` | Windows PowerShell runner |
 | `com.pyprocore.nightly-project-context.plist` | macOS launchd template |
 | `pyprocore-scheduled-workflow.yml` | GitHub Actions scheduled workflow template |
+| `pyprocore-docker-workflow.yml` | GitHub Actions Docker dry-run workflow template |
+
+Docker examples live in `examples/docker/`:
+
+| File | Demonstrates |
+| ---- | ------------ |
+| `README.md` | Docker usage notes and dry-run examples |
+| `workflow-runner.docker-compose.yml` | Docker Compose workflow-plan dry-run template |
+| `run-workflow-in-docker.sh` | macOS/Linux Docker workflow-plan dry-run helper |
+| `run-workflow-in-docker.ps1` | Windows PowerShell Docker workflow-plan dry-run helper |
 
 Sample webhook payloads live in `examples/webhooks/`:
 
@@ -234,5 +244,6 @@ Sample webhook payloads live in `examples/webhooks/`:
 - Example `49` validates local files only. Example `48` defaults to dry-run.
 - Examples `50`, `51`, and `52` use local webhook JSON files only. Example `52` dispatches in dry-run mode.
 - Scheduled templates should be dry-run tested before use.
+- Docker templates are optional and should be dry-run tested before live use.
 - Unit tests do not run these scripts against Procore.
 - Keep secrets out of code, screenshots, logs, and issue reports.

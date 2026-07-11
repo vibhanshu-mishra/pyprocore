@@ -20,6 +20,14 @@ token_store.json
 logs/
 *.log
 
+# Generated local outputs
+downloads/
+exports/
+pyprocore-runs/
+webhook-events/
+project-context/
+ai-export/
+
 # Coverage / tests
 .coverage
 .coverage.*

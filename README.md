@@ -790,6 +790,11 @@ sample webhook JSON payloads without running a hosted webhook server. Start with
 [Save a Webhook Event](docs/recipes/save-webhook-event.md), or
 [Dispatch a Webhook Event to a Workflow Plan](docs/recipes/dispatch-webhook-to-workflow.md).
 
+Docker and CI templates are optional. They help teams dry-run workflow plans in
+repeatable local or GitHub Actions environments without committing secrets or
+generated outputs. Start with [Docker Automation](docs/automation/docker.md),
+[CI Automation](docs/automation/ci.md), or `examples/docker/`.
+
 Before releasing Documents changes against a new Procore environment, run the
 manual smoke helper with sandbox credentials:
 

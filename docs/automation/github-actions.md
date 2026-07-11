@@ -26,6 +26,16 @@ Copy it into:
 - Runs the workflow plan.
 - Uploads the output folder as a GitHub Actions artifact.
 
+For Docker-based CI dry-runs, see:
+
+```text
+examples/github-actions/pyprocore-docker-workflow.yml
+```
+
+That template builds the Docker image, runs `procore-sdk --help`, validates a
+sample workflow plan, and dry-runs the plan without requiring live Procore
+credentials.
+
 ## Required Secrets
 
 Configure repository or organization secrets:

@@ -117,6 +117,7 @@ Status: In Progress
 - Beginner-friendly scheduled automation docs with dry-run-first guidance
 - Local webhook helpers for validating, redacting, saving, listing, filtering, and dry-run dispatching webhook payloads
 - Webhook CLI commands, examples, and recipes for future webhook-triggered workflows
+- Docker, Docker Compose, and CI dry-run templates for repeatable automation environments
 
 ## Phase 7: Examples and Recipes
 
