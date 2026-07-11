@@ -1,18 +1,20 @@
 # Final Release Readiness
 
-This report summarizes PyProcore's pre-release state after the release,
-documentation, GitHub project, security, and quality-hardening polish phases.
+This report summarizes PyProcore's `2.1.0` release-candidate state after the
+release, documentation, GitHub project, security, and quality-hardening polish
+phases.
 
 No publishing has been performed as part of this report.
 
 ## Current Status
 
-PyProcore is release-ready from a local repository quality perspective. The SDK
-has a typed package structure, production package metadata, mocked unit tests,
-local release checks, security checks, examples, recipes, MkDocs documentation,
-and contributor guidance.
+PyProcore `2.1.0` release candidate is prepared from a local repository quality
+perspective. The SDK has a typed package structure, production package
+metadata, mocked unit tests, local release checks, security checks, examples,
+recipes, MkDocs documentation, and contributor guidance.
 
-The package version was left unchanged during this final polish pass.
+The package version is prepared as `2.1.0` in `pyproject.toml` and
+`pyprocore/__init__.py`.
 
 ## Major Capabilities
 
@@ -91,8 +93,8 @@ must be handled separately with credentials that have permission to modify
 
 ## Publishing Status
 
-PyPI publishing has not been performed for this release pass. No GitHub release
-has been created.
+PyPI publishing has not been performed for `2.1.0`. No GitHub release has been
+created for `2.1.0`.
 
 Before publishing:
 
@@ -106,7 +108,7 @@ Before publishing:
 
 ## Recommended Next Steps
 
-- Decide the next public version number.
+- Confirm `2.1.0` is the intended public version number.
 - Confirm whether workflow-file updates should be pushed by a maintainer with the right GitHub token scope.
 - Run live smoke tests in a controlled sandbox only when valid OAuth credentials are available.
 - Cut a release branch or tag only after local validation and artifact inspection pass.

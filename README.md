@@ -836,8 +836,8 @@ make release-candidate-check
 
 This builds local artifacts, inspects package metadata, installs the wheel in a
 temporary environment, and checks package exports plus `procore-sdk --help`.
-Publishing is not automatic; see [docs/release.md](docs/release.md) before
-using TestPyPI or PyPI.
+The prepared release candidate is `2.1.0`. Publishing is not automatic; see
+[docs/release.md](docs/release.md) before using TestPyPI or PyPI.
 
 ---
 

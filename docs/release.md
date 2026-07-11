@@ -3,6 +3,10 @@
 This guide describes the local release-readiness process for PyProcore. It does
 not publish to PyPI or create GitHub releases.
 
+The next prepared release is `2.1.0`. It is an additive, backward-compatible
+release candidate. Do not publish it to TestPyPI or PyPI until final manual
+confirmation.
+
 ## Versioning
 
 PyProcore follows SemVer:
@@ -44,6 +48,8 @@ Before publishing:
 
 - Confirm no `.env`, token store, downloads, logs, or generated workflow outputs
   are tracked.
+- Confirm the prepared version is `2.1.0` in both `pyproject.toml` and
+  `pyprocore/__init__.py`.
 - Confirm `CHANGELOG.md` has clear entries for the release.
 - Confirm `README.md` installation, authentication, examples, and security
   notes are current.
@@ -53,8 +59,8 @@ Before publishing:
 
 ## Release Candidate Validation
 
-Before publishing to TestPyPI or PyPI, build and inspect release artifacts
-locally:
+Before publishing the prepared `2.1.0` release to TestPyPI or PyPI, build and
+inspect release artifacts locally:
 
 ```bash
 python3 -m pip install build twine

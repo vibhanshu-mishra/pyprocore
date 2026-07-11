@@ -7,6 +7,15 @@ and this project follows semantic versioning.
 
 ## [Unreleased]
 
+No unreleased changes yet.
+
+## [2.1.0] - 2026-07-11
+
+PyProcore 2.1.0 is an additive, backward-compatible release candidate. It
+expands API coverage, adds AI-ready local workflow packages, strengthens
+automation foundations, improves documentation and security posture, and adds
+local release-candidate validation tooling.
+
 ### Added
 
 - Phase 3 expanded API coverage across Documents, Drawings, Specifications, Photos, and Daily Logs.
@@ -137,7 +146,7 @@ and this project follows semantic versioning.
 
 ### Fixed
 
-- No runtime fixes in this unreleased phase.
+- No runtime fixes in this release.
 
 ### Security
 

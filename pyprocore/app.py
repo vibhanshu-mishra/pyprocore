@@ -9,6 +9,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel
 
+from pyprocore import __version__
 from pyprocore.auth.diagnostics import (
     AuthExchangeResult,
     AuthLoginUrlResult,
@@ -134,6 +135,7 @@ from pyprocore.workflows import (
 def build_parser() -> argparse.ArgumentParser:
     """Build the command-line parser."""
     parser = argparse.ArgumentParser(description="Procore SDK utility commands")
+    parser.add_argument("--version", action="version", version=f"pyprocore {__version__}")
     subcommands = parser.add_subparsers(dest="command", required=True)
 
     doctor_parser = subcommands.add_parser("doctor", help="Check local SDK setup")
