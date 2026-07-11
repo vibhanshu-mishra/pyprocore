@@ -1,4 +1,4 @@
-.PHONY: test coverage examples-check smoke-documents smoke-drawings smoke-specifications lint format typecheck clean
+.PHONY: test coverage examples-check smoke-documents smoke-drawings smoke-specifications smoke-photos lint format typecheck clean
 
 PYTHON ?= python3
 
@@ -47,6 +47,18 @@ smoke-specifications:
 	if [ -n "$$PROCORE_SPECIFICATION_SECTION_ID" ]; then args="$$args --section $$PROCORE_SPECIFICATION_SECTION_ID"; fi; \
 	if [ -n "$$PROCORE_SPECIFICATION_REVISION_ID" ]; then args="$$args --revision $$PROCORE_SPECIFICATION_REVISION_ID"; fi; \
 	PYTHONPATH=. $(PYTHON) scripts/smoke_specifications.py $$args
+
+smoke-photos:
+	@if [ -z "$$PROCORE_PROJECT_ID" ]; then \
+		echo "Photos smoke test needs PROCORE_PROJECT_ID."; \
+		echo "Example: PROCORE_PROJECT_ID=352338 make smoke-photos"; \
+		exit 1; \
+	fi
+	@args="--project $$PROCORE_PROJECT_ID"; \
+	if [ -n "$$PROCORE_COMPANY_ID" ]; then args="$$args --company $$PROCORE_COMPANY_ID"; fi; \
+	if [ -n "$$PROCORE_PHOTO_ALBUM_ID" ]; then args="$$args --album $$PROCORE_PHOTO_ALBUM_ID"; fi; \
+	if [ -n "$$PROCORE_PHOTO_ID" ]; then args="$$args --photo $$PROCORE_PHOTO_ID"; fi; \
+	PYTHONPATH=. $(PYTHON) scripts/smoke_photos.py $$args
 
 lint:
 	$(PYTHON) -m black --check pyprocore tests

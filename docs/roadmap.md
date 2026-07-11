@@ -17,6 +17,7 @@ coverage priorities.
 - Documents
 - Drawings
 - Specifications
+- Photos
 - Attachment downloads
 - Typed models
 - Search and resolver helpers
@@ -68,7 +69,11 @@ Documents, Drawings, Specifications, Photos, and Daily Logs.
   - List/get specification section revisions
   - Download specification section revisions
   - Manual smoke test for sandbox endpoint and payload validation
-- Photos
+- Photos: In Progress
+  - List/get/find photo albums
+  - List/get/find photos
+  - Download photos and photo albums
+  - Manual smoke test for sandbox endpoint and payload validation
 - Daily Logs
 - Observations
 - Correspondence

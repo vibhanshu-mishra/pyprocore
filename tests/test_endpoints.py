@@ -67,6 +67,16 @@ class EndpointsTestCase(unittest.TestCase):
             "/rest/v1.0/projects/456/drawing_revisions",
         )
 
+    def test_photo_endpoints(self) -> None:
+        """Photo endpoints use query-scoped image category and image routes."""
+        self.assertEqual(endpoints.image_categories(), "/rest/v1.0/image_categories")
+        self.assertEqual(
+            endpoints.image_category(image_category_id=123),
+            "/rest/v1.0/image_categories/123",
+        )
+        self.assertEqual(endpoints.images(), "/rest/v1.0/images")
+        self.assertEqual(endpoints.image(image_id=456), "/rest/v1.0/images/456")
+
     def test_specification_endpoints(self) -> None:
         """Specification endpoints use verified company/project scoped routes."""
         self.assertEqual(

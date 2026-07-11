@@ -38,6 +38,7 @@ PyProcore does that once, correctly, behind a clean interface. You call a servic
 - Documents
 - Drawings
 - Specifications
+- Photos
 - Attachment downloads
 
 **Developer experience**
@@ -55,7 +56,7 @@ PyProcore does that once, correctly, behind a clean interface. You call a servic
 | `pyprocore/auth/`     | OAuth exchange, token persistence, token refresh                |
 | `pyprocore/core/`     | Configuration, endpoint paths, HTTP client, logging, exceptions |
 | `pyprocore/models/`   | Pydantic response models                                        |
-| `pyprocore/services/` | Company, project, RFI, submittal, document, drawing, specification, and file services |
+| `pyprocore/services/` | Company, project, RFI, submittal, document, drawing, specification, photo, and file services |
 | `pyprocore/parser/`   | Email parsing utilities for future automation                   |
 | `tests/`              | Mocked unit tests with no live Procore dependency               |
 
@@ -209,6 +210,9 @@ specification_section = client.specifications.find_section(
     project_id=352338,
     number="03 3000",
 )
+photo_albums = client.photos.list_albums(project_id=352338)
+photos = client.photos.list(project_id=352338, album_id=123)
+photo = client.photos.get(project_id=352338, photo_id=789)
 ```
 
 Full service surface:
@@ -231,6 +235,8 @@ from pyprocore.services import (
     list_drawing_areas,
     list_drawing_disciplines,
     list_drawings,
+    list_photo_albums,
+    list_photos,
     list_projects,
     list_rfis,
     list_specification_section_revisions,
@@ -271,6 +277,8 @@ specification_revisions = list_specification_section_revisions(
     project_id=352338,
     per_page=1000,
 )
+photo_albums = list_photo_albums(project_id=352338)
+photos = list_photos(project_id=352338, album_id=123)
 ```
 
 Procore Documents are exposed through Project Folders and Files endpoints. PyProcore
@@ -294,6 +302,11 @@ individual sections by matching the list locally, and uses the verified revision
 show and download endpoints for revision workflows. Use
 `PROCORE_PROJECT_ID=352338 make smoke-specifications` to inspect live payloads
 before building a specification download workflow.
+
+Procore Photos are exposed through the Images API. PyProcore uses SDK-facing
+photo and album names, while the REST API calls albums `image_categories` and
+photos `images`. Project scoping is sent with `project_id` as a query parameter
+and `Procore-Company-Id` as a header.
 
 RFI and submittal list calls also accept optional date filters:
 
@@ -557,6 +570,14 @@ procore-sdk find-specification-section --project 352338 --number "03 3000"
 procore-sdk specification-revisions --project 352338 --section 123 --per-page 1000
 procore-sdk specification-revision --project 352338 --revision 456
 procore-sdk download-specification-revision --project 352338 --revision 456 --output-dir ./specifications
+procore-sdk photo-albums --project 352338
+procore-sdk photo-album --project 352338 --album 123
+procore-sdk find-photo-album --project 352338 --name Progress
+procore-sdk photos --project 352338 --album 123 --sort=-created_at
+procore-sdk photo --project 352338 --photo 789
+procore-sdk find-photo --project 352338 --filename site.jpg
+procore-sdk download-photo --project 352338 --photo 789 --output-dir ./photos
+procore-sdk download-photo-album --project 352338 --album 123 --limit 10 --output-dir ./photos
 procore-sdk package-rfi --project 352338 --id 102784
 procore-sdk package-rfi --project-name "Sandbox Test Project" --number 15
 procore-sdk package-submittal --project 352338 --id 309641
@@ -586,8 +607,8 @@ short human-readable summaries.
 
 Runnable example scripts live in [examples/](examples/README.md). They show
 common SDK tasks such as listing projects, fetching RFIs, downloading
-attachments, documents, drawings, and specification revisions, building workflow
-packages, exporting CSVs, and syncing local review folders.
+attachments, documents, drawings, specification revisions, and photos, building
+workflow packages, exporting CSVs, and syncing local review folders.
 
 Examples can be syntax-checked without credentials or live Procore access:
 
@@ -634,6 +655,20 @@ company, the app is connected to that company, production vs sandbox is correct,
 the OAuth user has project access, the Specifications tool is enabled, and the
 user can view Specifications.
 
+Before relying on photo downloads in a new Procore environment, inspect the live
+Photos payload:
+
+```bash
+PROCORE_PROJECT_ID=352338 make smoke-photos
+PYTHONPATH=. python3 scripts/smoke_photos.py --project 352338 --album 123 --photo 456
+```
+
+A Photos 403 usually means authentication succeeded, but Procore rejected the
+project/company context. Confirm the app is connected to the company, production
+vs sandbox is correct, the Photos tool is enabled, and the user can view Photos.
+If a photo download says no URL was found, inspect the `photo` payload to see
+which URL fields Procore returned.
+
 ---
 
 ## Pagination
@@ -679,6 +714,10 @@ GET /rest/v2.1/companies/{company_id}/projects/{project_id}/specification_sectio
 GET /rest/v2.1/companies/{company_id}/projects/{project_id}/specification_section_revisions
 GET /rest/v2.1/companies/{company_id}/projects/{project_id}/specification_section_revisions/{revision_id}
 GET /rest/v2.1/companies/{company_id}/projects/{project_id}/specification_section_revisions/{revision_id}/download
+GET /rest/v1.0/image_categories?project_id={project_id}
+GET /rest/v1.0/image_categories/{image_category_id}?project_id={project_id}
+GET /rest/v1.0/images?project_id={project_id}
+GET /rest/v1.0/images/{image_id}?project_id={project_id}
 ```
 
 ---
@@ -717,7 +756,11 @@ GET /rest/v2.1/companies/{company_id}/projects/{project_id}/specification_sectio
   - Specification section revisions
   - Specification revision downloads
   - Manual smoke-test validation
-- Photos
+- Photos: In Progress
+  - Photo albums/image categories
+  - Photo list/get/find helpers
+  - Photo and album download helpers
+  - Manual smoke-test validation
 - Daily Logs
 - Observations
 - Correspondence

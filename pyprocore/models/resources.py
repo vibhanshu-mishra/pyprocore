@@ -162,6 +162,57 @@ class Drawing(ProcoreModel):
     download_url: str | HttpUrl | None = None
 
 
+class PhotoAlbum(ProcoreModel):
+    """Procore photo album resource.
+
+    Procore calls photo albums ``image_categories`` in the REST API.
+    """
+
+    id: int | None = None
+    name: str | None = None
+    description: str | None = None
+    image_count: int | None = None
+    photos_count: int | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class PhotoImage(ProcoreModel):
+    """Procore photo/image resource."""
+
+    id: int | None = None
+    name: str | None = None
+    filename: str | None = None
+    file_name: str | None = None
+    image_name: str | None = None
+    original_filename: str | None = None
+    description: str | None = None
+    image_category_id: int | None = None
+    private: bool | None = None
+    starred: bool | None = None
+    taken_at: str | None = None
+    exposure_date: str | None = None
+    log_date: str | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+    thumbnail_url: str | HttpUrl | None = None
+    url: str | HttpUrl | None = None
+    download_url: str | HttpUrl | None = None
+    file_url: str | HttpUrl | None = None
+    original_url: str | HttpUrl | None = None
+    full_size_url: str | HttpUrl | None = None
+
+
+class PhotoAlbumDownloadResult(ProcoreModel):
+    """Summary returned after downloading a photo album."""
+
+    album_id: int
+    requested: int
+    downloaded_files: list[str] = Field(default_factory=list)
+    skipped: list[str] = Field(default_factory=list)
+    errors: list[str] = Field(default_factory=list)
+
+
 class SpecificationSet(ProcoreModel):
     """Procore specification set resource."""
 

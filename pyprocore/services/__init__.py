@@ -19,6 +19,17 @@ from pyprocore.services.drawings import (
     list_drawings,
 )
 from pyprocore.services.files import FileDownloadService, attachment_filename, download_url
+from pyprocore.services.photos import (
+    PhotosService,
+    download_photo,
+    download_photo_album,
+    find_photo,
+    find_photo_album,
+    get_photo,
+    get_photo_album,
+    list_photo_albums,
+    list_photos,
+)
 from pyprocore.services.projects import ProjectsService, get_project, list_projects
 from pyprocore.services.rfis import RFIsService, download_rfi_attachments, get_rfi, list_rfis
 from pyprocore.services.search import (
@@ -54,6 +65,7 @@ __all__ = [
     "DocumentsService",
     "DrawingsService",
     "FileDownloadService",
+    "PhotosService",
     "ProjectsService",
     "RFIsService",
     "SpecificationsService",
@@ -61,6 +73,8 @@ __all__ = [
     "attachment_filename",
     "download_document",
     "download_drawing",
+    "download_photo",
+    "download_photo_album",
     "download_rfi_attachments",
     "download_specification_section_revision",
     "download_submittal_attachments",
@@ -70,6 +84,8 @@ __all__ = [
     "find_document_folder",
     "find_drawing",
     "find_drawings_contains",
+    "find_photo",
+    "find_photo_album",
     "find_project",
     "find_project_contains",
     "find_rfi",
@@ -79,6 +95,8 @@ __all__ = [
     "get_document_folder",
     "get_drawing",
     "get_drawing_area",
+    "get_photo",
+    "get_photo_album",
     "get_project",
     "get_rfi",
     "get_specification_section",
@@ -90,6 +108,8 @@ __all__ = [
     "list_drawing_areas",
     "list_drawing_disciplines",
     "list_drawings",
+    "list_photo_albums",
+    "list_photos",
     "list_projects",
     "list_rfis",
     "list_specification_section_revisions",

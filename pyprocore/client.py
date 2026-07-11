@@ -24,6 +24,9 @@ from pyprocore.models import (
     Drawing,
     DrawingArea,
     DrawingDiscipline,
+    PhotoAlbum,
+    PhotoAlbumDownloadResult,
+    PhotoImage,
     Project,
     SpecificationSection,
     SpecificationSectionRevision,
@@ -33,6 +36,8 @@ from pyprocore.models import (
 from pyprocore.services import (
     download_document,
     download_drawing,
+    download_photo,
+    download_photo_album,
     download_rfi_attachments,
     download_specification_section_revision,
     download_submittal_attachments,
@@ -41,6 +46,8 @@ from pyprocore.services import (
     find_document_folder,
     find_drawing,
     find_drawings_contains,
+    find_photo,
+    find_photo_album,
     find_project,
     find_project_contains,
     find_rfi,
@@ -50,6 +57,8 @@ from pyprocore.services import (
     get_document_folder,
     get_drawing,
     get_drawing_area,
+    get_photo,
+    get_photo_album,
     get_project,
     get_rfi,
     get_specification_section,
@@ -61,6 +70,8 @@ from pyprocore.services import (
     list_drawing_areas,
     list_drawing_disciplines,
     list_drawings,
+    list_photo_albums,
+    list_photos,
     list_projects,
     list_rfis,
     list_specification_section_revisions,
@@ -827,6 +838,115 @@ class SpecificationsClient:
         )
 
 
+class PhotosClient:
+    """Convenience methods for Procore photo resources."""
+
+    def list_albums(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> list[PhotoAlbum]:
+        """List photo albums for a Procore project."""
+        return list_photo_albums(project_id, company_id=company_id, **filters)
+
+    def get_album(
+        self,
+        project_id: int,
+        album_id: int,
+        company_id: int | None = None,
+    ) -> PhotoAlbum:
+        """Get one photo album."""
+        return get_photo_album(project_id, album_id, company_id=company_id)
+
+    def find_album(
+        self,
+        project_id: int,
+        name: str | None = None,
+        company_id: int | None = None,
+    ) -> PhotoAlbum:
+        """Find one photo album by name."""
+        return find_photo_album(project_id, name=name, company_id=company_id)
+
+    def list(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        album_id: int | None = None,
+        **filters: Any,
+    ) -> list[PhotoImage]:
+        """List photos for a Procore project or album."""
+        return list_photos(project_id, company_id=company_id, album_id=album_id, **filters)
+
+    def get(
+        self,
+        project_id: int,
+        photo_id: int,
+        company_id: int | None = None,
+    ) -> PhotoImage:
+        """Get one photo."""
+        return get_photo(project_id, photo_id, company_id=company_id)
+
+    def find(
+        self,
+        project_id: int,
+        photo_id: int | None = None,
+        filename: str | None = None,
+        description: str | None = None,
+        query: str | None = None,
+        company_id: int | None = None,
+    ) -> PhotoImage:
+        """Find one photo."""
+        return find_photo(
+            project_id,
+            photo_id=photo_id,
+            filename=filename,
+            description=description,
+            query=query,
+            company_id=company_id,
+        )
+
+    def download(
+        self,
+        project_id: int,
+        photo_id: int,
+        output_dir: Path | str = "downloads/photos",
+        company_id: int | None = None,
+        *,
+        overwrite: bool = False,
+        filename: str | None = None,
+    ) -> Path:
+        """Download one photo."""
+        return download_photo(
+            project_id,
+            photo_id,
+            output_dir=output_dir,
+            company_id=company_id,
+            overwrite=overwrite,
+            filename=filename,
+        )
+
+    def download_album(
+        self,
+        project_id: int,
+        album_id: int,
+        output_dir: Path | str = "downloads/photos",
+        company_id: int | None = None,
+        *,
+        overwrite: bool = False,
+        limit: int | None = None,
+    ) -> PhotoAlbumDownloadResult:
+        """Download photos from one album."""
+        return download_photo_album(
+            project_id,
+            album_id,
+            output_dir=output_dir,
+            company_id=company_id,
+            overwrite=overwrite,
+            limit=limit,
+        )
+
+
 class AutomationClient:
     """Convenience methods for AI-ready automation workflow packages."""
 
@@ -1198,6 +1318,7 @@ class Procore:
         self.documents = DocumentsClient()
         self.drawings = DrawingsClient()
         self.specifications = SpecificationsClient()
+        self.photos = PhotosClient()
         self.automation = AutomationClient()
         self.workflows = WorkflowsClient()
 
@@ -1209,6 +1330,7 @@ __all__ = [
     "DrawingsClient",
     "Procore",
     "ProjectsClient",
+    "PhotosClient",
     "RFIsClient",
     "SpecificationsClient",
     "SubmittalsClient",

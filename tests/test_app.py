@@ -215,6 +215,78 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(download_drawing.output_dir, Path("drawings"))
         self.assertTrue(download_drawing.overwrite)
 
+        photo_albums = parser.parse_args(["photo-albums", "--project", "10", "--company", "123"])
+        self.assertEqual(photo_albums.command, "photo-albums")
+        self.assertEqual(photo_albums.project_id, 10)
+        self.assertEqual(photo_albums.company_id, 123)
+        self.assertEqual(
+            parser.parse_args(["photo-album", "--project", "10", "--album", "7"]).album_id,
+            7,
+        )
+        self.assertEqual(
+            parser.parse_args(["find-photo-album", "--project", "10", "--name", "Progress"]).name,
+            "Progress",
+        )
+        photos = parser.parse_args(
+            [
+                "photos",
+                "--project",
+                "10",
+                "--album",
+                "7",
+                "--starred",
+                "--query",
+                "roof",
+                "--uploader-id",
+                "5",
+                "--uploader-id",
+                "6",
+                "--sort=-created_at",
+            ]
+        )
+        self.assertEqual(photos.album_id, 7)
+        self.assertTrue(photos.starred)
+        self.assertEqual(photos.uploader_ids, [5, 6])
+        self.assertEqual(
+            parser.parse_args(["photo", "--project", "10", "--photo", "9"]).photo_id,
+            9,
+        )
+        self.assertEqual(
+            parser.parse_args(["find-photo", "--project", "10", "--filename", "site.jpg"]).filename,
+            "site.jpg",
+        )
+        download_photo = parser.parse_args(
+            [
+                "download-photo",
+                "--project",
+                "10",
+                "--photo",
+                "9",
+                "--output-dir",
+                "photos",
+                "--filename",
+                "site.jpg",
+                "--overwrite",
+            ]
+        )
+        self.assertEqual(download_photo.output_dir, Path("photos"))
+        self.assertTrue(download_photo.overwrite)
+        download_photo_album = parser.parse_args(
+            [
+                "download-photo-album",
+                "--project",
+                "10",
+                "--album",
+                "7",
+                "--output-dir",
+                "photos",
+                "--limit",
+                "3",
+            ]
+        )
+        self.assertEqual(download_photo_album.album_id, 7)
+        self.assertEqual(download_photo_album.limit, 3)
+
         specification_sets = parser.parse_args(
             ["specification-sets", "--project", "10", "--company", "123"]
         )
@@ -839,6 +911,157 @@ class AppTestCase(unittest.TestCase):
             company_id=123,
             overwrite=True,
             drawing_area_id=5,
+        )
+
+        with patch.object(app, "list_photo_albums", return_value="albums") as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="photo-albums",
+                    project_id=10,
+                    company_id=123,
+                    page=1,
+                    per_page=50,
+                )
+            )
+        self.assertEqual(result, "albums")
+        helper.assert_called_once_with(10, company_id=123, page=1, per_page=50)
+
+        with patch.object(app, "get_photo_album", return_value="album") as helper:
+            result = app.run_command(
+                argparse.Namespace(command="photo-album", project_id=10, album_id=7, company_id=123)
+            )
+        self.assertEqual(result, "album")
+        helper.assert_called_once_with(10, 7, company_id=123)
+
+        with patch.object(app, "find_photo_album", return_value="album") as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="find-photo-album",
+                    project_id=10,
+                    name="Progress",
+                    company_id=123,
+                )
+            )
+        self.assertEqual(result, "album")
+        helper.assert_called_once_with(10, name="Progress", company_id=123)
+
+        with patch.object(app, "list_photos", return_value="photos") as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="photos",
+                    project_id=10,
+                    company_id=123,
+                    album_id=7,
+                    image_category_id=None,
+                    private=None,
+                    starred=True,
+                    created_at=None,
+                    updated_at=None,
+                    log_date=None,
+                    query="roof",
+                    uploader_ids=[5],
+                    location_ids=None,
+                    trade_ids=None,
+                    projection=None,
+                    serializer_view="normal",
+                    sort="-created_at",
+                    page=None,
+                    per_page=None,
+                )
+            )
+        self.assertEqual(result, "photos")
+        helper.assert_called_once_with(
+            10,
+            company_id=123,
+            album_id=7,
+            image_category_id=None,
+            private=None,
+            starred=True,
+            created_at=None,
+            updated_at=None,
+            log_date=None,
+            query="roof",
+            uploader_ids=[5],
+            location_ids=None,
+            trade_ids=None,
+            projection=None,
+            serializer_view="normal",
+            sort="-created_at",
+            page=None,
+            per_page=None,
+        )
+
+        with patch.object(app, "get_photo", return_value="photo") as helper:
+            result = app.run_command(
+                argparse.Namespace(command="photo", project_id=10, photo_id=9, company_id=123)
+            )
+        self.assertEqual(result, "photo")
+        helper.assert_called_once_with(10, 9, company_id=123)
+
+        with patch.object(app, "find_photo", return_value="photo") as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="find-photo",
+                    project_id=10,
+                    photo_id=None,
+                    filename="site.jpg",
+                    description=None,
+                    query=None,
+                    company_id=123,
+                )
+            )
+        self.assertEqual(result, "photo")
+        helper.assert_called_once_with(
+            10,
+            photo_id=None,
+            filename="site.jpg",
+            description=None,
+            query=None,
+            company_id=123,
+        )
+
+        with patch.object(app, "download_photo", return_value=Path("site.jpg")) as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="download-photo",
+                    project_id=10,
+                    photo_id=9,
+                    output_dir=Path("photos"),
+                    company_id=123,
+                    overwrite=True,
+                    filename="site.jpg",
+                )
+            )
+        self.assertEqual(result, Path("site.jpg"))
+        helper.assert_called_once_with(
+            10,
+            9,
+            output_dir=Path("photos"),
+            company_id=123,
+            overwrite=True,
+            filename="site.jpg",
+        )
+
+        with patch.object(app, "download_photo_album", return_value="summary") as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="download-photo-album",
+                    project_id=10,
+                    album_id=7,
+                    output_dir=Path("photos"),
+                    company_id=123,
+                    overwrite=True,
+                    limit=3,
+                )
+            )
+        self.assertEqual(result, "summary")
+        helper.assert_called_once_with(
+            10,
+            7,
+            output_dir=Path("photos"),
+            company_id=123,
+            overwrite=True,
+            limit=3,
         )
 
         with patch.object(app, "list_specification_sets", return_value="sets") as helper:

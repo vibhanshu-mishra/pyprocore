@@ -41,6 +41,9 @@ export PROCORE_DOCUMENT_FOLDER_ID=your_document_folder_id
 export PROCORE_DRAWING_ID=your_drawing_id
 export PROCORE_DRAWING_AREA_ID=your_drawing_area_id
 export PROCORE_DRAWING_DISCIPLINE_ID=your_drawing_discipline_id
+export PROCORE_PHOTO_ALBUM_ID=your_photo_album_id
+export PROCORE_PHOTO_ID=your_photo_id
+export PROCORE_PHOTO_LIMIT=5
 export PROCORE_SPECIFICATION_SET_ID=your_specification_set_id
 export PROCORE_SPECIFICATION_SECTION_ID=your_specification_section_id
 export PROCORE_SPECIFICATION_REVISION_ID=your_specification_revision_id
@@ -66,6 +69,7 @@ python3 examples/18_incremental_sync.py
 python3 examples/20_list_documents.py
 python3 examples/23_list_drawings.py
 python3 examples/26_list_specification_sections.py
+python3 examples/31_list_photos.py
 ```
 
 Documents use Procore's Project Folders and Files endpoints internally. Before a
@@ -89,6 +93,13 @@ building automation around a new project, inspect the live payload shape with:
 
 ```bash
 PROCORE_PROJECT_ID=352338 make smoke-specifications
+```
+
+Photos use Procore's Images API. Procore calls photo albums "image categories"
+and photos "images" in the REST API. Inspect live payloads with:
+
+```bash
+PROCORE_PROJECT_ID=352338 make smoke-photos
 ```
 
 Each script prints helpful messages when required environment variables are
@@ -135,6 +146,11 @@ make examples-check
 | `27_get_specification_section.py` | Fetch one specification section by ID using the verified list endpoint |
 | `28_list_specification_revisions.py` | List specification section revisions for a project or section |
 | `29_download_specification_revision.py` | Download one specification section revision PDF |
+| `30_list_photo_albums.py` | List photo albums, which Procore calls image categories |
+| `31_list_photos.py` | List photos for a project or album |
+| `32_get_photo.py` | Fetch one photo by ID |
+| `33_download_photo.py` | Download one photo when Procore returns a full-size URL |
+| `34_download_photo_album.py` | Download photos from one album with an optional limit |
 
 ## Safety Notes
 

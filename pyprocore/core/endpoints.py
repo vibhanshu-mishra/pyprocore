@@ -28,6 +28,10 @@ DRAWING_DISCIPLINES = f"{API_V1}/projects/{{project_id}}/drawing_disciplines"
 DRAWINGS = f"{API_V1}/drawing_areas/{{drawing_area_id}}/drawings"
 DRAWING = f"{API_V1}/drawing_areas/{{drawing_area_id}}/drawings/{{drawing_id}}"
 DRAWING_REVISIONS = f"{API_V1}/projects/{{project_id}}/drawing_revisions"
+IMAGE_CATEGORIES = f"{API_V1}/image_categories"
+IMAGE_CATEGORY = f"{API_V1}/image_categories/{{image_category_id}}"
+IMAGES = f"{API_V1}/images"
+IMAGE = f"{API_V1}/images/{{image_id}}"
 SPECIFICATION_SETS = f"{API_V2}/companies/{{company_id}}/projects/{{project_id}}/specification_sets"
 SPECIFICATION_SET_V1 = (
     f"{API_V1}/projects/{{project_id}}/specification_sets/{{specification_set_id}}"
@@ -141,6 +145,26 @@ def drawing_revisions(project_id: int) -> str:
     return DRAWING_REVISIONS.format(project_id=project_id)
 
 
+def image_categories() -> str:
+    """Return the photo albums/image categories collection endpoint."""
+    return IMAGE_CATEGORIES
+
+
+def image_category(image_category_id: int) -> str:
+    """Return the endpoint for one photo album/image category."""
+    return IMAGE_CATEGORY.format(image_category_id=image_category_id)
+
+
+def images() -> str:
+    """Return the photos/images collection endpoint."""
+    return IMAGES
+
+
+def image(image_id: int) -> str:
+    """Return the endpoint for one photo/image."""
+    return IMAGE.format(image_id=image_id)
+
+
 def specification_sets(company_id: int, project_id: int) -> str:
     """Return the specification sets collection endpoint for a project."""
     return SPECIFICATION_SETS.format(company_id=company_id, project_id=project_id)
@@ -208,6 +232,10 @@ class Endpoints:
     DRAWING_AREA = DRAWING_AREA
     DRAWING_DISCIPLINES = DRAWING_DISCIPLINES
     DRAWING_REVISIONS = DRAWING_REVISIONS
+    IMAGE_CATEGORIES = IMAGE_CATEGORIES
+    IMAGE_CATEGORY = IMAGE_CATEGORY
+    IMAGES = IMAGES
+    IMAGE = IMAGE
     SPECIFICATION_SETS = SPECIFICATION_SETS
     SPECIFICATION_SET_V1 = SPECIFICATION_SET_V1
     SPECIFICATION_SECTIONS = SPECIFICATION_SECTIONS

@@ -35,6 +35,8 @@ from pyprocore.core.exceptions import (
 from pyprocore.services import (
     download_document,
     download_drawing,
+    download_photo,
+    download_photo_album,
     download_rfi_attachments,
     download_specification_section_revision,
     download_submittal_attachments,
@@ -43,6 +45,8 @@ from pyprocore.services import (
     find_document_folder,
     find_drawing,
     find_drawings_contains,
+    find_photo,
+    find_photo_album,
     find_project,
     find_rfi,
     find_specification_section,
@@ -51,6 +55,8 @@ from pyprocore.services import (
     get_document_folder,
     get_drawing,
     get_drawing_area,
+    get_photo,
+    get_photo_album,
     get_rfi,
     get_specification_section,
     get_specification_section_revision,
@@ -61,6 +67,8 @@ from pyprocore.services import (
     list_drawing_areas,
     list_drawing_disciplines,
     list_drawings,
+    list_photo_albums,
+    list_photos,
     list_projects,
     list_rfis,
     list_specification_section_revisions,
@@ -376,6 +384,81 @@ def build_parser() -> argparse.ArgumentParser:
         help="Overwrite the local drawing file if it exists",
     )
 
+    photo_albums_parser = subcommands.add_parser(
+        "photo-albums",
+        help="List photo albums for a project",
+    )
+    _add_photo_project_company_options(photo_albums_parser)
+    photo_albums_parser.add_argument("--page", type=int)
+    photo_albums_parser.add_argument("--per-page", type=int)
+
+    photo_album_parser = subcommands.add_parser("photo-album", help="Get one photo album")
+    _add_photo_project_company_options(photo_album_parser)
+    photo_album_parser.add_argument(
+        "--album", "--album-id", dest="album_id", type=int, required=True
+    )
+
+    find_photo_album_parser = subcommands.add_parser(
+        "find-photo-album",
+        help="Find one photo album by name",
+    )
+    _add_photo_project_company_options(find_photo_album_parser)
+    find_photo_album_parser.add_argument("--name", required=True)
+
+    photos_parser = subcommands.add_parser("photos", help="List photos for a project or album")
+    _add_photo_project_company_options(photos_parser)
+    _add_photo_filter_options(photos_parser)
+
+    photo_parser = subcommands.add_parser("photo", help="Get one photo")
+    _add_photo_project_company_options(photo_parser)
+    photo_parser.add_argument("--photo", "--photo-id", dest="photo_id", type=int, required=True)
+
+    find_photo_parser = subcommands.add_parser("find-photo", help="Find one photo")
+    _add_photo_project_company_options(find_photo_parser)
+    find_photo_parser.add_argument("--photo", "--photo-id", dest="photo_id", type=int)
+    find_photo_parser.add_argument("--filename", default=None)
+    find_photo_parser.add_argument("--description", default=None)
+    find_photo_parser.add_argument("--query", default=None)
+
+    download_photo_parser = subcommands.add_parser("download-photo", help="Download one photo")
+    _add_photo_project_company_options(download_photo_parser)
+    download_photo_parser.add_argument(
+        "--photo",
+        "--photo-id",
+        dest="photo_id",
+        type=int,
+        required=True,
+    )
+    download_photo_parser.add_argument("--output-dir", "--output", dest="output_dir", type=Path)
+    download_photo_parser.add_argument("--filename", default=None)
+    download_photo_parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Overwrite the local photo file if it exists",
+    )
+
+    download_photo_album_parser = subcommands.add_parser(
+        "download-photo-album",
+        help="Download photos from one album",
+    )
+    _add_photo_project_company_options(download_photo_album_parser)
+    download_photo_album_parser.add_argument(
+        "--album",
+        "--album-id",
+        dest="album_id",
+        type=int,
+        required=True,
+    )
+    download_photo_album_parser.add_argument(
+        "--output-dir", "--output", dest="output_dir", type=Path
+    )
+    download_photo_album_parser.add_argument("--limit", type=int)
+    download_photo_album_parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Overwrite local photo files if they exist",
+    )
+
     specification_sets_parser = subcommands.add_parser(
         "specification-sets",
         help="List specification sets for a project",
@@ -615,6 +698,32 @@ def _add_spec_project_company_options(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--company-id", "--company", dest="company_id", type=int, default=None)
 
 
+def _add_photo_project_company_options(parser: argparse.ArgumentParser) -> None:
+    """Add shared Photos command options."""
+    parser.add_argument("--project", "--project-id", dest="project_id", type=int, required=True)
+    parser.add_argument("--company-id", "--company", dest="company_id", type=int, default=None)
+
+
+def _add_photo_filter_options(parser: argparse.ArgumentParser) -> None:
+    """Add shared Photos list filter options."""
+    parser.add_argument("--album", "--album-id", dest="album_id", type=int)
+    parser.add_argument("--image-category-id", type=int)
+    parser.add_argument("--private", action="store_true", default=None)
+    parser.add_argument("--starred", action="store_true", default=None)
+    parser.add_argument("--created-at", default=None)
+    parser.add_argument("--updated-at", default=None)
+    parser.add_argument("--log-date", default=None)
+    parser.add_argument("--query", default=None)
+    parser.add_argument("--uploader-id", dest="uploader_ids", type=int, action="append")
+    parser.add_argument("--location-id", dest="location_ids", type=int, action="append")
+    parser.add_argument("--trade-id", dest="trade_ids", type=int, action="append")
+    parser.add_argument("--projection", default=None)
+    parser.add_argument("--serializer-view", default=None)
+    parser.add_argument("--sort", default=None)
+    parser.add_argument("--page", type=int)
+    parser.add_argument("--per-page", type=int)
+
+
 def _add_project_output_options(parser: argparse.ArgumentParser, *, output_help: str) -> None:
     """Add shared project and output options."""
     parser.add_argument("--project", "--project-id", dest="project_id", type=int, required=True)
@@ -835,6 +944,77 @@ def run_command(args: argparse.Namespace) -> Any:
             company_id=args.company_id,
             overwrite=args.overwrite,
             drawing_area_id=args.drawing_area_id,
+        )
+
+    if args.command == "photo-albums":
+        return list_photo_albums(
+            args.project_id,
+            company_id=args.company_id,
+            page=args.page,
+            per_page=args.per_page,
+        )
+
+    if args.command == "photo-album":
+        return get_photo_album(args.project_id, args.album_id, company_id=args.company_id)
+
+    if args.command == "find-photo-album":
+        return find_photo_album(args.project_id, name=args.name, company_id=args.company_id)
+
+    if args.command == "photos":
+        return list_photos(
+            args.project_id,
+            company_id=args.company_id,
+            album_id=args.album_id,
+            image_category_id=args.image_category_id,
+            private=args.private,
+            starred=args.starred,
+            created_at=args.created_at,
+            updated_at=args.updated_at,
+            log_date=args.log_date,
+            query=args.query,
+            uploader_ids=args.uploader_ids,
+            location_ids=args.location_ids,
+            trade_ids=args.trade_ids,
+            projection=args.projection,
+            serializer_view=args.serializer_view,
+            sort=args.sort,
+            page=args.page,
+            per_page=args.per_page,
+        )
+
+    if args.command == "photo":
+        return get_photo(args.project_id, args.photo_id, company_id=args.company_id)
+
+    if args.command == "find-photo":
+        return find_photo(
+            args.project_id,
+            photo_id=args.photo_id,
+            filename=args.filename,
+            description=args.description,
+            query=args.query,
+            company_id=args.company_id,
+        )
+
+    if args.command == "download-photo":
+        output_dir = args.output_dir if args.output_dir is not None else "downloads/photos"
+        return download_photo(
+            args.project_id,
+            args.photo_id,
+            output_dir=output_dir,
+            company_id=args.company_id,
+            overwrite=args.overwrite,
+            filename=args.filename,
+        )
+
+    if args.command == "download-photo-album":
+        output_dir = args.output_dir if args.output_dir is not None else "downloads/photos"
+        return download_photo_album(
+            args.project_id,
+            args.album_id,
+            output_dir=output_dir,
+            company_id=args.company_id,
+            overwrite=args.overwrite,
+            limit=args.limit,
         )
 
     if args.command == "specification-sets":
@@ -1128,6 +1308,7 @@ def main() -> None:
     if isinstance(result, Path) and args.command in {
         "download-document",
         "download-drawing",
+        "download-photo",
         "download-specification-revision",
     }:
         print(f"Download complete.\nOutput: {result}")

@@ -13,6 +13,7 @@ from pyprocore.client import (
     CompaniesClient,
     DocumentsClient,
     DrawingsClient,
+    PhotosClient,
     ProjectsClient,
     RFIsClient,
     SpecificationsClient,
@@ -36,6 +37,7 @@ class ProcoreObjectClientTestCase(unittest.TestCase):
         self.assertIsInstance(client.documents, DocumentsClient)
         self.assertIsInstance(client.drawings, DrawingsClient)
         self.assertIsInstance(client.specifications, SpecificationsClient)
+        self.assertIsInstance(client.photos, PhotosClient)
         self.assertIsInstance(client.automation, AutomationClient)
         self.assertIsInstance(client.workflows, WorkflowsClient)
 
@@ -552,6 +554,129 @@ class ProcoreObjectClientTestCase(unittest.TestCase):
             overwrite=True,
             company_id=123,
             drawing_area_id=5,
+        )
+
+    @patch("pyprocore.client.list_photo_albums")
+    def test_photos_list_albums_delegates_to_service(self, list_photo_albums: Mock) -> None:
+        """Photo album listing delegates to the service."""
+        list_photo_albums.return_value = ["album"]
+
+        result = Procore().photos.list_albums(352338, company_id=123, per_page=50)
+
+        self.assertEqual(result, ["album"])
+        list_photo_albums.assert_called_once_with(352338, company_id=123, per_page=50)
+
+    @patch("pyprocore.client.get_photo_album")
+    def test_photos_get_album_delegates_to_service(self, get_photo_album: Mock) -> None:
+        """Photo album retrieval delegates to the service."""
+        get_photo_album.return_value = "album"
+
+        result = Procore().photos.get_album(352338, 7, company_id=123)
+
+        self.assertEqual(result, "album")
+        get_photo_album.assert_called_once_with(352338, 7, company_id=123)
+
+    @patch("pyprocore.client.find_photo_album")
+    def test_photos_find_album_delegates_to_service(self, find_photo_album: Mock) -> None:
+        """Photo album lookup delegates to the service."""
+        find_photo_album.return_value = "album"
+
+        result = Procore().photos.find_album(352338, name="Progress", company_id=123)
+
+        self.assertEqual(result, "album")
+        find_photo_album.assert_called_once_with(352338, name="Progress", company_id=123)
+
+    @patch("pyprocore.client.list_photos")
+    def test_photos_list_delegates_to_service(self, list_photos: Mock) -> None:
+        """Photo listing delegates to the service."""
+        list_photos.return_value = ["photo"]
+
+        result = Procore().photos.list(352338, company_id=123, album_id=7, sort="-created_at")
+
+        self.assertEqual(result, ["photo"])
+        list_photos.assert_called_once_with(
+            352338,
+            company_id=123,
+            album_id=7,
+            sort="-created_at",
+        )
+
+    @patch("pyprocore.client.get_photo")
+    def test_photos_get_delegates_to_service(self, get_photo: Mock) -> None:
+        """Photo retrieval delegates to the service."""
+        get_photo.return_value = "photo"
+
+        result = Procore().photos.get(352338, 9, company_id=123)
+
+        self.assertEqual(result, "photo")
+        get_photo.assert_called_once_with(352338, 9, company_id=123)
+
+    @patch("pyprocore.client.find_photo")
+    def test_photos_find_delegates_to_service(self, find_photo: Mock) -> None:
+        """Photo lookup delegates to the service."""
+        find_photo.return_value = "photo"
+
+        result = Procore().photos.find(352338, filename="site.jpg", company_id=123)
+
+        self.assertEqual(result, "photo")
+        find_photo.assert_called_once_with(
+            352338,
+            photo_id=None,
+            filename="site.jpg",
+            description=None,
+            query=None,
+            company_id=123,
+        )
+
+    @patch("pyprocore.client.download_photo")
+    def test_photos_download_delegates_to_service(self, download_photo: Mock) -> None:
+        """Photo downloads delegate to the service."""
+        download_photo.return_value = Path("photo.jpg")
+
+        result = Procore().photos.download(
+            352338,
+            9,
+            output_dir="downloads/photos",
+            company_id=123,
+            overwrite=True,
+            filename="site.jpg",
+        )
+
+        self.assertEqual(result, Path("photo.jpg"))
+        download_photo.assert_called_once_with(
+            352338,
+            9,
+            output_dir="downloads/photos",
+            company_id=123,
+            overwrite=True,
+            filename="site.jpg",
+        )
+
+    @patch("pyprocore.client.download_photo_album")
+    def test_photos_download_album_delegates_to_service(
+        self,
+        download_photo_album: Mock,
+    ) -> None:
+        """Photo album downloads delegate to the service."""
+        download_photo_album.return_value = "summary"
+
+        result = Procore().photos.download_album(
+            352338,
+            7,
+            output_dir="downloads/photos",
+            company_id=123,
+            overwrite=True,
+            limit=10,
+        )
+
+        self.assertEqual(result, "summary")
+        download_photo_album.assert_called_once_with(
+            352338,
+            7,
+            output_dir="downloads/photos",
+            company_id=123,
+            overwrite=True,
+            limit=10,
         )
 
     @patch("pyprocore.client.list_specification_sets")
