@@ -62,6 +62,12 @@ and this project follows semantic versioning.
 - Photo CLI commands for albums, photos, photo lookup, and downloads.
 - Photo examples and recipes.
 - Manual Photos smoke-test helper for validating sandbox endpoint and payload behavior.
+- Daily Logs API models and services.
+- Daily Log counts, headers, type-specific list helpers, local lookup helpers, and grouped date summary helpers.
+- `client.daily_logs` object-client wrapper.
+- Daily Logs CLI commands for counts, headers, type-specific logs, grouped date summaries, and delay log types.
+- Daily Logs examples and recipes.
+- Manual Daily Logs smoke-test helper for validating sandbox endpoint and payload behavior.
 
 ### Changed
 
@@ -78,6 +84,7 @@ and this project follows semantic versioning.
 - Updated Documents smoke-test docs to recommend `PYTHONPATH=.` for local checkout validation.
 - Updated README, roadmap, examples, and recipes for Specifications support.
 - Updated README, roadmap, examples, and recipes for Photos support.
+- Updated README, roadmap, examples, and recipes for Daily Logs support.
 
 ## [2.0.0] - 2026-07-03
 

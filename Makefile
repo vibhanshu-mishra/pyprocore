@@ -1,4 +1,4 @@
-.PHONY: test coverage examples-check smoke-documents smoke-drawings smoke-specifications smoke-photos lint format typecheck clean
+.PHONY: test coverage examples-check smoke-documents smoke-drawings smoke-specifications smoke-photos smoke-daily-logs lint format typecheck clean
 
 PYTHON ?= python3
 
@@ -59,6 +59,18 @@ smoke-photos:
 	if [ -n "$$PROCORE_PHOTO_ALBUM_ID" ]; then args="$$args --album $$PROCORE_PHOTO_ALBUM_ID"; fi; \
 	if [ -n "$$PROCORE_PHOTO_ID" ]; then args="$$args --photo $$PROCORE_PHOTO_ID"; fi; \
 	PYTHONPATH=. $(PYTHON) scripts/smoke_photos.py $$args
+
+smoke-daily-logs:
+	@if [ -z "$$PROCORE_PROJECT_ID" ]; then \
+		echo "Daily Logs smoke test needs PROCORE_PROJECT_ID."; \
+		echo "Example: PROCORE_PROJECT_ID=352338 make smoke-daily-logs"; \
+		exit 1; \
+	fi
+	@args="--project $$PROCORE_PROJECT_ID"; \
+	if [ -n "$$PROCORE_COMPANY_ID" ]; then args="$$args --company $$PROCORE_COMPANY_ID"; fi; \
+	if [ -n "$$PROCORE_LOG_DATE" ]; then args="$$args --log-date $$PROCORE_LOG_DATE"; fi; \
+	if [ -n "$$PROCORE_DAILY_LOG_TYPE" ]; then args="$$args --log-type $$PROCORE_DAILY_LOG_TYPE"; fi; \
+	PYTHONPATH=. $(PYTHON) scripts/smoke_daily_logs.py $$args
 
 lint:
 	$(PYTHON) -m black --check pyprocore tests

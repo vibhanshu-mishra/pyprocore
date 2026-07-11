@@ -213,6 +213,57 @@ class PhotoAlbumDownloadResult(ProcoreModel):
     errors: list[str] = Field(default_factory=list)
 
 
+class DailyLogCount(ProcoreModel):
+    """Procore Daily Log count resource."""
+
+    log_type: str | None = None
+    type: str | None = None
+    name: str | None = None
+    count: int | None = None
+
+
+class DailyLogHeader(ProcoreModel):
+    """Procore Daily Log header resource."""
+
+    id: int | None = None
+    log_date: str | None = None
+    date: str | None = None
+    status: str | Status | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class DailyLogEntry(ProcoreModel):
+    """Flexible Procore Daily Log entry resource."""
+
+    id: int | None = None
+    log_type: str | None = None
+    log_date: str | None = None
+    date: str | None = None
+    comments: str | None = None
+    description: str | None = None
+    notes: str | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class DelayLogType(ProcoreModel):
+    """Procore delay log type resource."""
+
+    id: int | None = None
+    name: str | None = None
+    description: str | None = None
+
+
+class DailyLogsByType(ProcoreModel):
+    """Daily Log entries grouped by log type for one date."""
+
+    project_id: int
+    log_date: str | None = None
+    logs: dict[str, list[DailyLogEntry]] = Field(default_factory=dict)
+    errors: dict[str, str] = Field(default_factory=dict)
+
+
 class SpecificationSet(ProcoreModel):
     """Procore specification set resource."""
 

@@ -74,7 +74,12 @@ Documents, Drawings, Specifications, Photos, and Daily Logs.
   - List/get/find photos
   - Download photos and photo albums
   - Manual smoke test for sandbox endpoint and payload validation
-- Daily Logs
+- Daily Logs: In Progress
+  - Daily Log counts and headers
+  - Type-specific read-only log listing
+  - Local lookup helpers for headers and log entries
+  - Grouped date summary helper
+  - CLI, examples, recipes, and manual smoke test
 - Observations
 - Correspondence
 

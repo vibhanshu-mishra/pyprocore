@@ -39,6 +39,7 @@ PyProcore does that once, correctly, behind a clean interface. You call a servic
 - Drawings
 - Specifications
 - Photos
+- Daily Logs
 - Attachment downloads
 
 **Developer experience**
@@ -56,7 +57,7 @@ PyProcore does that once, correctly, behind a clean interface. You call a servic
 | `pyprocore/auth/`     | OAuth exchange, token persistence, token refresh                |
 | `pyprocore/core/`     | Configuration, endpoint paths, HTTP client, logging, exceptions |
 | `pyprocore/models/`   | Pydantic response models                                        |
-| `pyprocore/services/` | Company, project, RFI, submittal, document, drawing, specification, photo, and file services |
+| `pyprocore/services/` | Company, project, RFI, submittal, document, drawing, specification, photo, Daily Logs, and file services |
 | `pyprocore/parser/`   | Email parsing utilities for future automation                   |
 | `tests/`              | Mocked unit tests with no live Procore dependency               |
 
@@ -307,6 +308,24 @@ Procore Photos are exposed through the Images API. PyProcore uses SDK-facing
 photo and album names, while the REST API calls albums `image_categories` and
 photos `images`. Project scoping is sent with `project_id` as a query parameter
 and `Procore-Company-Id` as a header.
+
+Procore Daily Logs are organized by log type. PyProcore supports read-only
+counts, headers, type-specific listing, local lookup by ID/date, and grouped
+date summaries:
+
+```python
+from pyprocore import Procore, list_manpower_logs
+
+client = Procore()
+counts = client.daily_logs.counts(project_id=352338)
+headers = client.daily_logs.headers(project_id=352338, log_date="2026-07-10")
+manpower = list_manpower_logs(project_id=352338, log_date="2026-07-10")
+summary = client.daily_logs.list_for_date(
+    project_id=352338,
+    log_date="2026-07-10",
+    log_types=["manpower", "notes", "delay"],
+)
+```
 
 RFI and submittal list calls also accept optional date filters:
 
@@ -578,6 +597,14 @@ procore-sdk photo --project 352338 --photo 789
 procore-sdk find-photo --project 352338 --filename site.jpg
 procore-sdk download-photo --project 352338 --photo 789 --output-dir ./photos
 procore-sdk download-photo-album --project 352338 --album 123 --limit 10 --output-dir ./photos
+procore-sdk daily-log-counts --project 352338 --log-date 2026-07-10
+procore-sdk daily-log-headers --project 352338
+procore-sdk daily-log-header --project 352338 --header 123
+procore-sdk daily-logs --project 352338 --log-type manpower --log-date 2026-07-10
+procore-sdk daily-log --project 352338 --log-type notes --log 456
+procore-sdk daily-logs-date --project 352338 --log-date 2026-07-10 --types manpower,notes,delay
+procore-sdk manpower-logs --project 352338 --log-date 2026-07-10
+procore-sdk delay-log-types --project 352338
 procore-sdk package-rfi --project 352338 --id 102784
 procore-sdk package-rfi --project-name "Sandbox Test Project" --number 15
 procore-sdk package-submittal --project 352338 --id 309641
@@ -607,8 +634,9 @@ short human-readable summaries.
 
 Runnable example scripts live in [examples/](examples/README.md). They show
 common SDK tasks such as listing projects, fetching RFIs, downloading
-attachments, documents, drawings, specification revisions, and photos, building
-workflow packages, exporting CSVs, and syncing local review folders.
+attachments, documents, drawings, specification revisions, photos, and Daily
+Logs, building workflow packages, exporting CSVs, and syncing local review
+folders.
 
 Examples can be syntax-checked without credentials or live Procore access:
 
@@ -668,6 +696,20 @@ project/company context. Confirm the app is connected to the company, production
 vs sandbox is correct, the Photos tool is enabled, and the user can view Photos.
 If a photo download says no URL was found, inspect the `photo` payload to see
 which URL fields Procore returned.
+
+Before relying on Daily Logs automation in a new Procore environment, inspect
+the live Daily Logs payload:
+
+```bash
+PROCORE_PROJECT_ID=352338 make smoke-daily-logs
+PYTHONPATH=. python3 scripts/smoke_daily_logs.py --project 352338 --log-date 2026-07-10 --log-type manpower
+```
+
+A Daily Logs 403 usually means authentication succeeded, but Procore rejected
+the project/company context. Confirm the app is connected to the company,
+production vs sandbox is correct, the Daily Log tool is enabled, and the user
+can view Daily Logs. Empty responses can simply mean there are no entries for
+that date or log type.
 
 ---
 
@@ -761,7 +803,11 @@ GET /rest/v1.0/images/{image_id}?project_id={project_id}
   - Photo list/get/find helpers
   - Photo and album download helpers
   - Manual smoke-test validation
-- Daily Logs
+- Daily Logs: In Progress
+  - Counts and headers
+  - Type-specific read-only log listing
+  - Grouped date summaries
+  - Manual smoke-test validation
 - Observations
 - Correspondence
 

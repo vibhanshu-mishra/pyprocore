@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import builtins
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any, Literal
 
@@ -19,6 +19,11 @@ from pyprocore.core.exceptions import ValidationError
 from pyprocore.models import (
     RFI,
     Company,
+    DailyLogCount,
+    DailyLogEntry,
+    DailyLogHeader,
+    DailyLogsByType,
+    DelayLogType,
     Document,
     DocumentFolder,
     Drawing,
@@ -53,6 +58,9 @@ from pyprocore.services import (
     find_rfi,
     find_specification_section,
     find_submittal,
+    get_daily_log,
+    get_daily_log_counts,
+    get_daily_log_header,
     get_document,
     get_document_folder,
     get_drawing,
@@ -64,20 +72,35 @@ from pyprocore.services import (
     get_specification_section,
     get_specification_section_revision,
     get_submittal,
+    list_accident_logs,
+    list_call_logs,
     list_companies,
+    list_daily_construction_report_logs,
+    list_daily_log_headers,
+    list_daily_logs,
+    list_daily_logs_for_date,
+    list_delay_log_types,
+    list_delay_logs,
+    list_delivery_logs,
     list_document_folders,
     list_documents,
     list_drawing_areas,
     list_drawing_disciplines,
     list_drawings,
+    list_dumpster_logs,
+    list_manpower_logs,
+    list_notes_logs,
     list_photo_albums,
     list_photos,
+    list_plan_revision_logs,
+    list_productivity_logs,
     list_projects,
     list_rfis,
     list_specification_section_revisions,
     list_specification_sections,
     list_specification_sets,
     list_submittals,
+    list_visitor_logs,
 )
 from pyprocore.workflows import (
     ProjectSyncResult,
@@ -947,6 +970,135 @@ class PhotosClient:
         )
 
 
+class DailyLogsClient:
+    """Convenience methods for Procore Daily Logs resources."""
+
+    def counts(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[DailyLogCount]:
+        """Return Daily Log counts."""
+        return get_daily_log_counts(project_id, company_id=company_id, **filters)
+
+    def headers(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[DailyLogHeader]:
+        """Return Daily Log headers."""
+        return list_daily_log_headers(project_id, company_id=company_id, **filters)
+
+    def get_header(
+        self,
+        project_id: int,
+        header_id: int | None = None,
+        log_date: str | None = None,
+        company_id: int | None = None,
+    ) -> DailyLogHeader:
+        """Return one Daily Log header."""
+        return get_daily_log_header(
+            project_id, header_id=header_id, log_date=log_date, company_id=company_id
+        )
+
+    def list(
+        self, project_id: int, log_type: str, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[DailyLogEntry]:
+        """Return Daily Log entries for a supported log type."""
+        return list_daily_logs(project_id, log_type, company_id=company_id, **filters)
+
+    def get(
+        self,
+        project_id: int,
+        log_type: str,
+        log_id: int,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> DailyLogEntry:
+        """Return one Daily Log entry."""
+        return get_daily_log(project_id, log_type, log_id, company_id=company_id, **filters)
+
+    def list_for_date(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        log_date: str | None = None,
+        log_types: Sequence[str] | None = None,
+    ) -> DailyLogsByType:
+        """Return multiple Daily Log types for one date."""
+        return list_daily_logs_for_date(
+            project_id, company_id=company_id, log_date=log_date, log_types=log_types
+        )
+
+    def delay_types(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[DelayLogType]:
+        """Return delay log types."""
+        return list_delay_log_types(project_id, company_id=company_id, **filters)
+
+    def manpower(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[DailyLogEntry]:
+        """Return manpower logs."""
+        return list_manpower_logs(project_id, company_id=company_id, **filters)
+
+    def notes(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[DailyLogEntry]:
+        """Return notes logs."""
+        return list_notes_logs(project_id, company_id=company_id, **filters)
+
+    def daily_construction_reports(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[DailyLogEntry]:
+        """Return daily construction report logs."""
+        return list_daily_construction_report_logs(project_id, company_id=company_id, **filters)
+
+    def delays(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[DailyLogEntry]:
+        """Return delay logs."""
+        return list_delay_logs(project_id, company_id=company_id, **filters)
+
+    def deliveries(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[DailyLogEntry]:
+        """Return delivery logs."""
+        return list_delivery_logs(project_id, company_id=company_id, **filters)
+
+    def calls(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[DailyLogEntry]:
+        """Return call logs."""
+        return list_call_logs(project_id, company_id=company_id, **filters)
+
+    def accidents(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[DailyLogEntry]:
+        """Return accident logs."""
+        return list_accident_logs(project_id, company_id=company_id, **filters)
+
+    def dumpsters(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[DailyLogEntry]:
+        """Return dumpster logs."""
+        return list_dumpster_logs(project_id, company_id=company_id, **filters)
+
+    def visitors(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[DailyLogEntry]:
+        """Return visitor logs."""
+        return list_visitor_logs(project_id, company_id=company_id, **filters)
+
+    def productivity(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[DailyLogEntry]:
+        """Return productivity logs."""
+        return list_productivity_logs(project_id, company_id=company_id, **filters)
+
+    def plan_revisions(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[DailyLogEntry]:
+        """Return plan revision logs."""
+        return list_plan_revision_logs(project_id, company_id=company_id, **filters)
+
+
 class AutomationClient:
     """Convenience methods for AI-ready automation workflow packages."""
 
@@ -1319,6 +1471,7 @@ class Procore:
         self.drawings = DrawingsClient()
         self.specifications = SpecificationsClient()
         self.photos = PhotosClient()
+        self.daily_logs = DailyLogsClient()
         self.automation = AutomationClient()
         self.workflows = WorkflowsClient()
 
@@ -1326,6 +1479,7 @@ class Procore:
 __all__ = [
     "AutomationClient",
     "CompaniesClient",
+    "DailyLogsClient",
     "DocumentsClient",
     "DrawingsClient",
     "Procore",

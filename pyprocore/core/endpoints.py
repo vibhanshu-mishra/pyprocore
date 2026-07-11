@@ -32,6 +32,22 @@ IMAGE_CATEGORIES = f"{API_V1}/image_categories"
 IMAGE_CATEGORY = f"{API_V1}/image_categories/{{image_category_id}}"
 IMAGES = f"{API_V1}/images"
 IMAGE = f"{API_V1}/images/{{image_id}}"
+DAILY_LOG_COUNTS = f"{API_V1_1}/projects/{{project_id}}/daily_logs/counts"
+DAILY_LOG_HEADERS = f"{API_V1}/projects/{{project_id}}/daily_log_headers"
+DAILY_LOG_TYPES = {
+    "manpower": "manpower_logs",
+    "notes": "notes_logs",
+    "daily_construction_report": "daily_construction_report_logs",
+    "delay": "delay_logs",
+    "delivery": "delivery_logs",
+    "call": "call_logs",
+    "accident": "accident_logs",
+    "dumpster": "dumpster_logs",
+    "visitor": "visitor_logs",
+    "productivity": "productivity_logs",
+    "plan_revision": "plan_revision_logs",
+}
+DELAY_LOG_TYPES = f"{API_V1}/projects/{{project_id}}/daily_logs/delay_log_types"
 SPECIFICATION_SETS = f"{API_V2}/companies/{{company_id}}/projects/{{project_id}}/specification_sets"
 SPECIFICATION_SET_V1 = (
     f"{API_V1}/projects/{{project_id}}/specification_sets/{{specification_set_id}}"
@@ -165,6 +181,30 @@ def image(image_id: int) -> str:
     return IMAGE.format(image_id=image_id)
 
 
+def daily_log_counts(project_id: int) -> str:
+    """Return the daily log counts endpoint for a project."""
+    return DAILY_LOG_COUNTS.format(project_id=project_id)
+
+
+def daily_log_headers(project_id: int) -> str:
+    """Return the daily log headers collection endpoint for a project."""
+    return DAILY_LOG_HEADERS.format(project_id=project_id)
+
+
+def daily_log_type(project_id: int, log_type: str) -> str:
+    """Return the endpoint for a supported Daily Logs type."""
+    normalized = log_type.strip().casefold().replace("-", "_")
+    if normalized not in DAILY_LOG_TYPES:
+        supported = ", ".join(sorted(DAILY_LOG_TYPES))
+        raise ValueError(f"Unsupported daily log type {log_type!r}. Supported types: {supported}")
+    return f"{API_V1}/projects/{project_id}/{DAILY_LOG_TYPES[normalized]}"
+
+
+def delay_log_types(project_id: int) -> str:
+    """Return the delay log types endpoint for a project."""
+    return DELAY_LOG_TYPES.format(project_id=project_id)
+
+
 def specification_sets(company_id: int, project_id: int) -> str:
     """Return the specification sets collection endpoint for a project."""
     return SPECIFICATION_SETS.format(company_id=company_id, project_id=project_id)
@@ -236,6 +276,10 @@ class Endpoints:
     IMAGE_CATEGORY = IMAGE_CATEGORY
     IMAGES = IMAGES
     IMAGE = IMAGE
+    DAILY_LOG_COUNTS = DAILY_LOG_COUNTS
+    DAILY_LOG_HEADERS = DAILY_LOG_HEADERS
+    DAILY_LOG_TYPES = DAILY_LOG_TYPES
+    DELAY_LOG_TYPES = DELAY_LOG_TYPES
     SPECIFICATION_SETS = SPECIFICATION_SETS
     SPECIFICATION_SET_V1 = SPECIFICATION_SET_V1
     SPECIFICATION_SECTIONS = SPECIFICATION_SECTIONS

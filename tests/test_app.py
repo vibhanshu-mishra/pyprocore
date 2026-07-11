@@ -287,6 +287,53 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(download_photo_album.album_id, 7)
         self.assertEqual(download_photo_album.limit, 3)
 
+        counts = parser.parse_args(
+            ["daily-log-counts", "--project", "10", "--company", "123", "--log-date", "2026-07-10"]
+        )
+        self.assertEqual(counts.command, "daily-log-counts")
+        self.assertEqual(counts.log_date, "2026-07-10")
+        self.assertEqual(
+            parser.parse_args(["daily-log-headers", "--project", "10"]).command,
+            "daily-log-headers",
+        )
+        self.assertEqual(
+            parser.parse_args(["daily-log-header", "--project", "10", "--header", "5"]).header_id,
+            5,
+        )
+        daily_logs = parser.parse_args(
+            [
+                "daily-logs",
+                "--project",
+                "10",
+                "--log-type",
+                "manpower",
+                "--page",
+                "2",
+            ]
+        )
+        self.assertEqual(daily_logs.log_type, "manpower")
+        self.assertEqual(daily_logs.page, 2)
+        self.assertEqual(
+            parser.parse_args(
+                ["daily-log", "--project", "10", "--log-type", "notes", "--log", "9"]
+            ).log_id,
+            9,
+        )
+        self.assertEqual(
+            parser.parse_args(
+                ["daily-logs-date", "--project", "10", "--types", "manpower,notes"]
+            ).types,
+            "manpower,notes",
+        )
+        self.assertEqual(
+            parser.parse_args(["delay-log-types", "--project", "10"]).command,
+            "delay-log-types",
+        )
+        self.assertEqual(
+            parser.parse_args(["manpower-logs", "--project", "10"]).command,
+            "manpower-logs",
+        )
+
         specification_sets = parser.parse_args(
             ["specification-sets", "--project", "10", "--company", "123"]
         )
@@ -1063,6 +1110,154 @@ class AppTestCase(unittest.TestCase):
             overwrite=True,
             limit=3,
         )
+
+        with patch.object(app, "get_daily_log_counts", return_value="counts") as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="daily-log-counts",
+                    project_id=10,
+                    company_id=123,
+                    log_date="2026-07-10",
+                    start_date=None,
+                    end_date=None,
+                )
+            )
+        self.assertEqual(result, "counts")
+        helper.assert_called_once_with(
+            10,
+            company_id=123,
+            log_date="2026-07-10",
+            start_date=None,
+            end_date=None,
+        )
+
+        with patch.object(app, "list_daily_log_headers", return_value="headers") as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="daily-log-headers",
+                    project_id=10,
+                    company_id=123,
+                    log_date=None,
+                    start_date=None,
+                    end_date=None,
+                )
+            )
+        self.assertEqual(result, "headers")
+        helper.assert_called_once()
+
+        with patch.object(app, "get_daily_log_header", return_value="header") as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="daily-log-header",
+                    project_id=10,
+                    header_id=5,
+                    log_date=None,
+                    company_id=123,
+                    start_date=None,
+                    end_date=None,
+                    page=None,
+                    per_page=None,
+                )
+            )
+        self.assertEqual(result, "header")
+        helper.assert_called_once_with(10, header_id=5, log_date=None, company_id=123)
+
+        with patch.object(app, "list_daily_logs", return_value="entries") as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="daily-logs",
+                    project_id=10,
+                    log_type="manpower",
+                    company_id=123,
+                    log_date="2026-07-10",
+                    start_date=None,
+                    end_date=None,
+                    page=1,
+                    per_page=100,
+                )
+            )
+        self.assertEqual(result, "entries")
+        helper.assert_called_once_with(
+            10,
+            "manpower",
+            company_id=123,
+            log_date="2026-07-10",
+            start_date=None,
+            end_date=None,
+            page=1,
+            per_page=100,
+        )
+
+        with patch.object(app, "get_daily_log", return_value="entry") as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="daily-log",
+                    project_id=10,
+                    log_type="notes",
+                    log_id=9,
+                    company_id=123,
+                    log_date=None,
+                    start_date=None,
+                    end_date=None,
+                    page=None,
+                    per_page=None,
+                )
+            )
+        self.assertEqual(result, "entry")
+        helper.assert_called_once_with(
+            10,
+            "notes",
+            9,
+            company_id=123,
+            log_date=None,
+            start_date=None,
+            end_date=None,
+        )
+
+        with patch.object(app, "list_daily_logs_for_date", return_value="summary") as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="daily-logs-date",
+                    project_id=10,
+                    company_id=123,
+                    log_date="2026-07-10",
+                    types="manpower,notes",
+                    start_date=None,
+                    end_date=None,
+                    page=None,
+                    per_page=None,
+                )
+            )
+        self.assertEqual(result, "summary")
+        helper.assert_called_once_with(
+            10,
+            company_id=123,
+            log_date="2026-07-10",
+            log_types=["manpower", "notes"],
+        )
+
+        with patch.object(app, "list_delay_log_types", return_value="delay-types") as helper:
+            result = app.run_command(
+                argparse.Namespace(command="delay-log-types", project_id=10, company_id=123)
+            )
+        self.assertEqual(result, "delay-types")
+        helper.assert_called_once_with(10, company_id=123)
+
+        with patch.object(app, "list_manpower_logs", return_value="manpower") as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="manpower-logs",
+                    project_id=10,
+                    company_id=123,
+                    log_date=None,
+                    start_date=None,
+                    end_date=None,
+                    page=None,
+                    per_page=None,
+                )
+            )
+        self.assertEqual(result, "manpower")
+        helper.assert_called_once()
 
         with patch.object(app, "list_specification_sets", return_value="sets") as helper:
             result = app.run_command(

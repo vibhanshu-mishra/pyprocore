@@ -51,6 +51,9 @@ from pyprocore.services import (
     find_rfi,
     find_specification_section,
     find_submittal,
+    get_daily_log,
+    get_daily_log_counts,
+    get_daily_log_header,
     get_document,
     get_document_folder,
     get_drawing,
@@ -61,20 +64,35 @@ from pyprocore.services import (
     get_specification_section,
     get_specification_section_revision,
     get_submittal,
+    list_accident_logs,
+    list_call_logs,
     list_companies,
+    list_daily_construction_report_logs,
+    list_daily_log_headers,
+    list_daily_logs,
+    list_daily_logs_for_date,
+    list_delay_log_types,
+    list_delay_logs,
+    list_delivery_logs,
     list_document_folders,
     list_documents,
     list_drawing_areas,
     list_drawing_disciplines,
     list_drawings,
+    list_dumpster_logs,
+    list_manpower_logs,
+    list_notes_logs,
     list_photo_albums,
     list_photos,
+    list_plan_revision_logs,
+    list_productivity_logs,
     list_projects,
     list_rfis,
     list_specification_section_revisions,
     list_specification_sections,
     list_specification_sets,
     list_submittals,
+    list_visitor_logs,
 )
 from pyprocore.workflows import (
     ProjectSyncResult,
@@ -459,6 +477,70 @@ def build_parser() -> argparse.ArgumentParser:
         help="Overwrite local photo files if they exist",
     )
 
+    daily_log_counts_parser = subcommands.add_parser(
+        "daily-log-counts",
+        help="Get Daily Log counts for a project",
+    )
+    _add_daily_log_options(daily_log_counts_parser)
+
+    daily_log_headers_parser = subcommands.add_parser(
+        "daily-log-headers",
+        help="List Daily Log headers for a project",
+    )
+    _add_daily_log_options(daily_log_headers_parser)
+
+    daily_log_header_parser = subcommands.add_parser(
+        "daily-log-header",
+        help="Get one Daily Log header by ID or date",
+    )
+    _add_daily_log_options(daily_log_header_parser)
+    daily_log_header_parser.add_argument("--header", "--header-id", dest="header_id", type=int)
+
+    daily_logs_parser = subcommands.add_parser(
+        "daily-logs",
+        help="List Daily Logs by type",
+    )
+    _add_daily_log_options(daily_logs_parser)
+    daily_logs_parser.add_argument("--log-type", required=True)
+
+    daily_log_parser = subcommands.add_parser("daily-log", help="Get one Daily Log by type and ID")
+    _add_daily_log_options(daily_log_parser)
+    daily_log_parser.add_argument("--log-type", required=True)
+    daily_log_parser.add_argument("--log", "--log-id", dest="log_id", type=int, required=True)
+
+    daily_logs_date_parser = subcommands.add_parser(
+        "daily-logs-date",
+        help="List multiple Daily Log types for one date",
+    )
+    _add_daily_log_options(daily_logs_date_parser)
+    daily_logs_date_parser.add_argument(
+        "--types",
+        default=None,
+        help="Comma-separated Daily Log types, for example manpower,notes",
+    )
+
+    delay_log_types_parser = subcommands.add_parser(
+        "delay-log-types",
+        help="List Daily Logs delay types",
+    )
+    _add_daily_log_options(delay_log_types_parser)
+
+    for command_name, help_text in {
+        "manpower-logs": "List manpower logs",
+        "notes-logs": "List notes logs",
+        "daily-construction-report-logs": "List daily construction report logs",
+        "delay-logs": "List delay logs",
+        "delivery-logs": "List delivery logs",
+        "call-logs": "List call logs",
+        "accident-logs": "List accident logs",
+        "dumpster-logs": "List dumpster logs",
+        "visitor-logs": "List visitor logs",
+        "productivity-logs": "List productivity logs",
+        "plan-revision-logs": "List plan revision logs",
+    }.items():
+        convenience_parser = subcommands.add_parser(command_name, help=help_text)
+        _add_daily_log_options(convenience_parser)
+
     specification_sets_parser = subcommands.add_parser(
         "specification-sets",
         help="List specification sets for a project",
@@ -720,6 +802,17 @@ def _add_photo_filter_options(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--projection", default=None)
     parser.add_argument("--serializer-view", default=None)
     parser.add_argument("--sort", default=None)
+    parser.add_argument("--page", type=int)
+    parser.add_argument("--per-page", type=int)
+
+
+def _add_daily_log_options(parser: argparse.ArgumentParser) -> None:
+    """Add shared Daily Logs command options."""
+    parser.add_argument("--project", "--project-id", dest="project_id", type=int, required=True)
+    parser.add_argument("--company-id", "--company", dest="company_id", type=int, default=None)
+    parser.add_argument("--log-date", default=None)
+    parser.add_argument("--start-date", default=None)
+    parser.add_argument("--end-date", default=None)
     parser.add_argument("--page", type=int)
     parser.add_argument("--per-page", type=int)
 
@@ -1015,6 +1108,91 @@ def run_command(args: argparse.Namespace) -> Any:
             company_id=args.company_id,
             overwrite=args.overwrite,
             limit=args.limit,
+        )
+
+    if args.command == "daily-log-counts":
+        return get_daily_log_counts(
+            args.project_id,
+            company_id=args.company_id,
+            log_date=args.log_date,
+            start_date=args.start_date,
+            end_date=args.end_date,
+        )
+
+    if args.command == "daily-log-headers":
+        return list_daily_log_headers(
+            args.project_id,
+            company_id=args.company_id,
+            log_date=args.log_date,
+            start_date=args.start_date,
+            end_date=args.end_date,
+        )
+
+    if args.command == "daily-log-header":
+        return get_daily_log_header(
+            args.project_id,
+            header_id=args.header_id,
+            log_date=args.log_date,
+            company_id=args.company_id,
+        )
+
+    if args.command == "daily-logs":
+        return list_daily_logs(
+            args.project_id,
+            args.log_type,
+            company_id=args.company_id,
+            log_date=args.log_date,
+            start_date=args.start_date,
+            end_date=args.end_date,
+            page=args.page,
+            per_page=args.per_page,
+        )
+
+    if args.command == "daily-log":
+        return get_daily_log(
+            args.project_id,
+            args.log_type,
+            args.log_id,
+            company_id=args.company_id,
+            log_date=args.log_date,
+            start_date=args.start_date,
+            end_date=args.end_date,
+        )
+
+    if args.command == "daily-logs-date":
+        log_types = [item.strip() for item in args.types.split(",")] if args.types else None
+        return list_daily_logs_for_date(
+            args.project_id,
+            company_id=args.company_id,
+            log_date=args.log_date,
+            log_types=log_types,
+        )
+
+    if args.command == "delay-log-types":
+        return list_delay_log_types(args.project_id, company_id=args.company_id)
+
+    daily_log_commands = {
+        "manpower-logs": list_manpower_logs,
+        "notes-logs": list_notes_logs,
+        "daily-construction-report-logs": list_daily_construction_report_logs,
+        "delay-logs": list_delay_logs,
+        "delivery-logs": list_delivery_logs,
+        "call-logs": list_call_logs,
+        "accident-logs": list_accident_logs,
+        "dumpster-logs": list_dumpster_logs,
+        "visitor-logs": list_visitor_logs,
+        "productivity-logs": list_productivity_logs,
+        "plan-revision-logs": list_plan_revision_logs,
+    }
+    if args.command in daily_log_commands:
+        return daily_log_commands[args.command](
+            args.project_id,
+            company_id=args.company_id,
+            log_date=args.log_date,
+            start_date=args.start_date,
+            end_date=args.end_date,
+            page=args.page,
+            per_page=args.per_page,
         )
 
     if args.command == "specification-sets":

@@ -44,6 +44,9 @@ export PROCORE_DRAWING_DISCIPLINE_ID=your_drawing_discipline_id
 export PROCORE_PHOTO_ALBUM_ID=your_photo_album_id
 export PROCORE_PHOTO_ID=your_photo_id
 export PROCORE_PHOTO_LIMIT=5
+export PROCORE_LOG_DATE=2026-07-10
+export PROCORE_DAILY_LOG_TYPE=manpower
+export PROCORE_DAILY_LOG_TYPES=manpower,notes,delay
 export PROCORE_SPECIFICATION_SET_ID=your_specification_set_id
 export PROCORE_SPECIFICATION_SECTION_ID=your_specification_section_id
 export PROCORE_SPECIFICATION_REVISION_ID=your_specification_revision_id
@@ -70,6 +73,7 @@ python3 examples/20_list_documents.py
 python3 examples/23_list_drawings.py
 python3 examples/26_list_specification_sections.py
 python3 examples/31_list_photos.py
+python3 examples/35_get_daily_log_counts.py
 ```
 
 Documents use Procore's Project Folders and Files endpoints internally. Before a
@@ -100,6 +104,13 @@ and photos "images" in the REST API. Inspect live payloads with:
 
 ```bash
 PROCORE_PROJECT_ID=352338 make smoke-photos
+```
+
+Daily Logs are organized by log type. You can list counts, headers, or a
+specific type such as manpower, notes, or delay. Inspect live payloads with:
+
+```bash
+PROCORE_PROJECT_ID=352338 make smoke-daily-logs
 ```
 
 Each script prints helpful messages when required environment variables are
@@ -151,6 +162,11 @@ make examples-check
 | `32_get_photo.py` | Fetch one photo by ID |
 | `33_download_photo.py` | Download one photo when Procore returns a full-size URL |
 | `34_download_photo_album.py` | Download photos from one album with an optional limit |
+| `35_get_daily_log_counts.py` | Get Daily Log counts for a project |
+| `36_list_daily_log_headers.py` | List Daily Log headers for a project or date |
+| `37_list_manpower_logs.py` | List manpower Daily Log entries |
+| `38_list_daily_logs_by_type.py` | List Daily Log entries by type |
+| `39_list_daily_logs_for_date.py` | List multiple Daily Log types for one date |
 
 ## Safety Notes
 

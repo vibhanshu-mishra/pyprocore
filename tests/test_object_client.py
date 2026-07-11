@@ -11,6 +11,7 @@ from pyprocore.automation import AutomationInput
 from pyprocore.client import (
     AutomationClient,
     CompaniesClient,
+    DailyLogsClient,
     DocumentsClient,
     DrawingsClient,
     PhotosClient,
@@ -31,6 +32,7 @@ class ProcoreObjectClientTestCase(unittest.TestCase):
         client = Procore()
 
         self.assertIsInstance(client.companies, CompaniesClient)
+        self.assertIsInstance(client.daily_logs, DailyLogsClient)
         self.assertIsInstance(client.projects, ProjectsClient)
         self.assertIsInstance(client.rfis, RFIsClient)
         self.assertIsInstance(client.submittals, SubmittalsClient)
@@ -678,6 +680,73 @@ class ProcoreObjectClientTestCase(unittest.TestCase):
             overwrite=True,
             limit=10,
         )
+
+    @patch("pyprocore.client.get_daily_log_counts")
+    def test_daily_logs_counts_delegates_to_service(self, get_daily_log_counts: Mock) -> None:
+        """Daily Log counts delegate to the service."""
+        get_daily_log_counts.return_value = ["count"]
+
+        result = Procore().daily_logs.counts(352338, company_id=123, log_date="2026-07-10")
+
+        self.assertEqual(result, ["count"])
+        get_daily_log_counts.assert_called_once_with(
+            352338,
+            company_id=123,
+            log_date="2026-07-10",
+        )
+
+    @patch("pyprocore.client.list_daily_log_headers")
+    def test_daily_logs_headers_delegates_to_service(self, list_daily_log_headers: Mock) -> None:
+        """Daily Log headers delegate to the service."""
+        list_daily_log_headers.return_value = ["header"]
+
+        result = Procore().daily_logs.headers(352338, company_id=123)
+
+        self.assertEqual(result, ["header"])
+        list_daily_log_headers.assert_called_once_with(352338, company_id=123)
+
+    @patch("pyprocore.client.list_daily_logs")
+    def test_daily_logs_list_delegates_to_service(self, list_daily_logs: Mock) -> None:
+        """Generic Daily Log listing delegates to the service."""
+        list_daily_logs.return_value = ["entry"]
+
+        result = Procore().daily_logs.list(352338, "manpower", company_id=123)
+
+        self.assertEqual(result, ["entry"])
+        list_daily_logs.assert_called_once_with(352338, "manpower", company_id=123)
+
+    @patch("pyprocore.client.list_daily_logs_for_date")
+    def test_daily_logs_list_for_date_delegates_to_service(
+        self,
+        list_daily_logs_for_date: Mock,
+    ) -> None:
+        """Daily Log date aggregate delegates to the service."""
+        list_daily_logs_for_date.return_value = "summary"
+
+        result = Procore().daily_logs.list_for_date(
+            352338,
+            company_id=123,
+            log_date="2026-07-10",
+            log_types=["manpower"],
+        )
+
+        self.assertEqual(result, "summary")
+        list_daily_logs_for_date.assert_called_once_with(
+            352338,
+            company_id=123,
+            log_date="2026-07-10",
+            log_types=["manpower"],
+        )
+
+    @patch("pyprocore.client.list_manpower_logs")
+    def test_daily_logs_manpower_delegates_to_service(self, list_manpower_logs: Mock) -> None:
+        """Daily Log convenience methods delegate to the service."""
+        list_manpower_logs.return_value = ["entry"]
+
+        result = Procore().daily_logs.manpower(352338, company_id=123)
+
+        self.assertEqual(result, ["entry"])
+        list_manpower_logs.assert_called_once_with(352338, company_id=123)
 
     @patch("pyprocore.client.list_specification_sets")
     def test_specifications_list_sets_delegates_to_service(

@@ -77,6 +77,31 @@ class EndpointsTestCase(unittest.TestCase):
         self.assertEqual(endpoints.images(), "/rest/v1.0/images")
         self.assertEqual(endpoints.image(image_id=456), "/rest/v1.0/images/456")
 
+    def test_daily_log_endpoints(self) -> None:
+        """Daily Log endpoints use verified project-scoped routes."""
+        self.assertEqual(
+            endpoints.daily_log_counts(project_id=456),
+            "/rest/v1.1/projects/456/daily_logs/counts",
+        )
+        self.assertEqual(
+            endpoints.daily_log_headers(project_id=456),
+            "/rest/v1.0/projects/456/daily_log_headers",
+        )
+        self.assertEqual(
+            endpoints.daily_log_type(project_id=456, log_type="manpower"),
+            "/rest/v1.0/projects/456/manpower_logs",
+        )
+        self.assertEqual(
+            endpoints.daily_log_type(project_id=456, log_type="plan-revision"),
+            "/rest/v1.0/projects/456/plan_revision_logs",
+        )
+        self.assertEqual(
+            endpoints.delay_log_types(project_id=456),
+            "/rest/v1.0/projects/456/daily_logs/delay_log_types",
+        )
+        with self.assertRaisesRegex(ValueError, "Unsupported daily log type"):
+            endpoints.daily_log_type(project_id=456, log_type="weather")
+
     def test_specification_endpoints(self) -> None:
         """Specification endpoints use verified company/project scoped routes."""
         self.assertEqual(
