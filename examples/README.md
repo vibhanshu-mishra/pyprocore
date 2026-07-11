@@ -77,6 +77,7 @@ python3 examples/31_list_photos.py
 python3 examples/35_get_daily_log_counts.py
 python3 examples/40_build_project_context_package.py
 python3 examples/42_build_enhanced_rfi_package.py
+python3 examples/44_build_enhanced_submittal_package.py
 ```
 
 Documents use Procore's Project Folders and Files endpoints internally. Before a
@@ -174,6 +175,8 @@ make examples-check
 | `41_build_lightweight_project_context.py` | Build a smaller project context package with selected sections |
 | `42_build_enhanced_rfi_package.py` | Build an enhanced AI-ready RFI review package with related context |
 | `43_build_rfi_ai_review_context.py` | Build focused AI review files for one RFI |
+| `44_build_enhanced_submittal_package.py` | Build an enhanced AI-ready submittal review package with related context |
+| `45_build_submittal_ai_review_context.py` | Build focused AI review files for one submittal |
 
 ## Safety Notes
 

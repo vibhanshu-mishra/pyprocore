@@ -473,6 +473,51 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(package_submittal.item_id, 30)
         self.assertEqual(package_submittal.company_id, 123)
 
+        enhanced_submittal = parser.parse_args(
+            [
+                "enhanced-submittal-package",
+                "--project",
+                "10",
+                "--company",
+                "123",
+                "--submittal-number",
+                "27",
+                "--output",
+                "submittal-package",
+                "--related-sections",
+                "rfis,drawings",
+                "--exclude-related",
+                "photos",
+                "--search-term",
+                "door,hardware",
+                "--search-term",
+                "level 2",
+                "--start-date",
+                "2026-07-01",
+                "--end-date",
+                "2026-07-10",
+                "--log-date",
+                "2026-07-10",
+                "--max-related-items",
+                "5",
+                "--download-files",
+                "--overwrite",
+                "--fail-fast",
+            ]
+        )
+        self.assertEqual(enhanced_submittal.command, "enhanced-submittal-package")
+        self.assertEqual(enhanced_submittal.project_id, 10)
+        self.assertEqual(enhanced_submittal.company_id, 123)
+        self.assertEqual(enhanced_submittal.submittal_number, "27")
+        self.assertEqual(enhanced_submittal.output_dir, Path("submittal-package"))
+        self.assertEqual(enhanced_submittal.related_sections, "rfis,drawings")
+        self.assertEqual(enhanced_submittal.exclude_related, "photos")
+        self.assertEqual(enhanced_submittal.search_terms, ["door,hardware", "level 2"])
+        self.assertEqual(enhanced_submittal.max_related_items, 5)
+        self.assertTrue(enhanced_submittal.download_files)
+        self.assertTrue(enhanced_submittal.overwrite)
+        self.assertTrue(enhanced_submittal.fail_fast)
+
         export_rfis = parser.parse_args(
             [
                 "export-rfis",
@@ -1766,6 +1811,55 @@ class AppTestCase(unittest.TestCase):
             output_dir=Path("rfi-package"),
             include_related=True,
             related_sections=["submittals", "drawings"],
+            exclude_related=["photos"],
+            search_terms=["door", "hardware", "level 2"],
+            start_date="2026-07-01",
+            end_date="2026-07-10",
+            log_date="2026-07-10",
+            max_related_items=5,
+            download_files=True,
+            overwrite=True,
+            continue_on_error=False,
+        )
+
+    def test_run_enhanced_submittal_package_command_dispatches_to_helper(self) -> None:
+        """Enhanced submittal package command calls the workflow helper."""
+        with patch.object(
+            app,
+            "build_enhanced_submittal_package",
+            return_value="enhanced",
+        ) as build_package:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="enhanced-submittal-package",
+                    project_id=10,
+                    company_id=123,
+                    submittal_id=None,
+                    submittal_number="27",
+                    output_dir=Path("submittal-package"),
+                    include_related=True,
+                    related_sections="rfis,drawings",
+                    exclude_related="photos",
+                    search_terms=["door,hardware", "level 2"],
+                    start_date="2026-07-01",
+                    end_date="2026-07-10",
+                    log_date="2026-07-10",
+                    max_related_items=5,
+                    download_files=True,
+                    overwrite=True,
+                    fail_fast=True,
+                )
+            )
+
+        self.assertEqual(result, "enhanced")
+        build_package.assert_called_once_with(
+            10,
+            submittal_id=None,
+            submittal_number="27",
+            company_id=123,
+            output_dir=Path("submittal-package"),
+            include_related=True,
+            related_sections=["rfis", "drawings"],
             exclude_related=["photos"],
             search_terms=["door", "hardware", "level 2"],
             start_date="2026-07-01",

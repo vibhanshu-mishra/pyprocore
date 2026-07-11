@@ -96,10 +96,12 @@ from pyprocore.services import (
 )
 from pyprocore.workflows import (
     EnhancedRFIPackageResult,
+    EnhancedSubmittalPackageResult,
     ProjectContextResult,
     ProjectSyncResult,
     SyncResult,
     build_enhanced_rfi_package,
+    build_enhanced_submittal_package,
     build_project_context_package,
     export_rfis_to_csv,
     export_submittals_to_csv,
@@ -705,6 +707,65 @@ def build_parser() -> argparse.ArgumentParser:
         help="Build an automation package for one submittal",
     )
     _add_package_options(package_submittal_parser)
+
+    enhanced_submittal_parser = subcommands.add_parser(
+        "enhanced-submittal-package",
+        help="Build an enhanced AI-ready submittal review package",
+    )
+    enhanced_submittal_parser.add_argument(
+        "--project",
+        "--project-id",
+        dest="project_id",
+        type=int,
+        required=True,
+    )
+    enhanced_submittal_parser.add_argument("--company-id", "--company", dest="company_id", type=int)
+    enhanced_submittal_parser.add_argument("--submittal-id", type=int)
+    enhanced_submittal_parser.add_argument("--submittal-number")
+    enhanced_submittal_parser.add_argument(
+        "--output-dir",
+        "--output",
+        dest="output_dir",
+        type=Path,
+        default=None,
+    )
+    enhanced_submittal_parser.add_argument(
+        "--include-related",
+        dest="include_related",
+        action="store_true",
+        default=True,
+        help="Include related project context",
+    )
+    enhanced_submittal_parser.add_argument(
+        "--no-related",
+        dest="include_related",
+        action="store_false",
+        help="Skip related project context",
+    )
+    enhanced_submittal_parser.add_argument("--related-sections")
+    enhanced_submittal_parser.add_argument("--exclude-related")
+    enhanced_submittal_parser.add_argument(
+        "--search-term",
+        dest="search_terms",
+        action="append",
+        default=None,
+        help="Search term to use for related context. Can be repeated or comma-separated.",
+    )
+    enhanced_submittal_parser.add_argument("--start-date")
+    enhanced_submittal_parser.add_argument("--end-date")
+    enhanced_submittal_parser.add_argument("--log-date")
+    enhanced_submittal_parser.add_argument("--max-related-items", type=int, default=25)
+    enhanced_submittal_parser.add_argument(
+        "--download-files",
+        action="store_true",
+        help="Download submittal attachments. Off by default.",
+    )
+    enhanced_submittal_parser.add_argument("--overwrite", action="store_true")
+    enhanced_submittal_parser.add_argument(
+        "--fail-fast",
+        action="store_true",
+        help="Stop on the first related section error",
+    )
 
     export_rfis_parser = subcommands.add_parser(
         "export-rfis",
@@ -1373,6 +1434,26 @@ def run_command(args: argparse.Namespace) -> Any:
     if args.command == "package-submittal":
         return build_workflow_package(_automation_input(args, item_type="submittal"))
 
+    if args.command == "enhanced-submittal-package":
+        return build_enhanced_submittal_package(
+            args.project_id,
+            submittal_id=args.submittal_id,
+            submittal_number=args.submittal_number,
+            company_id=args.company_id,
+            output_dir=args.output_dir,
+            include_related=args.include_related,
+            related_sections=_split_csv(args.related_sections),
+            exclude_related=_split_csv(args.exclude_related),
+            search_terms=_split_csv_list(args.search_terms),
+            start_date=args.start_date,
+            end_date=args.end_date,
+            log_date=args.log_date,
+            max_related_items=args.max_related_items,
+            download_files=args.download_files,
+            overwrite=args.overwrite,
+            continue_on_error=not args.fail_fast,
+        )
+
     if args.command == "export-rfis":
         return export_rfis_to_csv(
             args.project_id,
@@ -1618,6 +1699,25 @@ def format_enhanced_rfi_summary(result: EnhancedRFIPackageResult) -> str:
     )
 
 
+def format_enhanced_submittal_summary(result: EnhancedSubmittalPackageResult) -> str:
+    """Return a human-readable enhanced submittal package summary."""
+    manifest = result.manifest
+    return "\n".join(
+        [
+            "Enhanced submittal package complete.",
+            f"Project: {result.project_id}",
+            f"Submittal: {result.submittal_number or result.submittal_id}",
+            f"Output: {result.output_dir}",
+            f"Manifest: {result.manifest_path}",
+            f"Summary: {result.summary_path}",
+            f"Approval review: {result.approval_review_path}",
+            f"Related sections completed: {len(manifest.sections_completed)}",
+            f"Related sections failed: {len(manifest.sections_failed)}",
+            f"Downloads enabled: {manifest.downloads_enabled}",
+        ]
+    )
+
+
 def main() -> None:
     """Run the CLI entrypoint."""
     parser = build_parser()
@@ -1670,6 +1770,10 @@ def main() -> None:
 
     if isinstance(result, EnhancedRFIPackageResult):
         print(format_enhanced_rfi_summary(result))
+        return
+
+    if isinstance(result, EnhancedSubmittalPackageResult):
+        print(format_enhanced_submittal_summary(result))
         return
 
     if isinstance(result, Path) and args.command in {"export-rfis", "export-submittals"}:

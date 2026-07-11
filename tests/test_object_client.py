@@ -1242,6 +1242,51 @@ class ProcoreObjectClientTestCase(unittest.TestCase):
             continue_on_error=False,
         )
 
+    @patch("pyprocore.client.build_enhanced_submittal_package")
+    def test_workflows_enhanced_submittal_package_delegates_to_helper(
+        self,
+        build_enhanced_submittal_package: Mock,
+    ) -> None:
+        """Enhanced submittal object client passes options through."""
+        build_enhanced_submittal_package.return_value = "enhanced"
+
+        result = Procore().workflows.build_enhanced_submittal_package(
+            1,
+            submittal_number="27",
+            company_id=2,
+            output_dir="submittal-package",
+            related_sections=["rfis"],
+            exclude_related=["photos"],
+            search_terms=["door"],
+            start_date="2026-07-01",
+            end_date="2026-07-10",
+            log_date="2026-07-10",
+            max_related_items=5,
+            download_files=True,
+            overwrite=True,
+            continue_on_error=False,
+        )
+
+        self.assertEqual(result, "enhanced")
+        build_enhanced_submittal_package.assert_called_once_with(
+            1,
+            submittal_id=None,
+            submittal_number="27",
+            company_id=2,
+            output_dir="submittal-package",
+            include_related=True,
+            related_sections=["rfis"],
+            exclude_related=["photos"],
+            search_terms=["door"],
+            start_date="2026-07-01",
+            end_date="2026-07-10",
+            log_date="2026-07-10",
+            max_related_items=5,
+            download_files=True,
+            overwrite=True,
+            continue_on_error=False,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

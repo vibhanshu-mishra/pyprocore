@@ -48,6 +48,7 @@ PyProcore does that once, correctly, behind a clean interface. You call a servic
 - Command-line interface
 - AI-ready project context packages
 - Enhanced RFI review packages
+- Enhanced submittal review packages
 - Mocked unit tests with no live Procore dependency
 
 ---
@@ -459,6 +460,7 @@ print(sync_result.manifest_path)
 Available helpers:
 
 - `build_enhanced_rfi_package()`
+- `build_enhanced_submittal_package()`
 - `build_project_context_package()`
 - `export_rfis_to_csv()`
 - `export_submittals_to_csv()`
@@ -543,6 +545,26 @@ result = build_enhanced_rfi_package(
 )
 
 print(result.review_context_path)
+```
+
+Enhanced submittal packages follow the same conservative pattern for submittal
+review. They include `ai/approval_review.md` for structured human review
+assistance and never approve, reject, or revise anything:
+
+```python
+from pyprocore.workflows import build_enhanced_submittal_package
+
+result = build_enhanced_submittal_package(
+    project_id=352338,
+    company_id=4286480,
+    submittal_number="27",
+    output_dir="enhanced-submittal-package",
+    related_sections=["rfis", "drawings", "specifications"],
+    max_related_items=10,
+    download_files=False,
+)
+
+print(result.approval_review_path)
 ```
 
 Every typed model serializes back to JSON:
@@ -667,6 +689,8 @@ procore-sdk project-context --project 352338 --company 4286480 --output ./projec
 procore-sdk project-context --project 352338 --include rfis,submittals,daily_logs --max-items 50
 procore-sdk enhanced-rfi-package --project 352338 --company 4286480 --rfi-number 15
 procore-sdk enhanced-rfi-package --project 352338 --rfi-id 102784 --related-sections drawings,specifications,submittals
+procore-sdk enhanced-submittal-package --project 352338 --company 4286480 --submittal-number 27
+procore-sdk enhanced-submittal-package --project 352338 --submittal-id 309641 --related-sections rfis,drawings,specifications
 procore-sdk auth status
 procore-sdk auth login-url
 procore-sdk auth refresh
@@ -684,7 +708,7 @@ common SDK tasks such as listing projects, fetching RFIs, downloading
 attachments, documents, drawings, specification revisions, photos, and Daily
 Logs, building workflow packages, exporting CSVs, syncing local review folders,
 building AI-ready project context packages, and creating enhanced RFI review
-packages.
+and submittal review packages.
 
 Examples can be syntax-checked without credentials or live Procore access:
 
@@ -699,6 +723,10 @@ expect, and how to troubleshoot beginner-friendly issues.
 For AI-ready RFI review workflows, start with
 [Build Enhanced RFI Package](docs/recipes/build-enhanced-rfi-package.md) or
 [RFI AI Review Context](docs/recipes/rfi-ai-review-context.md).
+
+For AI-ready submittal review workflows, start with
+[Build Enhanced Submittal Package](docs/recipes/build-enhanced-submittal-package.md)
+or [Submittal AI Review Context](docs/recipes/submittal-ai-review-context.md).
 
 Before releasing Documents changes against a new Procore environment, run the
 manual smoke helper with sandbox credentials:

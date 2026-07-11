@@ -77,6 +77,11 @@ and this project follows semantic versioning.
 - `procore-sdk enhanced-rfi-package` CLI command.
 - Enhanced RFI package examples and recipes.
 - Keyword-matched related RFI context across submittals, documents, drawings, specifications, photos, and Daily Logs.
+- Enhanced submittal intelligence package workflow with AI-ready review and approval assistance files.
+- `client.workflows.build_enhanced_submittal_package`.
+- `procore-sdk enhanced-submittal-package` CLI command.
+- Enhanced submittal package examples and recipes.
+- Keyword-matched related submittal context across RFIs, documents, drawings, specifications, photos, and Daily Logs.
 
 ### Changed
 
@@ -96,6 +101,7 @@ and this project follows semantic versioning.
 - Updated README, roadmap, examples, and recipes for Daily Logs support.
 - Updated README, roadmap, examples, and recipes for project context package support.
 - Updated README, roadmap, examples, and recipes for enhanced RFI package support.
+- Updated README, roadmap, examples, and recipes for enhanced submittal package support.
 
 ## [2.0.0] - 2026-07-03
 

@@ -90,12 +90,15 @@ Status: In Progress
 
 - Read-only project context package builder
 - Enhanced RFI intelligence package builder
+- Enhanced submittal intelligence package builder
 - JSON, JSONL, Markdown, and manifest outputs
 - Safe defaults with downloads off
 - Continue-on-error behavior for partial project permissions
 - Lightweight include/exclude controls
 - Keyword-matched related context for RFI review
+- Keyword-matched related context for submittal review
 - AI review-context, reviewer-questions, and possible risk-flag files
+- Structured submittal approval review assistance files
 
 ## Phase 7: Examples and Recipes
 

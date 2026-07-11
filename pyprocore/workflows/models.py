@@ -276,3 +276,83 @@ class EnhancedRFIPackageResult(ProcoreModel):
     errors_path: Path | None = None
     warnings_path: Path | None = None
     manifest: EnhancedRFIPackageManifest
+
+
+class EnhancedSubmittalPackageOptions(ProcoreModel):
+    """Options used to build an enhanced AI-ready submittal package."""
+
+    model_config = ConfigDict(extra="allow", populate_by_name=True, arbitrary_types_allowed=True)
+
+    project_id: int
+    submittal_id: int | None = None
+    submittal_number: str | None = None
+    company_id: int | None = None
+    output_dir: Path
+    include_related: bool = True
+    related_sections: list[str] | None = None
+    exclude_related: list[str] | None = None
+    search_terms: list[str] = Field(default_factory=list)
+    start_date: str | None = None
+    end_date: str | None = None
+    log_date: str | None = None
+    max_related_items: int = 25
+    download_files: bool = False
+    overwrite: bool = False
+    continue_on_error: bool = True
+
+
+class EnhancedSubmittalRelatedSectionResult(ProcoreModel):
+    """Result for one related-context section in an enhanced submittal package."""
+
+    model_config = ConfigDict(extra="allow", populate_by_name=True, arbitrary_types_allowed=True)
+
+    name: str
+    status: str
+    item_count: int = 0
+    files_written: list[Path] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
+    errors: list[str] = Field(default_factory=list)
+
+
+class EnhancedSubmittalPackageManifest(ProcoreModel):
+    """Manifest metadata for an enhanced submittal package."""
+
+    model_config = ConfigDict(extra="allow", populate_by_name=True, arbitrary_types_allowed=True)
+
+    created_at: str
+    project_id: int
+    company_id: int | None = None
+    submittal_id: int
+    submittal_number: str | None = None
+    output_dir: Path
+    options: EnhancedSubmittalPackageOptions
+    sections_attempted: list[str] = Field(default_factory=list)
+    sections_completed: list[str] = Field(default_factory=list)
+    sections_failed: list[str] = Field(default_factory=list)
+    files_written: list[Path] = Field(default_factory=list)
+    related_item_counts: dict[str, int] = Field(default_factory=dict)
+    downloads_enabled: bool = False
+    downloaded_files: list[Path] = Field(default_factory=list)
+    errors: list[str] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
+    related_sections: list[EnhancedSubmittalRelatedSectionResult] = Field(default_factory=list)
+
+
+class EnhancedSubmittalPackageResult(ProcoreModel):
+    """Result returned after building an enhanced submittal package."""
+
+    model_config = ConfigDict(extra="allow", populate_by_name=True, arbitrary_types_allowed=True)
+
+    output_dir: Path
+    project_id: int
+    company_id: int | None = None
+    submittal_id: int
+    submittal_number: str | None = None
+    manifest_path: Path
+    summary_path: Path
+    submittal_json_path: Path
+    review_context_path: Path
+    approval_review_path: Path
+    errors_path: Path | None = None
+    warnings_path: Path | None = None
+    manifest: EnhancedSubmittalPackageManifest
