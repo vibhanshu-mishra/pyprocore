@@ -822,6 +822,26 @@ Release readiness guidance lives in [docs/release.md](docs/release.md). It
 covers versioning, validation, changelog updates, and the future PyPI publishing
 checklist.
 
+---
+
+## Documentation Site
+
+PyProcore now includes an MkDocs-ready documentation site structure under
+[docs/](docs/index.md). The docs are organized for local browsing and future
+publishing, but they are not published as a hosted site yet.
+
+Install the optional docs tooling when you want to preview or build the site:
+
+```bash
+python3 -m pip install -e ".[docs]"
+make docs-serve
+make docs-build
+```
+
+The MkDocs site links the getting started guide, authentication help, CLI usage,
+API coverage, workflows, AI review guidance, automation docs, recipes,
+contributing guidance, release guide, and changelog.
+
 Before releasing Documents changes against a new Procore environment, run the
 manual smoke helper with sandbox credentials:
 
@@ -1114,6 +1134,7 @@ make coverage
 - [Architecture notes](docs/architecture.md)
 - [Roadmap](docs/roadmap.md)
 - [Suggested GitHub labels](docs/github-labels.md)
+- [Documentation site](docs/index.md)
 - [Examples](examples/README.md)
 - [Recipes](docs/recipes/)
 

@@ -1,4 +1,4 @@
-.PHONY: test coverage examples-check smoke-documents smoke-drawings smoke-specifications smoke-photos smoke-daily-logs lint format typecheck docker-build docker-help docker-run-plan release-check clean
+.PHONY: test coverage examples-check smoke-documents smoke-drawings smoke-specifications smoke-photos smoke-daily-logs lint format typecheck docs-serve docs-build docker-build docker-help docker-run-plan release-check clean
 
 PYTHON ?= python3
 PLAN ?= examples/workflow_plans/nightly_project_context.json
@@ -85,6 +85,12 @@ format:
 
 typecheck:
 	$(PYTHON) -m mypy pyprocore
+
+docs-serve:
+	mkdocs serve
+
+docs-build:
+	mkdocs build --strict
 
 docker-build:
 	docker build -t pyprocore:local .

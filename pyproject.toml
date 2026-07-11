@@ -68,6 +68,9 @@ dev = [
     "mypy>=1.13.0",
     "types-requests>=2.32.0",
 ]
+docs = [
+    "mkdocs>=1.5",
+]
 
 [project.scripts]
 procore-sdk = "pyprocore.app:main"
