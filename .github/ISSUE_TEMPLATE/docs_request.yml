@@ -1,0 +1,49 @@
+name: Documentation request
+description: Request a docs, recipe, README, or example improvement.
+title: "[Docs]: "
+labels: ["documentation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Tell us what was confusing or missing. Do not paste secrets, tokens, `.env` values, token stores, Authorization headers, or private project data.
+  - type: input
+    id: page
+    attributes:
+      label: Page or file
+      placeholder: "README.md, docs/recipes/..., examples/..."
+  - type: textarea
+    id: problem
+    attributes:
+      label: What needs improvement?
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested change
+  - type: input
+    id: sdk-version
+    attributes:
+      label: PyProcore version
+      placeholder: "2.0.0"
+  - type: input
+    id: command
+    attributes:
+      label: Command or workflow involved
+      placeholder: "procore-sdk auth login-url"
+  - type: dropdown
+    id: live-api
+    attributes:
+      label: Was live Procore API behavior involved?
+      options:
+        - "No"
+        - "Yes"
+        - "Not sure"
+  - type: checkboxes
+    id: secret-confirmation
+    attributes:
+      label: Secret safety
+      options:
+        - label: I did not include Procore secrets, tokens, `.env` values, token stores, Authorization headers, or private project data.
+          required: true

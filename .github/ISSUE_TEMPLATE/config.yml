@@ -3,6 +3,9 @@ contact_links:
   - name: README
     url: https://github.com/vibhanshu-mishra/pyprocore#readme
     about: Start here for installation, configuration, CLI, and SDK usage.
+  - name: Support
+    url: https://github.com/vibhanshu-mishra/pyprocore/blob/main/SUPPORT.md
+    about: Read support guidance before opening usage questions.
   - name: Security Policy
     url: https://github.com/vibhanshu-mishra/pyprocore/blob/main/SECURITY.md
     about: Report security issues privately. Do not open public security issues.

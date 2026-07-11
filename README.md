@@ -1109,9 +1109,11 @@ make coverage
 - [Changelog](CHANGELOG.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security](SECURITY.md)
+- [Support](SUPPORT.md)
 - [Code of Conduct](CODE_OF_CONDUCT.md)
 - [Architecture notes](docs/architecture.md)
 - [Roadmap](docs/roadmap.md)
+- [Suggested GitHub labels](docs/github-labels.md)
 - [Examples](examples/README.md)
 - [Recipes](docs/recipes/)
 
@@ -1124,9 +1126,16 @@ make coverage
 
 ---
 
-## Contributing
+## Contributing and Support
 
-Contributions, issues, and feature requests are welcome. Please open an issue before submitting large changes.
+Contributions, issues, and feature requests are welcome. Start with
+[CONTRIBUTING.md](CONTRIBUTING.md), [SUPPORT.md](SUPPORT.md),
+[SECURITY.md](SECURITY.md), and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+
+Please open an issue before submitting large changes, and never paste Procore
+client secrets, access tokens, refresh tokens, `.env` values, token stores,
+Authorization headers, or private project data into public issues or pull
+requests.
 
 ---
 

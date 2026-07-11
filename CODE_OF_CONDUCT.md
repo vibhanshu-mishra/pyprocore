@@ -2,49 +2,40 @@
 
 ## Our Pledge
 
-We pledge to make participation in this project a respectful and harassment-free
-experience for everyone, regardless of age, body size, disability, ethnicity,
-gender identity and expression, level of experience, nationality, personal
-appearance, race, religion, or sexual identity and orientation.
+We pledge to make participation in PyProcore welcoming, respectful, and
+harassment-free for everyone.
 
 ## Our Standards
 
-Examples of behavior that contributes to a positive environment include:
+Examples of behavior that helps the community:
 
-- Using welcoming and inclusive language.
-- Being respectful of differing viewpoints and experiences.
-- Giving and accepting constructive feedback gracefully.
-- Focusing on what is best for the community.
-- Showing empathy toward other contributors.
+- using welcoming and inclusive language
+- respecting different viewpoints and experience levels
+- giving constructive feedback
+- focusing on what is best for users and maintainers
+- showing patience with new contributors
 
-Examples of unacceptable behavior include:
+Examples of unacceptable behavior:
 
-- Harassment, intimidation, or discriminatory language.
-- Personal attacks or insulting comments.
-- Publishing another person's private information without permission.
-- Sustained disruption of discussions or project work.
-- Other conduct that could reasonably be considered inappropriate in a
-  professional setting.
-
-## Enforcement Responsibilities
-
-Project maintainers are responsible for clarifying and enforcing standards of
-acceptable behavior. Maintainers may remove, edit, or reject comments, commits,
-issues, pull requests, and other contributions that do not align with this Code
-of Conduct.
+- harassment, intimidation, or discriminatory language
+- personal attacks or insults
+- publishing private information without permission
+- sustained disruption of discussions or project work
+- sharing another person's secrets, credentials, or private project data
 
 ## Scope
 
-This Code of Conduct applies in all project spaces and when an individual is
-officially representing the project in public spaces.
+This Code of Conduct applies in project spaces and when someone represents the
+project publicly.
 
 ## Enforcement
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the project maintainer at vibhanshumishra72@gmail.com. Reports will
-be reviewed and handled respectfully and confidentially.
+Maintainers may remove, edit, or reject comments, commits, issues, pull
+requests, or other contributions that do not align with this Code of Conduct.
+
+Concerns may be reported through GitHub private channels when available or by
+contacting the maintainer through GitHub. Reports will be reviewed respectfully.
 
 ## Attribution
 
-This Code of Conduct is adapted from the Contributor Covenant, version 2.1,
-available at https://www.contributor-covenant.org/version/2/1/code_of_conduct/.
+This Code of Conduct is adapted from the Contributor Covenant, version 2.1.

@@ -3,35 +3,43 @@
 ## Supported Versions
 
 Security fixes are considered for the latest released version of PyProcore.
-Users are encouraged to upgrade to the newest available release.
+Older releases are best effort.
 
 | Version | Supported |
 | ------- | --------- |
-| Latest  | Yes       |
+| Latest release | Yes |
 | Older releases | Best effort |
 
 ## Reporting a Vulnerability
 
-Please do not open public GitHub issues for security vulnerabilities.
+Please do not open public GitHub issues for security vulnerabilities, leaked
+secrets, OAuth problems, token-store exposure, or private project data.
 
-Report security concerns privately by emailing:
+Use GitHub private vulnerability reporting if it is enabled for the repository.
+If that is not available, contact the maintainer through GitHub and avoid
+posting exploit details publicly.
 
-```text
-vibhanshumishra72@gmail.com
-```
+## Secret Handling
 
-Include a clear description, affected versions, reproduction steps when safe to
-share, and any relevant sanitized logs.
+Never share or commit:
 
-## Sensitive Information
-
-Never share Procore credentials or token material in issues, pull requests,
-screenshots, logs, or email unless explicitly requested through a secure channel.
-This includes:
-
+- Procore client IDs when paired with other credentials
 - Procore client secrets
-- Access tokens
-- Refresh tokens
-- `.env` files
-- Token store files
+- access tokens
+- refresh tokens
 - Authorization headers
+- `.env` files
+- token store files such as `token_store.json`
+- logs or screenshots containing credentials
+- private project, company, document, drawing, RFI, or submittal data
+
+## Token Store Warning
+
+PyProcore stores OAuth tokens locally for development workflows. Treat token
+store files as secrets. Do not commit them, attach them to issues, or upload them
+to CI artifacts.
+
+## Procore OAuth Credential Warning
+
+If a Procore OAuth client secret, refresh token, or access token is exposed,
+rotate or revoke it immediately in Procore before sharing any public details.

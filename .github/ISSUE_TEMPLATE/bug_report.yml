@@ -1,0 +1,73 @@
+name: Bug report
+description: Report a reproducible problem in PyProcore.
+title: "[Bug]: "
+labels: ["bug", "needs reproduction"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Do not paste secrets, tokens, `.env` values, token stores, Authorization headers, or private project data.
+  - type: input
+    id: sdk-version
+    attributes:
+      label: PyProcore version
+      placeholder: "2.0.0"
+    validations:
+      required: true
+  - type: input
+    id: python-version
+    attributes:
+      label: Python version
+      placeholder: "3.12.4"
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: "macOS 15, Ubuntu 24.04, Windows 11"
+    validations:
+      required: true
+  - type: input
+    id: command
+    attributes:
+      label: Command or code used
+      placeholder: "procore-sdk projects --company-id 123"
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened instead?
+    validations:
+      required: true
+  - type: dropdown
+    id: live-api
+    attributes:
+      label: Was a live Procore API involved?
+      options:
+        - "No"
+        - "Yes, production"
+        - "Yes, sandbox"
+        - "Not sure"
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Sanitized logs or traceback
+      description: Remove secrets, tokens, Authorization headers, company-private data, and project-private data before pasting.
+      render: text
+  - type: checkboxes
+    id: secret-confirmation
+    attributes:
+      label: Secret safety
+      options:
+        - label: I removed Procore client secrets, access tokens, refresh tokens, `.env` values, token stores, Authorization headers, and private project data.
+          required: true

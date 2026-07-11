@@ -1,7 +1,8 @@
 # Contributing
 
-Thank you for your interest in improving PyProcore. Contributions, bug reports,
-documentation fixes, and thoughtful questions are welcome.
+Thank you for helping improve PyProcore. This project is a Python SDK and
+automation foundation for Procore data workflows, including typed API access,
+downloads, local exports, AI-ready packages, workflow plans, and CLI tooling.
 
 ## Local Development
 
@@ -15,76 +16,110 @@ source .venv/bin/activate
 python3 -m pip install --upgrade pip
 ```
 
-Install development dependencies:
+Install the editable package with development tools:
 
 ```bash
-pip install -e ".[dev]"
+python3 -m pip install -e ".[dev]"
 ```
 
-If you are working in a restricted environment where build isolation cannot
-resolve PyPI dependencies, use:
+If build isolation cannot reach PyPI in your environment, try:
 
 ```bash
-pip install --no-build-isolation -e ".[dev]"
+python3 -m pip install --no-build-isolation -e ".[dev]"
 ```
 
-## Checks
+## Local Checks
 
-Run the full local quality gate before opening a pull request:
+Run focused checks while developing:
 
 ```bash
-make lint
-make typecheck
+make examples-check
 make test
 make coverage
+make lint
+make typecheck
+python3 -m black --check .
+python3 -m isort --check-only .
 ```
 
-## Coding Standards
+Run the release-readiness gate before a larger pull request:
 
-- Format Python code with Black.
-- Sort imports with isort.
-- Keep flake8 clean.
-- Keep mypy clean for the source package.
-- Use typed public APIs.
-- Add or update tests for behavior changes.
-- Mock all HTTP requests in tests.
-- Do not require live Procore access for unit tests.
+```bash
+make release-check
+```
 
-## Pull Requests
+Unit tests must not require live Procore access. Mock HTTP calls and keep tests
+safe for contributors without credentials.
 
-Pull requests should include a clear summary, focused scope, and tests or
-documentation updates where appropriate. Keep public APIs backwards compatible
-unless the change is explicitly documented as breaking.
+## Branch and Commit Guidance
 
-Before submitting, confirm:
+- Keep branches focused on one change.
+- Use descriptive branch names, such as `fix-token-refresh-message` or
+  `add-drawings-example`.
+- Keep commits small enough to review.
+- Do not mix unrelated refactors with feature or bug-fix work.
 
-- Relevant tests were added or updated.
-- Documentation was updated when behavior or usage changed.
-- `make lint` passed.
-- `make typecheck` passed.
-- `make test` passed.
-- `make coverage` passed.
+## Adding a New Endpoint
 
-## Issues
+When adding a Procore endpoint:
 
-Please use the GitHub issue templates when reporting bugs, requesting features,
-or asking questions. Include enough detail for maintainers to reproduce or
-understand the request.
+1. Add endpoint helpers in `pyprocore/core/endpoints.py`.
+2. Add or update typed models in `pyprocore/models/`.
+3. Add service functions in `pyprocore/services/`.
+4. Add object-client wrappers in `pyprocore/client.py` when appropriate.
+5. Add CLI commands only when useful for users.
+6. Add mocked unit tests for success and common failures.
+7. Add docs, examples, or recipes for user-facing workflows.
 
-## Secrets and Generated Files
+Do not add Procore mutation behavior unless it is explicitly in scope and
+reviewed carefully.
 
-Do not commit secrets, tokens, logs, `.env` files, token stores, build outputs,
-or generated caches. This includes:
+## Docs, Examples, and Tests
+
+Documentation changes should be beginner-friendly and avoid real company,
+project, RFI, submittal, or token values.
+
+Examples should:
+
+- use environment variables or placeholder IDs
+- avoid secrets
+- include `if __name__ == "__main__":`
+- be syntax-checkable with `make examples-check`
+
+Tests should:
+
+- use `unittest` and `unittest.mock`
+- avoid live Procore calls
+- avoid reading real `.env` or token stores
+- cover both success and failure behavior
+
+## Secret Safety
+
+Do not commit secrets or generated private project outputs.
+
+Never commit or paste:
 
 - Procore client secrets
-- Access tokens
-- Refresh tokens
-- `.env`
+- access tokens
+- refresh tokens
+- Authorization headers
+- `.env` files
 - `token_store.json`
-- `logs/`
-- `dist/`
-- `build/`
-- `*.egg-info/`
-- `.coverage`
-- `htmlcov/`
-- `__pycache__/`
+- logs containing credentials
+- generated downloads or workflow outputs with sensitive project data
+
+If you accidentally expose a secret, rotate it immediately before opening a
+public issue or pull request.
+
+## Opening a Pull Request
+
+Before opening a pull request:
+
+- summarize what changed and why
+- mention any user-facing behavior changes
+- add or update tests
+- add or update docs/examples when relevant
+- confirm no secrets or generated outputs are committed
+- run the local checks listed above
+
+Large changes are easier to review when an issue exists first.

@@ -1,0 +1,60 @@
+name: Endpoint request
+description: Request support for an additional Procore endpoint or resource.
+title: "[Endpoint]: "
+labels: ["endpoint request", "enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Endpoint requests are welcome. Do not paste secrets, tokens, `.env` values, token stores, Authorization headers, or private project data.
+  - type: input
+    id: endpoint
+    attributes:
+      label: Procore endpoint or resource
+      placeholder: "GET /rest/v1.0/..."
+    validations:
+      required: true
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use case
+      description: What workflow would this unlock?
+    validations:
+      required: true
+  - type: input
+    id: sdk-version
+    attributes:
+      label: PyProcore version
+      placeholder: "2.0.0"
+  - type: input
+    id: python-version
+    attributes:
+      label: Python version
+      placeholder: "3.12.4"
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: "macOS, Linux, Windows"
+  - type: textarea
+    id: known-shape
+    attributes:
+      label: Known response shape or fields
+      description: Optional. Provide sanitized field names only. Do not include private project data.
+      render: text
+  - type: dropdown
+    id: live-api
+    attributes:
+      label: Have you validated this endpoint with live Procore access?
+      options:
+        - "No"
+        - "Yes, production"
+        - "Yes, sandbox"
+        - "Not sure"
+  - type: checkboxes
+    id: secret-confirmation
+    attributes:
+      label: Secret safety
+      options:
+        - label: I removed Procore secrets, tokens, `.env` values, token stores, Authorization headers, and private project data.
+          required: true

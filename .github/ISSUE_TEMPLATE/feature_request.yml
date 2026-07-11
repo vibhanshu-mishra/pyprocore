@@ -1,0 +1,63 @@
+name: Feature request
+description: Suggest an improvement for PyProcore.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the idea. Do not paste secrets, tokens, `.env` values, token stores, Authorization headers, or private project data.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What problem would this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What behavior or API would you like?
+    validations:
+      required: true
+  - type: input
+    id: sdk-version
+    attributes:
+      label: PyProcore version
+      placeholder: "2.0.0"
+  - type: input
+    id: python-version
+    attributes:
+      label: Python version
+      placeholder: "3.12.4"
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: "macOS, Linux, Windows"
+  - type: input
+    id: command
+    attributes:
+      label: Related command or workflow
+      placeholder: "procore-sdk workflow-plan run ..."
+  - type: dropdown
+    id: live-api
+    attributes:
+      label: Would this involve live Procore API calls?
+      options:
+        - "No"
+        - "Yes"
+        - "Not sure"
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What workaround are you using today?
+  - type: checkboxes
+    id: secret-confirmation
+    attributes:
+      label: Secret safety
+      options:
+        - label: I did not include Procore secrets, tokens, `.env` values, token stores, Authorization headers, or private project data.
+          required: true
