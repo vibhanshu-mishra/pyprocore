@@ -1017,29 +1017,29 @@ GET /rest/v1.0/images/{image_id}?project_id={project_id}
 - AI-ready project context packages
 
 ### Phase 3: Expanded API Coverage
-- Documents: Completed
-- Drawings: Completed
+- Documents
+- Drawings:
   - Drawing areas
   - Drawing disciplines
   - Drawing list/get/find/download helpers
   - Manual smoke-test validation
-- Specifications: Completed
+- Specifications:
   - Specification sets
   - Specification sections
   - Specification section revisions
   - Specification revision downloads
   - Manual smoke-test validation
-- Photos: Completed
+- Photos:
   - Photo albums/image categories
   - Photo list/get/find helpers
   - Photo and album download helpers
   - Manual smoke-test validation
-- Daily Logs: Completed
+- Daily Logs: 
   - Counts and headers
   - Type-specific read-only log listing
   - Grouped date summaries
   - Manual smoke-test validation
-- Project Context Packages: In Progress
+- Project Context Packages: 
   - Read-only AI-friendly project exports
   - JSON, JSONL, Markdown, and manifest outputs
   - Continue-on-error section handling
