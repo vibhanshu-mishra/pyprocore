@@ -33,6 +33,7 @@ export PROCORE_PROJECT_NUMBER="Project number"
 export PROCORE_RFI_ID=your_rfi_id
 export PROCORE_RFI_NUMBER=your_rfi_number
 export PROCORE_RFI_STATUS=open
+export PROCORE_SEARCH_TERM="door hardware"
 export PROCORE_SUBMITTAL_ID=your_submittal_id
 export PROCORE_SUBMITTAL_NUMBER=your_submittal_number
 export PROCORE_SUBMITTAL_STATUS=pending
@@ -75,6 +76,7 @@ python3 examples/26_list_specification_sections.py
 python3 examples/31_list_photos.py
 python3 examples/35_get_daily_log_counts.py
 python3 examples/40_build_project_context_package.py
+python3 examples/42_build_enhanced_rfi_package.py
 ```
 
 Documents use Procore's Project Folders and Files endpoints internally. Before a
@@ -170,6 +172,8 @@ make examples-check
 | `39_list_daily_logs_for_date.py` | List multiple Daily Log types for one date |
 | `40_build_project_context_package.py` | Build an AI-ready project context package |
 | `41_build_lightweight_project_context.py` | Build a smaller project context package with selected sections |
+| `42_build_enhanced_rfi_package.py` | Build an enhanced AI-ready RFI review package with related context |
+| `43_build_rfi_ai_review_context.py` | Build focused AI review files for one RFI |
 
 ## Safety Notes
 

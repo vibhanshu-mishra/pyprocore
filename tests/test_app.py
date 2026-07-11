@@ -420,6 +420,51 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(package_rfi.item_number, "15")
         self.assertFalse(package_rfi.download_attachments)
 
+        enhanced_rfi = parser.parse_args(
+            [
+                "enhanced-rfi-package",
+                "--project",
+                "10",
+                "--company",
+                "123",
+                "--rfi-number",
+                "15",
+                "--output",
+                "rfi-package",
+                "--related-sections",
+                "submittals,drawings",
+                "--exclude-related",
+                "photos",
+                "--search-term",
+                "door,hardware",
+                "--search-term",
+                "level 2",
+                "--start-date",
+                "2026-07-01",
+                "--end-date",
+                "2026-07-10",
+                "--log-date",
+                "2026-07-10",
+                "--max-related-items",
+                "5",
+                "--download-files",
+                "--overwrite",
+                "--fail-fast",
+            ]
+        )
+        self.assertEqual(enhanced_rfi.command, "enhanced-rfi-package")
+        self.assertEqual(enhanced_rfi.project_id, 10)
+        self.assertEqual(enhanced_rfi.company_id, 123)
+        self.assertEqual(enhanced_rfi.rfi_number, "15")
+        self.assertEqual(enhanced_rfi.output_dir, Path("rfi-package"))
+        self.assertEqual(enhanced_rfi.related_sections, "submittals,drawings")
+        self.assertEqual(enhanced_rfi.exclude_related, "photos")
+        self.assertEqual(enhanced_rfi.search_terms, ["door,hardware", "level 2"])
+        self.assertEqual(enhanced_rfi.max_related_items, 5)
+        self.assertTrue(enhanced_rfi.download_files)
+        self.assertTrue(enhanced_rfi.overwrite)
+        self.assertTrue(enhanced_rfi.fail_fast)
+
         package_submittal = parser.parse_args(
             ["package-submittal", "--project", "10", "--id", "30", "--company", "123"]
         )
@@ -1683,6 +1728,57 @@ class AppTestCase(unittest.TestCase):
             continue_on_error=False,
         )
 
+    def test_run_enhanced_rfi_package_command_dispatches_to_helper(self) -> None:
+        """Enhanced RFI package command calls the workflow helper."""
+        with patch.object(
+            app,
+            "build_enhanced_rfi_package",
+            return_value="enhanced",
+        ) as build_package:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="enhanced-rfi-package",
+                    project_id=10,
+                    company_id=123,
+                    rfi_id=None,
+                    rfi_number="15",
+                    output_dir=Path("rfi-package"),
+                    include_related=True,
+                    related_sections="submittals,drawings",
+                    exclude_related="photos",
+                    search_terms=["door,hardware", "level 2"],
+                    start_date="2026-07-01",
+                    end_date="2026-07-10",
+                    log_date="2026-07-10",
+                    max_related_items=5,
+                    download_files=True,
+                    overwrite=True,
+                    fail_fast=True,
+                )
+            )
+
+        self.assertEqual(result, "enhanced")
+        build_package.assert_called_once_with(
+            10,
+            rfi_id=None,
+            rfi_number="15",
+            company_id=123,
+            output_dir=Path("rfi-package"),
+            include_related=True,
+            related_sections=["submittals", "drawings"],
+            exclude_related=["photos"],
+            search_terms=["door", "hardware", "level 2"],
+            start_date="2026-07-01",
+            end_date="2026-07-10",
+            log_date="2026-07-10",
+            max_related_items=5,
+            download_files=True,
+            overwrite=True,
+            continue_on_error=False,
+        )
+
+    def test_run_sync_submittals_command_dispatches_to_helper(self) -> None:
+        """Submittal sync command calls the workflow helper."""
         with patch.object(app, "sync_submittals_to_folder", return_value="sync") as sync:
             result = app.run_command(
                 argparse.Namespace(

@@ -72,6 +72,11 @@ and this project follows semantic versioning.
 - `client.workflows.build_project_context_package`.
 - `procore-sdk project-context` CLI command.
 - Project context examples and recipes.
+- Enhanced RFI intelligence package workflow with AI-ready review files.
+- `client.workflows.build_enhanced_rfi_package`.
+- `procore-sdk enhanced-rfi-package` CLI command.
+- Enhanced RFI package examples and recipes.
+- Keyword-matched related RFI context across submittals, documents, drawings, specifications, photos, and Daily Logs.
 
 ### Changed
 
@@ -90,6 +95,7 @@ and this project follows semantic versioning.
 - Updated README, roadmap, examples, and recipes for Photos support.
 - Updated README, roadmap, examples, and recipes for Daily Logs support.
 - Updated README, roadmap, examples, and recipes for project context package support.
+- Updated README, roadmap, examples, and recipes for enhanced RFI package support.
 
 ## [2.0.0] - 2026-07-03
 

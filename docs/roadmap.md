@@ -89,10 +89,13 @@ Documents, Drawings, Specifications, Photos, and Daily Logs.
 Status: In Progress
 
 - Read-only project context package builder
+- Enhanced RFI intelligence package builder
 - JSON, JSONL, Markdown, and manifest outputs
 - Safe defaults with downloads off
 - Continue-on-error behavior for partial project permissions
 - Lightweight include/exclude controls
+- Keyword-matched related context for RFI review
+- AI review-context, reviewer-questions, and possible risk-flag files
 
 ## Phase 7: Examples and Recipes
 

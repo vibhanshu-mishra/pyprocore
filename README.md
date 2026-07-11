@@ -47,6 +47,7 @@ PyProcore does that once, correctly, behind a clean interface. You call a servic
 - Typed Pydantic response models
 - Command-line interface
 - AI-ready project context packages
+- Enhanced RFI review packages
 - Mocked unit tests with no live Procore dependency
 
 ---
@@ -457,6 +458,8 @@ print(sync_result.manifest_path)
 
 Available helpers:
 
+- `build_enhanced_rfi_package()`
+- `build_project_context_package()`
 - `export_rfis_to_csv()`
 - `export_submittals_to_csv()`
 - `export_rfis_to_jsonl()`
@@ -519,6 +522,28 @@ result = sync_documents_to_folder(
 Document downloads use `download_url` or `url` fields when Procore includes
 them in the file payload. Some Procore environments may require a separate
 secure file access step before a direct download URL is available.
+
+Enhanced RFI packages create a read-only, AI-friendly review folder for one RFI.
+They can include keyword-matched related submittals, documents, drawings,
+specifications, photos, and Daily Logs. Downloads are off by default, related
+section failures are recorded by default, and generated risk flags are only
+possible review flags:
+
+```python
+from pyprocore.workflows import build_enhanced_rfi_package
+
+result = build_enhanced_rfi_package(
+    project_id=352338,
+    company_id=4286480,
+    rfi_number="15",
+    output_dir="rfi-package",
+    related_sections=["drawings", "specifications", "submittals"],
+    max_related_items=10,
+    download_files=False,
+)
+
+print(result.review_context_path)
+```
 
 Every typed model serializes back to JSON:
 
@@ -640,6 +665,8 @@ procore-sdk sync-project --project 352338 --output ./project-sync
 procore-sdk sync-project --project 352338 --output ./project-sync --incremental
 procore-sdk project-context --project 352338 --company 4286480 --output ./project-context
 procore-sdk project-context --project 352338 --include rfis,submittals,daily_logs --max-items 50
+procore-sdk enhanced-rfi-package --project 352338 --company 4286480 --rfi-number 15
+procore-sdk enhanced-rfi-package --project 352338 --rfi-id 102784 --related-sections drawings,specifications,submittals
 procore-sdk auth status
 procore-sdk auth login-url
 procore-sdk auth refresh
@@ -656,7 +683,8 @@ Runnable example scripts live in [examples/](examples/README.md). They show
 common SDK tasks such as listing projects, fetching RFIs, downloading
 attachments, documents, drawings, specification revisions, photos, and Daily
 Logs, building workflow packages, exporting CSVs, syncing local review folders,
-and building AI-ready project context packages.
+building AI-ready project context packages, and creating enhanced RFI review
+packages.
 
 Examples can be syntax-checked without credentials or live Procore access:
 
@@ -667,6 +695,10 @@ make examples-check
 Task-based guides live in [docs/recipes/](docs/recipes/). Recipes explain when
 to use each pattern, which environment variables are needed, what output to
 expect, and how to troubleshoot beginner-friendly issues.
+
+For AI-ready RFI review workflows, start with
+[Build Enhanced RFI Package](docs/recipes/build-enhanced-rfi-package.md) or
+[RFI AI Review Context](docs/recipes/rfi-ai-review-context.md).
 
 Before releasing Documents changes against a new Procore environment, run the
 manual smoke helper with sandbox credentials:

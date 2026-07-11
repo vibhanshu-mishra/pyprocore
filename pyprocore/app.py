@@ -95,9 +95,11 @@ from pyprocore.services import (
     list_visitor_logs,
 )
 from pyprocore.workflows import (
+    EnhancedRFIPackageResult,
     ProjectContextResult,
     ProjectSyncResult,
     SyncResult,
+    build_enhanced_rfi_package,
     build_project_context_package,
     export_rfis_to_csv,
     export_submittals_to_csv,
@@ -638,6 +640,65 @@ def build_parser() -> argparse.ArgumentParser:
         help="Build an automation package for one RFI",
     )
     _add_package_options(package_rfi_parser)
+
+    enhanced_rfi_parser = subcommands.add_parser(
+        "enhanced-rfi-package",
+        help="Build an enhanced AI-ready RFI review package",
+    )
+    enhanced_rfi_parser.add_argument(
+        "--project",
+        "--project-id",
+        dest="project_id",
+        type=int,
+        required=True,
+    )
+    enhanced_rfi_parser.add_argument("--company-id", "--company", dest="company_id", type=int)
+    enhanced_rfi_parser.add_argument("--rfi-id", type=int)
+    enhanced_rfi_parser.add_argument("--rfi-number")
+    enhanced_rfi_parser.add_argument(
+        "--output-dir",
+        "--output",
+        dest="output_dir",
+        type=Path,
+        default=None,
+    )
+    enhanced_rfi_parser.add_argument(
+        "--include-related",
+        dest="include_related",
+        action="store_true",
+        default=True,
+        help="Include related project context",
+    )
+    enhanced_rfi_parser.add_argument(
+        "--no-related",
+        dest="include_related",
+        action="store_false",
+        help="Skip related project context",
+    )
+    enhanced_rfi_parser.add_argument("--related-sections")
+    enhanced_rfi_parser.add_argument("--exclude-related")
+    enhanced_rfi_parser.add_argument(
+        "--search-term",
+        dest="search_terms",
+        action="append",
+        default=None,
+        help="Search term to use for related context. Can be repeated or comma-separated.",
+    )
+    enhanced_rfi_parser.add_argument("--start-date")
+    enhanced_rfi_parser.add_argument("--end-date")
+    enhanced_rfi_parser.add_argument("--log-date")
+    enhanced_rfi_parser.add_argument("--max-related-items", type=int, default=25)
+    enhanced_rfi_parser.add_argument(
+        "--download-files",
+        action="store_true",
+        help="Download RFI attachments. Off by default.",
+    )
+    enhanced_rfi_parser.add_argument("--overwrite", action="store_true")
+    enhanced_rfi_parser.add_argument(
+        "--fail-fast",
+        action="store_true",
+        help="Stop on the first related section error",
+    )
 
     package_submittal_parser = subcommands.add_parser(
         "package-submittal",
@@ -1289,6 +1350,26 @@ def run_command(args: argparse.Namespace) -> Any:
     if args.command == "package-rfi":
         return build_workflow_package(_automation_input(args, item_type="rfi"))
 
+    if args.command == "enhanced-rfi-package":
+        return build_enhanced_rfi_package(
+            args.project_id,
+            rfi_id=args.rfi_id,
+            rfi_number=args.rfi_number,
+            company_id=args.company_id,
+            output_dir=args.output_dir,
+            include_related=args.include_related,
+            related_sections=_split_csv(args.related_sections),
+            exclude_related=_split_csv(args.exclude_related),
+            search_terms=_split_csv_list(args.search_terms),
+            start_date=args.start_date,
+            end_date=args.end_date,
+            log_date=args.log_date,
+            max_related_items=args.max_related_items,
+            download_files=args.download_files,
+            overwrite=args.overwrite,
+            continue_on_error=not args.fail_fast,
+        )
+
     if args.command == "package-submittal":
         return build_workflow_package(_automation_input(args, item_type="submittal"))
 
@@ -1408,6 +1489,16 @@ def _split_csv(value: str | None) -> list[str] | None:
     return [item.strip() for item in value.split(",") if item.strip()]
 
 
+def _split_csv_list(values: list[str] | None) -> list[str] | None:
+    """Split repeated comma-separated CLI values."""
+    if values is None:
+        return None
+    items: list[str] = []
+    for value in values:
+        items.extend(item.strip() for item in value.split(",") if item.strip())
+    return items
+
+
 def _automation_input(
     args: argparse.Namespace,
     *,
@@ -1509,6 +1600,24 @@ def format_project_context_summary(result: ProjectContextResult) -> str:
     )
 
 
+def format_enhanced_rfi_summary(result: EnhancedRFIPackageResult) -> str:
+    """Return a human-readable enhanced RFI package summary."""
+    manifest = result.manifest
+    return "\n".join(
+        [
+            "Enhanced RFI package complete.",
+            f"Project: {result.project_id}",
+            f"RFI: {result.rfi_number or result.rfi_id}",
+            f"Output: {result.output_dir}",
+            f"Manifest: {result.manifest_path}",
+            f"Summary: {result.summary_path}",
+            f"Related sections completed: {len(manifest.sections_completed)}",
+            f"Related sections failed: {len(manifest.sections_failed)}",
+            f"Downloads enabled: {manifest.downloads_enabled}",
+        ]
+    )
+
+
 def main() -> None:
     """Run the CLI entrypoint."""
     parser = build_parser()
@@ -1557,6 +1666,10 @@ def main() -> None:
 
     if isinstance(result, ProjectContextResult):
         print(format_project_context_summary(result))
+        return
+
+    if isinstance(result, EnhancedRFIPackageResult):
+        print(format_enhanced_rfi_summary(result))
         return
 
     if isinstance(result, Path) and args.command in {"export-rfis", "export-submittals"}:

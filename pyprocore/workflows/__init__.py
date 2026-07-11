@@ -1,5 +1,6 @@
 """Higher-level workflow automation helpers for PyProcore."""
 
+from pyprocore.workflows.enhanced_rfi import build_enhanced_rfi_package
 from pyprocore.workflows.exports import (
     export_rfis_to_csv,
     export_rfis_to_jsonl,
@@ -7,6 +8,10 @@ from pyprocore.workflows.exports import (
     export_submittals_to_jsonl,
 )
 from pyprocore.workflows.models import (
+    EnhancedRFIPackageManifest,
+    EnhancedRFIPackageOptions,
+    EnhancedRFIPackageResult,
+    EnhancedRFIRelatedSectionResult,
     ProjectContextManifest,
     ProjectContextOptions,
     ProjectContextResult,
@@ -26,6 +31,10 @@ from pyprocore.workflows.sync import (
 
 __all__ = [
     "ProjectSyncResult",
+    "EnhancedRFIPackageManifest",
+    "EnhancedRFIPackageOptions",
+    "EnhancedRFIPackageResult",
+    "EnhancedRFIRelatedSectionResult",
     "ProjectContextManifest",
     "ProjectContextOptions",
     "ProjectContextResult",
@@ -33,6 +42,7 @@ __all__ = [
     "SyncedItem",
     "SyncResult",
     "build_sync_state_path",
+    "build_enhanced_rfi_package",
     "build_project_context_package",
     "export_rfis_to_csv",
     "export_rfis_to_jsonl",
