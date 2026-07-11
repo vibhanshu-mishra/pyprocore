@@ -6,7 +6,7 @@
 ![Python](https://img.shields.io/badge/python-3.12%2B-blue.svg)
 [![License](https://img.shields.io/pypi/l/pyprocore.svg)](LICENSE)
 [![Tests](https://github.com/vibhanshu-mishra/pyprocore/actions/workflows/tests.yml/badge.svg)](https://github.com/vibhanshu-mishra/pyprocore/actions/workflows/tests.yml)
-![Coverage](https://img.shields.io/badge/coverage-91%25-brightgreen.svg)
+![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)
 
 PyProcore handles the parts of a Procore integration that are tedious and easy to get wrong — OAuth, token refresh, pagination, retries, typed responses, structured logging, and attachment downloads - so you work with Python objects instead of raw JSON and API plumbing.
 
