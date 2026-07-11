@@ -125,3 +125,75 @@ class ProjectSyncResult(ProcoreModel):
     summary_path: Path | None = None
     warnings: list[str] = Field(default_factory=list)
     errors: list[str] = Field(default_factory=list)
+
+
+class ProjectContextOptions(ProcoreModel):
+    """Options used to build an AI-ready project context package."""
+
+    model_config = ConfigDict(extra="allow", populate_by_name=True, arbitrary_types_allowed=True)
+
+    project_id: int
+    company_id: int | None = None
+    output_dir: Path
+    include: list[str] | None = None
+    exclude: list[str] | None = None
+    start_date: str | None = None
+    end_date: str | None = None
+    log_date: str | None = None
+    max_items: int | None = None
+    download_files: bool = False
+    overwrite: bool = False
+    continue_on_error: bool = True
+
+
+class ProjectContextSectionResult(ProcoreModel):
+    """Result for one attempted project context package section."""
+
+    model_config = ConfigDict(extra="allow", populate_by_name=True, arbitrary_types_allowed=True)
+
+    name: str
+    status: str
+    item_count: int = 0
+    files_written: list[Path] = Field(default_factory=list)
+    downloaded_files: list[Path] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
+    errors: list[str] = Field(default_factory=list)
+
+
+class ProjectContextManifest(ProcoreModel):
+    """Manifest metadata for an AI-ready project context package."""
+
+    model_config = ConfigDict(extra="allow", populate_by_name=True, arbitrary_types_allowed=True)
+
+    created_at: str
+    package_version: str
+    project_id: int
+    company_id: int | None = None
+    output_dir: Path
+    options: ProjectContextOptions
+    sections_attempted: list[str] = Field(default_factory=list)
+    sections_completed: list[str] = Field(default_factory=list)
+    sections_failed: list[str] = Field(default_factory=list)
+    sections_skipped: list[str] = Field(default_factory=list)
+    file_paths_written: list[Path] = Field(default_factory=list)
+    item_counts: dict[str, int] = Field(default_factory=dict)
+    warnings: list[str] = Field(default_factory=list)
+    errors: list[str] = Field(default_factory=list)
+    live_downloads_enabled: bool = False
+    duration_seconds: float | None = None
+    sections: list[ProjectContextSectionResult] = Field(default_factory=list)
+
+
+class ProjectContextResult(ProcoreModel):
+    """Result returned after building a project context package."""
+
+    model_config = ConfigDict(extra="allow", populate_by_name=True, arbitrary_types_allowed=True)
+
+    output_dir: Path
+    project_id: int
+    company_id: int | None = None
+    manifest_path: Path
+    summary_path: Path
+    errors_path: Path | None = None
+    warnings_path: Path | None = None
+    manifest: ProjectContextManifest

@@ -103,8 +103,10 @@ from pyprocore.services import (
     list_visitor_logs,
 )
 from pyprocore.workflows import (
+    ProjectContextResult,
     ProjectSyncResult,
     SyncResult,
+    build_project_context_package,
     export_rfis_to_csv,
     export_rfis_to_jsonl,
     export_submittals_to_csv,
@@ -1450,6 +1452,38 @@ class WorkflowsClient:
             dry_run=dry_run,
             incremental=incremental,
             **filters,
+        )
+
+    def build_project_context_package(
+        self,
+        project_id: int,
+        output_dir: Path | str | None = None,
+        *,
+        company_id: int | None = None,
+        include: Sequence[str] | str | None = None,
+        exclude: Sequence[str] | str | None = None,
+        start_date: str | None = None,
+        end_date: str | None = None,
+        log_date: str | None = None,
+        max_items: int | None = None,
+        download_files: bool = False,
+        overwrite: bool = False,
+        continue_on_error: bool = True,
+    ) -> ProjectContextResult:
+        """Build an AI-ready read-only project context package."""
+        return build_project_context_package(
+            project_id,
+            company_id=company_id,
+            output_dir=output_dir,
+            include=include,
+            exclude=exclude,
+            start_date=start_date,
+            end_date=end_date,
+            log_date=log_date,
+            max_items=max_items,
+            download_files=download_files,
+            overwrite=overwrite,
+            continue_on_error=continue_on_error,
         )
 
 

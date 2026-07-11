@@ -74,6 +74,7 @@ python3 examples/23_list_drawings.py
 python3 examples/26_list_specification_sections.py
 python3 examples/31_list_photos.py
 python3 examples/35_get_daily_log_counts.py
+python3 examples/40_build_project_context_package.py
 ```
 
 Documents use Procore's Project Folders and Files endpoints internally. Before a
@@ -167,6 +168,8 @@ make examples-check
 | `37_list_manpower_logs.py` | List manpower Daily Log entries |
 | `38_list_daily_logs_by_type.py` | List Daily Log entries by type |
 | `39_list_daily_logs_for_date.py` | List multiple Daily Log types for one date |
+| `40_build_project_context_package.py` | Build an AI-ready project context package |
+| `41_build_lightweight_project_context.py` | Build a smaller project context package with selected sections |
 
 ## Safety Notes
 

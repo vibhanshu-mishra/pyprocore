@@ -68,6 +68,10 @@ and this project follows semantic versioning.
 - Daily Logs CLI commands for counts, headers, type-specific logs, grouped date summaries, and delay log types.
 - Daily Logs examples and recipes.
 - Manual Daily Logs smoke-test helper for validating sandbox endpoint and payload behavior.
+- AI-ready project context package workflow.
+- `client.workflows.build_project_context_package`.
+- `procore-sdk project-context` CLI command.
+- Project context examples and recipes.
 
 ### Changed
 
@@ -85,6 +89,7 @@ and this project follows semantic versioning.
 - Updated README, roadmap, examples, and recipes for Specifications support.
 - Updated README, roadmap, examples, and recipes for Photos support.
 - Updated README, roadmap, examples, and recipes for Daily Logs support.
+- Updated README, roadmap, examples, and recipes for project context package support.
 
 ## [2.0.0] - 2026-07-03
 

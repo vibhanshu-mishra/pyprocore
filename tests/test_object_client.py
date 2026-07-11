@@ -1158,6 +1158,45 @@ class ProcoreObjectClientTestCase(unittest.TestCase):
             incremental=True,
         )
 
+    @patch("pyprocore.client.build_project_context_package")
+    def test_workflows_project_context_delegates_to_helper(
+        self,
+        build_project_context_package: Mock,
+    ) -> None:
+        """Project context object client passes options through."""
+        build_project_context_package.return_value = "context"
+
+        result = Procore().workflows.build_project_context_package(
+            1,
+            "context",
+            company_id=2,
+            include=["rfis"],
+            exclude=["photos"],
+            start_date="2026-07-01",
+            end_date="2026-07-10",
+            log_date="2026-07-10",
+            max_items=5,
+            download_files=True,
+            overwrite=True,
+            continue_on_error=False,
+        )
+
+        self.assertEqual(result, "context")
+        build_project_context_package.assert_called_once_with(
+            1,
+            company_id=2,
+            output_dir="context",
+            include=["rfis"],
+            exclude=["photos"],
+            start_date="2026-07-01",
+            end_date="2026-07-10",
+            log_date="2026-07-10",
+            max_items=5,
+            download_files=True,
+            overwrite=True,
+            continue_on_error=False,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

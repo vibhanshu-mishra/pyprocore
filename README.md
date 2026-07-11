@@ -46,6 +46,7 @@ PyProcore does that once, correctly, behind a clean interface. You call a servic
 
 - Typed Pydantic response models
 - Command-line interface
+- AI-ready project context packages
 - Mocked unit tests with no live Procore dependency
 
 ---
@@ -325,6 +326,23 @@ summary = client.daily_logs.list_for_date(
     log_date="2026-07-10",
     log_types=["manpower", "notes", "delay"],
 )
+```
+
+Project context packages gather available project data into a local AI-friendly
+folder with JSON, JSONL, Markdown summaries, a manifest, and recorded section
+errors:
+
+```python
+from pyprocore.workflows import build_project_context_package
+
+result = build_project_context_package(
+    project_id=352338,
+    company_id=4286480,
+    output_dir="project-context",
+    include=["project", "rfis", "submittals", "daily_logs"],
+    max_items=100,
+)
+print(result.summary_path)
 ```
 
 RFI and submittal list calls also accept optional date filters:
@@ -620,6 +638,8 @@ procore-sdk sync-documents --project 352338 --output ./documents --incremental
 procore-sdk sync-documents --project 352338 --output ./documents --recursive
 procore-sdk sync-project --project 352338 --output ./project-sync
 procore-sdk sync-project --project 352338 --output ./project-sync --incremental
+procore-sdk project-context --project 352338 --company 4286480 --output ./project-context
+procore-sdk project-context --project 352338 --include rfis,submittals,daily_logs --max-items 50
 procore-sdk auth status
 procore-sdk auth login-url
 procore-sdk auth refresh
@@ -635,8 +655,8 @@ short human-readable summaries.
 Runnable example scripts live in [examples/](examples/README.md). They show
 common SDK tasks such as listing projects, fetching RFIs, downloading
 attachments, documents, drawings, specification revisions, photos, and Daily
-Logs, building workflow packages, exporting CSVs, and syncing local review
-folders.
+Logs, building workflow packages, exporting CSVs, syncing local review folders,
+and building AI-ready project context packages.
 
 Examples can be syntax-checked without credentials or live Procore access:
 
@@ -784,30 +804,35 @@ GET /rest/v1.0/images/{image_id}?project_id={project_id}
 - Combined project folder sync
 - Sync summary reports
 - AI-ready workflow packages
+- AI-ready project context packages
 
 ### Phase 3: Expanded API Coverage
-- Documents: In Progress
-- Drawings: In Progress
+- Documents: Completed
+- Drawings: Completed
   - Drawing areas
   - Drawing disciplines
   - Drawing list/get/find/download helpers
   - Manual smoke-test validation
-- Specifications: In Progress
+- Specifications: Completed
   - Specification sets
   - Specification sections
   - Specification section revisions
   - Specification revision downloads
   - Manual smoke-test validation
-- Photos: In Progress
+- Photos: Completed
   - Photo albums/image categories
   - Photo list/get/find helpers
   - Photo and album download helpers
   - Manual smoke-test validation
-- Daily Logs: In Progress
+- Daily Logs: Completed
   - Counts and headers
   - Type-specific read-only log listing
   - Grouped date summaries
   - Manual smoke-test validation
+- Project Context Packages: In Progress
+  - Read-only AI-friendly project exports
+  - JSON, JSONL, Markdown, and manifest outputs
+  - Continue-on-error section handling
 - Observations
 - Correspondence
 

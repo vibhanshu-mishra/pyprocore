@@ -22,6 +22,7 @@ coverage priorities.
 - Typed models
 - Search and resolver helpers
 - Automation workflow packages
+- AI-ready project context packages
 - CLI
 - Mocked unit test suite
 
@@ -50,31 +51,31 @@ Status: Completed
 
 ## Phase 3: Expanded API Coverage
 
-Status: In Progress
+Status: Completed
 
 Phase 3 will focus on expanded endpoint coverage for project resources such as
 Documents, Drawings, Specifications, Photos, and Daily Logs.
 
-- Documents: In Progress
-- Drawings: In Progress
+- Documents: Completed
+- Drawings: Completed
   - List/get drawing areas
   - List drawing disciplines
   - List/get/find drawings
   - Download drawings when Procore provides a direct URL
   - Manual smoke test for sandbox endpoint and payload validation
   - Folder sync planned after live download behavior is confirmed
-- Specifications: In Progress
+- Specifications: Completed
   - List specification sets
   - List/get/find specification sections
   - List/get specification section revisions
   - Download specification section revisions
   - Manual smoke test for sandbox endpoint and payload validation
-- Photos: In Progress
+- Photos: Completed
   - List/get/find photo albums
   - List/get/find photos
   - Download photos and photo albums
   - Manual smoke test for sandbox endpoint and payload validation
-- Daily Logs: In Progress
+- Daily Logs: Completed
   - Daily Log counts and headers
   - Type-specific read-only log listing
   - Local lookup helpers for headers and log entries
@@ -82,6 +83,16 @@ Documents, Drawings, Specifications, Photos, and Daily Logs.
   - CLI, examples, recipes, and manual smoke test
 - Observations
 - Correspondence
+
+## Phase 4: AI-Ready Project Context
+
+Status: In Progress
+
+- Read-only project context package builder
+- JSON, JSONL, Markdown, and manifest outputs
+- Safe defaults with downloads off
+- Continue-on-error behavior for partial project permissions
+- Lightweight include/exclude controls
 
 ## Phase 7: Examples and Recipes
 

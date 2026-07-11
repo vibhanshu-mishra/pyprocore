@@ -95,8 +95,10 @@ from pyprocore.services import (
     list_visitor_logs,
 )
 from pyprocore.workflows import (
+    ProjectContextResult,
     ProjectSyncResult,
     SyncResult,
+    build_project_context_package,
     export_rfis_to_csv,
     export_submittals_to_csv,
     sync_documents_to_folder,
@@ -732,6 +734,40 @@ def build_parser() -> argparse.ArgumentParser:
         help="Sync only submittals",
     )
 
+    project_context_parser = subcommands.add_parser(
+        "project-context",
+        help="Build an AI-ready read-only project context package",
+    )
+    _add_project_output_options(project_context_parser, output_help="Output folder")
+    project_context_parser.add_argument("--company-id", "--company", dest="company_id", type=int)
+    project_context_parser.add_argument(
+        "--include",
+        help="Comma-separated sections to include, such as rfis,submittals",
+    )
+    project_context_parser.add_argument(
+        "--exclude",
+        help="Comma-separated sections to skip, such as photos,documents",
+    )
+    project_context_parser.add_argument("--start-date")
+    project_context_parser.add_argument("--end-date")
+    project_context_parser.add_argument("--log-date")
+    project_context_parser.add_argument("--max-items", type=int)
+    project_context_parser.add_argument(
+        "--download-files",
+        action="store_true",
+        help="Download supported files. Off by default.",
+    )
+    project_context_parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Allow file downloads to overwrite existing files",
+    )
+    project_context_parser.add_argument(
+        "--fail-fast",
+        action="store_true",
+        help="Stop on the first section error instead of recording it",
+    )
+
     return parser
 
 
@@ -1346,7 +1382,30 @@ def run_command(args: argparse.Namespace) -> Any:
             incremental=args.incremental,
         )
 
+    if args.command == "project-context":
+        return build_project_context_package(
+            args.project_id,
+            company_id=args.company_id,
+            output_dir=args.output_path,
+            include=_split_csv(args.include),
+            exclude=_split_csv(args.exclude),
+            start_date=args.start_date,
+            end_date=args.end_date,
+            log_date=args.log_date,
+            max_items=args.max_items,
+            download_files=args.download_files,
+            overwrite=args.overwrite,
+            continue_on_error=not args.fail_fast,
+        )
+
     raise ValueError(f"Unsupported command: {args.command}")
+
+
+def _split_csv(value: str | None) -> list[str] | None:
+    """Split a comma-separated CLI value."""
+    if value is None:
+        return None
+    return [item.strip() for item in value.split(",") if item.strip()]
 
 
 def _automation_input(
@@ -1433,6 +1492,23 @@ def format_project_sync_summary(result: ProjectSyncResult) -> str:
     )
 
 
+def format_project_context_summary(result: ProjectContextResult) -> str:
+    """Return a human-readable project context package summary."""
+    manifest = result.manifest
+    return "\n".join(
+        [
+            "Project context package complete.",
+            f"Project: {result.project_id}",
+            f"Output: {result.output_dir}",
+            f"Manifest: {result.manifest_path}",
+            f"Summary: {result.summary_path}",
+            f"Sections completed: {len(manifest.sections_completed)}",
+            f"Sections failed: {len(manifest.sections_failed)}",
+            f"Downloads enabled: {manifest.live_downloads_enabled}",
+        ]
+    )
+
+
 def main() -> None:
     """Run the CLI entrypoint."""
     parser = build_parser()
@@ -1477,6 +1553,10 @@ def main() -> None:
 
     if isinstance(result, ProjectSyncResult):
         print(format_project_sync_summary(result))
+        return
+
+    if isinstance(result, ProjectContextResult):
+        print(format_project_context_summary(result))
         return
 
     if isinstance(result, Path) and args.command in {"export-rfis", "export-submittals"}:

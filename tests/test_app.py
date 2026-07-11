@@ -501,6 +501,43 @@ class AppTestCase(unittest.TestCase):
         self.assertTrue(sync_documents.dry_run)
         self.assertTrue(sync_documents.incremental)
 
+        project_context = parser.parse_args(
+            [
+                "project-context",
+                "--project",
+                "10",
+                "--company",
+                "123",
+                "--output",
+                "context",
+                "--include",
+                "rfis,submittals",
+                "--exclude",
+                "photos",
+                "--start-date",
+                "2026-07-01",
+                "--end-date",
+                "2026-07-10",
+                "--log-date",
+                "2026-07-10",
+                "--max-items",
+                "5",
+                "--download-files",
+                "--overwrite",
+                "--fail-fast",
+            ]
+        )
+        self.assertEqual(project_context.command, "project-context")
+        self.assertEqual(project_context.project_id, 10)
+        self.assertEqual(project_context.company_id, 123)
+        self.assertEqual(project_context.output_path, Path("context"))
+        self.assertEqual(project_context.include, "rfis,submittals")
+        self.assertEqual(project_context.exclude, "photos")
+        self.assertEqual(project_context.max_items, 5)
+        self.assertTrue(project_context.download_files)
+        self.assertTrue(project_context.overwrite)
+        self.assertTrue(project_context.fail_fast)
+
     def test_download_command_aliases_are_supported(self) -> None:
         """Legacy attachment command aliases still parse to the canonical command."""
         parser = app.build_parser()
@@ -1604,6 +1641,47 @@ class AppTestCase(unittest.TestCase):
                     submittals_only=True,
                 )
             )
+
+    def test_run_project_context_command_dispatches_to_helper(self) -> None:
+        """Project context command calls the workflow helper with parsed options."""
+        with patch.object(
+            app,
+            "build_project_context_package",
+            return_value="context",
+        ) as build_context:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="project-context",
+                    project_id=10,
+                    company_id=123,
+                    output_path=Path("context"),
+                    include="rfis,submittals",
+                    exclude="photos",
+                    start_date="2026-07-01",
+                    end_date="2026-07-10",
+                    log_date="2026-07-10",
+                    max_items=5,
+                    download_files=True,
+                    overwrite=True,
+                    fail_fast=True,
+                )
+            )
+
+        self.assertEqual(result, "context")
+        build_context.assert_called_once_with(
+            10,
+            company_id=123,
+            output_dir=Path("context"),
+            include=["rfis", "submittals"],
+            exclude=["photos"],
+            start_date="2026-07-01",
+            end_date="2026-07-10",
+            log_date="2026-07-10",
+            max_items=5,
+            download_files=True,
+            overwrite=True,
+            continue_on_error=False,
+        )
 
         with patch.object(app, "sync_submittals_to_folder", return_value="sync") as sync:
             result = app.run_command(
