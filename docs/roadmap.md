@@ -99,6 +99,9 @@ Status: In Progress
 - Keyword-matched related context for submittal review
 - AI review-context, reviewer-questions, and possible risk-flag files
 - Structured submittal approval review assistance files
+- Local-file-only AI review export layer
+- Prompt packs, source indexes, deterministic chunks, and review checklists
+- CLI and client helpers for reviewing existing package folders without live Procore or AI calls
 
 ## Phase 7: Examples and Recipes
 

@@ -628,6 +628,54 @@ class AppTestCase(unittest.TestCase):
         self.assertTrue(project_context.overwrite)
         self.assertTrue(project_context.fail_fast)
 
+        ai_review_export = parser.parse_args(
+            [
+                "ai-review-export",
+                "--package-dir",
+                "packages/rfi-15",
+                "--output-dir",
+                "packages/rfi-15/ai-export",
+                "--export-name",
+                "rfi-review",
+                "--no-json",
+                "--no-prompt",
+                "--no-checklists",
+                "--max-chunk-chars",
+                "5000",
+                "--overwrite",
+            ]
+        )
+        self.assertEqual(ai_review_export.command, "ai-review-export")
+        self.assertEqual(ai_review_export.package_dir, Path("packages/rfi-15"))
+        self.assertEqual(ai_review_export.output_dir, Path("packages/rfi-15/ai-export"))
+        self.assertEqual(ai_review_export.export_name, "rfi-review")
+        self.assertFalse(ai_review_export.include_json)
+        self.assertFalse(ai_review_export.include_prompt)
+        self.assertFalse(ai_review_export.include_checklists)
+        self.assertEqual(ai_review_export.max_chunk_chars, 5000)
+        self.assertTrue(ai_review_export.overwrite)
+
+        ai_prompt_pack = parser.parse_args(
+            [
+                "ai-prompt-pack",
+                "--package-dir",
+                "packages/submittal-27",
+                "--output-dir",
+                "packages/submittal-27/ai-prompt-pack",
+                "--review-type",
+                "submittal",
+                "--max-chunk-chars",
+                "4000",
+                "--overwrite",
+            ]
+        )
+        self.assertEqual(ai_prompt_pack.command, "ai-prompt-pack")
+        self.assertEqual(ai_prompt_pack.package_dir, Path("packages/submittal-27"))
+        self.assertEqual(ai_prompt_pack.output_dir, Path("packages/submittal-27/ai-prompt-pack"))
+        self.assertEqual(ai_prompt_pack.review_type, "submittal")
+        self.assertEqual(ai_prompt_pack.max_chunk_chars, 4000)
+        self.assertTrue(ai_prompt_pack.overwrite)
+
     def test_download_command_aliases_are_supported(self) -> None:
         """Legacy attachment command aliases still parse to the canonical command."""
         parser = app.build_parser()
@@ -1869,6 +1917,60 @@ class AppTestCase(unittest.TestCase):
             download_files=True,
             overwrite=True,
             continue_on_error=False,
+        )
+
+    def test_run_ai_review_export_command_dispatches_to_helper(self) -> None:
+        """AI review export command calls the local workflow helper."""
+        with patch.object(app, "build_ai_review_export", return_value="export") as build_export:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="ai-review-export",
+                    package_dir=Path("package"),
+                    output_dir=Path("package/ai-export"),
+                    export_name="review",
+                    format="markdown",
+                    include_json=False,
+                    include_prompt=False,
+                    include_checklists=False,
+                    max_chunk_chars=5000,
+                    overwrite=True,
+                )
+            )
+
+        self.assertEqual(result, "export")
+        build_export.assert_called_once_with(
+            Path("package"),
+            output_dir=Path("package/ai-export"),
+            export_name="review",
+            format="markdown",
+            include_json=False,
+            include_prompt=False,
+            include_checklists=False,
+            max_chunk_chars=5000,
+            overwrite=True,
+        )
+
+    def test_run_ai_prompt_pack_command_dispatches_to_helper(self) -> None:
+        """AI prompt pack command calls the local workflow helper."""
+        with patch.object(app, "build_ai_prompt_pack", return_value="pack") as build_pack:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="ai-prompt-pack",
+                    package_dir=Path("package"),
+                    output_dir=Path("package/ai-prompt-pack"),
+                    review_type="submittal",
+                    max_chunk_chars=4000,
+                    overwrite=True,
+                )
+            )
+
+        self.assertEqual(result, "pack")
+        build_pack.assert_called_once_with(
+            Path("package"),
+            output_dir=Path("package/ai-prompt-pack"),
+            review_type="submittal",
+            max_chunk_chars=4000,
+            overwrite=True,
         )
 
     def test_run_sync_submittals_command_dispatches_to_helper(self) -> None:

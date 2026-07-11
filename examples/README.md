@@ -54,6 +54,10 @@ export PROCORE_SPECIFICATION_REVISION_ID=your_specification_revision_id
 export PROCORE_OUTPUT_DIR=downloads/examples
 export PROCORE_DRY_RUN=1
 export PROCORE_STATUS=open
+export PACKAGE_DIR=path/to/local/package
+export AI_EXPORT_OUTPUT_DIR=path/to/local/package/ai-export
+export AI_PROMPT_PACK_OUTPUT_DIR=path/to/local/package/ai-prompt-pack
+export AI_REVIEW_TYPE=general
 ```
 
 Use placeholder values while learning. Do not commit real IDs, tokens, secrets,
@@ -78,6 +82,8 @@ python3 examples/35_get_daily_log_counts.py
 python3 examples/40_build_project_context_package.py
 python3 examples/42_build_enhanced_rfi_package.py
 python3 examples/44_build_enhanced_submittal_package.py
+python3 examples/46_build_ai_review_export.py
+python3 examples/47_build_ai_prompt_pack.py
 ```
 
 Documents use Procore's Project Folders and Files endpoints internally. Before a
@@ -177,9 +183,12 @@ make examples-check
 | `43_build_rfi_ai_review_context.py` | Build focused AI review files for one RFI |
 | `44_build_enhanced_submittal_package.py` | Build an enhanced AI-ready submittal review package with related context |
 | `45_build_submittal_ai_review_context.py` | Build focused AI review files for one submittal |
+| `46_build_ai_review_export.py` | Build a local AI review export from an existing package folder |
+| `47_build_ai_prompt_pack.py` | Build a local AI prompt pack from an existing package folder |
 
 ## Safety Notes
 
 - These scripts make live Procore API calls when you run them.
+- Examples `46` and `47` are local-file-only and do not call Procore.
 - Unit tests do not run these scripts against Procore.
 - Keep secrets out of code, screenshots, logs, and issue reports.

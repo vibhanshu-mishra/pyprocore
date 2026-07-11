@@ -1287,6 +1287,68 @@ class ProcoreObjectClientTestCase(unittest.TestCase):
             continue_on_error=False,
         )
 
+    @patch("pyprocore.client.build_ai_review_export")
+    def test_workflows_ai_review_export_delegates_to_helper(
+        self,
+        build_ai_review_export: Mock,
+    ) -> None:
+        """AI review export object client passes options through."""
+        build_ai_review_export.return_value = "export"
+
+        result = Procore().workflows.build_ai_review_export(
+            "package",
+            output_dir="package/ai-export",
+            export_name="review",
+            format="markdown",
+            include_json=False,
+            include_prompt=False,
+            include_checklists=False,
+            max_chunk_chars=5000,
+            source_extensions=[".md"],
+            exclude_patterns=["ignored/*"],
+            overwrite=True,
+        )
+
+        self.assertEqual(result, "export")
+        build_ai_review_export.assert_called_once_with(
+            "package",
+            output_dir="package/ai-export",
+            export_name="review",
+            format="markdown",
+            include_json=False,
+            include_prompt=False,
+            include_checklists=False,
+            max_chunk_chars=5000,
+            source_extensions=[".md"],
+            exclude_patterns=["ignored/*"],
+            overwrite=True,
+        )
+
+    @patch("pyprocore.client.build_ai_prompt_pack")
+    def test_workflows_ai_prompt_pack_delegates_to_helper(
+        self,
+        build_ai_prompt_pack: Mock,
+    ) -> None:
+        """AI prompt pack object client passes options through."""
+        build_ai_prompt_pack.return_value = "pack"
+
+        result = Procore().workflows.build_ai_prompt_pack(
+            "package",
+            output_dir="package/ai-prompt-pack",
+            review_type="submittal",
+            max_chunk_chars=4000,
+            overwrite=True,
+        )
+
+        self.assertEqual(result, "pack")
+        build_ai_prompt_pack.assert_called_once_with(
+            "package",
+            output_dir="package/ai-prompt-pack",
+            review_type="submittal",
+            max_chunk_chars=4000,
+            overwrite=True,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

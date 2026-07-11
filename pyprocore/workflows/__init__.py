@@ -1,5 +1,6 @@
 """Higher-level workflow automation helpers for PyProcore."""
 
+from pyprocore.workflows.ai_exports import build_ai_prompt_pack, build_ai_review_export
 from pyprocore.workflows.enhanced_rfi import build_enhanced_rfi_package
 from pyprocore.workflows.enhanced_submittal import build_enhanced_submittal_package
 from pyprocore.workflows.exports import (
@@ -9,6 +10,11 @@ from pyprocore.workflows.exports import (
     export_submittals_to_jsonl,
 )
 from pyprocore.workflows.models import (
+    AIExportChunk,
+    AIExportManifest,
+    AIExportOptions,
+    AIExportResult,
+    AIExportSource,
     EnhancedRFIPackageManifest,
     EnhancedRFIPackageOptions,
     EnhancedRFIPackageResult,
@@ -36,6 +42,11 @@ from pyprocore.workflows.sync import (
 
 __all__ = [
     "ProjectSyncResult",
+    "AIExportChunk",
+    "AIExportManifest",
+    "AIExportOptions",
+    "AIExportResult",
+    "AIExportSource",
     "EnhancedRFIPackageManifest",
     "EnhancedRFIPackageOptions",
     "EnhancedRFIPackageResult",
@@ -50,6 +61,8 @@ __all__ = [
     "ProjectContextSectionResult",
     "SyncedItem",
     "SyncResult",
+    "build_ai_prompt_pack",
+    "build_ai_review_export",
     "build_sync_state_path",
     "build_enhanced_rfi_package",
     "build_enhanced_submittal_package",

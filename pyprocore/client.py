@@ -103,11 +103,14 @@ from pyprocore.services import (
     list_visitor_logs,
 )
 from pyprocore.workflows import (
+    AIExportResult,
     EnhancedRFIPackageResult,
     EnhancedSubmittalPackageResult,
     ProjectContextResult,
     ProjectSyncResult,
     SyncResult,
+    build_ai_prompt_pack,
+    build_ai_review_export,
     build_enhanced_rfi_package,
     build_enhanced_submittal_package,
     build_project_context_package,
@@ -1237,6 +1240,54 @@ class AutomationClient:
 
 class WorkflowsClient:
     """Convenience methods for local exports and folder sync workflows."""
+
+    def build_ai_review_export(
+        self,
+        package_dir: Path | str,
+        output_dir: Path | str | None = None,
+        *,
+        export_name: str | None = None,
+        format: str = "markdown",
+        include_json: bool = True,
+        include_prompt: bool = True,
+        include_checklists: bool = True,
+        max_chunk_chars: int = 12000,
+        source_extensions: Sequence[str] | str | None = None,
+        exclude_patterns: Sequence[str] | str | None = None,
+        overwrite: bool = False,
+    ) -> AIExportResult:
+        """Build a local AI-friendly review export from a package folder."""
+        return build_ai_review_export(
+            package_dir,
+            output_dir=output_dir,
+            export_name=export_name,
+            format=format,
+            include_json=include_json,
+            include_prompt=include_prompt,
+            include_checklists=include_checklists,
+            max_chunk_chars=max_chunk_chars,
+            source_extensions=source_extensions,
+            exclude_patterns=exclude_patterns,
+            overwrite=overwrite,
+        )
+
+    def build_ai_prompt_pack(
+        self,
+        package_dir: Path | str,
+        output_dir: Path | str | None = None,
+        *,
+        review_type: str = "general",
+        max_chunk_chars: int = 12000,
+        overwrite: bool = False,
+    ) -> AIExportResult:
+        """Build a prompt-focused local AI export from a package folder."""
+        return build_ai_prompt_pack(
+            package_dir,
+            output_dir=output_dir,
+            review_type=review_type,
+            max_chunk_chars=max_chunk_chars,
+            overwrite=overwrite,
+        )
 
     def export_rfis_to_csv(
         self,

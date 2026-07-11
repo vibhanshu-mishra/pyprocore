@@ -356,3 +356,84 @@ class EnhancedSubmittalPackageResult(ProcoreModel):
     errors_path: Path | None = None
     warnings_path: Path | None = None
     manifest: EnhancedSubmittalPackageManifest
+
+
+class AIExportOptions(ProcoreModel):
+    """Options used to build a local AI review export."""
+
+    model_config = ConfigDict(extra="allow", populate_by_name=True, arbitrary_types_allowed=True)
+
+    package_dir: Path
+    output_dir: Path
+    export_name: str | None = None
+    format: str = "markdown"
+    include_json: bool = True
+    include_prompt: bool = True
+    include_checklists: bool = True
+    max_chunk_chars: int = 12000
+    source_extensions: list[str] | None = None
+    exclude_patterns: list[str] | None = None
+    overwrite: bool = False
+
+
+class AIExportChunk(ProcoreModel):
+    """One chunk file generated for an AI review export."""
+
+    model_config = ConfigDict(extra="allow", populate_by_name=True, arbitrary_types_allowed=True)
+
+    path: Path
+    source_paths: list[Path] = Field(default_factory=list)
+    char_count: int = 0
+
+
+class AIExportSource(ProcoreModel):
+    """One source file considered for an AI review export."""
+
+    model_config = ConfigDict(extra="allow", populate_by_name=True, arbitrary_types_allowed=True)
+
+    relative_path: str
+    file_type: str
+    size: int
+    included: bool
+    reason: str | None = None
+    role: str | None = None
+    chunk_files: list[Path] = Field(default_factory=list)
+
+
+class AIExportManifest(ProcoreModel):
+    """Manifest metadata for a local AI review export."""
+
+    model_config = ConfigDict(extra="allow", populate_by_name=True, arbitrary_types_allowed=True)
+
+    created_at: str
+    package_dir: Path
+    output_dir: Path
+    package_type: str
+    options: AIExportOptions
+    sources: list[AIExportSource] = Field(default_factory=list)
+    chunks: list[AIExportChunk] = Field(default_factory=list)
+    files_written: list[Path] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
+    errors: list[str] = Field(default_factory=list)
+
+
+class AIExportResult(ProcoreModel):
+    """Result returned after building a local AI review export."""
+
+    model_config = ConfigDict(extra="allow", populate_by_name=True, arbitrary_types_allowed=True)
+
+    output_dir: Path
+    package_dir: Path
+    package_type: str
+    manifest_path: Path
+    ai_review_path: Path
+    ai_review_json_path: Path | None = None
+    prompt_path: Path | None = None
+    system_context_path: Path | None = None
+    source_index_json_path: Path
+    source_index_md_path: Path
+    chunk_paths: list[Path] = Field(default_factory=list)
+    checklist_paths: list[Path] = Field(default_factory=list)
+    warnings_path: Path | None = None
+    errors_path: Path | None = None
+    manifest: AIExportManifest

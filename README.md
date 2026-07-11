@@ -567,6 +567,20 @@ result = build_enhanced_submittal_package(
 print(result.approval_review_path)
 ```
 
+AI review exports are local-file-only. They read an existing PyProcore package
+folder and write an `ai-export/` folder with prompts, source indexes, chunks,
+and checklists for downstream review tools:
+
+```python
+from pyprocore.workflows import build_ai_review_export, build_ai_prompt_pack
+
+review_export = build_ai_review_export("rfi-package")
+prompt_pack = build_ai_prompt_pack("enhanced-submittal-package", review_type="submittal")
+
+print(review_export.ai_review_path)
+print(prompt_pack.prompt_path)
+```
+
 Every typed model serializes back to JSON:
 
 ```python
@@ -691,6 +705,8 @@ procore-sdk enhanced-rfi-package --project 352338 --company 4286480 --rfi-number
 procore-sdk enhanced-rfi-package --project 352338 --rfi-id 102784 --related-sections drawings,specifications,submittals
 procore-sdk enhanced-submittal-package --project 352338 --company 4286480 --submittal-number 27
 procore-sdk enhanced-submittal-package --project 352338 --submittal-id 309641 --related-sections rfis,drawings,specifications
+procore-sdk ai-review-export --package-dir ./rfi-package
+procore-sdk ai-prompt-pack --package-dir ./submittal-package --review-type submittal
 procore-sdk auth status
 procore-sdk auth login-url
 procore-sdk auth refresh
@@ -708,7 +724,9 @@ common SDK tasks such as listing projects, fetching RFIs, downloading
 attachments, documents, drawings, specification revisions, photos, and Daily
 Logs, building workflow packages, exporting CSVs, syncing local review folders,
 building AI-ready project context packages, and creating enhanced RFI review
-and submittal review packages.
+and submittal review packages. The local AI export examples show how to turn an
+existing package folder into prompt, chunk, source-index, and checklist files
+without calling Procore or an AI service.
 
 Examples can be syntax-checked without credentials or live Procore access:
 
@@ -727,6 +745,11 @@ For AI-ready RFI review workflows, start with
 For AI-ready submittal review workflows, start with
 [Build Enhanced Submittal Package](docs/recipes/build-enhanced-submittal-package.md)
 or [Submittal AI Review Context](docs/recipes/submittal-ai-review-context.md).
+
+For local-file-only AI review exports, start with
+[Build an AI Review Export](docs/recipes/build-ai-review-export.md),
+[Build an AI Prompt Pack](docs/recipes/build-ai-prompt-pack.md), or
+[Review a Procore Package with AI](docs/recipes/review-procore-package-with-ai.md).
 
 Before releasing Documents changes against a new Procore environment, run the
 manual smoke helper with sandbox credentials:

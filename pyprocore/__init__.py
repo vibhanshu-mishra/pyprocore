@@ -61,6 +61,11 @@ from pyprocore.services.specifications import (
     list_specification_sets,
 )
 from pyprocore.workflows import (
+    AIExportChunk,
+    AIExportManifest,
+    AIExportOptions,
+    AIExportResult,
+    AIExportSource,
     EnhancedRFIPackageManifest,
     EnhancedRFIPackageOptions,
     EnhancedRFIPackageResult,
@@ -75,6 +80,8 @@ from pyprocore.workflows import (
     ProjectContextSectionResult,
     ProjectSyncResult,
     SyncResult,
+    build_ai_prompt_pack,
+    build_ai_review_export,
     build_enhanced_rfi_package,
     build_enhanced_submittal_package,
     build_project_context_package,
@@ -92,6 +99,11 @@ __version__ = "2.0.0"
 
 __all__ = [
     "AutomationInput",
+    "AIExportChunk",
+    "AIExportManifest",
+    "AIExportOptions",
+    "AIExportResult",
+    "AIExportSource",
     "DuplicateMatchError",
     "DownloadedFile",
     "EnhancedRFIPackageManifest",
@@ -113,6 +125,8 @@ __all__ = [
     "SyncResult",
     "WorkflowPackage",
     "__version__",
+    "build_ai_prompt_pack",
+    "build_ai_review_export",
     "build_rfi_package",
     "build_submittal_package",
     "build_enhanced_rfi_package",

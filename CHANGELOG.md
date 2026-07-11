@@ -82,6 +82,10 @@ and this project follows semantic versioning.
 - `procore-sdk enhanced-submittal-package` CLI command.
 - Enhanced submittal package examples and recipes.
 - Keyword-matched related submittal context across RFIs, documents, drawings, specifications, photos, and Daily Logs.
+- Local-file-only AI review export workflow with manifest, source index, prompt, system context, chunks, and checklists.
+- `client.workflows.build_ai_review_export` and `client.workflows.build_ai_prompt_pack`.
+- `procore-sdk ai-review-export` and `procore-sdk ai-prompt-pack` CLI commands.
+- AI review export examples and recipes for reviewing existing package folders without live Procore or AI calls.
 
 ### Changed
 
@@ -102,6 +106,7 @@ and this project follows semantic versioning.
 - Updated README, roadmap, examples, and recipes for project context package support.
 - Updated README, roadmap, examples, and recipes for enhanced RFI package support.
 - Updated README, roadmap, examples, and recipes for enhanced submittal package support.
+- Updated README, roadmap, examples, and recipes for local AI review export workflows.
 
 ## [2.0.0] - 2026-07-03
 

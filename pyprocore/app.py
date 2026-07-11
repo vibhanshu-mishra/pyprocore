@@ -95,11 +95,14 @@ from pyprocore.services import (
     list_visitor_logs,
 )
 from pyprocore.workflows import (
+    AIExportResult,
     EnhancedRFIPackageResult,
     EnhancedSubmittalPackageResult,
     ProjectContextResult,
     ProjectSyncResult,
     SyncResult,
+    build_ai_prompt_pack,
+    build_ai_review_export,
     build_enhanced_rfi_package,
     build_enhanced_submittal_package,
     build_project_context_package,
@@ -780,6 +783,66 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_project_output_options(export_submittals_parser, output_help="CSV output path")
     _add_filter_options(export_submittals_parser)
+
+    ai_review_export_parser = subcommands.add_parser(
+        "ai-review-export",
+        help="Build a local AI review export from a package folder",
+    )
+    ai_review_export_parser.add_argument("--package-dir", type=Path, required=True)
+    ai_review_export_parser.add_argument("--output-dir", type=Path)
+    ai_review_export_parser.add_argument("--export-name")
+    ai_review_export_parser.add_argument("--format", default="markdown")
+    ai_review_export_parser.add_argument(
+        "--include-json",
+        dest="include_json",
+        action="store_true",
+        default=True,
+        help="Write ai_review.json",
+    )
+    ai_review_export_parser.add_argument(
+        "--no-json",
+        dest="include_json",
+        action="store_false",
+        help="Skip ai_review.json",
+    )
+    ai_review_export_parser.add_argument(
+        "--include-prompt",
+        dest="include_prompt",
+        action="store_true",
+        default=True,
+        help="Write prompt.md and system_context.md",
+    )
+    ai_review_export_parser.add_argument(
+        "--no-prompt",
+        dest="include_prompt",
+        action="store_false",
+        help="Skip prompt.md and system_context.md",
+    )
+    ai_review_export_parser.add_argument(
+        "--include-checklists",
+        dest="include_checklists",
+        action="store_true",
+        default=True,
+        help="Write checklist files",
+    )
+    ai_review_export_parser.add_argument(
+        "--no-checklists",
+        dest="include_checklists",
+        action="store_false",
+        help="Skip checklist files",
+    )
+    ai_review_export_parser.add_argument("--max-chunk-chars", type=int, default=12000)
+    ai_review_export_parser.add_argument("--overwrite", action="store_true")
+
+    ai_prompt_pack_parser = subcommands.add_parser(
+        "ai-prompt-pack",
+        help="Build a prompt-focused local AI export from a package folder",
+    )
+    ai_prompt_pack_parser.add_argument("--package-dir", type=Path, required=True)
+    ai_prompt_pack_parser.add_argument("--output-dir", type=Path)
+    ai_prompt_pack_parser.add_argument("--review-type", default="general")
+    ai_prompt_pack_parser.add_argument("--max-chunk-chars", type=int, default=12000)
+    ai_prompt_pack_parser.add_argument("--overwrite", action="store_true")
 
     sync_rfis_parser = subcommands.add_parser(
         "sync-rfis",
@@ -1476,6 +1539,28 @@ def run_command(args: argparse.Namespace) -> Any:
             created_before=args.created_before,
         )
 
+    if args.command == "ai-review-export":
+        return build_ai_review_export(
+            args.package_dir,
+            output_dir=args.output_dir,
+            export_name=args.export_name,
+            format=args.format,
+            include_json=args.include_json,
+            include_prompt=args.include_prompt,
+            include_checklists=args.include_checklists,
+            max_chunk_chars=args.max_chunk_chars,
+            overwrite=args.overwrite,
+        )
+
+    if args.command == "ai-prompt-pack":
+        return build_ai_prompt_pack(
+            args.package_dir,
+            output_dir=args.output_dir,
+            review_type=args.review_type,
+            max_chunk_chars=args.max_chunk_chars,
+            overwrite=args.overwrite,
+        )
+
     if args.command == "sync-rfis":
         return sync_rfis_to_folder(
             args.project_id,
@@ -1718,6 +1803,33 @@ def format_enhanced_submittal_summary(result: EnhancedSubmittalPackageResult) ->
     )
 
 
+def format_ai_export_summary(result: AIExportResult) -> str:
+    """Return a human-readable AI review export summary."""
+    lines = [
+        "AI review export complete.",
+        f"Package type: {result.package_type}",
+        f"Source package: {result.package_dir}",
+        f"Output: {result.output_dir}",
+        f"Manifest: {result.manifest_path}",
+        f"AI review: {result.ai_review_path}",
+        f"Source index: {result.source_index_md_path}",
+        f"Chunks generated: {len(result.chunk_paths)}",
+    ]
+    if result.prompt_path is not None:
+        lines.append(f"Prompt: {result.prompt_path}")
+    if result.system_context_path is not None:
+        lines.append(f"System context: {result.system_context_path}")
+    if result.ai_review_json_path is not None:
+        lines.append(f"JSON export: {result.ai_review_json_path}")
+    if result.checklist_paths:
+        lines.append(f"Checklists: {len(result.checklist_paths)}")
+    if result.manifest.warnings:
+        lines.append(f"Warnings: {len(result.manifest.warnings)}")
+    if result.manifest.errors:
+        lines.append(f"Errors: {len(result.manifest.errors)}")
+    return "\n".join(lines)
+
+
 def main() -> None:
     """Run the CLI entrypoint."""
     parser = build_parser()
@@ -1774,6 +1886,10 @@ def main() -> None:
 
     if isinstance(result, EnhancedSubmittalPackageResult):
         print(format_enhanced_submittal_summary(result))
+        return
+
+    if isinstance(result, AIExportResult):
+        print(format_ai_export_summary(result))
         return
 
     if isinstance(result, Path) and args.command in {"export-rfis", "export-submittals"}:
