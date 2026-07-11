@@ -96,6 +96,29 @@ PYTHONPATH=. python3 -m pyprocore.app --help
 
 ---
 
+## Quick Start
+
+```bash
+python3 -m pip install pyprocore
+cp .env.example .env
+procore-sdk doctor
+procore-sdk auth login-url
+```
+
+Open the login URL, approve access, then exchange the returned authorization
+code:
+
+```bash
+procore-sdk auth exchange-code YOUR_AUTHORIZATION_CODE
+procore-sdk companies
+```
+
+Do not commit `.env`, token stores, logs, downloads, or generated workflow
+outputs. PyProcore redacts secrets in SDK logs, but you should still keep local
+configuration and OAuth tokens private.
+
+---
+
 ## Quick Example
 
 Function style:
@@ -135,7 +158,7 @@ Required variables:
 
 ```bash
 PROCORE_CLIENT_ID=your_client_id
-PROCORE_CLIENT_SECRET=your_client_secret
+PROCORE_CLIENT_SECRET=your_client_secret_keep_private
 PROCORE_REDIRECT_URI=http://localhost:8080/callback
 PROCORE_LOGIN_URL=https://login.procore.com
 PROCORE_API_BASE=https://api.procore.com
@@ -794,6 +817,10 @@ Docker and CI templates are optional. They help teams dry-run workflow plans in
 repeatable local or GitHub Actions environments without committing secrets or
 generated outputs. Start with [Docker Automation](docs/automation/docker.md),
 [CI Automation](docs/automation/ci.md), or `examples/docker/`.
+
+Release readiness guidance lives in [docs/release.md](docs/release.md). It
+covers versioning, validation, changelog updates, and the future PyPI publishing
+checklist.
 
 Before releasing Documents changes against a new Procore environment, run the
 manual smoke helper with sandbox credentials:

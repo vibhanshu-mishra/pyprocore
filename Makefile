@@ -1,4 +1,4 @@
-.PHONY: test coverage examples-check smoke-documents smoke-drawings smoke-specifications smoke-photos smoke-daily-logs lint format typecheck docker-build docker-help docker-run-plan clean
+.PHONY: test coverage examples-check smoke-documents smoke-drawings smoke-specifications smoke-photos smoke-daily-logs lint format typecheck docker-build docker-help docker-run-plan release-check clean
 
 PYTHON ?= python3
 PLAN ?= examples/workflow_plans/nightly_project_context.json
@@ -100,6 +100,16 @@ docker-run-plan:
 	fi
 	mkdir -p "$(OUTPUT_DIR)"
 	docker run --rm -v "$(CURDIR)/exports:/app/exports" pyprocore:local procore-sdk workflow-plan run "$(PLAN)" --output-dir "$(OUTPUT_DIR)" --dry-run
+
+release-check:
+	$(PYTHON) scripts/check_release_ready.py
+	$(MAKE) examples-check
+	$(MAKE) test
+	$(MAKE) coverage
+	$(MAKE) lint
+	$(MAKE) typecheck
+	$(PYTHON) -m black --check .
+	$(PYTHON) -m isort --check-only .
 
 clean:
 	find . -name "__pycache__" -type d -prune -exec rm -rf {} +

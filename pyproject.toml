@@ -8,9 +8,12 @@ version = "2.0.0"
 description = "A production-ready Python SDK for the Procore REST API."
 readme = "README.md"
 requires-python = ">=3.12"
-license = "MIT"
+license = { file = "LICENSE" }
 
 authors = [
+  { name = "Vibhanshu Mishra", email = "vibhanshumishra72@gmail.com" }
+]
+maintainers = [
   { name = "Vibhanshu Mishra", email = "vibhanshumishra72@gmail.com" }
 ]
 
@@ -20,18 +23,33 @@ keywords = [
   "sdk",
   "python",
   "automation",
+  "construction-management",
+  "developer-tools",
+  "documents",
+  "drawings",
+  "project-management",
   "oauth",
   "api",
   "rfi",
-  "submittals"
+  "submittals",
+  "workflow"
 ]
 
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Developers",
+  "Intended Audience :: Information Technology",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
   "Programming Language :: Python :: 3.12",
+  "Typing :: Typed",
+  "Topic :: Internet :: WWW/HTTP",
+  "Topic :: Office/Business",
   "Topic :: Software Development :: Libraries",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: Utilities",
 ]
 
 dependencies = [
@@ -58,6 +76,12 @@ procore-sdk = "pyprocore.app:main"
 include = ["pyprocore*"]
 exclude = ["tests*"]
 
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+pyprocore = ["py.typed"]
+
 [tool.black]
 line-length = 100
 target-version = ["py312"]
@@ -83,3 +107,4 @@ Homepage = "https://github.com/vibhanshu-mishra/pyprocore"
 Repository = "https://github.com/vibhanshu-mishra/pyprocore"
 Issues = "https://github.com/vibhanshu-mishra/pyprocore/issues"
 Documentation = "https://github.com/vibhanshu-mishra/pyprocore#readme"
+Changelog = "https://github.com/vibhanshu-mishra/pyprocore/blob/main/CHANGELOG.md"

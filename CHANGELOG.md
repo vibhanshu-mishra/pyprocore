@@ -9,6 +9,10 @@ and this project follows semantic versioning.
 
 ### Added
 
+- Phase 3 expanded API coverage across Documents, Drawings, Specifications, Photos, and Daily Logs.
+- Phase 4 AI-ready project intelligence workflows for project context, enhanced RFI packages, enhanced submittal packages, and local AI review exports.
+- Phase 5 automation foundation for workflow plans, scheduled sync examples, webhook helpers, Docker templates, and CI dry-run examples.
+- Phase 6 release readiness metadata, package manifest, release docs, and local release checks.
 - Open-source repository support files, including contribution, security, issue, and pull request guidance.
 - Phase 7 examples and recipe documentation.
 - Runnable `examples/` scripts for common company, project, RFI, submittal, attachment, and workflow package tasks.
@@ -98,6 +102,7 @@ and this project follows semantic versioning.
 - Webhook sample payloads, local-only examples, automation docs, and recipes.
 - Dockerfile, `.dockerignore`, Docker Compose template, Docker helper scripts, and Docker CI workflow example.
 - Automation docs for Docker and CI usage with dry-run-first guidance.
+- `scripts/check_release_ready.py` and `make release-check` for local package/release readiness checks.
 
 ### Changed
 
@@ -123,6 +128,20 @@ and this project follows semantic versioning.
 - Updated README, roadmap, examples, and recipes for scheduled workflow plan automation.
 - Updated README, roadmap, examples, and recipes for local webhook helper workflows.
 - Updated README, roadmap, examples, and automation docs for Docker and CI templates.
+- Improved package metadata, source distribution manifest, and typed package marker.
+
+### Fixed
+
+- No runtime fixes in this unreleased phase.
+
+### Docs
+
+- Added release process documentation with versioning, validation, PyPI checklist, and changelog guidance.
+- Polished README release-facing metadata, safety notes, and package-readiness links.
+
+### Tests
+
+- Added release readiness tests for metadata, docs, Makefile targets, and secret-exclusion hygiene.
 
 ## [2.0.0] - 2026-07-03
 
