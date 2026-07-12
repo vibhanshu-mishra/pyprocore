@@ -10,6 +10,14 @@ from typing import Any, Literal
 from pydantic import BaseModel
 
 from pyprocore import __version__
+from pyprocore.agent import (
+    AgentManifest,
+    AgentTool,
+    AgentToolNotFoundError,
+    build_agent_manifest,
+    get_agent_tool,
+    list_agent_tools,
+)
 from pyprocore.auth.diagnostics import (
     AuthExchangeResult,
     AuthLoginUrlResult,
@@ -171,6 +179,55 @@ def build_parser() -> argparse.ArgumentParser:
     )
     auth_exchange_parser.set_defaults(auth_command="exchange-code")
     auth_exchange_parser.add_argument("code", help="Authorization code returned by Procore")
+
+    agent_parser = subcommands.add_parser("agent", help="Inspect the local agent tool registry")
+    agent_subcommands = agent_parser.add_subparsers(dest="agent_command", required=True)
+
+    agent_manifest_parser = agent_subcommands.add_parser(
+        "manifest",
+        help="Show agent tool manifest metadata",
+    )
+    agent_manifest_parser.add_argument(
+        "--json",
+        dest="json_output",
+        action="store_true",
+        help="Print structured JSON output",
+    )
+    agent_manifest_parser.add_argument(
+        "--pretty",
+        action="store_true",
+        help="Print pretty JSON output",
+    )
+
+    agent_tools_parser = agent_subcommands.add_parser("tools", help="List registered agent tools")
+    agent_tools_parser.add_argument(
+        "--json",
+        dest="json_output",
+        action="store_true",
+        help="Print structured JSON output",
+    )
+    agent_tools_parser.add_argument(
+        "--pretty",
+        action="store_true",
+        help="Print pretty JSON output",
+    )
+
+    agent_tool_parser = agent_subcommands.add_parser(
+        "tool",
+        help="Show metadata for one registered agent tool",
+    )
+    agent_tool_parser.add_argument("tool_name")
+    agent_tool_parser.add_argument(
+        "--json",
+        dest="json_output",
+        action="store_true",
+        help="Print structured JSON output",
+    )
+    agent_tool_parser.add_argument(
+        "--pretty",
+        action="store_true",
+        help="Print pretty JSON output",
+    )
 
     subcommands.add_parser("companies", help="List companies")
 
@@ -1227,6 +1284,15 @@ def run_command(args: argparse.Namespace) -> Any:
             return exchange_code_and_save(args.code)
         raise ValueError(f"Unsupported auth command: {args.auth_command}")
 
+    if args.command == "agent":
+        if args.agent_command == "manifest":
+            return build_agent_manifest()
+        if args.agent_command == "tools":
+            return list_agent_tools()
+        if args.agent_command == "tool":
+            return get_agent_tool(args.tool_name)
+        raise ValueError(f"Unsupported agent command: {args.agent_command}")
+
     if args.command == "workflow-plan":
         if args.workflow_plan_command == "list":
             return list_available_workflows()
@@ -2009,6 +2075,47 @@ def format_ai_export_summary(result: AIExportResult) -> str:
     return "\n".join(lines)
 
 
+def format_agent_manifest(manifest: AgentManifest) -> str:
+    """Return a human-readable agent manifest summary."""
+    return "\n".join(
+        [
+            "PyProcore agent tool registry.",
+            f"Package: {manifest.package_name} {manifest.package_version}",
+            f"Registry version: {manifest.registry_version}",
+            f"Tools: {manifest.tool_count}",
+            "Mode: metadata only; no tools are executed by this command.",
+        ]
+    )
+
+
+def format_agent_tools(tools: list[AgentTool]) -> str:
+    """Return a human-readable list of registered agent tools."""
+    if not tools:
+        return "No agent tools are registered."
+    lines = [f"Registered agent tools: {len(tools)}"]
+    lines.extend(f"- {tool.name}: {tool.title}" for tool in tools)
+    return "\n".join(lines)
+
+
+def format_agent_tool(tool: AgentTool) -> str:
+    """Return a human-readable summary of one agent tool."""
+    lines = [
+        tool.name,
+        f"Title: {tool.title}",
+        f"Category: {tool.category.value}",
+        f"Safety: {tool.safety_level.value}",
+        f"Requires auth: {tool.requires_auth}",
+        f"Calls live API: {tool.calls_live_api}",
+        f"Produces files: {tool.produces_files}",
+        f"Description: {tool.description}",
+    ]
+    if tool.cli_command:
+        lines.append(f"CLI: {tool.cli_command}")
+    if tool.operation_path:
+        lines.append(f"Operation: {tool.operation_path}")
+    return "\n".join(lines)
+
+
 def format_workflow_plan_validation(plan: WorkflowPlan) -> str:
     """Return a human-readable workflow plan validation summary."""
     enabled_count = sum(1 for step in plan.steps if step.enabled)
@@ -2124,6 +2231,9 @@ def main() -> None:
     except ValidationError as exc:
         print(f"PyProcore input is invalid.\n\nDetails: {exc}")
         raise SystemExit(1) from exc
+    except AgentToolNotFoundError as exc:
+        print(f"PyProcore agent tool lookup failed.\n\nDetails: {exc}")
+        raise SystemExit(1) from exc
     except (AuthorizationError, ResourceNotFoundError, ProcoreAPIError) as exc:
         print(format_cli_error(exc))
         raise SystemExit(1) from exc
@@ -2152,6 +2262,27 @@ def main() -> None:
     if isinstance(result, AuthLoginUrlResult):
         print(format_login_url(result))
         raise SystemExit(0)
+
+    if isinstance(result, AgentManifest):
+        if args.json_output or args.pretty:
+            print(json.dumps(to_serializable(result), indent=2, default=str))
+        else:
+            print(format_agent_manifest(result))
+        return
+
+    if isinstance(result, AgentTool):
+        if args.json_output or args.pretty:
+            print(json.dumps(to_serializable(result), indent=2, default=str))
+        else:
+            print(format_agent_tool(result))
+        return
+
+    if isinstance(result, list) and args.command == "agent" and args.agent_command == "tools":
+        if args.json_output or args.pretty:
+            print(json.dumps(to_serializable(result), indent=2, default=str))
+        else:
+            print(format_agent_tools(result))
+        return
 
     if args.command == "workflow-plan" and args.workflow_plan_command == "list":
         if args.json_output:

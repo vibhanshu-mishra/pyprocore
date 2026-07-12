@@ -77,6 +77,7 @@ class FinalReleasePolishTestCase(unittest.TestCase):
             "docs/api-coverage.md",
             "docs/workflows.md",
             "docs/ai-review.md",
+            "docs/agent-api.md",
             "docs/automation.md",
             "docs/security.md",
             "docs/release.md",
@@ -86,11 +87,12 @@ class FinalReleasePolishTestCase(unittest.TestCase):
             self.assertTrue((PROJECT_ROOT / relative_path).exists(), relative_path)
 
     def test_examples_readme_mentions_latest_example_range(self) -> None:
-        """Examples README should document the current 01 through 52 examples."""
+        """Examples README should document the current 01 through 54 examples."""
         examples = self.read_text("examples/README.md")
 
         self.assertIn("01_list_companies.py", examples)
         self.assertIn("52_dispatch_webhook_to_workflow_plan.py", examples)
+        self.assertIn("54_agent_manifest_export.py", examples)
         self.assertIn("runs from `01_list_companies.py` through", examples)
 
     def test_docs_claim_2_1_0_release_is_complete(self) -> None:

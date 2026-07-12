@@ -7,7 +7,9 @@ and this project follows semantic versioning.
 
 ## [Unreleased]
 
-No unreleased changes yet.
+### Added
+
+- Phase 7A agent tool registry with metadata-only tool definitions, manifest export helpers, CLI inspection commands, examples, and docs for future assistant integrations.
 
 ## [2.1.0] - 2026-07-11
 

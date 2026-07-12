@@ -12,6 +12,7 @@ nav:
   - API Coverage: api-coverage.md
   - Workflows: workflows.md
   - AI Review: ai-review.md
+  - Agent API: agent-api.md
   - Security: security.md
   - Automation:
       - Overview: automation.md
@@ -30,6 +31,7 @@ nav:
       - Export RFI JSON: recipes/export-rfi-json.md
       - Download RFI Attachments: recipes/download-rfi-attachments.md
       - Download Submittal Attachments: recipes/download-submittal-attachments.md
+      - Use Agent Tool Registry: recipes/use-agent-tool-registry.md
       - Run Workflow Plan: recipes/run-workflow-plan.md
       - Schedule Workflow Plan: recipes/schedule-workflow-plan.md
   - Contributing: contributing.md

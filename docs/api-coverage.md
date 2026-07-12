@@ -18,6 +18,16 @@ Procore environment.
 | Attachments/downloads | Supported | Streaming downloads, skip existing files, overwrite option | Downloads are local file operations only. |
 | Workflows | Supported | CSV, JSONL, folder sync, project context, AI-ready packages | Workflows create local files and do not mutate Procore data. |
 | Webhooks | Local helpers | Validate, redact, save, list, dry-run dispatch | No hosted webhook server is included. |
+| Agent registry | Metadata only | Manifest, tool list, tool lookup | No tool execution, server, credentials, or live Procore calls. |
+
+## Agent Tool Registry
+
+The agent registry describes existing read-only and local-file-output PyProcore
+operations for future assistant integrations. It is intentionally metadata-only:
+it does not execute SDK functions, mutate Procore data, read credentials, or
+start a server.
+
+See [Agent API](agent-api.md) for the CLI and Python usage.
 
 ## Live Verification Notes
 

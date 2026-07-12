@@ -38,7 +38,7 @@ class VersionReleasePrepTestCase(unittest.TestCase):
         changelog = self.read_text("CHANGELOG.md")
 
         self.assertIn("## [Unreleased]", changelog)
-        self.assertIn("No unreleased changes yet.", changelog)
+        self.assertIn("Phase 7A agent tool registry", changelog)
         self.assertIn("## [2.1.0] - 2026-07-11", changelog)
         self.assertIn("expanded API coverage", changelog)
         self.assertIn("Release-candidate validation tooling", changelog)

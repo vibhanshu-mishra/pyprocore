@@ -77,6 +77,10 @@ expect, and how to troubleshoot common beginner issues.
 - [Incremental Sync](incremental-sync.md)
 - [Sync Project To Folder](sync-project-to-folder.md)
 
+## Agent API
+
+- [Use The Agent Tool Registry](use-agent-tool-registry.md)
+
 ## Webhooks
 
 - [Validate Webhook Event](validate-webhook-event.md)

@@ -81,6 +81,18 @@ The main workflow and AI commands currently exposed by the CLI include
 `project-context`, `enhanced-rfi-package`, `enhanced-submittal-package`,
 `ai-review-export`, `ai-prompt-pack`, `workflow-plan`, and `webhook`.
 
+## Agent Registry
+
+Agent registry commands inspect local metadata for future assistant
+integrations. They do not execute tools, read credentials, or call Procore.
+
+```bash
+procore-sdk agent manifest
+procore-sdk agent manifest --json
+procore-sdk agent tools
+procore-sdk agent tool procore.find_rfi
+```
+
 ## Webhooks
 
 Webhook helpers are local utilities for validating, redacting, saving, listing,

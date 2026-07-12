@@ -817,6 +817,19 @@ sample webhook JSON payloads without running a hosted webhook server. Start with
 [Save a Webhook Event](docs/recipes/save-webhook-event.md), or
 [Dispatch a Webhook Event to a Workflow Plan](docs/recipes/dispatch-webhook-to-workflow.md).
 
+The local agent tool registry describes safe PyProcore operations for future AI
+assistant and orchestration integrations. It is metadata only: it does not
+execute tools, start a server, read credentials, or call Procore.
+
+```bash
+procore-sdk agent tools
+procore-sdk agent tool procore.find_rfi
+procore-sdk agent manifest --json
+```
+
+See [Agent API](docs/agent-api.md) and
+[Use the Agent Tool Registry](docs/recipes/use-agent-tool-registry.md).
+
 Docker and CI templates are optional. They help teams dry-run workflow plans in
 repeatable local or GitHub Actions environments without committing secrets or
 generated outputs. Start with [Docker Automation](docs/automation/docker.md),
