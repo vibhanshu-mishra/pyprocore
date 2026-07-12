@@ -91,7 +91,12 @@ procore-sdk agent manifest
 procore-sdk agent manifest --json
 procore-sdk agent tools
 procore-sdk agent tool procore.find_rfi
+procore-sdk agent serve --port 8765
 ```
+
+`agent serve` starts a local HTTP discovery API on `127.0.0.1` by default. It
+does not execute tools or call Procore. Binding outside localhost requires
+`--allow-public-bind`.
 
 ## Webhooks
 

@@ -4,10 +4,13 @@ PyProcore includes a local agent tool registry for developers who want to build
 AI assistants, workflow planners, or orchestration layers on top of existing
 SDK capabilities.
 
-The registry is metadata only. It does not execute tools, start a server, expose
-an MCP endpoint, read `.env`, load tokens, or call Procore. It describes the
-safe operations PyProcore can perform today so another system can decide how to
-present or map those operations.
+The registry is metadata only. It does not execute tools, read `.env`, load
+tokens, or call Procore. It describes the safe operations PyProcore can perform
+today so another system can decide how to present or map those operations.
+
+Phase 7B also exposes this metadata through a local HTTP discovery API. The
+server binds to `127.0.0.1` by default, requires no credentials, and still does
+not execute tools.
 
 ## What It Provides
 
@@ -17,13 +20,14 @@ present or map those operations.
 - Safety metadata for read-only and local-file-output operations.
 - Service and CLI command references.
 - A JSON manifest for future agent integrations.
+- A local HTTP discovery API for reading the manifest and tool metadata.
 
 ## What It Is Not
 
-- Not an HTTP API.
 - Not an MCP server.
 - Not a tool execution runtime.
 - Not a hosted agent.
+- Not a public hosted API.
 - Not a mutation layer for Procore data.
 
 All registered tools are either read-only Procore lookups or local-file-output
@@ -37,10 +41,38 @@ procore-sdk agent manifest
 procore-sdk agent manifest --json
 procore-sdk agent tools
 procore-sdk agent tool procore.find_rfi
+procore-sdk agent serve --port 8765
 ```
 
-These commands inspect local metadata only and do not require Procore
-credentials.
+These commands inspect or serve local metadata only and do not require Procore
+credentials. Use public binding only when you intentionally want to expose the
+local discovery API beyond your machine:
+
+```bash
+procore-sdk agent serve --host 0.0.0.0 --allow-public-bind
+```
+
+## Local HTTP API
+
+Start the local server:
+
+```bash
+procore-sdk agent serve
+```
+
+Available endpoints:
+
+| Method | Path | Description |
+| --- | --- | --- |
+| `GET` | `/` | Service metadata and links |
+| `GET` | `/health` | Health check |
+| `GET` | `/agent/manifest` | Full agent manifest |
+| `GET` | `/agent/tools` | Registered tools |
+| `GET` | `/agent/tools/procore.find_rfi` | One tool by name |
+| `POST` | `/agent/tools/procore.find_rfi/call` | Disabled execution placeholder |
+
+Tool execution is not enabled in Phase 7B. Calls to the `/call` endpoint return
+structured JSON with `tool_execution_disabled`.
 
 ## Python
 
@@ -90,8 +122,8 @@ Each tool declares whether it:
 - needs read-only Procore access
 - needs local file read/write permissions
 
-This makes the registry useful for model-agnostic planning while keeping actual
-execution under the caller's control.
+This makes the registry and local HTTP API useful for model-agnostic planning
+while keeping actual execution under the caller's control.
 
 ## Future Path
 

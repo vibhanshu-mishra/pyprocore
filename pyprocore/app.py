@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from ipaddress import ip_address
 from pathlib import Path
 from typing import Any, Literal
 
@@ -17,6 +18,7 @@ from pyprocore.agent import (
     build_agent_manifest,
     get_agent_tool,
     list_agent_tools,
+    run_agent_api_server,
 )
 from pyprocore.auth.diagnostics import (
     AuthExchangeResult,
@@ -227,6 +229,27 @@ def build_parser() -> argparse.ArgumentParser:
         "--pretty",
         action="store_true",
         help="Print pretty JSON output",
+    )
+
+    agent_serve_parser = agent_subcommands.add_parser(
+        "serve",
+        help="Run the local agent discovery API server",
+    )
+    agent_serve_parser.add_argument(
+        "--host",
+        default="127.0.0.1",
+        help="Bind host. Defaults to 127.0.0.1 for local-only access.",
+    )
+    agent_serve_parser.add_argument(
+        "--port",
+        type=int,
+        default=8765,
+        help="Bind port. Defaults to 8765.",
+    )
+    agent_serve_parser.add_argument(
+        "--allow-public-bind",
+        action="store_true",
+        help="Allow binding outside 127.0.0.1 when you intentionally want that.",
     )
 
     subcommands.add_parser("companies", help="List companies")
@@ -1291,6 +1314,20 @@ def run_command(args: argparse.Namespace) -> Any:
             return list_agent_tools()
         if args.agent_command == "tool":
             return get_agent_tool(args.tool_name)
+        if args.agent_command == "serve":
+            public_bind = _requires_public_bind(args.host)
+            if public_bind and not args.allow_public_bind:
+                raise ValidationError(
+                    "The agent API server binds to 127.0.0.1 by default. "
+                    "Use --allow-public-bind only when you intentionally want "
+                    "to expose it beyond localhost."
+                )
+            if public_bind and args.allow_public_bind:
+                print(
+                    "Warning: binding the agent API server outside localhost. "
+                    "Tool execution is still disabled."
+                )
+            return run_agent_api_server(host=args.host, port=args.port)
         raise ValueError(f"Unsupported agent command: {args.agent_command}")
 
     if args.command == "workflow-plan":
@@ -1885,6 +1922,16 @@ def _split_csv(value: str | None) -> list[str] | None:
     if value is None:
         return None
     return [item.strip() for item in value.split(",") if item.strip()]
+
+
+def _requires_public_bind(host: str) -> bool:
+    """Return whether a host requires explicit public-bind confirmation."""
+    if host.lower() == "localhost":
+        return False
+    try:
+        return not ip_address(host).is_loopback
+    except ValueError:
+        return True
 
 
 def _split_csv_list(values: list[str] | None) -> list[str] | None:

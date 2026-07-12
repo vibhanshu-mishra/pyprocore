@@ -17,6 +17,7 @@ from pyprocore.agent.registry import (
     get_agent_tool,
     list_agent_tools,
 )
+from pyprocore.agent.server import create_agent_api_handler, run_agent_api_server
 
 __all__ = [
     "AgentManifest",
@@ -27,9 +28,11 @@ __all__ = [
     "AgentToolRegistry",
     "AgentToolSafety",
     "build_agent_manifest",
+    "create_agent_api_handler",
     "export_agent_manifest_json",
     "export_agent_tools_json",
     "get_agent_registry",
     "get_agent_tool",
     "list_agent_tools",
+    "run_agent_api_server",
 ]

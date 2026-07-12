@@ -142,7 +142,7 @@ make examples-check
 ## Example Index
 
 The current example set runs from `01_list_companies.py` through
-`54_agent_manifest_export.py`.
+`55_agent_api_server.py`.
 
 | File | Demonstrates |
 | ---- | ------------ |
@@ -200,6 +200,7 @@ The current example set runs from `01_list_companies.py` through
 | `52_dispatch_webhook_to_workflow_plan.py` | Dry-run a workflow plan from a local webhook event |
 | `53_agent_tool_registry.py` | List local agent tool registry metadata without Procore credentials |
 | `54_agent_manifest_export.py` | Export the local agent manifest JSON without calling Procore |
+| `55_agent_api_server.py` | Print safe commands for starting the local agent API discovery server |
 
 Sample workflow plans live in `examples/workflow_plans/`:
 

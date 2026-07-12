@@ -80,6 +80,7 @@ expect, and how to troubleshoot common beginner issues.
 ## Agent API
 
 - [Use The Agent Tool Registry](use-agent-tool-registry.md)
+- [Run The Local Agent API Server](run-local-agent-api-server.md)
 
 ## Webhooks
 
