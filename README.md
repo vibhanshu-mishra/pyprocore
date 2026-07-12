@@ -8,7 +8,7 @@
 [![Tests](https://github.com/vibhanshu-mishra/pyprocore/actions/workflows/tests.yml/badge.svg)](https://github.com/vibhanshu-mishra/pyprocore/actions/workflows/tests.yml)
 ![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)
 
-PyProcore handles the parts of a Procore integration that are tedious and easy to get wrong — OAuth, token refresh, pagination, retries, typed responses, structured logging, and attachment downloads - so you work with Python objects instead of raw JSON and API plumbing.
+PyProcore handles the parts of a Procore integration that are tedious and easy to get wrong, like OAuth, token refresh, pagination, retries, typed responses, structured logging, and attachment downloads, so you work with Python objects instead of raw JSON and API plumbing.
 
 It is built for safe read-oriented automation: project exports, local syncs,
 workflow packages, AI-ready review folders, and CLI-driven diagnostics without
@@ -1195,6 +1195,17 @@ make coverage
 
 - Procore Production
 - Procore Sandbox
+
+---
+
+## 👷 About
+
+Built by **Vibhanshu Mishra, PE** — Structural Engineer at AG&E Structural Engineers, Austin, TX.
+
+Specialising in steel and mission-critical structures, with a side focus on miscellaneous structures — stairs, platforms, equipment supports. Building AI and automation tools for a niche that nobody else is covering yet.
+
+- 🔗 [RISA-3D MCP Server](https://github.com/vibhanshu-mishra/risa3d-mcp-server) — Connect Claude AI to your RISA-3D structural models
+- 🔗 [TSD MCP Server](https://github.com/vibhanshu-mishra/tsd-mcp) — Connect Claude AI to your TSD structural models
 
 ---
 
