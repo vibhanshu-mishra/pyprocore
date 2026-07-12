@@ -1216,7 +1216,7 @@ make coverage
 
 ## 👷 About
 
-Built by **Vibhanshu Mishra, PE** — Structural Engineer at AG&E Structural Engineers, Austin, TX.
+Built by **Vibhanshu Mishra, PE** — Structural Engineer at AG&E Structural Engenuity, Austin, TX.
 
 Specialising in steel and mission-critical structures, with a side focus on miscellaneous structures — stairs, platforms, equipment supports. Building AI and automation tools for a niche that nobody else is covering yet.
 
