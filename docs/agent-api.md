@@ -16,6 +16,10 @@ Phase 7C adds OpenAPI and JSON Schema exports for agent frameworks, gateways,
 workflow engines, documentation tools, and future MCP/Open Agent API adapters.
 These exports are specification-only and do not require Procore credentials.
 
+Phase 7D adds opt-in local run logs and replay. Run logs record sanitized
+summaries of local discovery activity only. Replay verifies what happened; it
+does not execute tools or call Procore.
+
 ## What It Provides
 
 - Stable tool names such as `procore.find_rfi`.
@@ -27,6 +31,8 @@ These exports are specification-only and do not require Procore credentials.
 - A local HTTP discovery API for reading the manifest and tool metadata.
 - OpenAPI 3.1 JSON/YAML export for the local Agent API.
 - JSON Schema export for agent models and registered tool inputs/outputs.
+- Opt-in local run logs for discovery requests.
+- Replay checks for local audit and future eval workflows.
 
 ## What It Is Not
 
@@ -51,6 +57,9 @@ procore-sdk agent openapi --pretty
 procore-sdk agent schemas --pretty
 procore-sdk agent openapi --output agent-openapi.json
 procore-sdk agent serve --port 8765
+procore-sdk agent serve --run-log-dir agent-runs
+procore-sdk agent runs list --run-log-dir agent-runs
+procore-sdk agent runs replay RUN_ID --run-log-dir agent-runs
 ```
 
 These commands inspect or serve local metadata only and do not require Procore
@@ -119,6 +128,37 @@ The helper script writes both JSON files:
 ```bash
 python3 scripts/export_agent_openapi.py --output-dir agent-spec-output --pretty
 ```
+
+## Run Logs And Replay
+
+Run logging is local-only and opt-in:
+
+```bash
+procore-sdk agent serve --run-log-dir agent-runs
+```
+
+The server writes:
+
+```text
+agent-runs/
+  RUN_ID/
+    run.json
+    events.jsonl
+```
+
+Inspect and replay runs:
+
+```bash
+procore-sdk agent runs list --run-log-dir agent-runs
+procore-sdk agent runs show RUN_ID --run-log-dir agent-runs
+procore-sdk agent runs replay RUN_ID --run-log-dir agent-runs
+procore-sdk agent runs export RUN_ID --run-log-dir agent-runs --output-dir agent-run-bundles
+```
+
+Run logs do not include raw request headers, authorization values, token store
+contents, `.env` values, or full signed URL query values. Replay validates route
+shape, registered tool names, and disabled tool-call events without executing
+anything.
 
 ## Python
 

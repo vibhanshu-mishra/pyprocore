@@ -142,7 +142,7 @@ make examples-check
 ## Example Index
 
 The current example set runs from `01_list_companies.py` through
-`57_inspect_agent_schemas.py`.
+`59_replay_agent_run.py`.
 
 | File | Demonstrates |
 | ---- | ------------ |
@@ -203,6 +203,8 @@ The current example set runs from `01_list_companies.py` through
 | `55_agent_api_server.py` | Print safe commands for starting the local agent API discovery server |
 | `56_export_agent_openapi.py` | Export the local Agent API OpenAPI document without Procore credentials |
 | `57_inspect_agent_schemas.py` | Inspect local agent JSON Schema metadata without calling Procore |
+| `58_agent_run_logs.py` | Print safe commands for opt-in local Agent API run logging |
+| `59_replay_agent_run.py` | Print safe commands for replaying local Agent API run logs |
 
 Sample workflow plans live in `examples/workflow_plans/`:
 

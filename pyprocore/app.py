@@ -13,14 +13,20 @@ from pydantic import BaseModel
 from pyprocore import __version__
 from pyprocore.agent import (
     AgentManifest,
+    AgentReplayResult,
+    AgentRun,
     AgentTool,
     AgentToolNotFoundError,
     build_agent_manifest,
     export_agent_openapi_json,
     export_agent_openapi_yaml,
+    export_agent_run_bundle,
     export_agent_tool_schemas_json,
     get_agent_tool,
+    list_agent_runs,
     list_agent_tools,
+    load_agent_run,
+    replay_agent_run,
     run_agent_api_server,
 )
 from pyprocore.auth.diagnostics import (
@@ -304,6 +310,60 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Allow binding outside 127.0.0.1 when you intentionally want that.",
     )
+    agent_serve_parser.add_argument(
+        "--run-log-dir",
+        type=Path,
+        default=None,
+        help="Opt in to local Agent API run logging under this directory.",
+    )
+    agent_serve_parser.add_argument(
+        "--run-id",
+        default=None,
+        help="Optional run ID to use when --run-log-dir is enabled.",
+    )
+
+    agent_runs_parser = agent_subcommands.add_parser(
+        "runs",
+        help="Inspect and replay local Agent API run logs",
+    )
+    agent_runs_subcommands = agent_runs_parser.add_subparsers(
+        dest="agent_runs_command",
+        required=True,
+    )
+    agent_runs_list_parser = agent_runs_subcommands.add_parser(
+        "list",
+        help="List local Agent API runs",
+    )
+    agent_runs_list_parser.add_argument("--run-log-dir", type=Path, required=True)
+    agent_runs_list_parser.add_argument("--json", dest="json_output", action="store_true")
+    agent_runs_list_parser.add_argument("--pretty", action="store_true")
+
+    agent_runs_show_parser = agent_runs_subcommands.add_parser(
+        "show",
+        help="Show one local Agent API run",
+    )
+    agent_runs_show_parser.add_argument("run_id")
+    agent_runs_show_parser.add_argument("--run-log-dir", type=Path, required=True)
+    agent_runs_show_parser.add_argument("--json", dest="json_output", action="store_true")
+    agent_runs_show_parser.add_argument("--pretty", action="store_true")
+
+    agent_runs_replay_parser = agent_runs_subcommands.add_parser(
+        "replay",
+        help="Replay one local Agent API run without executing tools",
+    )
+    agent_runs_replay_parser.add_argument("run_id")
+    agent_runs_replay_parser.add_argument("--run-log-dir", type=Path, required=True)
+    agent_runs_replay_parser.add_argument("--json", dest="json_output", action="store_true")
+    agent_runs_replay_parser.add_argument("--pretty", action="store_true")
+
+    agent_runs_export_parser = agent_runs_subcommands.add_parser(
+        "export",
+        help="Export one local Agent API run bundle",
+    )
+    agent_runs_export_parser.add_argument("run_id")
+    agent_runs_export_parser.add_argument("--run-log-dir", type=Path, required=True)
+    agent_runs_export_parser.add_argument("--output-dir", type=Path, required=True)
+    agent_runs_export_parser.add_argument("--json", dest="json_output", action="store_true")
 
     subcommands.add_parser("companies", help="List companies")
 
@@ -1388,6 +1448,20 @@ def run_command(args: argparse.Namespace) -> Any:
             if args.output is not None:
                 return _write_text_output(args.output, schemas_text)
             return schemas_text
+        if args.agent_command == "runs":
+            if args.agent_runs_command == "list":
+                return list_agent_runs(args.run_log_dir)
+            if args.agent_runs_command == "show":
+                return load_agent_run(args.run_log_dir, args.run_id)
+            if args.agent_runs_command == "replay":
+                return replay_agent_run(args.run_log_dir, args.run_id)
+            if args.agent_runs_command == "export":
+                return export_agent_run_bundle(
+                    args.run_log_dir,
+                    args.run_id,
+                    args.output_dir,
+                )
+            raise ValueError(f"Unsupported agent runs command: {args.agent_runs_command}")
         if args.agent_command == "serve":
             public_bind = _requires_public_bind(args.host)
             if public_bind and not args.allow_public_bind:
@@ -1401,7 +1475,12 @@ def run_command(args: argparse.Namespace) -> Any:
                     "Warning: binding the agent API server outside localhost. "
                     "Tool execution is still disabled."
                 )
-            return run_agent_api_server(host=args.host, port=args.port)
+            return run_agent_api_server(
+                host=args.host,
+                port=args.port,
+                run_log_dir=args.run_log_dir,
+                run_id=args.run_id,
+            )
         raise ValueError(f"Unsupported agent command: {args.agent_command}")
 
     if args.command == "workflow-plan":
@@ -2237,6 +2316,52 @@ def format_agent_tool(tool: AgentTool) -> str:
     return "\n".join(lines)
 
 
+def format_agent_runs(runs: list[AgentRun]) -> str:
+    """Return a human-readable list of local Agent API runs."""
+    if not runs:
+        return "No local Agent API runs found."
+    lines = [f"Local Agent API runs: {len(runs)}"]
+    for run in runs:
+        lines.append(f"- {run.run_id}: {len(run.events)} events, source={run.source}")
+    return "\n".join(lines)
+
+
+def format_agent_run(run: AgentRun) -> str:
+    """Return a human-readable summary of one local Agent API run."""
+    return "\n".join(
+        [
+            "Local Agent API run.",
+            f"Run ID: {run.run_id}",
+            f"Created: {run.created_at}",
+            f"Source: {run.source}",
+            f"PyProcore: {run.pyprocore_version}",
+            f"Registry version: {run.registry_version}",
+            f"Events: {len(run.events)}",
+            "Mode: replay/audit only; no tools are executed.",
+        ]
+    )
+
+
+def format_agent_replay_result(result: AgentReplayResult) -> str:
+    """Return a human-readable replay result summary."""
+    lines = [
+        "Agent run replay complete.",
+        f"Run ID: {result.run_id}",
+        f"Passed: {result.passed}",
+        f"Events checked: {result.event_count}",
+        f"Warnings: {len(result.warnings)}",
+        f"Errors: {len(result.errors)}",
+        "Mode: verification only; no tools were executed.",
+    ]
+    if result.warnings:
+        lines.append("Warning details:")
+        lines.extend(f"- {warning}" for warning in result.warnings)
+    if result.errors:
+        lines.append("Error details:")
+        lines.extend(f"- {error}" for error in result.errors)
+    return "\n".join(lines)
+
+
 def format_workflow_plan_validation(plan: WorkflowPlan) -> str:
     """Return a human-readable workflow plan validation summary."""
     enabled_count = sum(1 for step in plan.steps if step.enabled)
@@ -2355,6 +2480,9 @@ def main() -> None:
     except AgentToolNotFoundError as exc:
         print(f"PyProcore agent tool lookup failed.\n\nDetails: {exc}")
         raise SystemExit(1) from exc
+    except FileNotFoundError as exc:
+        print(f"PyProcore local file was not found.\n\nDetails: {exc}")
+        raise SystemExit(1) from exc
     except (AuthorizationError, ResourceNotFoundError, ProcoreAPIError) as exc:
         print(format_cli_error(exc))
         raise SystemExit(1) from exc
@@ -2390,6 +2518,26 @@ def main() -> None:
         else:
             print(result)
         return
+
+    if args.command == "agent" and args.agent_command == "runs":
+        if isinstance(result, Path):
+            if args.json_output:
+                print(json.dumps({"output_dir": str(result)}, indent=2))
+            else:
+                print(f"Agent run bundle exported to: {result}")
+            return
+        if args.json_output or getattr(args, "pretty", False):
+            print(json.dumps(to_serializable(result), indent=2, default=str))
+            return
+        if isinstance(result, AgentRun):
+            print(format_agent_run(result))
+            return
+        if isinstance(result, AgentReplayResult):
+            print(format_agent_replay_result(result))
+            return
+        if isinstance(result, list):
+            print(format_agent_runs(result))
+            return
 
     if isinstance(result, AgentManifest):
         if args.json_output or args.pretty:

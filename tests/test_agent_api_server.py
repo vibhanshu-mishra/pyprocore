@@ -239,14 +239,24 @@ class AgentAPIServerTestCase(unittest.TestCase):
         local_args = parser.parse_args(["agent", "serve"])
         with patch("pyprocore.app.run_agent_api_server", return_value=None) as run_server:
             self.assertIsNone(app.run_command(local_args))
-        run_server.assert_called_once_with(host="127.0.0.1", port=8765)
+        run_server.assert_called_once_with(
+            host="127.0.0.1",
+            port=8765,
+            run_log_dir=None,
+            run_id=None,
+        )
 
         public_args = parser.parse_args(
             ["agent", "serve", "--host", "0.0.0.0", "--allow-public-bind"]
         )
         with patch("pyprocore.app.run_agent_api_server", return_value=None) as run_server:
             self.assertIsNone(app.run_command(public_args))
-        run_server.assert_called_once_with(host="0.0.0.0", port=8765)
+        run_server.assert_called_once_with(
+            host="0.0.0.0",
+            port=8765,
+            run_log_dir=None,
+            run_id=None,
+        )
 
         blocked_args = parser.parse_args(["agent", "serve", "--host", "0.0.0.0"])
         with self.assertRaises(ValidationError):

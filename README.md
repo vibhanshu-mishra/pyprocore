@@ -822,7 +822,8 @@ assistant and orchestration integrations. It is metadata only: it does not
 execute tools, read credentials, or call Procore. The local agent API server
 exposes the same discovery metadata over HTTP on `127.0.0.1` by default.
 OpenAPI and JSON Schema exports are available for agent frameworks, gateways,
-workflow engines, and documentation tools.
+workflow engines, and documentation tools. Optional local run logs can record
+sanitized discovery activity for replay, evals, and audit trails.
 
 ```bash
 procore-sdk agent tools
@@ -831,12 +832,16 @@ procore-sdk agent manifest --json
 procore-sdk agent openapi --pretty
 procore-sdk agent schemas --pretty
 procore-sdk agent serve --port 8765
+procore-sdk agent serve --run-log-dir agent-runs
+procore-sdk agent runs replay RUN_ID --run-log-dir agent-runs
 ```
 
 See [Agent API](docs/agent-api.md) and
 [Use the Agent Tool Registry](docs/recipes/use-agent-tool-registry.md), or
 [Run the Local Agent API Server](docs/recipes/run-local-agent-api-server.md), or
-[Export Agent OpenAPI](docs/recipes/export-agent-openapi.md).
+[Export Agent OpenAPI](docs/recipes/export-agent-openapi.md),
+[Inspect Agent Run Logs](docs/recipes/inspect-agent-run-logs.md), or
+[Replay Agent Run](docs/recipes/replay-agent-run.md).
 
 Docker and CI templates are optional. They help teams dry-run workflow plans in
 repeatable local or GitHub Actions environments without committing secrets or
