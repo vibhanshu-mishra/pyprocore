@@ -55,7 +55,7 @@ class AgentMCPTestCase(unittest.TestCase):
         self.assertTrue(find_rfi["metadata"]["calls_live_api"])
         self.assertFalse(find_rfi["metadata"]["execution_enabled"])
         self.assertTrue(find_rfi["metadata"]["discovery_only"])
-        self.assertEqual(find_rfi["metadata"]["version_added"], "2.1.0")
+        self.assertEqual(find_rfi["metadata"]["version_added"], "2.2.0")
 
     def test_mcp_resources_include_expected_local_documents(self) -> None:
         """Resource definitions should include local manifest, OpenAPI, and schemas."""
@@ -326,14 +326,14 @@ class AgentMCPTestCase(unittest.TestCase):
         self.assertIn("False", combined)
 
     def test_version_remains_210(self) -> None:
-        """Phase 7E should not change the package version."""
-        self.assertEqual(__version__, "2.1.0")
+        """Phase 7E should use the prepared package version."""
+        self.assertEqual(__version__, "2.2.0")
 
     def test_mcp_server_info_is_discovery_only(self) -> None:
         """Server info should state discovery-only safety."""
         info = build_mcp_server_info()
 
-        self.assertEqual(info["version"], "2.1.0")
+        self.assertEqual(info["version"], "2.2.0")
         self.assertFalse(info["safety"]["tool_execution_enabled"])
         self.assertFalse(info["safety"]["calls_live_procore_api"])
         self.assertFalse(info["safety"]["requires_credentials"])

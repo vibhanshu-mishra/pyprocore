@@ -58,7 +58,7 @@ The health endpoint returns JSON similar to:
 {
   "service": "pyprocore-agent-api",
   "status": "ok",
-  "version": "2.1.0"
+  "version": "2.2.0"
 }
 ```
 

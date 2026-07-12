@@ -16,6 +16,69 @@ hardcoding credentials or requiring live Procore calls in tests.
 
 ---
 
+## Current Release Status
+
+- Published stable PyPI release: `2.1.0`
+- Prepared next release: `2.2.0`
+- `2.2.0` prepares the Phase 7 Agent API layer and is not published yet.
+- Procore tool execution remains disabled.
+
+Install the current published stable release:
+
+```bash
+python3 -m pip install pyprocore==2.1.0
+```
+
+After `2.2.0` is published, install it with:
+
+```bash
+python3 -m pip install pyprocore==2.2.0
+```
+
+To test the current main branch before release:
+
+```bash
+git clone https://github.com/vibhanshu-mishra/pyprocore.git
+cd pyprocore
+python3 -m pip install -e .
+```
+
+---
+
+## Phase 7 Agent Layer
+
+PyProcore is becoming an open, model-agnostic agent layer for Procore
+automation. The prepared `2.2.0` source adds local-first infrastructure that
+lets assistants discover what PyProcore can do without giving them permission
+to execute Procore actions.
+
+Phase 7 includes:
+
+- Agent Tool Registry
+- Local Agent API Server
+- OpenAPI / JSON Schema Export
+- Agent Run Logs + Replay
+- Discovery-only MCP Adapter
+- Agent Evaluation Harness
+
+This layer is discovery/spec/eval/replay infrastructure. It does not call
+external AI/model APIs, does not call live Procore APIs for metadata, schema,
+MCP discovery, replay, or eval commands, and does not enable Procore tool
+execution. The MCP adapter is discovery-only.
+
+Try the local metadata and eval commands from a checkout:
+
+```bash
+PYTHONPATH=. procore-sdk agent tools
+PYTHONPATH=. procore-sdk agent manifest --json
+PYTHONPATH=. procore-sdk agent openapi --pretty
+PYTHONPATH=. procore-sdk agent schemas --pretty
+PYTHONPATH=. procore-sdk agent mcp tools --pretty
+PYTHONPATH=. procore-sdk agent evals run
+```
+
+---
+
 ## Why PyProcore
 
 Calling the Procore REST API directly means managing the OAuth handshake, refreshing expired tokens, following pagination headers, retrying failed requests, and parsing untyped JSON on every call.
@@ -72,10 +135,11 @@ PyProcore does that once, correctly, behind a clean interface. You call a servic
 
 ## Installation
 
-Requires Python 3.12+.
+Requires Python 3.12+. The latest published stable package is currently
+`2.1.0`; the repository source is prepared for `2.2.0`.
 
 ```bash
-pip3 install pyprocore
+python3 -m pip install pyprocore==2.1.0
 ```
 
 For local development:
@@ -817,17 +881,17 @@ sample webhook JSON payloads without running a hosted webhook server. Start with
 [Save a Webhook Event](docs/recipes/save-webhook-event.md), or
 [Dispatch a Webhook Event to a Workflow Plan](docs/recipes/dispatch-webhook-to-workflow.md).
 
-The local agent tool registry describes safe PyProcore operations for future AI
-assistant and orchestration integrations. It is metadata only: it does not
-execute tools, read credentials, or call Procore. The local agent API server
-exposes the same discovery metadata over HTTP on `127.0.0.1` by default.
-OpenAPI and JSON Schema exports are available for agent frameworks, gateways,
-workflow engines, and documentation tools. Optional local run logs can record
-sanitized discovery activity for replay, evals, and audit trails. Phase 7E also
-exports discovery-only MCP-style metadata. MCP tool execution is disabled, so no
-Procore calls or credentials are required for MCP discovery. Phase 7F adds local
-deterministic agent evals for registry safety, schema quality, OpenAPI coverage,
-MCP discovery, replay safety, redaction, and disabled-execution checks.
+The prepared `2.2.0` source includes Phase 7 agent-layer infrastructure:
+Agent Tool Registry, Local Agent API Server, OpenAPI / JSON Schema Export,
+Agent Run Logs + Replay, Discovery-only MCP Adapter, and Agent Evaluation
+Harness. These commands are metadata/spec/eval/replay infrastructure
+only. They do not execute Procore tools, do not call external AI/model APIs, and
+do not require Procore credentials unless a separate live SDK workflow is run.
+MCP tool execution remains disabled.
+The older lowercase command names map to the same Phase 7 components:
+local agent API server, OpenAPI and JSON Schema
+exports, agent run logs and replay, a discovery-only MCP adapter, and a local
+deterministic eval harness.
 
 ```bash
 procore-sdk agent tools
@@ -859,10 +923,10 @@ repeatable local or GitHub Actions environments without committing secrets or
 generated outputs. Start with [Docker Automation](docs/automation/docker.md),
 [CI Automation](docs/automation/ci.md), or `examples/docker/`.
 
-Release readiness guidance lives in [docs/release.md](docs/release.md). It
-covers versioning, validation, changelog updates, and PyPI publishing
-checklists. The current release status is captured in
-[docs/final-release-readiness.md](docs/final-release-readiness.md).
+Release guidance lives in [docs/release.md](docs/release.md). It covers
+versioning, validation, changelog updates, and PyPI publishing checklists. The
+current public release status is captured in
+[docs/project-status.md](docs/project-status.md).
 
 Maintainers can also run a local release-candidate package check before any
 manual publishing step:
@@ -873,9 +937,9 @@ make release-candidate-check
 
 This builds local artifacts, inspects package metadata, installs the wheel in a
 temporary environment, and checks package exports plus `procore-sdk --help`.
-PyProcore `2.1.0` is available on PyPI. Publishing future releases is not
-automatic; see [docs/release.md](docs/release.md) before using TestPyPI or
-PyPI.
+PyProcore `2.1.0` is available on PyPI now; `2.2.0` is prepared in source but
+not published yet. Publishing future releases is not automatic; see
+[docs/release.md](docs/release.md) before using TestPyPI or PyPI.
 
 ---
 
@@ -1222,7 +1286,7 @@ make coverage
 - [Suggested GitHub labels](docs/github-labels.md)
 - [Documentation site](docs/index.md)
 - [Security guide](docs/security.md)
-- [Final release readiness](docs/final-release-readiness.md)
+- [Project status](docs/project-status.md)
 - [Examples](examples/README.md)
 - [Recipes](docs/recipes/)
 

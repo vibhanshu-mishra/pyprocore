@@ -76,7 +76,7 @@ class AgentTool(ProcoreModel):
     operation_path: str | None = None
     cli_command: str | None = None
     examples: list[str] = Field(default_factory=list)
-    version_added: str = "2.1.0"
+    version_added: str = "2.2.0"
 
 
 class AgentToolRegistry(ProcoreModel):

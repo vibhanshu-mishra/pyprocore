@@ -1,4 +1,4 @@
-"""Final release polish and readiness documentation tests."""
+"""Public release polish and status documentation tests."""
 
 from __future__ import annotations
 
@@ -9,29 +9,32 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 class FinalReleasePolishTestCase(unittest.TestCase):
-    """Validate final release-facing docs stay accurate."""
+    """Validate public release-facing docs stay accurate."""
 
     def read_text(self, relative_path: str) -> str:
         """Read a repository file."""
         return (PROJECT_ROOT / relative_path).read_text(encoding="utf-8")
 
-    def test_final_release_readiness_doc_exists(self) -> None:
-        """Final readiness report should exist and cover release blockers."""
+    def test_internal_final_readiness_doc_is_not_public(self) -> None:
+        """Internal readiness report should not be tracked as public docs."""
         report_path = PROJECT_ROOT / "docs/final-release-readiness.md"
 
-        self.assertTrue(report_path.exists())
-        report = self.read_text("docs/final-release-readiness.md")
+        self.assertFalse(report_path.exists())
 
+    def test_project_status_doc_exists(self) -> None:
+        """Project status page should provide the public release summary."""
+        report = self.read_text("docs/project-status.md")
         for phrase in (
-            "Current Status",
-            "Major Capabilities",
-            "Validation Commands",
+            "Current Versions",
+            "Released In 2.1.0",
+            "Prepared For 2.2.0",
+            "Safety Status",
             "Known Limitations",
-            "Live Procore Verification Limitations",
-            "GitHub Workflow Token Limitation",
-            "PyPI publishing has been completed for `2.1.0`",
-            "Git tag `v2.1.0`",
-            "Recommended Next Steps",
+            "Published stable release: `2.1.0`",
+            "Prepared next release: `2.2.0`",
+            "Tool execution remains disabled",
+            "MCP adapter remains discovery-only",
+            "Next Recommended Steps",
         ):
             self.assertIn(phrase, report)
 
@@ -48,7 +51,8 @@ class FinalReleasePolishTestCase(unittest.TestCase):
             "workflow-plan",
             "webhook",
             "make secret-check",
-            "Final release readiness",
+            "Project status",
+            "Phase 7 Agent Layer",
         ):
             self.assertIn(phrase, readme)
 
@@ -82,7 +86,7 @@ class FinalReleasePolishTestCase(unittest.TestCase):
             "docs/security.md",
             "docs/release.md",
             "docs/recipes/index.md",
-            "docs/final-release-readiness.md",
+            "docs/project-status.md",
         ):
             self.assertTrue((PROJECT_ROOT / relative_path).exists(), relative_path)
 
@@ -105,24 +109,23 @@ class FinalReleasePolishTestCase(unittest.TestCase):
         checked_docs = "\n".join(
             self.read_text(path)
             for path in (
-                "docs/final-release-readiness.md",
+                "docs/project-status.md",
                 "docs/release.md",
                 "README.md",
             )
         )
 
         self.assertIn("PyProcore `2.1.0` has been published to PyPI", checked_docs)
-        self.assertIn("GitHub release was created", checked_docs)
+        self.assertIn("released on GitHub", checked_docs)
         self.assertNotIn("PyPI publishing has not been performed for `2.1.0`", checked_docs)
         self.assertIn("not published as a hosted site", checked_docs)
 
     def test_live_verification_claims_are_limited(self) -> None:
         """Docs should describe live verification as manual and environment-specific."""
-        report = self.read_text("docs/final-release-readiness.md")
+        report = self.read_text("docs/project-status.md")
         api_coverage = self.read_text("docs/api-coverage.md")
 
-        self.assertIn("Smoke scripts", report)
-        self.assertIn("project-level verification remains", report)
+        self.assertIn("Live project-level behavior can vary", report)
         self.assertIn("Procore access varies by environment", api_coverage)
         self.assertNotIn("all endpoints are live verified", report.lower())
 

@@ -21,6 +21,14 @@ Before running the examples:
 The examples require valid Procore credentials and access to the company,
 project, RFI, or submittal you are trying to read.
 
+Examples `01` through `52` align with the current published `2.1.0` stable
+functionality. Examples `53` through `63` demonstrate Phase 7 agent-layer
+infrastructure prepared for `2.2.0`; those agent examples are local metadata,
+schema, replay, MCP discovery, or eval examples and do not require Procore
+credentials or execute tools.
+
+Agent examples do not require Procore credentials or execute tools.
+
 ## Environment Variables
 
 IDs and lookup values can be supplied through environment variables:
@@ -132,6 +140,10 @@ PROCORE_PROJECT_ID=352338 make smoke-daily-logs
 
 Each script prints helpful messages when required environment variables are
 missing.
+
+Agent-layer examples do not require `.env`, OAuth tokens, company IDs, project
+IDs, or live Procore access unless an example explicitly says otherwise. They do
+not execute Procore tools, and the MCP adapter remains discovery-only.
 
 ## Keeping Examples Valid
 

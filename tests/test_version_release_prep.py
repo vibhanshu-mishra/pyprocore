@@ -1,4 +1,4 @@
-"""Tests for 2.1.0 post-release documentation state."""
+"""Tests for 2.2.0 release-prep documentation state."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 class VersionReleasePrepTestCase(unittest.TestCase):
-    """Validate 2.1.0 released version and docs state."""
+    """Validate prepared 2.2.0 source version and docs state."""
 
     def read_text(self, relative_path: str) -> str:
         """Read a repository file.
@@ -23,21 +23,22 @@ class VersionReleasePrepTestCase(unittest.TestCase):
         """
         return (PROJECT_ROOT / relative_path).read_text(encoding="utf-8")
 
-    def test_package_version_is_2_1_0(self) -> None:
+    def test_package_version_is_2_2_0(self) -> None:
         """The package root should expose the prepared release version."""
-        self.assertEqual(pyprocore.__version__, "2.1.0")
+        self.assertEqual(pyprocore.__version__, "2.2.0")
 
-    def test_pyproject_version_is_2_1_0(self) -> None:
+    def test_pyproject_version_is_2_2_0(self) -> None:
         """pyproject metadata should match the package root version."""
         pyproject = tomllib.loads(self.read_text("pyproject.toml"))
 
-        self.assertEqual(pyproject["project"]["version"], "2.1.0")
+        self.assertEqual(pyproject["project"]["version"], "2.2.0")
 
-    def test_changelog_has_2_1_0_section(self) -> None:
-        """CHANGELOG should have a dated 2.1.0 release section."""
+    def test_changelog_has_2_2_0_release_prep_section(self) -> None:
+        """CHANGELOG should have a dated 2.2.0 release-prep section."""
         changelog = self.read_text("CHANGELOG.md")
 
         self.assertIn("## [Unreleased]", changelog)
+        self.assertIn("## [2.2.0] - 2026-07-12", changelog)
         self.assertIn("Phase 7A agent tool registry", changelog)
         self.assertIn("## [2.1.0] - 2026-07-11", changelog)
         self.assertIn("expanded API coverage", changelog)
@@ -46,14 +47,15 @@ class VersionReleasePrepTestCase(unittest.TestCase):
     def test_docs_mention_2_1_0_released_state(self) -> None:
         """Release docs should identify 2.1.0 as published and released."""
         release_doc = self.read_text("docs/release.md")
-        readiness_doc = self.read_text("docs/final-release-readiness.md")
+        status_doc = self.read_text("docs/project-status.md")
         readme = self.read_text("README.md")
 
         self.assertIn("PyProcore `2.1.0` has been published to PyPI", release_doc)
-        self.assertIn("PyProcore `2.1.0` has been published to PyPI", readiness_doc)
-        self.assertIn("Git tag `v2.1.0`", readiness_doc)
-        self.assertIn("GitHub release", readiness_doc)
-        self.assertIn("PyProcore `2.1.0` is available on PyPI", readme)
+        self.assertIn("PyProcore `2.1.0` is the current stable PyPI release", status_doc)
+        self.assertIn("2.2.0` has not been published to PyPI yet", release_doc)
+        self.assertIn("Prepared next release: `2.2.0`", status_doc)
+        self.assertIn("released on GitHub", release_doc)
+        self.assertIn("Published stable PyPI release: `2.1.0`", readme)
 
     def test_docs_do_not_claim_2_1_0_is_unpublished(self) -> None:
         """Docs should not keep stale 2.1.0 pre-publish language."""
@@ -61,7 +63,7 @@ class VersionReleasePrepTestCase(unittest.TestCase):
             [
                 self.read_text("README.md"),
                 self.read_text("docs/release.md"),
-                self.read_text("docs/final-release-readiness.md"),
+                self.read_text("docs/project-status.md"),
             ]
         )
 
@@ -71,12 +73,13 @@ class VersionReleasePrepTestCase(unittest.TestCase):
             "2.1.0 release candidate is prepared",
             "The prepared release candidate is `2.1.0`",
             "The next prepared release is `2.1.0`",
+            "2.2.0 has been published",
         )
         for phrase in forbidden_phrases:
             self.assertNotIn(phrase, docs)
 
-        self.assertIn("PyPI publishing has been completed for `2.1.0`", docs)
-        self.assertIn("Git tag `v2.1.0` was", docs)
+        self.assertIn("PyProcore `2.1.0` has been published to PyPI", docs)
+        self.assertIn("tagged as `v2.1.0`", docs)
 
     def test_github_workflow_files_are_unmodified(self) -> None:
         """Version prep should not modify GitHub Actions workflow files."""

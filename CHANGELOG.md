@@ -7,6 +7,13 @@ and this project follows semantic versioning.
 
 ## [Unreleased]
 
+No unreleased changes yet.
+
+## [2.2.0] - 2026-07-12
+
+PyProcore 2.2.0 is prepared for release and includes the completed Phase 7
+agent-layer infrastructure. This release has not been published to PyPI yet.
+
 ### Added
 
 - Phase 7A agent tool registry with metadata-only tool definitions, manifest export helpers, CLI inspection commands, examples, and docs for future assistant integrations.
@@ -16,6 +23,12 @@ and this project follows semantic versioning.
 - Phase 7E discovery-only MCP adapter with MCP-style tool, resource, prompt, manifest, CLI, stdio, examples, docs, and export script support while keeping tool execution disabled.
 - Phase 7F local deterministic agent eval harness with registry safety, schema quality, OpenAPI completeness, MCP discovery, run replay, redaction, and disabled-execution suites.
 - `procore-sdk agent evals` CLI commands, `scripts/run_agent_evals.py`, examples, recipes, and JSON/Markdown eval result exports without live Procore or AI calls.
+
+### Security
+
+- Agent metadata, schema, MCP discovery, replay, and eval commands avoid live Procore calls unless a separate live SDK workflow is run.
+- External AI/model APIs are not called by the Phase 7 agent layer.
+- Tool execution remains disabled for the local Agent API and discovery-only MCP adapter.
 
 ## [2.1.0] - 2026-07-11
 
@@ -36,7 +49,7 @@ release-candidate validation tooling.
 - Phase 6E final release polish and readiness audit across README, docs, examples, changelog, CLI discoverability, and release-readiness reporting.
 - Release-candidate validation tooling for local source distribution, wheel, metadata, clean-install, CLI, and package-export checks.
 - Open-source repository support files, including contribution, security, issue, and pull request guidance.
-- Phase 7 examples and recipe documentation.
+- Expanded examples and recipe documentation.
 - Runnable `examples/` scripts for common company, project, RFI, submittal, attachment, and workflow package tasks.
 - `docs/recipes/` task-based guides.
 - `scripts/check_examples.py` and `make examples-check` for validating example syntax and main guards without live Procore access.
@@ -166,7 +179,7 @@ release-candidate validation tooling.
 - Added GitHub/community documentation for contributing, support, security reporting, code of conduct, issue forms, pull requests, Dependabot, and labels.
 - Added MkDocs documentation-site configuration, local docs preview/build targets, and beginner-friendly docs indexes.
 - Added security hardening documentation for OAuth credentials, `.env`, token stores, logs, secret checks, pre-commit, CI, and vulnerability reporting.
-- Added final release readiness report covering capabilities, validation commands, known limitations, live verification limits, GitHub workflow token limits, and publishing status.
+- Added public project status and release documentation covering capabilities, validation commands, known limitations, live verification guidance, and publishing status.
 - Added release-candidate validation documentation for local artifact builds, metadata checks, clean wheel installs, and manual publishing safeguards.
 - Polished README release-facing metadata, safety notes, and package-readiness links.
 

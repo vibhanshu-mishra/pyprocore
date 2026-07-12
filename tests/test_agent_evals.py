@@ -332,8 +332,8 @@ class AgentEvalsTestCase(unittest.TestCase):
         self.assertIn("execution_disabled", combined)
 
     def test_version_remains_210(self) -> None:
-        """Phase 7F should not change the package version."""
-        self.assertEqual(__version__, "2.1.0")
+        """Phase 7F should use the prepared package version."""
+        self.assertEqual(__version__, "2.2.0")
 
 
 if __name__ == "__main__":

@@ -28,6 +28,19 @@ pyprocore-runs/
 webhook-events/
 project-context/
 ai-export/
+agent-runs/
+agent-eval-output/
+agent-spec-output/
+agent-mcp-output/
+
+# Internal-only notes
+docs/internal/
+internal/
+release-private/
+*_private.md
+*-private.md
+local-release-notes.md
+local-readiness.md
 
 # Coverage / tests
 .coverage

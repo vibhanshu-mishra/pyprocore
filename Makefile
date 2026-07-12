@@ -1,4 +1,4 @@
-.PHONY: test coverage examples-check smoke-documents smoke-drawings smoke-specifications smoke-photos smoke-daily-logs lint format typecheck docs-serve docs-build secret-check quality-check docker-build docker-help docker-run-plan release-check release-candidate-check build-package clean
+.PHONY: test coverage examples-check docs-truth-check smoke-documents smoke-drawings smoke-specifications smoke-photos smoke-daily-logs lint format typecheck docs-serve docs-build secret-check quality-check docker-build docker-help docker-run-plan release-check release-candidate-check build-package clean
 
 PYTHON ?= python3
 PLAN ?= examples/workflow_plans/nightly_project_context.json
@@ -14,6 +14,9 @@ coverage:
 
 examples-check:
 	$(PYTHON) scripts/check_examples.py
+
+docs-truth-check:
+	$(PYTHON) scripts/audit_docs_truth.py
 
 smoke-documents:
 	@if [ -z "$$PROCORE_PROJECT_ID" ]; then \
@@ -96,6 +99,7 @@ secret-check:
 	$(PYTHON) scripts/check_secrets.py
 
 quality-check:
+	$(MAKE) docs-truth-check
 	$(MAKE) examples-check
 	$(MAKE) test
 	$(MAKE) coverage

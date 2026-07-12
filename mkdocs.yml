@@ -13,6 +13,7 @@ nav:
   - Workflows: workflows.md
   - AI Review: ai-review.md
   - Agent API: agent-api.md
+  - Project Status: project-status.md
   - Security: security.md
   - Automation:
       - Overview: automation.md
@@ -44,5 +45,4 @@ nav:
       - Schedule Workflow Plan: recipes/schedule-workflow-plan.md
   - Contributing: contributing.md
   - Release Guide: release.md
-  - Final Release Readiness: final-release-readiness.md
   - Changelog: changelog.md

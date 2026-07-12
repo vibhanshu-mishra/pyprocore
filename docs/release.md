@@ -6,6 +6,9 @@ not publish to PyPI or create GitHub releases.
 PyProcore `2.1.0` has been published to PyPI, verified from a clean virtual
 environment, tagged as `v2.1.0`, and released on GitHub.
 
+The repository source is now prepared for `2.2.0`, which includes the completed
+Phase 7 agent-layer infrastructure. `2.2.0` has not been published to PyPI yet.
+
 ## Versioning
 
 PyProcore follows SemVer:
@@ -38,8 +41,7 @@ Or run the combined target:
 make release-check
 ```
 
-For the final repository-level readiness summary, see
-[Final Release Readiness](final-release-readiness.md).
+For the public release status summary, see [Project Status](project-status.md).
 
 ## Release Checklist
 
@@ -58,7 +60,7 @@ Before publishing a future release:
 
 ## Release Candidate Validation
 
-Before publishing a future release to TestPyPI or PyPI, build and inspect
+Before publishing `2.2.0` or any future release to TestPyPI or PyPI, build and inspect
 release artifacts locally:
 
 ```bash
@@ -106,14 +108,17 @@ create a GitHub release.
 Publishing is intentionally manual for now. Running the release checks does not
 publish to PyPI and does not create a GitHub release.
 
-When the project is ready:
+For the prepared `2.2.0` release, use this order when the project is ready:
 
-1. Build the source distribution and wheel in a clean environment.
-2. Inspect the artifacts to make sure secrets and generated outputs are absent.
+1. Run the docs truth audit.
+2. Run release-candidate validation.
 3. Upload to TestPyPI first.
 4. Install from TestPyPI in a fresh virtual environment.
-5. Run `procore-sdk --help` and import `pyprocore`.
+5. Run `procore-sdk --help`, `procore-sdk --version`, and import `pyprocore`.
 6. Publish to PyPI only after the TestPyPI check succeeds.
+7. Create the Git tag.
+8. Create the GitHub release.
+9. Perform post-release documentation cleanup.
 
 Do not upload real `.env` files, OAuth token stores, logs, downloads, workflow
 runs, webhook event stores, or generated AI/export folders.
@@ -138,6 +143,26 @@ pyprocore 2.1.0
 For future releases, repeat the full validation flow, upload to TestPyPI first,
 verify a clean install, publish to real PyPI only after final confirmation, then
 create the Git tag and GitHub release.
+
+## 2.2.0 Release Prepared
+
+The `2.2.0` release is prepared in source but has not been published. Do not
+claim it is available on PyPI until the TestPyPI, PyPI, tag, and GitHub release
+steps are completed.
+
+To verify the prepared source locally:
+
+```bash
+PYTHONPATH=. procore-sdk --version
+python3 scripts/audit_docs_truth.py
+make release-candidate-check
+```
+
+Expected local source version:
+
+```text
+pyprocore 2.2.0
+```
 
 ## Changelog Updates
 

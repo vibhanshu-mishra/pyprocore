@@ -9,6 +9,11 @@ PyProcore focuses on safe, read-oriented automation. It is designed for listing,
 retrieving, downloading, exporting, packaging, and reviewing project information
 locally. The current workflow examples do not mutate Procore data.
 
+Current published stable release: `2.1.0`.
+
+Prepared next release: `2.2.0`, which includes the completed Phase 7
+agent-layer infrastructure. `2.2.0` has not been published to PyPI yet.
+
 ## What PyProcore Can Do
 
 - Authenticate with Procore using OAuth.
@@ -32,12 +37,13 @@ locally. The current workflow examples do not mutate Procore data.
 - [Workflows](workflows.md)
 - [AI Review](ai-review.md)
 - [Agent API](agent-api.md)
+- [Project Status](project-status.md)
 - [Security](security.md)
 - [Automation](automation.md)
 - [Recipes](recipes/index.md)
 - [Contributing](contributing.md)
 - [Release Guide](release.md)
-- [Final Release Readiness](final-release-readiness.md)
+- [Project Status](project-status.md)
 
 ## Important Notice
 
