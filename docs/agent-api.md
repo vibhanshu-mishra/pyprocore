@@ -24,6 +24,11 @@ Phase 7E adds a discovery-only MCP adapter. It maps the same local agent
 registry into MCP-style tool, resource, prompt, and manifest documents. Tool
 execution remains disabled, and no Procore credentials are required.
 
+Phase 7F adds a local deterministic agent eval harness. The evals check
+registry safety, schema quality, OpenAPI completeness, MCP discovery, run-log
+replay, redaction, and disabled-execution guarantees without calling Procore or
+any AI/model APIs.
+
 ## What It Provides
 
 - Stable tool names such as `procore.find_rfi`.
@@ -39,6 +44,7 @@ execution remains disabled, and no Procore credentials are required.
 - Replay checks for local audit and future eval workflows.
 - MCP-style tool, resource, prompt, and manifest exports.
 - An experimental local stdio adapter for MCP discovery.
+- Local deterministic eval suites for agent metadata and safety checks.
 
 ## What It Is Not
 
@@ -69,6 +75,10 @@ procore-sdk agent runs replay RUN_ID --run-log-dir agent-runs
 procore-sdk agent mcp tools --pretty
 procore-sdk agent mcp manifest --pretty
 procore-sdk agent mcp stdio
+procore-sdk agent evals list
+procore-sdk agent evals run
+procore-sdk agent evals run registry_safety
+procore-sdk agent evals run --output agent-eval-output/agent-eval-results.json
 ```
 
 These commands inspect or serve local metadata only and do not require Procore
@@ -199,6 +209,31 @@ It does not load `.env`, read token stores, execute registered tools, or call
 Procore. A future phase may add guarded execution with explicit approval gates
 and replay/eval integration.
 
+## Agent Evals
+
+Agent evals are local checks for agent-facing metadata and safety guarantees.
+They do not load `.env`, read token stores, call Procore, execute tools, or call
+AI/model APIs.
+
+```bash
+procore-sdk agent evals list
+procore-sdk agent evals show registry_safety
+procore-sdk agent evals run
+procore-sdk agent evals run registry_safety
+procore-sdk agent evals run --output agent-eval-output/agent-eval-results.json
+procore-sdk agent evals run --fail-on-warning
+```
+
+The helper script writes both JSON and Markdown summaries:
+
+```bash
+python3 scripts/run_agent_evals.py --output-dir agent-eval-output
+```
+
+Built-in suites include `registry_safety`, `schema_quality`,
+`openapi_completeness`, `mcp_discovery`, `run_replay_safety`,
+`redaction_safety`, and `execution_disabled`.
+
 ## Python
 
 ```python
@@ -210,14 +245,17 @@ from pyprocore.agent import (
     export_mcp_tools_json,
     get_agent_tool,
     list_agent_tools,
+    run_all_agent_eval_suites,
 )
 
 tools = list_agent_tools()
 find_rfi = get_agent_tool("procore.find_rfi")
 manifest = build_agent_manifest()
+eval_results = run_all_agent_eval_suites()
 
 print(len(tools))
 print(find_rfi.input_schema)
+print(all(result.passed for result in eval_results))
 print(manifest.model_dump_json(indent=2))
 print(export_agent_openapi_json(pretty=True))
 print(export_agent_tool_schemas_json(pretty=True))

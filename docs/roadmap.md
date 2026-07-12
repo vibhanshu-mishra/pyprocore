@@ -139,6 +139,16 @@ Status: Completed
 - CI quality workflow coverage for examples, tests, coverage, lint, typecheck, formatting, release readiness, secret checks, and docs build
 - Security guide for OAuth credentials, `.env`, token stores, logs, and reporting security issues
 
+## Phase 7F: Agent Evaluation Harness
+
+Status: Completed
+
+- Local deterministic agent eval suites
+- Registry safety, schema quality, OpenAPI completeness, and MCP discovery checks
+- Run-log replay, redaction, and disabled-execution safety checks
+- CLI, script, examples, recipes, and JSON/Markdown result exports
+- No live Procore calls, no tool execution, and no AI/model API calls
+
 ## Planned Capabilities
 
 - Async client

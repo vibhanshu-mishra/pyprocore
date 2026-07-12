@@ -1,5 +1,20 @@
 """Agent-facing metadata registry for PyProcore."""
 
+from pyprocore.agent.evals import (
+    AgentEvalCase,
+    AgentEvalCaseResult,
+    AgentEvalFinding,
+    AgentEvalResult,
+    AgentEvalSeverity,
+    AgentEvalSuite,
+    export_agent_eval_results_json,
+    format_agent_eval_summary,
+    get_agent_eval_suite,
+    list_agent_eval_suites,
+    run_agent_eval_suite,
+    run_all_agent_eval_suites,
+    write_agent_eval_results,
+)
 from pyprocore.agent.mcp import (
     build_mcp_prompt_definitions,
     build_mcp_resource_definitions,
@@ -54,6 +69,12 @@ from pyprocore.agent.runs import (
 from pyprocore.agent.server import create_agent_api_handler, run_agent_api_server
 
 __all__ = [
+    "AgentEvalCase",
+    "AgentEvalCaseResult",
+    "AgentEvalFinding",
+    "AgentEvalResult",
+    "AgentEvalSeverity",
+    "AgentEvalSuite",
     "AgentManifest",
     "AgentReplayEventResult",
     "AgentReplayResult",
@@ -83,19 +104,26 @@ __all__ = [
     "export_agent_openapi_yaml",
     "export_agent_tool_schemas_json",
     "export_agent_tools_json",
+    "export_agent_eval_results_json",
     "export_mcp_manifest_json",
     "export_mcp_prompts_json",
     "export_mcp_resources_json",
     "export_mcp_tools_json",
+    "format_agent_eval_summary",
     "get_agent_registry",
+    "get_agent_eval_suite",
     "get_agent_tool",
     "handle_mcp_jsonrpc_request",
     "list_agent_runs",
+    "list_agent_eval_suites",
     "list_agent_tools",
     "load_agent_run",
     "redact_agent_event_payload",
     "read_mcp_resource",
     "replay_agent_run",
+    "run_agent_eval_suite",
     "run_agent_api_server",
+    "run_all_agent_eval_suites",
     "run_mcp_stdio_server",
+    "write_agent_eval_results",
 ]

@@ -86,6 +86,8 @@ expect, and how to troubleshoot common beginner issues.
 - [Replay Agent Run](replay-agent-run.md)
 - [Export Agent MCP Tools](export-agent-mcp-tools.md)
 - [Run MCP Discovery Adapter](run-mcp-discovery-adapter.md)
+- [Run Agent Evals](run-agent-evals.md)
+- [Inspect Agent Eval Results](inspect-agent-eval-results.md)
 
 ## Webhooks
 

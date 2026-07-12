@@ -58,6 +58,7 @@ export PACKAGE_DIR=path/to/local/package
 export AI_EXPORT_OUTPUT_DIR=path/to/local/package/ai-export
 export AI_PROMPT_PACK_OUTPUT_DIR=path/to/local/package/ai-prompt-pack
 export AI_REVIEW_TYPE=general
+export AGENT_EVAL_RESULTS_PATH=example-output/agent-evals/agent-eval-results.json
 export WORKFLOW_PLAN_PATH=examples/workflow_plans/project_context_and_ai_export.json
 export WORKFLOW_RUN_OUTPUT_DIR=exports/workflow-run
 export WORKFLOW_DRY_RUN=1
@@ -89,6 +90,7 @@ python3 examples/46_build_ai_review_export.py
 python3 examples/47_build_ai_prompt_pack.py
 python3 examples/48_run_workflow_plan.py
 python3 examples/49_validate_workflow_plan.py
+python3 examples/62_run_agent_evals.py
 ```
 
 Documents use Procore's Project Folders and Files endpoints internally. Before a
@@ -142,7 +144,7 @@ make examples-check
 ## Example Index
 
 The current example set runs from `01_list_companies.py` through
-`61_mcp_discovery_only.py`.
+`63_inspect_agent_eval_results.py`.
 
 | File | Demonstrates |
 | ---- | ------------ |
@@ -207,6 +209,8 @@ The current example set runs from `01_list_companies.py` through
 | `59_replay_agent_run.py` | Print safe commands for replaying local Agent API run logs |
 | `60_export_agent_mcp.py` | Export discovery-only MCP metadata without Procore credentials |
 | `61_mcp_discovery_only.py` | Show the disabled MCP tool-call response without executing tools |
+| `62_run_agent_evals.py` | Run local deterministic agent evals without Procore or AI credentials |
+| `63_inspect_agent_eval_results.py` | Inspect a saved local agent eval JSON report |
 
 Sample workflow plans live in `examples/workflow_plans/`:
 

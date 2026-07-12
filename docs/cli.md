@@ -102,6 +102,9 @@ procore-sdk agent mcp resources --pretty
 procore-sdk agent mcp prompts --pretty
 procore-sdk agent mcp manifest --pretty
 procore-sdk agent mcp stdio
+procore-sdk agent evals list
+procore-sdk agent evals run
+procore-sdk agent evals run registry_safety
 ```
 
 `agent serve` starts a local HTTP discovery API on `127.0.0.1` by default. It
@@ -119,6 +122,10 @@ call Procore.
 `agent mcp` commands export MCP-style discovery metadata for the same local
 agent registry. The Phase 7E MCP adapter is discovery-only: `tools/call` returns
 a disabled execution response, and no Procore API calls or credentials are used.
+
+`agent evals` commands run local deterministic safety and quality checks for
+agent metadata. They do not execute tools, load credentials, call Procore, or
+call AI/model APIs.
 
 ## Webhooks
 

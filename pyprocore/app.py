@@ -12,12 +12,15 @@ from pydantic import BaseModel
 
 from pyprocore import __version__
 from pyprocore.agent import (
+    AgentEvalResult,
+    AgentEvalSuite,
     AgentManifest,
     AgentReplayResult,
     AgentRun,
     AgentTool,
     AgentToolNotFoundError,
     build_agent_manifest,
+    export_agent_eval_results_json,
     export_agent_openapi_json,
     export_agent_openapi_yaml,
     export_agent_run_bundle,
@@ -26,13 +29,19 @@ from pyprocore.agent import (
     export_mcp_prompts_json,
     export_mcp_resources_json,
     export_mcp_tools_json,
+    format_agent_eval_summary,
+    get_agent_eval_suite,
     get_agent_tool,
+    list_agent_eval_suites,
     list_agent_runs,
     list_agent_tools,
     load_agent_run,
     replay_agent_run,
     run_agent_api_server,
+    run_agent_eval_suite,
+    run_all_agent_eval_suites,
     run_mcp_stdio_server,
+    write_agent_eval_results,
 )
 from pyprocore.auth.diagnostics import (
     AuthExchangeResult,
@@ -414,6 +423,44 @@ def build_parser() -> argparse.ArgumentParser:
     agent_mcp_subcommands.add_parser(
         "stdio",
         help="Run the experimental discovery-only MCP stdio adapter",
+    )
+
+    agent_evals_parser = agent_subcommands.add_parser(
+        "evals",
+        help="Run local deterministic agent safety evals",
+    )
+    agent_evals_subcommands = agent_evals_parser.add_subparsers(
+        dest="agent_evals_command",
+        required=True,
+    )
+
+    agent_evals_list_parser = agent_evals_subcommands.add_parser(
+        "list",
+        help="List built-in agent eval suites",
+    )
+    agent_evals_list_parser.add_argument("--json", dest="json_output", action="store_true")
+    agent_evals_list_parser.add_argument("--pretty", action="store_true")
+
+    agent_evals_show_parser = agent_evals_subcommands.add_parser(
+        "show",
+        help="Show one built-in agent eval suite",
+    )
+    agent_evals_show_parser.add_argument("suite_name")
+    agent_evals_show_parser.add_argument("--json", dest="json_output", action="store_true")
+    agent_evals_show_parser.add_argument("--pretty", action="store_true")
+
+    agent_evals_run_parser = agent_evals_subcommands.add_parser(
+        "run",
+        help="Run all agent eval suites or one named suite",
+    )
+    agent_evals_run_parser.add_argument("suite_name", nargs="?")
+    agent_evals_run_parser.add_argument("--json", dest="json_output", action="store_true")
+    agent_evals_run_parser.add_argument("--pretty", action="store_true")
+    agent_evals_run_parser.add_argument("--output", type=Path, default=None)
+    agent_evals_run_parser.add_argument(
+        "--fail-on-warning",
+        action="store_true",
+        help="Exit nonzero when eval warnings are present",
     )
 
     subcommands.add_parser("companies", help="List companies")
@@ -1544,6 +1591,21 @@ def run_command(args: argparse.Namespace) -> Any:
             if args.agent_mcp_command == "stdio":
                 return run_mcp_stdio_server()
             raise ValueError(f"Unsupported agent MCP command: {args.agent_mcp_command}")
+        if args.agent_command == "evals":
+            if args.agent_evals_command == "list":
+                return list_agent_eval_suites()
+            if args.agent_evals_command == "show":
+                return get_agent_eval_suite(args.suite_name)
+            if args.agent_evals_command == "run":
+                eval_results = (
+                    run_agent_eval_suite(args.suite_name)
+                    if args.suite_name
+                    else run_all_agent_eval_suites()
+                )
+                if args.output is not None:
+                    write_agent_eval_results(eval_results, args.output, pretty=True)
+                return eval_results
+            raise ValueError(f"Unsupported agent evals command: {args.agent_evals_command}")
         if args.agent_command == "serve":
             public_bind = _requires_public_bind(args.host)
             if public_bind and not args.allow_public_bind:
@@ -2444,6 +2506,60 @@ def format_agent_replay_result(result: AgentReplayResult) -> str:
     return "\n".join(lines)
 
 
+def format_agent_eval_suites(suites: list[AgentEvalSuite]) -> str:
+    """Return a human-readable list of built-in agent eval suites."""
+    lines = [f"Built-in agent eval suites: {len(suites)}"]
+    lines.extend(f"- {suite.name}: {suite.description}" for suite in suites)
+    lines.append("Mode: local deterministic checks only; no Procore or AI calls.")
+    return "\n".join(lines)
+
+
+def format_agent_eval_suite(suite: AgentEvalSuite) -> str:
+    """Return a human-readable summary of one agent eval suite."""
+    lines = [
+        f"Agent eval suite: {suite.name}",
+        f"Description: {suite.description}",
+        f"Cases: {len(suite.cases)}",
+    ]
+    lines.extend(f"- {case.case_id}: {case.description}" for case in suite.cases)
+    lines.append("Mode: local deterministic checks only; no Procore or AI calls.")
+    return "\n".join(lines)
+
+
+def format_agent_eval_results(result: AgentEvalResult | list[AgentEvalResult]) -> str:
+    """Return a human-readable summary of agent eval results."""
+    active_results = [result] if isinstance(result, AgentEvalResult) else result
+    lines = [format_agent_eval_summary(active_results).rstrip()]
+    for suite_result in active_results:
+        issue_findings = [
+            finding
+            for finding in suite_result.findings
+            if finding.severity.value in {"warning", "failure"}
+        ]
+        if issue_findings:
+            lines.append("")
+            lines.append(f"{suite_result.suite_name} findings:")
+            lines.extend(
+                f"- {finding.severity.value}: {finding.case_id}: {finding.message}"
+                for finding in issue_findings
+            )
+    lines.append("")
+    lines.append("Mode: local deterministic checks only; no Procore or AI calls.")
+    return "\n".join(lines)
+
+
+def agent_eval_exit_code(
+    result: AgentEvalResult | list[AgentEvalResult],
+    *,
+    fail_on_warning: bool = False,
+) -> int:
+    """Return the CLI exit code for agent eval results."""
+    active_results = [result] if isinstance(result, AgentEvalResult) else result
+    has_failure = any(not suite_result.passed for suite_result in active_results)
+    has_warning = any(suite_result.warnings > 0 for suite_result in active_results)
+    return 1 if has_failure or (fail_on_warning and has_warning) else 0
+
+
 def format_workflow_plan_validation(plan: WorkflowPlan) -> str:
     """Return a human-readable workflow plan validation summary."""
     enabled_count = sum(1 for step in plan.steps if step.enabled)
@@ -2559,6 +2675,9 @@ def main() -> None:
     except ValidationError as exc:
         print(f"PyProcore input is invalid.\n\nDetails: {exc}")
         raise SystemExit(1) from exc
+    except ValueError as exc:
+        print(f"PyProcore input is invalid.\n\nDetails: {exc}")
+        raise SystemExit(1) from exc
     except AgentToolNotFoundError as exc:
         print(f"PyProcore agent tool lookup failed.\n\nDetails: {exc}")
         raise SystemExit(1) from exc
@@ -2632,6 +2751,28 @@ def main() -> None:
         if isinstance(result, list):
             print(format_agent_runs(result))
             return
+
+    if args.command == "agent" and args.agent_command == "evals":
+        if args.agent_evals_command == "list" and isinstance(result, list):
+            if args.json_output or args.pretty:
+                print(json.dumps(to_serializable(result), indent=2, default=str))
+            else:
+                print(format_agent_eval_suites(result))
+            return
+        if args.agent_evals_command == "show" and isinstance(result, AgentEvalSuite):
+            if args.json_output or args.pretty:
+                print(json.dumps(to_serializable(result), indent=2, default=str))
+            else:
+                print(format_agent_eval_suite(result))
+            return
+        if args.agent_evals_command == "run":
+            if args.json_output or args.pretty:
+                print(export_agent_eval_results_json(result, pretty=True))
+            else:
+                if args.output is not None:
+                    print(f"Agent eval results written to: {args.output}")
+                print(format_agent_eval_results(result))
+            raise SystemExit(agent_eval_exit_code(result, fail_on_warning=args.fail_on_warning))
 
     if isinstance(result, AgentManifest):
         if args.json_output or args.pretty:

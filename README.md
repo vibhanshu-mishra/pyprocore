@@ -825,7 +825,9 @@ OpenAPI and JSON Schema exports are available for agent frameworks, gateways,
 workflow engines, and documentation tools. Optional local run logs can record
 sanitized discovery activity for replay, evals, and audit trails. Phase 7E also
 exports discovery-only MCP-style metadata. MCP tool execution is disabled, so no
-Procore calls or credentials are required for MCP discovery.
+Procore calls or credentials are required for MCP discovery. Phase 7F adds local
+deterministic agent evals for registry safety, schema quality, OpenAPI coverage,
+MCP discovery, replay safety, redaction, and disabled-execution checks.
 
 ```bash
 procore-sdk agent tools
@@ -838,6 +840,8 @@ procore-sdk agent serve --run-log-dir agent-runs
 procore-sdk agent runs replay RUN_ID --run-log-dir agent-runs
 procore-sdk agent mcp tools --pretty
 procore-sdk agent mcp manifest --pretty
+procore-sdk agent evals list
+procore-sdk agent evals run
 ```
 
 See [Agent API](docs/agent-api.md) and
@@ -847,7 +851,8 @@ See [Agent API](docs/agent-api.md) and
 [Inspect Agent Run Logs](docs/recipes/inspect-agent-run-logs.md), or
 [Replay Agent Run](docs/recipes/replay-agent-run.md),
 [Export Agent MCP Tools](docs/recipes/export-agent-mcp-tools.md), or
-[Run MCP Discovery Adapter](docs/recipes/run-mcp-discovery-adapter.md).
+[Run MCP Discovery Adapter](docs/recipes/run-mcp-discovery-adapter.md), or
+[Run Agent Evals](docs/recipes/run-agent-evals.md).
 
 Docker and CI templates are optional. They help teams dry-run workflow plans in
 repeatable local or GitHub Actions environments without committing secrets or

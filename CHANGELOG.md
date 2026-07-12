@@ -14,6 +14,8 @@ and this project follows semantic versioning.
 - Phase 7C OpenAPI and JSON Schema exports for the local Agent API, including CLI export commands, server discovery endpoints, examples, docs, and a local export script.
 - Phase 7D opt-in local Agent API run logs and replay helpers for audit trails, future evals, regression checks, and safety reviews without tool execution.
 - Phase 7E discovery-only MCP adapter with MCP-style tool, resource, prompt, manifest, CLI, stdio, examples, docs, and export script support while keeping tool execution disabled.
+- Phase 7F local deterministic agent eval harness with registry safety, schema quality, OpenAPI completeness, MCP discovery, run replay, redaction, and disabled-execution suites.
+- `procore-sdk agent evals` CLI commands, `scripts/run_agent_evals.py`, examples, recipes, and JSON/Markdown eval result exports without live Procore or AI calls.
 
 ## [2.1.0] - 2026-07-11
 

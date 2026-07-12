@@ -20,7 +20,7 @@ locally. The current workflow examples do not mutate Procore data.
 - Build local project context packages for review workflows.
 - Export CSV, JSONL, Markdown, and manifest files.
 - Run repeatable workflow plans from local JSON files.
-- Inspect a local agent tool registry, local HTTP discovery API, OpenAPI export, JSON Schema export, MCP-style discovery metadata, and opt-in run logs for future assistant integrations.
+- Inspect a local agent tool registry, local HTTP discovery API, OpenAPI export, JSON Schema export, MCP-style discovery metadata, opt-in run logs, and deterministic agent evals for future assistant integrations.
 - Validate examples, release metadata, and automation templates without live Procore access.
 
 ## Quick Links
