@@ -16,6 +16,9 @@ from pyprocore.agent import (
     AgentTool,
     AgentToolNotFoundError,
     build_agent_manifest,
+    export_agent_openapi_json,
+    export_agent_openapi_yaml,
+    export_agent_tool_schemas_json,
     get_agent_tool,
     list_agent_tools,
     run_agent_api_server,
@@ -229,6 +232,56 @@ def build_parser() -> argparse.ArgumentParser:
         "--pretty",
         action="store_true",
         help="Print pretty JSON output",
+    )
+
+    agent_openapi_parser = agent_subcommands.add_parser(
+        "openapi",
+        help="Export the local Agent API OpenAPI document",
+    )
+    agent_openapi_format = agent_openapi_parser.add_mutually_exclusive_group()
+    agent_openapi_format.add_argument(
+        "--json",
+        dest="json_output",
+        action="store_true",
+        help="Print JSON output. This is the default.",
+    )
+    agent_openapi_format.add_argument(
+        "--yaml",
+        action="store_true",
+        help="Print YAML output using PyProcore's built-in minimal emitter.",
+    )
+    agent_openapi_parser.add_argument(
+        "--output",
+        type=Path,
+        default=None,
+        help="Write the OpenAPI document to this path.",
+    )
+    agent_openapi_parser.add_argument(
+        "--pretty",
+        action="store_true",
+        help="Pretty-print JSON output.",
+    )
+
+    agent_schemas_parser = agent_subcommands.add_parser(
+        "schemas",
+        help="Export JSON schemas for agent models and registered tools",
+    )
+    agent_schemas_parser.add_argument(
+        "--json",
+        dest="json_output",
+        action="store_true",
+        help="Print JSON output. This is the default.",
+    )
+    agent_schemas_parser.add_argument(
+        "--output",
+        type=Path,
+        default=None,
+        help="Write the schema export to this path.",
+    )
+    agent_schemas_parser.add_argument(
+        "--pretty",
+        action="store_true",
+        help="Pretty-print JSON output.",
     )
 
     agent_serve_parser = agent_subcommands.add_parser(
@@ -1182,6 +1235,13 @@ def _add_package_options(parser: argparse.ArgumentParser) -> None:
     )
 
 
+def _write_text_output(output_path: Path, content: str) -> Path:
+    """Write CLI text output to a path and return the saved path."""
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(content, encoding="utf-8")
+    return output_path
+
+
 def _add_filter_options(parser: argparse.ArgumentParser) -> None:
     """Add shared list filter options."""
     parser.add_argument("--status", default=None)
@@ -1314,6 +1374,20 @@ def run_command(args: argparse.Namespace) -> Any:
             return list_agent_tools()
         if args.agent_command == "tool":
             return get_agent_tool(args.tool_name)
+        if args.agent_command == "openapi":
+            openapi_text = (
+                export_agent_openapi_yaml()
+                if args.yaml
+                else export_agent_openapi_json(pretty=args.pretty)
+            )
+            if args.output is not None:
+                return _write_text_output(args.output, openapi_text)
+            return openapi_text
+        if args.agent_command == "schemas":
+            schemas_text = export_agent_tool_schemas_json(pretty=args.pretty)
+            if args.output is not None:
+                return _write_text_output(args.output, schemas_text)
+            return schemas_text
         if args.agent_command == "serve":
             public_bind = _requires_public_bind(args.host)
             if public_bind and not args.allow_public_bind:
@@ -2309,6 +2383,13 @@ def main() -> None:
     if isinstance(result, AuthLoginUrlResult):
         print(format_login_url(result))
         raise SystemExit(0)
+
+    if args.command == "agent" and args.agent_command in {"openapi", "schemas"}:
+        if isinstance(result, Path):
+            print(f"Agent specification written to: {result}")
+        else:
+            print(result)
+        return
 
     if isinstance(result, AgentManifest):
         if args.json_output or args.pretty:

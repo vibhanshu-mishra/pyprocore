@@ -821,17 +821,22 @@ The local agent tool registry describes safe PyProcore operations for future AI
 assistant and orchestration integrations. It is metadata only: it does not
 execute tools, read credentials, or call Procore. The local agent API server
 exposes the same discovery metadata over HTTP on `127.0.0.1` by default.
+OpenAPI and JSON Schema exports are available for agent frameworks, gateways,
+workflow engines, and documentation tools.
 
 ```bash
 procore-sdk agent tools
 procore-sdk agent tool procore.find_rfi
 procore-sdk agent manifest --json
+procore-sdk agent openapi --pretty
+procore-sdk agent schemas --pretty
 procore-sdk agent serve --port 8765
 ```
 
 See [Agent API](docs/agent-api.md) and
 [Use the Agent Tool Registry](docs/recipes/use-agent-tool-registry.md), or
-[Run the Local Agent API Server](docs/recipes/run-local-agent-api-server.md).
+[Run the Local Agent API Server](docs/recipes/run-local-agent-api-server.md), or
+[Export Agent OpenAPI](docs/recipes/export-agent-openapi.md).
 
 Docker and CI templates are optional. They help teams dry-run workflow plans in
 repeatable local or GitHub Actions environments without committing secrets or

@@ -12,6 +12,10 @@ Phase 7B also exposes this metadata through a local HTTP discovery API. The
 server binds to `127.0.0.1` by default, requires no credentials, and still does
 not execute tools.
 
+Phase 7C adds OpenAPI and JSON Schema exports for agent frameworks, gateways,
+workflow engines, documentation tools, and future MCP/Open Agent API adapters.
+These exports are specification-only and do not require Procore credentials.
+
 ## What It Provides
 
 - Stable tool names such as `procore.find_rfi`.
@@ -21,6 +25,8 @@ not execute tools.
 - Service and CLI command references.
 - A JSON manifest for future agent integrations.
 - A local HTTP discovery API for reading the manifest and tool metadata.
+- OpenAPI 3.1 JSON/YAML export for the local Agent API.
+- JSON Schema export for agent models and registered tool inputs/outputs.
 
 ## What It Is Not
 
@@ -41,6 +47,9 @@ procore-sdk agent manifest
 procore-sdk agent manifest --json
 procore-sdk agent tools
 procore-sdk agent tool procore.find_rfi
+procore-sdk agent openapi --pretty
+procore-sdk agent schemas --pretty
+procore-sdk agent openapi --output agent-openapi.json
 procore-sdk agent serve --port 8765
 ```
 
@@ -69,15 +78,58 @@ Available endpoints:
 | `GET` | `/agent/manifest` | Full agent manifest |
 | `GET` | `/agent/tools` | Registered tools |
 | `GET` | `/agent/tools/procore.find_rfi` | One tool by name |
+| `GET` | `/agent/openapi.json` | OpenAPI document for the local Agent API |
+| `GET` | `/agent/schemas` | JSON schemas for agent models and registered tools |
 | `POST` | `/agent/tools/procore.find_rfi/call` | Disabled execution placeholder |
 
-Tool execution is not enabled in Phase 7B. Calls to the `/call` endpoint return
+Tool execution is not enabled in Phase 7B/7C. Calls to the `/call` endpoint return
 structured JSON with `tool_execution_disabled`.
+
+## OpenAPI And JSON Schema Export
+
+Export the OpenAPI document:
+
+```bash
+procore-sdk agent openapi --pretty --output agent-openapi.json
+```
+
+Export JSON schemas:
+
+```bash
+procore-sdk agent schemas --pretty --output agent-schemas.json
+```
+
+YAML output is available without adding a YAML dependency:
+
+```bash
+procore-sdk agent openapi --yaml --output agent-openapi.yaml
+```
+
+The schema export includes:
+
+- Pydantic JSON Schema for `AgentManifest`, `AgentTool`, and
+  `AgentToolRegistry`.
+- A tool-list schema.
+- Each registered tool's `input_schema` and `output_schema`.
+- Safety metadata such as `requires_auth`, `calls_live_api`, and
+  `produces_files`.
+
+The helper script writes both JSON files:
+
+```bash
+python3 scripts/export_agent_openapi.py --output-dir agent-spec-output --pretty
+```
 
 ## Python
 
 ```python
-from pyprocore.agent import build_agent_manifest, get_agent_tool, list_agent_tools
+from pyprocore.agent import (
+    build_agent_manifest,
+    export_agent_openapi_json,
+    export_agent_tool_schemas_json,
+    get_agent_tool,
+    list_agent_tools,
+)
 
 tools = list_agent_tools()
 find_rfi = get_agent_tool("procore.find_rfi")
@@ -86,6 +138,8 @@ manifest = build_agent_manifest()
 print(len(tools))
 print(find_rfi.input_schema)
 print(manifest.model_dump_json(indent=2))
+print(export_agent_openapi_json(pretty=True))
+print(export_agent_tool_schemas_json(pretty=True))
 ```
 
 ## Manifest
@@ -112,6 +166,16 @@ Path("exports/agent_manifest.json").write_text(
 )
 ```
 
+## Specification Safety
+
+OpenAPI and schema exports are local metadata. They do not:
+
+- load `.env`
+- read token stores
+- call the Procore API
+- execute registered tools
+- include access tokens, refresh tokens, client secrets, or authorization headers
+
 ## Safety Model
 
 Each tool declares whether it:
@@ -128,5 +192,5 @@ while keeping actual execution under the caller's control.
 ## Future Path
 
 The registry is the first step toward a future open agent API. Later phases may
-add execution adapters, MCP-compatible surfaces, or server integrations. Those
-are intentionally not included yet.
+add approval-gated execution, MCP-compatible adapters, replay/eval tooling, or
+server integrations. Those are intentionally not included yet.

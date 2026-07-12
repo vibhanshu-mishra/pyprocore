@@ -10,6 +10,7 @@ from typing import Any
 from urllib.parse import unquote, urlparse
 
 from pyprocore.agent.models import AgentManifest, AgentToolRegistry
+from pyprocore.agent.openapi import build_agent_openapi_spec, build_agent_tool_schemas
 from pyprocore.agent.registry import (
     get_agent_registry,
 )
@@ -64,6 +65,8 @@ def create_agent_api_handler(
                         "links": {
                             "health": "/health",
                             "manifest": "/agent/manifest",
+                            "openapi": "/agent/openapi.json",
+                            "schemas": "/agent/schemas",
                             "tools": "/agent/tools",
                         },
                     },
@@ -91,6 +94,14 @@ def create_agent_api_handler(
                     HTTPStatus.OK,
                     [tool.model_dump(mode="json") for tool in active_registry.tools],
                 )
+                return
+
+            if path == "/agent/openapi.json":
+                self._send_json(HTTPStatus.OK, build_agent_openapi_spec(active_registry))
+                return
+
+            if path == "/agent/schemas":
+                self._send_json(HTTPStatus.OK, build_agent_tool_schemas(active_registry))
                 return
 
             if path.startswith("/agent/tools/"):

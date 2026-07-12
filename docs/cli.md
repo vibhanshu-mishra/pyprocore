@@ -91,12 +91,18 @@ procore-sdk agent manifest
 procore-sdk agent manifest --json
 procore-sdk agent tools
 procore-sdk agent tool procore.find_rfi
+procore-sdk agent openapi --pretty
+procore-sdk agent schemas --pretty
 procore-sdk agent serve --port 8765
 ```
 
 `agent serve` starts a local HTTP discovery API on `127.0.0.1` by default. It
 does not execute tools or call Procore. Binding outside localhost requires
 `--allow-public-bind`.
+
+`agent openapi` and `agent schemas` export machine-readable documents for agent
+frameworks and gateways. They are specification-only commands and do not require
+Procore credentials.
 
 ## Webhooks
 

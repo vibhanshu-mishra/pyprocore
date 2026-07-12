@@ -33,6 +33,7 @@ nav:
       - Download Submittal Attachments: recipes/download-submittal-attachments.md
       - Use Agent Tool Registry: recipes/use-agent-tool-registry.md
       - Run Local Agent API Server: recipes/run-local-agent-api-server.md
+      - Export Agent OpenAPI: recipes/export-agent-openapi.md
       - Run Workflow Plan: recipes/run-workflow-plan.md
       - Schedule Workflow Plan: recipes/schedule-workflow-plan.md
   - Contributing: contributing.md

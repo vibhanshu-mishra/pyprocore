@@ -81,6 +81,7 @@ expect, and how to troubleshoot common beginner issues.
 
 - [Use The Agent Tool Registry](use-agent-tool-registry.md)
 - [Run The Local Agent API Server](run-local-agent-api-server.md)
+- [Export Agent OpenAPI](export-agent-openapi.md)
 
 ## Webhooks
 

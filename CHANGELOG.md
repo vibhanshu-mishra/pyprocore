@@ -11,6 +11,7 @@ and this project follows semantic versioning.
 
 - Phase 7A agent tool registry with metadata-only tool definitions, manifest export helpers, CLI inspection commands, examples, and docs for future assistant integrations.
 - Phase 7B local agent API server for HTTP discovery of the agent manifest and tools, with tool execution explicitly disabled.
+- Phase 7C OpenAPI and JSON Schema exports for the local Agent API, including CLI export commands, server discovery endpoints, examples, docs, and a local export script.
 
 ## [2.1.0] - 2026-07-11
 

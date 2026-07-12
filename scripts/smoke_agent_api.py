@@ -60,6 +60,16 @@ def main() -> int:
         _assert(isinstance(tool, dict), "Expected tool lookup to return an object.")
         _assert(tool.get("name") == "procore.find_rfi", "Expected procore.find_rfi.")
 
+        status, openapi = _read_json(f"{base_url}/agent/openapi.json")
+        _assert(status == 200, "Expected /agent/openapi.json to return 200.")
+        _assert(isinstance(openapi, dict), "Expected OpenAPI to return an object.")
+        _assert(openapi.get("openapi") == "3.1.0", "Expected OpenAPI 3.1.0.")
+
+        status, schemas = _read_json(f"{base_url}/agent/schemas")
+        _assert(status == 200, "Expected /agent/schemas to return 200.")
+        _assert(isinstance(schemas, dict), "Expected schemas to return an object.")
+        _assert("procore.find_rfi" in schemas["tools"], "Expected find_rfi schema.")
+
         status, disabled = _read_json(
             f"{base_url}/agent/tools/procore.find_rfi/call",
             method="POST",
