@@ -97,6 +97,11 @@ procore-sdk agent serve --port 8765
 procore-sdk agent serve --run-log-dir agent-runs
 procore-sdk agent runs list --run-log-dir agent-runs
 procore-sdk agent runs replay RUN_ID --run-log-dir agent-runs
+procore-sdk agent mcp tools --pretty
+procore-sdk agent mcp resources --pretty
+procore-sdk agent mcp prompts --pretty
+procore-sdk agent mcp manifest --pretty
+procore-sdk agent mcp stdio
 ```
 
 `agent serve` starts a local HTTP discovery API on `127.0.0.1` by default. It
@@ -110,6 +115,10 @@ Procore credentials.
 `agent runs` commands inspect, replay, and export opt-in local run logs. Replay
 verifies recorded Agent API discovery activity but does not execute tools or
 call Procore.
+
+`agent mcp` commands export MCP-style discovery metadata for the same local
+agent registry. The Phase 7E MCP adapter is discovery-only: `tools/call` returns
+a disabled execution response, and no Procore API calls or credentials are used.
 
 ## Webhooks
 

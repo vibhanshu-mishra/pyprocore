@@ -1,5 +1,18 @@
 """Agent-facing metadata registry for PyProcore."""
 
+from pyprocore.agent.mcp import (
+    build_mcp_prompt_definitions,
+    build_mcp_resource_definitions,
+    build_mcp_server_info,
+    build_mcp_tool_definitions,
+    build_mcp_tool_execution_disabled_response,
+    export_mcp_manifest_json,
+    export_mcp_prompts_json,
+    export_mcp_resources_json,
+    export_mcp_tools_json,
+    read_mcp_resource,
+)
+from pyprocore.agent.mcp_stdio import handle_mcp_jsonrpc_request, run_mcp_stdio_server
 from pyprocore.agent.models import (
     AgentManifest,
     AgentTool,
@@ -54,6 +67,11 @@ __all__ = [
     "AgentToolRegistry",
     "AgentToolSafety",
     "build_agent_manifest",
+    "build_mcp_prompt_definitions",
+    "build_mcp_resource_definitions",
+    "build_mcp_server_info",
+    "build_mcp_tool_definitions",
+    "build_mcp_tool_execution_disabled_response",
     "build_agent_openapi_spec",
     "build_agent_tool_schemas",
     "append_agent_run_event",
@@ -65,12 +83,19 @@ __all__ = [
     "export_agent_openapi_yaml",
     "export_agent_tool_schemas_json",
     "export_agent_tools_json",
+    "export_mcp_manifest_json",
+    "export_mcp_prompts_json",
+    "export_mcp_resources_json",
+    "export_mcp_tools_json",
     "get_agent_registry",
     "get_agent_tool",
+    "handle_mcp_jsonrpc_request",
     "list_agent_runs",
     "list_agent_tools",
     "load_agent_run",
     "redact_agent_event_payload",
+    "read_mcp_resource",
     "replay_agent_run",
     "run_agent_api_server",
+    "run_mcp_stdio_server",
 ]

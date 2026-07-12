@@ -20,6 +20,10 @@ Phase 7D adds opt-in local run logs and replay. Run logs record sanitized
 summaries of local discovery activity only. Replay verifies what happened; it
 does not execute tools or call Procore.
 
+Phase 7E adds a discovery-only MCP adapter. It maps the same local agent
+registry into MCP-style tool, resource, prompt, and manifest documents. Tool
+execution remains disabled, and no Procore credentials are required.
+
 ## What It Provides
 
 - Stable tool names such as `procore.find_rfi`.
@@ -33,10 +37,12 @@ does not execute tools or call Procore.
 - JSON Schema export for agent models and registered tool inputs/outputs.
 - Opt-in local run logs for discovery requests.
 - Replay checks for local audit and future eval workflows.
+- MCP-style tool, resource, prompt, and manifest exports.
+- An experimental local stdio adapter for MCP discovery.
 
 ## What It Is Not
 
-- Not an MCP server.
+- Not an execution-enabled MCP server.
 - Not a tool execution runtime.
 - Not a hosted agent.
 - Not a public hosted API.
@@ -60,6 +66,9 @@ procore-sdk agent serve --port 8765
 procore-sdk agent serve --run-log-dir agent-runs
 procore-sdk agent runs list --run-log-dir agent-runs
 procore-sdk agent runs replay RUN_ID --run-log-dir agent-runs
+procore-sdk agent mcp tools --pretty
+procore-sdk agent mcp manifest --pretty
+procore-sdk agent mcp stdio
 ```
 
 These commands inspect or serve local metadata only and do not require Procore
@@ -160,6 +169,36 @@ contents, `.env` values, or full signed URL query values. Replay validates route
 shape, registered tool names, and disabled tool-call events without executing
 anything.
 
+## MCP Adapter
+
+The MCP adapter is discovery-only in Phase 7E. It lets local MCP-compatible
+clients inspect PyProcore tool metadata, but `tools/call` always returns a
+disabled execution response.
+
+```bash
+procore-sdk agent mcp tools --pretty
+procore-sdk agent mcp resources --pretty
+procore-sdk agent mcp prompts --pretty
+procore-sdk agent mcp manifest --pretty
+```
+
+Export the same metadata to local files:
+
+```bash
+python3 scripts/export_agent_mcp.py --output-dir agent-mcp-output --pretty
+```
+
+The experimental stdio adapter supports metadata methods such as `initialize`,
+`tools/list`, `resources/list`, `resources/read`, `prompts/list`, and `ping`:
+
+```bash
+procore-sdk agent mcp stdio
+```
+
+It does not load `.env`, read token stores, execute registered tools, or call
+Procore. A future phase may add guarded execution with explicit approval gates
+and replay/eval integration.
+
 ## Python
 
 ```python
@@ -167,6 +206,8 @@ from pyprocore.agent import (
     build_agent_manifest,
     export_agent_openapi_json,
     export_agent_tool_schemas_json,
+    export_mcp_manifest_json,
+    export_mcp_tools_json,
     get_agent_tool,
     list_agent_tools,
 )
@@ -180,6 +221,8 @@ print(find_rfi.input_schema)
 print(manifest.model_dump_json(indent=2))
 print(export_agent_openapi_json(pretty=True))
 print(export_agent_tool_schemas_json(pretty=True))
+print(export_mcp_tools_json(pretty=True))
+print(export_mcp_manifest_json(pretty=True))
 ```
 
 ## Manifest
@@ -215,6 +258,7 @@ OpenAPI and schema exports are local metadata. They do not:
 - call the Procore API
 - execute registered tools
 - include access tokens, refresh tokens, client secrets, or authorization headers
+- enable MCP tool execution
 
 ## Safety Model
 
@@ -232,5 +276,5 @@ while keeping actual execution under the caller's control.
 ## Future Path
 
 The registry is the first step toward a future open agent API. Later phases may
-add approval-gated execution, MCP-compatible adapters, replay/eval tooling, or
+add approval-gated execution, richer MCP integration, replay/eval tooling, or
 server integrations. Those are intentionally not included yet.

@@ -22,12 +22,17 @@ from pyprocore.agent import (
     export_agent_openapi_yaml,
     export_agent_run_bundle,
     export_agent_tool_schemas_json,
+    export_mcp_manifest_json,
+    export_mcp_prompts_json,
+    export_mcp_resources_json,
+    export_mcp_tools_json,
     get_agent_tool,
     list_agent_runs,
     list_agent_tools,
     load_agent_run,
     replay_agent_run,
     run_agent_api_server,
+    run_mcp_stdio_server,
 )
 from pyprocore.auth.diagnostics import (
     AuthExchangeResult,
@@ -364,6 +369,52 @@ def build_parser() -> argparse.ArgumentParser:
     agent_runs_export_parser.add_argument("--run-log-dir", type=Path, required=True)
     agent_runs_export_parser.add_argument("--output-dir", type=Path, required=True)
     agent_runs_export_parser.add_argument("--json", dest="json_output", action="store_true")
+
+    agent_mcp_parser = agent_subcommands.add_parser(
+        "mcp",
+        help="Export discovery-only MCP adapter metadata",
+    )
+    agent_mcp_subcommands = agent_mcp_parser.add_subparsers(
+        dest="agent_mcp_command",
+        required=True,
+    )
+
+    agent_mcp_tools_parser = agent_mcp_subcommands.add_parser(
+        "tools",
+        help="Export MCP-style tool definitions",
+    )
+    agent_mcp_tools_parser.add_argument("--json", dest="json_output", action="store_true")
+    agent_mcp_tools_parser.add_argument("--pretty", action="store_true")
+    agent_mcp_tools_parser.add_argument("--output", type=Path, default=None)
+
+    agent_mcp_resources_parser = agent_mcp_subcommands.add_parser(
+        "resources",
+        help="Export MCP-style resource definitions",
+    )
+    agent_mcp_resources_parser.add_argument("--json", dest="json_output", action="store_true")
+    agent_mcp_resources_parser.add_argument("--pretty", action="store_true")
+    agent_mcp_resources_parser.add_argument("--output", type=Path, default=None)
+
+    agent_mcp_prompts_parser = agent_mcp_subcommands.add_parser(
+        "prompts",
+        help="Export MCP-style prompt definitions",
+    )
+    agent_mcp_prompts_parser.add_argument("--json", dest="json_output", action="store_true")
+    agent_mcp_prompts_parser.add_argument("--pretty", action="store_true")
+    agent_mcp_prompts_parser.add_argument("--output", type=Path, default=None)
+
+    agent_mcp_manifest_parser = agent_mcp_subcommands.add_parser(
+        "manifest",
+        help="Export the discovery-only MCP manifest",
+    )
+    agent_mcp_manifest_parser.add_argument("--json", dest="json_output", action="store_true")
+    agent_mcp_manifest_parser.add_argument("--pretty", action="store_true")
+    agent_mcp_manifest_parser.add_argument("--output", type=Path, default=None)
+
+    agent_mcp_subcommands.add_parser(
+        "stdio",
+        help="Run the experimental discovery-only MCP stdio adapter",
+    )
 
     subcommands.add_parser("companies", help="List companies")
 
@@ -1302,6 +1353,13 @@ def _write_text_output(output_path: Path, content: str) -> Path:
     return output_path
 
 
+def _write_optional_output(content: str, output_path: Path | None) -> str | Path:
+    """Return text content or write it to disk when an output path is provided."""
+    if output_path is None:
+        return content
+    return _write_text_output(output_path, content)
+
+
 def _add_filter_options(parser: argparse.ArgumentParser) -> None:
     """Add shared list filter options."""
     parser.add_argument("--status", default=None)
@@ -1462,6 +1520,30 @@ def run_command(args: argparse.Namespace) -> Any:
                     args.output_dir,
                 )
             raise ValueError(f"Unsupported agent runs command: {args.agent_runs_command}")
+        if args.agent_command == "mcp":
+            if args.agent_mcp_command == "tools":
+                return _write_optional_output(
+                    export_mcp_tools_json(pretty=args.pretty),
+                    args.output,
+                )
+            if args.agent_mcp_command == "resources":
+                return _write_optional_output(
+                    export_mcp_resources_json(pretty=args.pretty),
+                    args.output,
+                )
+            if args.agent_mcp_command == "prompts":
+                return _write_optional_output(
+                    export_mcp_prompts_json(pretty=args.pretty),
+                    args.output,
+                )
+            if args.agent_mcp_command == "manifest":
+                return _write_optional_output(
+                    export_mcp_manifest_json(pretty=args.pretty),
+                    args.output,
+                )
+            if args.agent_mcp_command == "stdio":
+                return run_mcp_stdio_server()
+            raise ValueError(f"Unsupported agent MCP command: {args.agent_mcp_command}")
         if args.agent_command == "serve":
             public_bind = _requires_public_bind(args.host)
             if public_bind and not args.allow_public_bind:
@@ -2517,6 +2599,18 @@ def main() -> None:
             print(f"Agent specification written to: {result}")
         else:
             print(result)
+        return
+
+    if args.command == "agent" and args.agent_command == "mcp":
+        if args.agent_mcp_command == "stdio":
+            return
+        if isinstance(result, Path):
+            if args.json_output:
+                print(json.dumps({"output_path": str(result)}, indent=2))
+            else:
+                print(f"MCP metadata written to: {result}")
+            return
+        print(result)
         return
 
     if args.command == "agent" and args.agent_command == "runs":

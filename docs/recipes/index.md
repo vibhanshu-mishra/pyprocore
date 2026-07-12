@@ -84,6 +84,8 @@ expect, and how to troubleshoot common beginner issues.
 - [Export Agent OpenAPI](export-agent-openapi.md)
 - [Inspect Agent Run Logs](inspect-agent-run-logs.md)
 - [Replay Agent Run](replay-agent-run.md)
+- [Export Agent MCP Tools](export-agent-mcp-tools.md)
+- [Run MCP Discovery Adapter](run-mcp-discovery-adapter.md)
 
 ## Webhooks
 

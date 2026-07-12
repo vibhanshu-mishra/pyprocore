@@ -142,7 +142,7 @@ make examples-check
 ## Example Index
 
 The current example set runs from `01_list_companies.py` through
-`59_replay_agent_run.py`.
+`61_mcp_discovery_only.py`.
 
 | File | Demonstrates |
 | ---- | ------------ |
@@ -205,6 +205,8 @@ The current example set runs from `01_list_companies.py` through
 | `57_inspect_agent_schemas.py` | Inspect local agent JSON Schema metadata without calling Procore |
 | `58_agent_run_logs.py` | Print safe commands for opt-in local Agent API run logging |
 | `59_replay_agent_run.py` | Print safe commands for replaying local Agent API run logs |
+| `60_export_agent_mcp.py` | Export discovery-only MCP metadata without Procore credentials |
+| `61_mcp_discovery_only.py` | Show the disabled MCP tool-call response without executing tools |
 
 Sample workflow plans live in `examples/workflow_plans/`:
 
