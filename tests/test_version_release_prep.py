@@ -1,4 +1,4 @@
-"""Tests for 2.1.0 version bump release preparation."""
+"""Tests for 2.1.0 post-release documentation state."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 class VersionReleasePrepTestCase(unittest.TestCase):
-    """Validate 2.1.0 release-candidate version and docs state."""
+    """Validate 2.1.0 released version and docs state."""
 
     def read_text(self, relative_path: str) -> str:
         """Read a repository file.
@@ -43,18 +43,20 @@ class VersionReleasePrepTestCase(unittest.TestCase):
         self.assertIn("expanded API coverage", changelog)
         self.assertIn("Release-candidate validation tooling", changelog)
 
-    def test_docs_mention_2_1_0_release_candidate(self) -> None:
-        """Release docs should identify 2.1.0 as the prepared candidate."""
+    def test_docs_mention_2_1_0_released_state(self) -> None:
+        """Release docs should identify 2.1.0 as published and released."""
         release_doc = self.read_text("docs/release.md")
         readiness_doc = self.read_text("docs/final-release-readiness.md")
         readme = self.read_text("README.md")
 
-        self.assertIn("The next prepared release is `2.1.0`", release_doc)
-        self.assertIn("PyProcore `2.1.0` release candidate is prepared", readiness_doc)
-        self.assertIn("The prepared release candidate is `2.1.0`", readme)
+        self.assertIn("PyProcore `2.1.0` has been published to PyPI", release_doc)
+        self.assertIn("PyProcore `2.1.0` has been published to PyPI", readiness_doc)
+        self.assertIn("Git tag `v2.1.0`", readiness_doc)
+        self.assertIn("GitHub release", readiness_doc)
+        self.assertIn("PyProcore `2.1.0` is available on PyPI", readme)
 
-    def test_docs_do_not_claim_2_1_0_was_published(self) -> None:
-        """Docs should keep 2.1.0 publishing and GitHub release as pending."""
+    def test_docs_do_not_claim_2_1_0_is_unpublished(self) -> None:
+        """Docs should not keep stale 2.1.0 pre-publish language."""
         docs = "\n".join(
             [
                 self.read_text("README.md"),
@@ -64,17 +66,17 @@ class VersionReleasePrepTestCase(unittest.TestCase):
         )
 
         forbidden_phrases = (
-            "2.1.0 has been published",
-            "2.1.0 is published",
-            "published 2.1.0 to PyPI",
-            "created a GitHub release for `2.1.0`",
+            "PyPI publishing has not been performed for `2.1.0`",
+            "No GitHub release has been created for `2.1.0`",
+            "2.1.0 release candidate is prepared",
+            "The prepared release candidate is `2.1.0`",
+            "The next prepared release is `2.1.0`",
         )
         for phrase in forbidden_phrases:
             self.assertNotIn(phrase, docs)
 
-        self.assertIn("PyPI publishing has not been performed for `2.1.0`", docs)
-        self.assertIn("No GitHub release has been", docs)
-        self.assertIn("created for `2.1.0`", docs)
+        self.assertIn("PyPI publishing has been completed for `2.1.0`", docs)
+        self.assertIn("Git tag `v2.1.0` was", docs)
 
     def test_github_workflow_files_are_unmodified(self) -> None:
         """Version prep should not modify GitHub Actions workflow files."""

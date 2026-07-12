@@ -1,19 +1,20 @@
 # Final Release Readiness
 
-This report summarizes PyProcore's `2.1.0` release-candidate state after the
-release, documentation, GitHub project, security, and quality-hardening polish
-phases.
+This report summarizes PyProcore's `2.1.0` post-release state after the
+release, documentation, GitHub project, security, quality-hardening, and local
+package validation phases.
 
-No publishing has been performed as part of this report.
+PyProcore `2.1.0` has been published to PyPI, verified from a clean virtual
+environment, tagged as `v2.1.0`, and released on GitHub.
 
 ## Current Status
 
-PyProcore `2.1.0` release candidate is prepared from a local repository quality
-perspective. The SDK has a typed package structure, production package
-metadata, mocked unit tests, local release checks, security checks, examples,
-recipes, MkDocs documentation, and contributor guidance.
+PyProcore `2.1.0` is released from a local repository quality perspective. The
+SDK has a typed package structure, production package metadata, mocked unit
+tests, local release checks, security checks, examples, recipes, MkDocs
+documentation, and contributor guidance.
 
-The package version is prepared as `2.1.0` in `pyproject.toml` and
+The package version remains `2.1.0` in `pyproject.toml` and
 `pyprocore/__init__.py`.
 
 ## Major Capabilities
@@ -39,7 +40,8 @@ The package version is prepared as `2.1.0` in `pyproject.toml` and
 
 ## Validation Commands
 
-Run these before an actual release:
+These local validation commands were used before the `2.1.0` release and should
+be repeated for future releases:
 
 ```bash
 PYTHONPATH=. procore-sdk --help
@@ -58,15 +60,21 @@ make quality-check
 
 These commands do not require live Procore credentials.
 
-The next release-candidate validation step is to build and inspect local package
-artifacts, then install the wheel into a clean temporary environment:
+The release-candidate validation step builds and inspects local package
+artifacts, then installs the wheel into a temporary environment:
 
 ```bash
 make release-candidate-check
 ```
 
-This check verifies the source distribution, wheel, package metadata, installed
-CLI, and important public exports without publishing to PyPI.
+For `2.1.0`, the published package was also verified from PyPI with:
+
+```bash
+pip install pyprocore==2.1.0
+procore-sdk --version
+```
+
+The clean install and CLI version check passed.
 
 ## Known Limitations
 
@@ -80,36 +88,35 @@ CLI, and important public exports without publishing to PyPI.
 ## Live Procore Verification Limitations
 
 Most tests are mocked and intentionally avoid live Procore access. Smoke scripts
-exist for manual sandbox validation, but they were not run as part of this final
-release polish. Endpoint behavior may still vary by Procore company, project,
-OAuth app connection, tool configuration, and user permissions.
+exist for manual sandbox validation, but live project-level verification remains
+limited by Procore app-company connection state. Endpoint behavior may still
+vary by Procore company, project, OAuth app connection, tool configuration, and
+user permissions.
 
 ## GitHub Workflow Token Limitation
 
-GitHub Actions workflow files were not modified during this final polish phase.
-The current GitHub token cannot push workflow-file changes, so workflow updates
-must be handled separately with credentials that have permission to modify
-`.github/workflows/`.
+GitHub Actions workflow-file cleanup remains optional future work. If workflow
+updates are needed later, they must be handled with credentials that have
+permission to modify `.github/workflows/`.
 
 ## Publishing Status
 
-PyPI publishing has not been performed for `2.1.0`. No GitHub release has been
-created for `2.1.0`.
+PyPI publishing has been completed for `2.1.0`. The Git tag `v2.1.0` was
+created, and a GitHub release was created.
 
-Before publishing:
+Completed release checks:
 
-1. Review `CHANGELOG.md`.
-2. Confirm the intended version in `pyproject.toml` and `pyprocore/__init__.py`.
-3. Run all validation commands above.
-4. Run `make release-candidate-check`.
-5. Inspect artifacts for secrets, token stores, logs, downloads, and generated outputs.
-6. Test with TestPyPI or a fresh local install.
-7. Publish only after the clean install check succeeds.
+1. `CHANGELOG.md` reviewed.
+2. Version confirmed as `2.1.0` in `pyproject.toml` and `pyprocore/__init__.py`.
+3. Local validation commands passed.
+4. Release-candidate package check passed.
+5. Published package installed successfully from PyPI.
+6. `procore-sdk --version` returned `pyprocore 2.1.0`.
+7. Git tag `v2.1.0` and GitHub release were created.
 
 ## Recommended Next Steps
 
-- Confirm `2.1.0` is the intended public version number.
-- Confirm whether workflow-file updates should be pushed by a maintainer with the right GitHub token scope.
-- Run live smoke tests in a controlled sandbox only when valid OAuth credentials are available.
-- Cut a release branch or tag only after local validation and artifact inspection pass.
+- Keep `2.1.0` unchanged unless preparing a future release.
+- Consider workflow-file cleanup only when a maintainer has the right GitHub token scope.
+- Run live smoke tests in a controlled sandbox only when valid OAuth credentials and app-company connection are available.
 - Publish docs only after choosing the final docs hosting location.

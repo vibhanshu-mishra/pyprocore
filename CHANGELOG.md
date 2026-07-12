@@ -11,10 +11,10 @@ No unreleased changes yet.
 
 ## [2.1.0] - 2026-07-11
 
-PyProcore 2.1.0 is an additive, backward-compatible release candidate. It
-expands API coverage, adds AI-ready local workflow packages, strengthens
-automation foundations, improves documentation and security posture, and adds
-local release-candidate validation tooling.
+PyProcore 2.1.0 is an additive, backward-compatible release. It expands API
+coverage, adds AI-ready local workflow packages, strengthens automation
+foundations, improves documentation and security posture, and adds local
+release-candidate validation tooling.
 
 ### Added
 

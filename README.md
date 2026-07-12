@@ -823,8 +823,8 @@ generated outputs. Start with [Docker Automation](docs/automation/docker.md),
 [CI Automation](docs/automation/ci.md), or `examples/docker/`.
 
 Release readiness guidance lives in [docs/release.md](docs/release.md). It
-covers versioning, validation, changelog updates, and the future PyPI publishing
-checklist. The current pre-release audit is captured in
+covers versioning, validation, changelog updates, and PyPI publishing
+checklists. The current release status is captured in
 [docs/final-release-readiness.md](docs/final-release-readiness.md).
 
 Maintainers can also run a local release-candidate package check before any
@@ -836,8 +836,9 @@ make release-candidate-check
 
 This builds local artifacts, inspects package metadata, installs the wheel in a
 temporary environment, and checks package exports plus `procore-sdk --help`.
-The prepared release candidate is `2.1.0`. Publishing is not automatic; see
-[docs/release.md](docs/release.md) before using TestPyPI or PyPI.
+PyProcore `2.1.0` is available on PyPI. Publishing future releases is not
+automatic; see [docs/release.md](docs/release.md) before using TestPyPI or
+PyPI.
 
 ---
 

@@ -29,7 +29,8 @@ class FinalReleasePolishTestCase(unittest.TestCase):
             "Known Limitations",
             "Live Procore Verification Limitations",
             "GitHub Workflow Token Limitation",
-            "PyPI publishing has not been performed",
+            "PyPI publishing has been completed for `2.1.0`",
+            "Git tag `v2.1.0`",
             "Recommended Next Steps",
         ):
             self.assertIn(phrase, report)
@@ -92,8 +93,8 @@ class FinalReleasePolishTestCase(unittest.TestCase):
         self.assertIn("52_dispatch_webhook_to_workflow_plan.py", examples)
         self.assertIn("runs from `01_list_companies.py` through", examples)
 
-    def test_docs_do_not_claim_this_release_was_published(self) -> None:
-        """Release docs should make clear this pass did not publish artifacts."""
+    def test_docs_claim_2_1_0_release_is_complete(self) -> None:
+        """Release docs should describe the completed 2.1.0 release."""
         checked_docs = "\n".join(
             self.read_text(path)
             for path in (
@@ -103,8 +104,9 @@ class FinalReleasePolishTestCase(unittest.TestCase):
             )
         )
 
-        self.assertIn("No publishing has been performed", checked_docs)
-        self.assertIn("publish to PyPI", checked_docs)
+        self.assertIn("PyProcore `2.1.0` has been published to PyPI", checked_docs)
+        self.assertIn("GitHub release was created", checked_docs)
+        self.assertNotIn("PyPI publishing has not been performed for `2.1.0`", checked_docs)
         self.assertIn("not published as a hosted site", checked_docs)
 
     def test_live_verification_claims_are_limited(self) -> None:
@@ -113,7 +115,7 @@ class FinalReleasePolishTestCase(unittest.TestCase):
         api_coverage = self.read_text("docs/api-coverage.md")
 
         self.assertIn("Smoke scripts", report)
-        self.assertIn("not run as part of this final", report)
+        self.assertIn("project-level verification remains", report)
         self.assertIn("Procore access varies by environment", api_coverage)
         self.assertNotIn("all endpoints are live verified", report.lower())
 

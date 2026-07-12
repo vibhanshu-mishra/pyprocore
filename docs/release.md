@@ -3,9 +3,8 @@
 This guide describes the local release-readiness process for PyProcore. It does
 not publish to PyPI or create GitHub releases.
 
-The next prepared release is `2.1.0`. It is an additive, backward-compatible
-release candidate. Do not publish it to TestPyPI or PyPI until final manual
-confirmation.
+PyProcore `2.1.0` has been published to PyPI, verified from a clean virtual
+environment, tagged as `v2.1.0`, and released on GitHub.
 
 ## Versioning
 
@@ -44,11 +43,11 @@ For the final repository-level readiness summary, see
 
 ## Release Checklist
 
-Before publishing:
+Before publishing a future release:
 
 - Confirm no `.env`, token store, downloads, logs, or generated workflow outputs
   are tracked.
-- Confirm the prepared version is `2.1.0` in both `pyproject.toml` and
+- Confirm the prepared version in both `pyproject.toml` and
   `pyprocore/__init__.py`.
 - Confirm `CHANGELOG.md` has clear entries for the release.
 - Confirm `README.md` installation, authentication, examples, and security
@@ -59,8 +58,8 @@ Before publishing:
 
 ## Release Candidate Validation
 
-Before publishing the prepared `2.1.0` release to TestPyPI or PyPI, build and
-inspect release artifacts locally:
+Before publishing a future release to TestPyPI or PyPI, build and inspect
+release artifacts locally:
 
 ```bash
 python3 -m pip install build twine
@@ -118,6 +117,27 @@ When the project is ready:
 
 Do not upload real `.env` files, OAuth token stores, logs, downloads, workflow
 runs, webhook event stores, or generated AI/export folders.
+
+## 2.1.0 Release Completed
+
+The `2.1.0` release has already been completed. Do not publish it again.
+
+To verify the published package:
+
+```bash
+python3 -m pip install pyprocore==2.1.0
+procore-sdk --version
+```
+
+Expected output:
+
+```text
+pyprocore 2.1.0
+```
+
+For future releases, repeat the full validation flow, upload to TestPyPI first,
+verify a clean install, publish to real PyPI only after final confirmation, then
+create the Git tag and GitHub release.
 
 ## Changelog Updates
 

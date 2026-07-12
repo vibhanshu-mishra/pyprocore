@@ -42,12 +42,12 @@ class ReleaseCandidateTestCase(unittest.TestCase):
         self.assertIn("does not publish anything", release_doc)
 
     def test_final_readiness_mentions_release_candidate_check(self) -> None:
-        """Final readiness report should point to the next RC validation step."""
+        """Final readiness report should mention RC validation as completed tooling."""
         report = self.read_text("docs/final-release-readiness.md")
 
         self.assertIn("release-candidate validation step", report)
         self.assertIn("make release-candidate-check", report)
-        self.assertIn("without publishing to PyPI", report)
+        self.assertIn("Release-candidate package check passed", report)
 
     def test_gitignore_excludes_release_artifacts(self) -> None:
         """Release build artifacts and temporary release envs should be ignored."""
