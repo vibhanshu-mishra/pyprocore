@@ -16,69 +16,6 @@ hardcoding credentials or requiring live Procore calls in tests.
 
 ---
 
-## Current Release Status
-
-- Published stable PyPI release: `2.1.0`
-- Prepared next release: `2.2.0`
-- `2.2.0` prepares the Phase 7 Agent API layer and is not published yet.
-- Procore tool execution remains disabled.
-
-Install the current published stable release:
-
-```bash
-python3 -m pip install pyprocore==2.1.0
-```
-
-After `2.2.0` is published, install it with:
-
-```bash
-python3 -m pip install pyprocore==2.2.0
-```
-
-To test the current main branch before release:
-
-```bash
-git clone https://github.com/vibhanshu-mishra/pyprocore.git
-cd pyprocore
-python3 -m pip install -e .
-```
-
----
-
-## Phase 7 Agent Layer
-
-PyProcore is becoming an open, model-agnostic agent layer for Procore
-automation. The prepared `2.2.0` source adds local-first infrastructure that
-lets assistants discover what PyProcore can do without giving them permission
-to execute Procore actions.
-
-Phase 7 includes:
-
-- Agent Tool Registry
-- Local Agent API Server
-- OpenAPI / JSON Schema Export
-- Agent Run Logs + Replay
-- Discovery-only MCP Adapter
-- Agent Evaluation Harness
-
-This layer is discovery/spec/eval/replay infrastructure. It does not call
-external AI/model APIs, does not call live Procore APIs for metadata, schema,
-MCP discovery, replay, or eval commands, and does not enable Procore tool
-execution. The MCP adapter is discovery-only.
-
-Try the local metadata and eval commands from a checkout:
-
-```bash
-PYTHONPATH=. procore-sdk agent tools
-PYTHONPATH=. procore-sdk agent manifest --json
-PYTHONPATH=. procore-sdk agent openapi --pretty
-PYTHONPATH=. procore-sdk agent schemas --pretty
-PYTHONPATH=. procore-sdk agent mcp tools --pretty
-PYTHONPATH=. procore-sdk agent evals run
-```
-
----
-
 ## Why PyProcore
 
 Calling the Procore REST API directly means managing the OAuth handshake, refreshing expired tokens, following pagination headers, retrying failed requests, and parsing untyped JSON on every call.
@@ -1183,6 +1120,36 @@ GET /rest/v1.0/images/{image_id}?project_id={project_id}
 - Retry reports
 - Scheduled sync examples
 - Docker example
+
+### Phase 7 Agent Layer
+
+PyProcore is becoming an open, model-agnostic agent layer for Procore
+automation. The prepared `2.2.0` source adds local-first infrastructure that
+lets assistants discover what PyProcore can do without giving them permission
+to execute Procore actions.
+
+- Agent Tool Registry
+- Local Agent API Server
+- OpenAPI / JSON Schema Export
+- Agent Run Logs + Replay
+- Discovery-only MCP Adapter
+- Agent Evaluation Harness
+
+This layer is discovery/spec/eval/replay infrastructure. It does not call
+external AI/model APIs, does not call live Procore APIs for metadata, schema,
+MCP discovery, replay, or eval commands, and does not enable Procore tool
+execution. The MCP adapter is discovery-only.
+
+Try the local metadata and eval commands from a checkout:
+
+```bash
+PYTHONPATH=. procore-sdk agent tools
+PYTHONPATH=. procore-sdk agent manifest --json
+PYTHONPATH=. procore-sdk agent openapi --pretty
+PYTHONPATH=. procore-sdk agent schemas --pretty
+PYTHONPATH=. procore-sdk agent mcp tools --pretty
+PYTHONPATH=. procore-sdk agent evals run
+```
 
 ---
 
