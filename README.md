@@ -29,8 +29,6 @@ PyProcore turns Procore REST API responses into typed Python objects and gives y
 - Use CLI diagnostics and automation commands without hardcoding credentials.
 - Expose local agent metadata, OpenAPI/JSON Schema, run logs, replay, MCP discovery, and deterministic evals for future assistant integrations.
 
-PyProcore is independent and not affiliated with or endorsed by Procore Technologies.
-
 ---
 
 ## Quick Start
