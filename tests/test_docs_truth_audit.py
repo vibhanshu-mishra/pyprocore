@@ -82,10 +82,29 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         """Roadmap should show Phase 7 as completed and prepared for 2.2.0."""
         roadmap = self.read_text("docs/roadmap.md")
 
-        self.assertIn("Released: 2.1.0", roadmap)
-        self.assertIn("Prepared: 2.2.0", roadmap)
+        self.assertIn("Released in 2.1.0", roadmap)
+        self.assertIn("Prepared for 2.2.0", roadmap)
         self.assertIn("Phase 7A: Agent Tool Registry", roadmap)
         self.assertIn("Tool execution remains disabled", roadmap)
+
+    def test_public_roadmap_does_not_mark_future_ideas_complete(self) -> None:
+        """README and roadmap should not list unimplemented ideas as completed."""
+        public_roadmap_text = "\n".join(
+            [
+                self.read_text("README.md"),
+                self.read_text("docs/roadmap.md"),
+            ]
+        )
+
+        for phrase in (
+            "Async client",
+            "Observations",
+            "Correspondence",
+            "plugin architecture",
+            "Vector database examples",
+            "Engineering assistant examples",
+        ):
+            self.assertNotIn(phrase, public_roadmap_text)
 
     def test_changelog_has_phase_7_under_2_2_0_not_2_1_0(self) -> None:
         """Changelog should place Phase 7 release notes under 2.2.0."""

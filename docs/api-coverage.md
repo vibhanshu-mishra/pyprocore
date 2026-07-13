@@ -38,3 +38,19 @@ different environment, a tool is disabled, or the user lacks permission.
 
 Use the smoke helper scripts only when you intentionally want to inspect live
 payload behavior in your own sandbox or production environment.
+
+Manual smoke helpers are not part of the normal test suite. They require valid
+Procore credentials, a project the OAuth user can access, and the correct
+sandbox or production API base:
+
+```bash
+PROCORE_PROJECT_ID=352338 make smoke-documents
+PROCORE_PROJECT_ID=352338 make smoke-drawings
+PROCORE_PROJECT_ID=352338 make smoke-specifications
+PROCORE_PROJECT_ID=352338 make smoke-photos
+PROCORE_PROJECT_ID=352338 make smoke-daily-logs
+```
+
+If one of these returns a 403, authentication may still be valid. Confirm the
+company/project pairing, app connection, user permissions, enabled Procore tool,
+and sandbox vs production environment.

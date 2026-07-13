@@ -3,7 +3,7 @@
 This roadmap is directional and may change based on user needs and Procore API
 coverage priorities.
 
-## Released: 2.1.0
+## Released in 2.1.0
 
 Status: Published to PyPI and released on GitHub.
 
@@ -21,7 +21,7 @@ Released capabilities include:
 - Workflow plan runner, scheduled automation examples, local webhook helpers, Docker templates, and CI dry-run examples
 - README, MkDocs documentation, recipes, examples, security docs, contributor docs, and release tooling
 
-## Prepared: 2.2.0
+## Prepared for 2.2.0
 
 Status: Prepared for release, not yet published.
 

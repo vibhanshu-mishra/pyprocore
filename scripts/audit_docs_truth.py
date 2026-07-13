@@ -76,6 +76,30 @@ FAIL_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
         re.compile(r"live Procore verification complete", re.IGNORECASE),
         "Live Procore verification remains environment-specific.",
     ),
+    (
+        re.compile(r"\bAsync client\b", re.IGNORECASE),
+        "Do not list an async client as completed until implemented.",
+    ),
+    (
+        re.compile(r"\bObservations\b", re.IGNORECASE),
+        "Do not list Observations coverage as completed until implemented.",
+    ),
+    (
+        re.compile(r"\bCorrespondence\b", re.IGNORECASE),
+        "Do not list Correspondence coverage as completed until implemented.",
+    ),
+    (
+        re.compile(r"\bplugin architecture\b", re.IGNORECASE),
+        "Do not list plugin architecture as completed until implemented.",
+    ),
+    (
+        re.compile(r"\bVector database examples\b", re.IGNORECASE),
+        "Do not list vector database examples as completed until implemented.",
+    ),
+    (
+        re.compile(r"\bEngineering assistant examples\b", re.IGNORECASE),
+        "Do not list engineering assistant examples as completed until implemented.",
+    ),
 )
 
 WARN_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (

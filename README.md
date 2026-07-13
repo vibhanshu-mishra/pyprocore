@@ -16,57 +16,121 @@ hardcoding credentials or requiring live Procore calls in tests.
 
 ---
 
+## Current Release Status
+
+- Published stable PyPI release: `2.1.0`
+- Prepared next release: `2.2.0`
+- `2.2.0` prepares the Phase 7 Agent API layer and is not published yet.
+- Phase 7 is included in the prepared `2.2.0` source.
+- Procore tool execution remains disabled.
+
+Install the current published stable release:
+
+```bash
+python3 -m pip install pyprocore==2.1.0
+```
+
+After `2.2.0` is published, install it with:
+
+```bash
+python3 -m pip install pyprocore==2.2.0
+```
+
+To test the current main branch before release:
+
+```bash
+git clone https://github.com/vibhanshu-mishra/pyprocore.git
+cd pyprocore
+python3 -m pip install -e .
+```
+
+---
+
+## Phase 7 Agent Layer
+
+PyProcore is becoming an open, model-agnostic agent layer for Procore
+automation. The prepared `2.2.0` source adds local-first infrastructure that
+lets assistants discover what PyProcore can do without giving them permission
+to execute Procore actions.
+
+Phase 7 includes:
+
+- Agent Tool Registry
+- Local Agent API Server
+- OpenAPI / JSON Schema Export
+- Agent Run Logs + Replay
+- Discovery-only MCP Adapter
+- Agent Evaluation Harness
+
+This layer is discovery/spec/eval/replay infrastructure. It does not call
+external AI/model APIs, does not call live Procore APIs for metadata, schema,
+MCP discovery, replay, or eval commands, and does not enable Procore tool
+execution. The MCP adapter is discovery-only.
+
+Try the local metadata and eval commands from a checkout:
+
+```bash
+PYTHONPATH=. procore-sdk agent tools
+PYTHONPATH=. procore-sdk agent manifest --json
+PYTHONPATH=. procore-sdk agent openapi --pretty
+PYTHONPATH=. procore-sdk agent schemas --pretty
+PYTHONPATH=. procore-sdk agent mcp tools --pretty
+PYTHONPATH=. procore-sdk agent evals run
+```
+
+---
+
 ## Why PyProcore
 
 Calling the Procore REST API directly means managing the OAuth handshake, refreshing expired tokens, following pagination headers, retrying failed requests, and parsing untyped JSON on every call.
 
-PyProcore does that once, correctly, behind a clean interface. You call a service method and get back a typed Pydantic object. It is designed as the foundation layer for higher-level tools built on Procore data: engineering assistants, document analysis, workflow automation, and AI-powered review.
+PyProcore does that once, correctly, behind a clean interface. You call a service method and get back a typed Pydantic object. It is designed as the foundation layer for higher-level tools built on Procore data: reporting, document analysis, workflow automation, and AI-powered review.
 
 ---
 
 ## Features
 
-**Authentication and transport**
+**Core SDK**
 
-- OAuth 2.0 authorisation-code flow
-- Automatic access-token refresh
-- Automatic pagination via Procore response headers
-- Request retries and structured logging with secret redaction
+- OAuth 2.0 authorization-code flow with refresh-token handling
+- `requests.Session` HTTP client with retries, pagination, logging, and custom exceptions
+- Typed Pydantic response models that serialize back to JSON
+- Companies, projects, RFIs, submittals, documents, drawings, specifications, photos, and Daily Logs
+- Attachment and file downloads when Procore returns usable URLs
+- Human-friendly search/resolver helpers for common resources
+- CLI diagnostics, auth helpers, examples, recipes, and mocked tests with no live Procore dependency
 
-**API coverage**
+**Workflow and AI-ready exports**
 
-- Companies
-- Projects
-- RFIs
-- Submittals
-- Documents
-- Drawings
-- Specifications
-- Photos
-- Daily Logs
-- Attachment downloads
+- CSV, JSONL, Markdown, manifest, and local folder exports
+- RFI, submittal, document, and project sync helpers
+- Project context packages for downstream review workflows
+- Enhanced RFI and submittal packages with related context
+- Local AI review exports and prompt packs that do not call AI services
+- JSON workflow-plan runner, scheduled automation examples, local webhook helpers, Docker templates, and CI dry-run templates
 
-**Developer experience**
+**Phase 7 Agent Layer, prepared for 2.2.0**
 
-- Typed Pydantic response models
-- Command-line interface
-- AI-ready project context packages
-- Enhanced RFI review packages
-- Enhanced submittal review packages
-- Mocked unit tests with no live Procore dependency
+- Agent Tool Registry
+- Local Agent API Server
+- OpenAPI / JSON Schema Export
+- Agent Run Logs + Replay
+- Discovery-only MCP Adapter
+- Agent Evaluation Harness
+- Discovery/spec/eval/replay only; no Procore tool execution and no external model calls
 
 ---
 
 ## Architecture
 
-| Package               | Responsibility                                                  |
-| --------------------- | --------------------------------------------------------------- |
-| `pyprocore/auth/`     | OAuth exchange, token persistence, token refresh                |
-| `pyprocore/core/`     | Configuration, endpoint paths, HTTP client, logging, exceptions |
-| `pyprocore/models/`   | Pydantic response models                                        |
+| Package               | Responsibility                                                                                           |
+| --------------------- | -------------------------------------------------------------------------------------------------------- |
+| `pyprocore/auth/`     | OAuth exchange, token persistence, token refresh                                                         |
+| `pyprocore/core/`     | Configuration, endpoint paths, HTTP client, logging, exceptions                                          |
+| `pyprocore/models/`   | Pydantic response models                                                                                 |
 | `pyprocore/services/` | Company, project, RFI, submittal, document, drawing, specification, photo, Daily Logs, and file services |
-| `pyprocore/parser/`   | Email parsing utilities for future automation                   |
-| `tests/`              | Mocked unit tests with no live Procore dependency               |
+| `pyprocore/parser/`   | Email parsing utilities for future automation                                                            |
+| `tests/`              | Mocked unit tests with no live Procore dependency                                                        |
 
 ---
 
@@ -313,32 +377,11 @@ photo_albums = list_photo_albums(project_id=352338)
 photos = list_photos(project_id=352338, album_id=123)
 ```
 
-Procore Documents are exposed through Project Folders and Files endpoints. PyProcore
-keeps the user-friendly `client.documents` and `list_documents()` names while
-internally sending `project_id` as a query parameter to `/rest/v1.0/folders`.
-Folder scoping uses `filters[folder_id]`.
-
-Procore Drawings are organized by drawing areas. PyProcore lists project
-drawing areas first, then lists drawings from
-`/rest/v1.0/drawing_areas/{drawing_area_id}/drawings`. Passing
-`drawing_area_id` to `get_drawing()` or `download_drawing()` uses the exact
-area-scoped endpoint. If omitted, PyProcore searches the project's drawing
-areas for backward compatibility. Drawing downloads require Procore to include a
-direct `url` or `download_url` in the drawing payload. Use
-`PYTHONPATH=. python3 scripts/smoke_drawings.py --project "$PROCORE_PROJECT_ID"`
-to inspect the live sandbox payload before building a drawing download workflow.
-
-Procore Specifications use company/project-scoped V2 endpoints. PyProcore lists
-specification sets and sections through verified collection endpoints, resolves
-individual sections by matching the list locally, and uses the verified revision
-show and download endpoints for revision workflows. Use
-`PROCORE_PROJECT_ID=352338 make smoke-specifications` to inspect live payloads
-before building a specification download workflow.
-
-Procore Photos are exposed through the Images API. PyProcore uses SDK-facing
-photo and album names, while the REST API calls albums `image_categories` and
-photos `images`. Project scoping is sent with `project_id` as a query parameter
-and `Procore-Company-Id` as a header.
+Documents, drawings, specifications, photos, and Daily Logs each have
+Procore-specific shape and permission details. See
+[API Coverage](docs/api-coverage.md), [CLI](docs/cli.md), and the task recipes
+for endpoint notes, live-verification guidance, and project/company access
+troubleshooting.
 
 Procore Daily Logs are organized by log type. PyProcore supports read-only
 counts, headers, type-specific listing, local lookup by ID/date, and grouped
@@ -463,7 +506,7 @@ package = client.automation.build_rfi_package(project_id=352338, number="15")
 ## Workflow Automation
 
 Workflow helpers create local files for reporting, handoff, and AI workflows.
-They build on the existing typed services and do not require you to 
+They build on the existing typed services and do not require you to
 request additional pages manually.
 
 ```python
@@ -656,96 +699,28 @@ files = FileDownloadService().download_attachments(
 
 ```bash
 procore-sdk companies
-procore-sdk find-company Tracker
 procore-sdk projects
-procore-sdk find-project Hospital
-procore-sdk find-project --number 001
-procore-sdk rfis --project 352338
 procore-sdk rfis --project 352338 --status open
-procore-sdk rfis --project 352338 --updated-after 2026-07-01
-procore-sdk rfi --project 352338 --id 102784
-procore-sdk find-rfi --project 352338 --number 15
-procore-sdk submittals --project 352338
 procore-sdk submittals --project 352338 --status pending
-procore-sdk submittals --project 352338 --updated-after 2026-07-01
-procore-sdk submittal --project 352338 --id 309641
-procore-sdk find-submittal --project 352338 --number 27
-procore-sdk document-folders --project 352338
-procore-sdk document-folder --project 352338 --id 123
-procore-sdk find-document-folder --project 352338 --name Drawings
-procore-sdk documents --project 352338
-procore-sdk documents --project 352338 --folder 123
-procore-sdk documents --project 352338 --recursive
-procore-sdk document --project 352338 --id 456
-procore-sdk find-document --project 352338 --filename plan.pdf
+procore-sdk find-project Hospital
+procore-sdk find-rfi --project 352338 --number 15
 procore-sdk download-rfi --project 352338 --id 102784
-procore-sdk download-submittal --project 352338 --id 309641
-procore-sdk download-document --project 352338 --id 456 --output ./documents
-procore-sdk drawing-areas --project 352338
-procore-sdk drawing-disciplines --project 352338
-procore-sdk drawings --project 352338 --current
-procore-sdk drawings --project 352338 --area 123 --current
-procore-sdk drawing --project 352338 --area 123 --id 789
-procore-sdk find-drawing --project 352338 --number S-101
-procore-sdk find-drawings --project 352338 --contains stair
-procore-sdk download-drawing --project 352338 --area 123 --id 789 --output ./drawings
-procore-sdk specification-sets --project 352338
-procore-sdk specification-sections --project 352338 --sort number
-procore-sdk specification-section --project 352338 --section 123
-procore-sdk find-specification-section --project 352338 --number "03 3000"
-procore-sdk specification-revisions --project 352338 --section 123 --per-page 1000
-procore-sdk specification-revision --project 352338 --revision 456
-procore-sdk download-specification-revision --project 352338 --revision 456 --output-dir ./specifications
-procore-sdk photo-albums --project 352338
-procore-sdk photo-album --project 352338 --album 123
-procore-sdk find-photo-album --project 352338 --name Progress
-procore-sdk photos --project 352338 --album 123 --sort=-created_at
-procore-sdk photo --project 352338 --photo 789
-procore-sdk find-photo --project 352338 --filename site.jpg
-procore-sdk download-photo --project 352338 --photo 789 --output-dir ./photos
-procore-sdk download-photo-album --project 352338 --album 123 --limit 10 --output-dir ./photos
-procore-sdk daily-log-counts --project 352338 --log-date 2026-07-10
-procore-sdk daily-log-headers --project 352338
-procore-sdk daily-log-header --project 352338 --header 123
-procore-sdk daily-logs --project 352338 --log-type manpower --log-date 2026-07-10
-procore-sdk daily-log --project 352338 --log-type notes --log 456
-procore-sdk daily-logs-date --project 352338 --log-date 2026-07-10 --types manpower,notes,delay
-procore-sdk manpower-logs --project 352338 --log-date 2026-07-10
-procore-sdk delay-log-types --project 352338
-procore-sdk package-rfi --project 352338 --id 102784
-procore-sdk package-rfi --project-name "Sandbox Test Project" --number 15
-procore-sdk package-submittal --project 352338 --id 309641
-procore-sdk package-submittal --project-name "Sandbox Test Project" --number 27
-procore-sdk export-rfis --project 352338 --output ./rfis.csv
-procore-sdk export-submittals --project 352338 --output ./submittals.csv
-procore-sdk sync-rfis --project 352338 --output ./rfi-sync
-procore-sdk sync-rfis --project 352338 --output ./rfi-sync --dry-run
-procore-sdk sync-rfis --project 352338 --output ./rfi-sync --incremental
-procore-sdk sync-submittals --project 352338 --output ./submittal-sync
-procore-sdk sync-documents --project 352338 --output ./documents
-procore-sdk sync-documents --project 352338 --output ./documents --incremental
-procore-sdk sync-documents --project 352338 --output ./documents --recursive
-procore-sdk sync-project --project 352338 --output ./project-sync
-procore-sdk sync-project --project 352338 --output ./project-sync --incremental
 procore-sdk project-context --project 352338 --company 4286480 --output ./project-context
-procore-sdk project-context --project 352338 --include rfis,submittals,daily_logs --max-items 50
 procore-sdk enhanced-rfi-package --project 352338 --company 4286480 --rfi-number 15
-procore-sdk enhanced-rfi-package --project 352338 --rfi-id 102784 --related-sections drawings,specifications,submittals
 procore-sdk enhanced-submittal-package --project 352338 --company 4286480 --submittal-number 27
-procore-sdk enhanced-submittal-package --project 352338 --submittal-id 309641 --related-sections rfis,drawings,specifications
 procore-sdk ai-review-export --package-dir ./rfi-package
 procore-sdk ai-prompt-pack --package-dir ./submittal-package --review-type submittal
 procore-sdk workflow-plan list
 procore-sdk workflow-plan validate ./workflow.json
 procore-sdk workflow-plan run ./workflow.json --dry-run
-procore-sdk workflow-plan run ./workflow.json --output-dir ./runs
+procore-sdk webhook validate examples/webhooks/rfi_created_event.json
+procore-sdk agent tools
 procore-sdk auth status
-procore-sdk auth login-url
-procore-sdk auth refresh
 ```
 
 Most CLI commands print formatted JSON. Export and sync workflow commands print
-short human-readable summaries.
+short human-readable summaries. See [CLI](docs/cli.md) for the full command
+reference.
 
 ---
 
@@ -861,22 +836,9 @@ generated outputs. Start with [Docker Automation](docs/automation/docker.md),
 [CI Automation](docs/automation/ci.md), or `examples/docker/`.
 
 Release guidance lives in [docs/release.md](docs/release.md). It covers
-versioning, validation, changelog updates, and PyPI publishing checklists. The
-current public release status is captured in
+versioning, local package validation, changelog updates, and manual publishing
+checklists. The current public release status is captured in
 [docs/project-status.md](docs/project-status.md).
-
-Maintainers can also run a local release-candidate package check before any
-manual publishing step:
-
-```bash
-make release-candidate-check
-```
-
-This builds local artifacts, inspects package metadata, installs the wheel in a
-temporary environment, and checks package exports plus `procore-sdk --help`.
-PyProcore `2.1.0` is available on PyPI now; `2.2.0` is prepared in source but
-not published yet. Publishing future releases is not automatic; see
-[docs/release.md](docs/release.md) before using TestPyPI or PyPI.
 
 ---
 
@@ -898,68 +860,9 @@ The MkDocs site links the getting started guide, authentication help, CLI usage,
 API coverage, workflows, AI review guidance, automation docs, recipes,
 contributing guidance, release guide, and changelog.
 
-Before releasing Documents changes against a new Procore environment, run the
-manual smoke helper with sandbox credentials:
-
-```bash
-PROCORE_PROJECT_ID=352338 make smoke-documents
-PYTHONPATH=. python3 scripts/smoke_documents.py --project 352338 --folder 123
-```
-
-Before relying on drawing downloads in a new Procore environment, inspect the
-live drawing payload:
-
-```bash
-PROCORE_PROJECT_ID=352338 make smoke-drawings
-PYTHONPATH=. python3 scripts/smoke_drawings.py --project 352338 --area 123 --drawing 789
-```
-
-A Drawings 403 usually means authentication succeeded, but Procore rejected the
-project/company context. Confirm the project belongs to the company, production
-vs sandbox is correct, the OAuth user has project access, the Drawings tool is
-enabled, and the user can view Drawings.
-
-Before relying on specification revision downloads in a new Procore environment,
-inspect the live specification payload:
-
-```bash
-PROCORE_PROJECT_ID=352338 make smoke-specifications
-PYTHONPATH=. python3 scripts/smoke_specifications.py --project 352338 --section 123 --revision 456
-```
-
-A Specifications 403 usually means authentication succeeded, but Procore
-rejected the project/company context. Confirm the project belongs to the
-company, the app is connected to that company, production vs sandbox is correct,
-the OAuth user has project access, the Specifications tool is enabled, and the
-user can view Specifications.
-
-Before relying on photo downloads in a new Procore environment, inspect the live
-Photos payload:
-
-```bash
-PROCORE_PROJECT_ID=352338 make smoke-photos
-PYTHONPATH=. python3 scripts/smoke_photos.py --project 352338 --album 123 --photo 456
-```
-
-A Photos 403 usually means authentication succeeded, but Procore rejected the
-project/company context. Confirm the app is connected to the company, production
-vs sandbox is correct, the Photos tool is enabled, and the user can view Photos.
-If a photo download says no URL was found, inspect the `photo` payload to see
-which URL fields Procore returned.
-
-Before relying on Daily Logs automation in a new Procore environment, inspect
-the live Daily Logs payload:
-
-```bash
-PROCORE_PROJECT_ID=352338 make smoke-daily-logs
-PYTHONPATH=. python3 scripts/smoke_daily_logs.py --project 352338 --log-date 2026-07-10 --log-type manpower
-```
-
-A Daily Logs 403 usually means authentication succeeded, but Procore rejected
-the project/company context. Confirm the app is connected to the company,
-production vs sandbox is correct, the Daily Log tool is enabled, and the user
-can view Daily Logs. Empty responses can simply mean there are no entries for
-that date or log type.
+Detailed endpoint notes, live smoke helper commands, and 403 troubleshooting
+live in [API Coverage](docs/api-coverage.md) and [CLI](docs/cli.md). The
+README stays focused on installation, safe usage, and where to go next.
 
 ---
 
@@ -1013,113 +916,42 @@ private project data. See [docs/security.md](docs/security.md) and
 
 ---
 
-## Implemented Endpoints
+## API Coverage
 
-```text
-GET /rest/v1.0/companies
-GET /rest/v1.0/companies/{company_id}/projects
-GET /rest/v1.1/projects/{project_id}/rfis
-GET /rest/v1.1/projects/{project_id}/rfis/{rfi_id}
-GET /rest/v1.1/projects/{project_id}/submittals
-GET /rest/v1.1/projects/{project_id}/submittals/{submittal_id}
-GET /rest/v1.0/folders?project_id={project_id}
-GET /rest/v1.0/folders?project_id={project_id}&filters[folder_id]={folder_id}
-GET /rest/v1.0/folders/{folder_id}?project_id={project_id}
-GET /rest/v1.0/files/{document_id}?project_id={project_id}
-GET /rest/v1.0/projects/{project_id}/drawing_areas
-GET /rest/v1.0/projects/{project_id}/drawing_areas/{drawing_area_id}
-GET /rest/v1.0/projects/{project_id}/drawing_disciplines
-GET /rest/v1.0/drawing_areas/{drawing_area_id}/drawings
-GET /rest/v1.0/drawing_areas/{drawing_area_id}/drawings/{drawing_id}
-GET /rest/v1.0/projects/{project_id}/drawing_revisions
-GET /rest/v2.0/companies/{company_id}/projects/{project_id}/specification_sets
-GET /rest/v2.1/companies/{company_id}/projects/{project_id}/specification_sections
-GET /rest/v2.1/companies/{company_id}/projects/{project_id}/specification_section_revisions
-GET /rest/v2.1/companies/{company_id}/projects/{project_id}/specification_section_revisions/{revision_id}
-GET /rest/v2.1/companies/{company_id}/projects/{project_id}/specification_section_revisions/{revision_id}/download
-GET /rest/v1.0/image_categories?project_id={project_id}
-GET /rest/v1.0/image_categories/{image_category_id}?project_id={project_id}
-GET /rest/v1.0/images?project_id={project_id}
-GET /rest/v1.0/images/{image_id}?project_id={project_id}
-```
+See [API Coverage](docs/api-coverage.md) for implemented resource families,
+endpoint notes, live-verification limitations, and Procore permission context.
 
 ---
 
 ## Roadmap
 
-### Phase 1: SDK Foundation
-- OAuth and token refresh
-- Reusable HTTP client with retries and pagination
-- Companies, projects, RFIs, and submittals
-- Typed models and attachment downloads
-- Search/resolver helpers
-- Object-oriented client interface
+### Released in 2.1.0
 
-### Phase 2: Workflow Automation
-- RFI CSV and JSONL export
-- Submittal CSV and JSONL export
-- RFI folder sync with JSON, Markdown, tracker CSV, manifest, and attachments
-- Submittal folder sync with JSON, Markdown, tracker CSV, manifest, and attachments
-- Dry-run folder sync planning
-- Incremental sync state
-- Combined project folder sync
-- Sync summary reports
-- AI-ready workflow packages
-- AI-ready project context packages
+- Core SDK: OAuth, token refresh, retries, pagination, logging, typed models, and custom exceptions
+- Procore read coverage: companies, projects, RFIs, submittals, documents, drawings, specifications, photos, and Daily Logs
+- Human-friendly resolvers and object-oriented client helpers
+- Attachment/file downloads where Procore returns usable URLs
+- Workflow exports: CSV, JSONL, sync folders, project context packages, enhanced RFI packages, enhanced submittal packages, and local AI review exports
+- Automation foundation: workflow plans, scheduled examples, webhook helpers, Docker templates, CI dry-run examples, documentation site, recipes, security docs, and release tooling
 
-### Phase 3: Expanded API Coverage
-- Documents
-- Drawings:
-  - Drawing areas
-  - Drawing disciplines
-  - Drawing list/get/find/download helpers
-  - Manual smoke-test validation
-- Specifications:
-  - Specification sets
-  - Specification sections
-  - Specification section revisions
-  - Specification revision downloads
-  - Manual smoke-test validation
-- Photos:
-  - Photo albums/image categories
-  - Photo list/get/find helpers
-  - Photo and album download helpers
-  - Manual smoke-test validation
-- Daily Logs: 
-  - Counts and headers
-  - Type-specific read-only log listing
-  - Grouped date summaries
-  - Manual smoke-test validation
-- Project Context Packages: 
-  - Read-only AI-friendly project exports
-  - JSON, JSONL, Markdown, and manifest outputs
-  - Continue-on-error section handling
-- Observations
-- Correspondence
+### Prepared for 2.2.0
 
-### Phase 4: AI and Review Workflows
-- RFI review packages
-- Submittal review packages
-- Drawing/spec context packages
-- LLM-safe JSON exports
-- Vector database examples
-- Engineering assistant examples
+- Phase 7 Agent Tool Registry
+- Local Agent API Server
+- OpenAPI / JSON Schema Export
+- Agent Run Logs + Replay
+- Discovery-only MCP Adapter
+- Local deterministic Agent Evaluation Harness
+- Safety posture: discovery/spec/eval/replay only; tool execution remains disabled
 
-### Phase 5: Developer Platform
-- Client object interface
-- Async client
-- Webhook helpers
-- Rate-limit handling
-- Advanced filter models
-- Plugin architecture
+### Future
 
-### Phase 6: Production Tooling
-- CLI doctor command
-- Sync logs
-- Manifest files
-- Retry reports
-- Scheduled sync examples
-- Docker example
+- Guarded tool execution design
+- Human approval gates
+- Write-action safety model
+- Real MCP execution only after an explicit safety design
+- Golden datasets and model-evaluation improvements
+- Private deployment patterns
 
 ### Phase 7 Agent Layer
 
