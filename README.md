@@ -904,25 +904,6 @@ endpoint notes, live-verification limitations, and Procore permission context.
 - Workflow exports: CSV, JSONL, sync folders, project context packages, enhanced RFI packages, enhanced submittal packages, and local AI review exports
 - Automation foundation: workflow plans, scheduled examples, webhook helpers, Docker templates, CI dry-run examples, documentation site, recipes, security docs, and release tooling
 
-### Prepared for 2.2.0
-
-- Phase 7 Agent Tool Registry
-- Local Agent API Server
-- OpenAPI / JSON Schema Export
-- Agent Run Logs + Replay
-- Discovery-only MCP Adapter
-- Local deterministic Agent Evaluation Harness
-- Safety posture: discovery/spec/eval/replay only; tool execution remains disabled
-
-### Future
-
-- Guarded tool execution design
-- Human approval gates
-- Write-action safety model
-- Real MCP execution only after an explicit safety design
-- Golden datasets and model-evaluation improvements
-- Private deployment patterns
-
 ### Phase 7 Agent Layer
 
 PyProcore is becoming an open, model-agnostic agent layer for Procore
@@ -952,6 +933,27 @@ PYTHONPATH=. procore-sdk agent schemas --pretty
 PYTHONPATH=. procore-sdk agent mcp tools --pretty
 PYTHONPATH=. procore-sdk agent evals run
 ```
+
+### Future
+
+## Phase 8 — Guarded Tool Execution
+- guarded execution design
+- human approval gates
+- write-action safety model
+- real MCP execution after safety design
+
+## Phase 9 — Expanded Procore + Platform Layer
+- async client
+- Observations
+- Correspondence
+- plugin architecture
+
+## Phase 10 — AI Workflows, Evals, and Deployment
+- vector DB examples
+- engineering assistant examples
+- golden datasets and model evals
+- private deployment patterns
+- richer MCP integration
 
 ---
 
