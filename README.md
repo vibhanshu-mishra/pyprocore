@@ -16,36 +16,6 @@ hardcoding credentials or requiring live Procore calls in tests.
 
 ---
 
-## Current Release Status
-
-- Published stable PyPI release: `2.1.0`
-- Prepared next release: `2.2.0`
-- `2.2.0` prepares the Phase 7 Agent API layer and is not published yet.
-- Phase 7 is included in the prepared `2.2.0` source.
-- Procore tool execution remains disabled.
-
-Install the current published stable release:
-
-```bash
-python3 -m pip install pyprocore==2.1.0
-```
-
-After `2.2.0` is published, install it with:
-
-```bash
-python3 -m pip install pyprocore==2.2.0
-```
-
-To test the current main branch before release:
-
-```bash
-git clone https://github.com/vibhanshu-mishra/pyprocore.git
-cd pyprocore
-python3 -m pip install -e .
-```
-
----
-
 ## Phase 7 Agent Layer
 
 PyProcore is becoming an open, model-agnostic agent layer for Procore
