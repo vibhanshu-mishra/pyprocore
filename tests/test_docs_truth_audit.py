@@ -87,24 +87,34 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         self.assertIn("Phase 7A: Agent Tool Registry", roadmap)
         self.assertIn("Tool execution remains disabled", roadmap)
 
-    def test_public_roadmap_does_not_mark_future_ideas_complete(self) -> None:
-        """README and roadmap should not list unimplemented ideas as completed."""
-        public_roadmap_text = "\n".join(
-            [
-                self.read_text("README.md"),
-                self.read_text("docs/roadmap.md"),
-            ]
-        )
+    def test_public_roadmap_keeps_future_ideas_in_future_section(self):
+        roadmap = Path("docs/roadmap.md").read_text(encoding="utf-8")
+        readme = Path("README.md").read_text(encoding="utf-8")
+        public_roadmap_text = f"{readme}\n{roadmap}"
 
-        for phrase in (
+        future_phrases = [
             "Async client",
             "Observations",
             "Correspondence",
-            "plugin architecture",
-            "Vector database examples",
+            "Plugin architecture",
+            "Vector DB examples",
             "Engineering assistant examples",
-        ):
-            self.assertNotIn(phrase, public_roadmap_text)
+            "Guarded tool execution",
+            "Human approval gates",
+            "Write-action safety model",
+            "Real MCP execution",
+            "Golden datasets",
+            "Private deployment patterns",
+            "Richer MCP integration",
+        ]
+
+        self.assertIn("Future", roadmap)
+        for phrase in future_phrases:
+            self.assertIn(phrase, public_roadmap_text)
+
+        completed_section = roadmap.split("Future", 1)[0]
+        for phrase in future_phrases:
+            self.assertNotIn(phrase, completed_section)
 
     def test_changelog_has_phase_7_under_2_2_0_not_2_1_0(self) -> None:
         """Changelog should place Phase 7 release notes under 2.2.0."""

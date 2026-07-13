@@ -51,9 +51,15 @@ Future work should stay safety-first and additive:
 - Human approval gates
 - Write-action safety model
 - Real MCP execution only after explicit safety design
+- Richer MCP integration
 - Golden datasets and model evals
 - Private deployment patterns
-- Richer MCP integration
+- Async client
+- Observations API support
+- Correspondence API support
+- Plugin architecture
+- Vector DB examples
+- Engineering assistant examples
 - Possible `2.3.0` or later planning
 
 Live Procore project-level behavior remains environment-specific and can vary
