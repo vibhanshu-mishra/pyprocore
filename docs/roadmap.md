@@ -33,14 +33,111 @@ Safety status for `v2.2.0`:
 
 ## Future
 
-Future work should stay safety-first and additive:
+### Phase 8 — Expanded Procore API Coverage
 
-- Guarded execution and approval gates
-- Expanded Procore coverage: Observations and Correspondence
-- Developer platform: async client and plugin architecture
-- AI workflow examples: vector DB examples and engineering assistant examples
-- Evaluation: golden datasets and model evals
-- Deployment: private deployment patterns and richer MCP integration
+Planned modules:
+
+- Observations
+- Correspondence
+- Punch Items
+- Meetings
+- Inspections
+- Incidents
+- Directory
+- Locations
+- Commitments
+- Change Events
+- Change Orders
+- Budget/financial read coverage where appropriate
+
+Focus: read-oriented coverage first.
+
+### Phase 9 — Async Client
+
+Planned features:
+
+- Async Procore client
+- Async pagination
+- Async exports
+- Async downloads
+- Batch fetch helpers
+- Concurrency limits
+- Large-project performance improvements
+
+### Phase 10 — Plugin Architecture
+
+Planned features:
+
+- Plugin registration
+- Custom tool registration
+- Custom exporters
+- Custom package builders
+- Custom workflow steps
+- Third-party integration hooks
+- Organization-specific extensions
+
+### Phase 11 — AI Workflow Examples
+
+Planned examples:
+
+- RFI review assistant
+- Submittal review assistant
+- Drawing/specification comparison assistant
+- Project context search assistant
+- Vector DB examples
+- Engineering assistant examples
+- Document Q&A package
+- Field issue summarizer
+
+PyProcore will remain model-agnostic.
+
+### Phase 12 — Golden Datasets and Agent Evals
+
+Planned features:
+
+- Golden datasets
+- Expected-output fixtures
+- Agent evaluation scenarios
+- Model comparison examples
+- Tool-selection accuracy checks
+- Safety evals
+- Regression tests
+
+### Phase 13 — Private Deployment Patterns
+
+Planned features:
+
+- Local-only deployment guide
+- Private server deployment guide
+- Docker Compose examples
+- Internal network deployment
+- Token-store strategy
+- Secrets management guide
+- Audit-log storage guide
+
+### Phase 14 — Guarded Execution Foundation
+
+Planned features:
+
+- Guarded tool execution design
+- Human approval gates
+- Write-action safety model
+- Read-only execution allowlist
+- Risk levels
+- Dry-run-first execution
+- Execution audit logs
+
+This phase should happen only after the SDK has broader read coverage and stronger evaluation infrastructure.
+
+### Phase 15 — Richer MCP Integration
+
+Planned features:
+
+- Deeper MCP integration
+- Real MCP execution only after explicit safety design
+- Approval-aware MCP tool calls
+- Execution logs
+- Deployment guidance
 
 Live Procore project-level behavior remains environment-specific and can vary
 by company, project, OAuth app installation, user permissions, enabled tools,
