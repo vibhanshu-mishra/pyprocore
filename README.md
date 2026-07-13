@@ -385,7 +385,7 @@ See [Roadmap](docs/roadmap.md).
 
 Built by **Vibhanshu Mishra, PE** — Structural Engineer at AG&E Structural Engenuity, Austin, TX.
 
-Specialising in steel and mission-critical structures, with a side focus on miscellaneous structures: stairs, platforms, and equipment supports. Building AI and automation tools for a niche that deserves better software.
+Specialising in steel and mission-critical structures. Building AI and automation tools for a niche that deserves better software.
 
 - [RISA-3D MCP Server](https://github.com/vibhanshu-mishra/risa3d-mcp-server) — Connect Claude AI to RISA-3D structural models
 - [TSD MCP Server](https://github.com/vibhanshu-mishra/tsd-mcp) — Connect Claude AI to TSD structural models
