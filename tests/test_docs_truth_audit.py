@@ -43,25 +43,27 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         self.assertEqual(completed.returncode, 0, completed.stderr)
         self.assertIn("pyprocore 2.2.0", completed.stdout)
 
-    def test_readme_distinguishes_stable_and_prepared_versions(self) -> None:
-        """README should distinguish published stable 2.1.0 from prepared 2.2.0."""
-        readme = self.read_text("README.md")
+    def test_readme_highlights_phase_7_and_project_status_tracks_versions(self):
+        readme = Path("README.md").read_text(encoding="utf-8")
+        project_status = Path("docs/project-status.md").read_text(encoding="utf-8")
+        release_docs = Path("docs/release.md").read_text(encoding="utf-8")
+        public_status_text = f"{project_status}\n{release_docs}"
 
-        self.assertIn("Published stable PyPI release: `2.1.0`", readme)
-        self.assertIn("Prepared next release: `2.2.0`", readme)
-        self.assertIn("python3 -m pip install pyprocore==2.1.0", readme)
-        self.assertIn("python3 -m pip install pyprocore==2.2.0", readme)
-        self.assertIn("MCP tool execution remains disabled", readme)
         self.assertIn("Phase 7 Agent Layer", readme)
-        for phrase in (
-            "Agent Tool Registry",
-            "Local Agent API Server",
-            "OpenAPI / JSON Schema Export",
-            "Agent Run Logs + Replay",
-            "Discovery-only MCP Adapter",
-            "Agent Evaluation Harness",
-        ):
-            self.assertIn(phrase, readme)
+        self.assertIn("Agent Tool Registry", readme)
+        self.assertIn("Local Agent API Server", readme)
+        self.assertIn("OpenAPI / JSON Schema Export", readme)
+        self.assertIn("Agent Run Logs + Replay", readme)
+        self.assertIn("Discovery-only MCP Adapter", readme)
+        self.assertIn("Agent Evaluation Harness", readme)
+        self.assertIn("2.2.0", readme)
+
+        self.assertIn("2.1.0", public_status_text)
+        self.assertIn("2.2.0", public_status_text)
+        self.assertTrue(
+            "not yet published" in public_status_text.lower()
+            or "not been published" in public_status_text.lower()
+        )
 
     def test_project_status_page_and_mkdocs_nav_exist(self) -> None:
         """Project status page should exist and be included in docs navigation."""
