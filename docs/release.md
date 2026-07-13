@@ -1,13 +1,35 @@
 # Release Guide
 
-This guide describes the local release-readiness process for PyProcore. It does
-not publish to PyPI or create GitHub releases.
+This guide describes PyProcore's release-readiness process. Release checks are
+local by default; they do not publish to PyPI and do not create GitHub releases.
 
-PyProcore `2.1.0` has been published to PyPI, verified from a clean virtual
-environment, tagged as `v2.1.0`, and released on GitHub.
+## Current Release
 
-The repository source is now prepared for `2.2.0`, which includes the completed
-Phase 7 agent-layer infrastructure. `2.2.0` has not been published to PyPI yet.
+PyProcore `2.2.0` has been published to PyPI, verified from a clean install,
+tagged as `v2.2.0`, and released on GitHub.
+
+PyProcore `2.1.0` is the previous stable release.
+
+## Verify 2.2.0
+
+To verify the published package in a clean environment:
+
+```bash
+python3 -m pip install pyprocore==2.2.0
+procore-sdk --version
+procore-sdk agent tools
+procore-sdk agent evals run
+```
+
+Expected version output:
+
+```text
+pyprocore 2.2.0
+```
+
+The agent commands above inspect local metadata and deterministic evals. They do
+not execute Procore tools, call live Procore APIs, or call external AI/model
+APIs.
 
 ## Versioning
 
@@ -20,12 +42,14 @@ PyProcore follows SemVer:
 Keep `pyproject.toml`, `pyprocore/__init__.py`, and `CHANGELOG.md` aligned when
 a release intentionally changes the package version.
 
-## Pre-release Checklist
+## Pre-release Checklist For Future Releases
 
 Run:
 
 ```bash
+python3 scripts/audit_docs_truth.py
 python3 scripts/check_release_ready.py
+python3 scripts/check_secrets.py
 make examples-check
 make test
 make coverage
@@ -33,9 +57,16 @@ make lint
 make typecheck
 python3 -m black --check .
 python3 -m isort --check-only .
+make docs-build
 ```
 
 Or run the combined target:
+
+```bash
+make quality-check
+```
+
+For a package-oriented release-readiness subset, run:
 
 ```bash
 make release-check
@@ -43,24 +74,9 @@ make release-check
 
 For the public release status summary, see [Project Status](project-status.md).
 
-## Release Checklist
-
-Before publishing a future release:
-
-- Confirm no `.env`, token store, downloads, logs, or generated workflow outputs
-  are tracked.
-- Confirm the prepared version in both `pyproject.toml` and
-  `pyprocore/__init__.py`.
-- Confirm `CHANGELOG.md` has clear entries for the release.
-- Confirm `README.md` installation, authentication, examples, and security
-  notes are current.
-- Confirm `pyproject.toml` metadata, dependencies, classifiers, and project URLs
-  are accurate.
-- Confirm package imports and CLI imports work locally.
-
 ## Release Candidate Validation
 
-Before publishing `2.2.0` or any future release to TestPyPI or PyPI, build and inspect
+Before publishing a future release to TestPyPI or PyPI, build and inspect
 release artifacts locally:
 
 ```bash
@@ -81,8 +97,9 @@ The release-candidate checker:
 - Installs the built wheel into a clean temporary virtual environment.
 - Falls back to a local-dependency install check with a warning when an offline
   environment cannot resolve runtime dependencies.
-- Verifies `import pyprocore`, important public exports, and
-  `procore-sdk --help`.
+- Verifies `import pyprocore`, important public exports, and `procore-sdk --help`.
+
+The release-candidate check does not publish anything.
 
 If `twine` is not installed, the checker warns by default. Use strict mode when
 you want missing optional release tooling to fail the check:
@@ -91,31 +108,22 @@ you want missing optional release tooling to fail the check:
 python3 scripts/check_release_candidate.py --strict
 ```
 
-To inspect the generated artifacts manually, keep them after validation:
+Do not commit `dist/`, `build/`, `*.egg-info/`, temporary virtual environments,
+credentials, token stores, logs, downloads, or generated workflow outputs.
 
-```bash
-python3 scripts/check_release_candidate.py --keep-artifacts
-ls dist/
-```
+## Publishing Checklist For Future Releases
 
-Do not commit `dist/`, `build/`, `*.egg-info/`, temporary virtual
-environments, credentials, token stores, logs, downloads, or generated workflow
-outputs. The release-candidate check does not publish anything and does not
-create a GitHub release.
+Publishing is intentionally manual. Running release checks does not publish to
+PyPI and does not create a GitHub release.
 
-## PyPI Publishing Checklist
-
-Publishing is intentionally manual for now. Running the release checks does not
-publish to PyPI and does not create a GitHub release.
-
-For the prepared `2.2.0` release, use this order when the project is ready:
+For future releases, use this order:
 
 1. Run the docs truth audit.
 2. Run release-candidate validation.
 3. Upload to TestPyPI first.
 4. Install from TestPyPI in a fresh virtual environment.
 5. Run `procore-sdk --help`, `procore-sdk --version`, and import `pyprocore`.
-6. Publish to PyPI only after the TestPyPI check succeeds.
+6. Publish to real PyPI only after the TestPyPI check succeeds.
 7. Create the Git tag.
 8. Create the GitHub release.
 9. Perform post-release documentation cleanup.
@@ -123,46 +131,21 @@ For the prepared `2.2.0` release, use this order when the project is ready:
 Do not upload real `.env` files, OAuth token stores, logs, downloads, workflow
 runs, webhook event stores, or generated AI/export folders.
 
-## 2.1.0 Release Completed
+## 2.2.0 Release Completed
 
-The `2.1.0` release has already been completed. Do not publish it again.
+The `2.2.0` release has already been completed. Do not publish it again and do
+not create another `v2.2.0` GitHub release.
 
-To verify the published package:
+Completed release steps:
 
-```bash
-python3 -m pip install pyprocore==2.1.0
-procore-sdk --version
-```
-
-Expected output:
-
-```text
-pyprocore 2.1.0
-```
-
-For future releases, repeat the full validation flow, upload to TestPyPI first,
-verify a clean install, publish to real PyPI only after final confirmation, then
-create the Git tag and GitHub release.
-
-## 2.2.0 Release Prepared
-
-The `2.2.0` release is prepared in source but has not been published. Do not
-claim it is available on PyPI until the TestPyPI, PyPI, tag, and GitHub release
-steps are completed.
-
-To verify the prepared source locally:
-
-```bash
-PYTHONPATH=. procore-sdk --version
-python3 scripts/audit_docs_truth.py
-make release-candidate-check
-```
-
-Expected local source version:
-
-```text
-pyprocore 2.2.0
-```
+- PyPI release completed.
+- PyPI publication completed.
+- Clean install verification completed.
+- CLI version check completed.
+- Phase 7 local agent metadata/eval commands verified.
+- Git tag `v2.2.0` created.
+- GitHub release created.
+- Post-release documentation cleanup completed.
 
 ## Changelog Updates
 
@@ -174,6 +157,7 @@ Group entries under:
 - `Changed`
 - `Fixed`
 - `Docs`
+- `Security`
 - `Tests`
 
 When cutting a release, move relevant unreleased entries under the new version

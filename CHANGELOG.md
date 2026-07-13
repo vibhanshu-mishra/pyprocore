@@ -11,8 +11,9 @@ No unreleased changes yet.
 
 ## [2.2.0] - 2026-07-12
 
-PyProcore 2.2.0 is prepared for release and includes the completed Phase 7
-agent-layer infrastructure. This release has not been published to PyPI yet.
+PyProcore 2.2.0 is a released, additive update that includes the completed
+Phase 7 Agent Layer. It has been published to PyPI, tagged as `v2.2.0`, and
+released on GitHub.
 
 ### Added
 

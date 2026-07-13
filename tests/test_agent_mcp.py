@@ -326,7 +326,7 @@ class AgentMCPTestCase(unittest.TestCase):
         self.assertIn("False", combined)
 
     def test_version_remains_210(self) -> None:
-        """Phase 7E should use the prepared package version."""
+        """Phase 7E should use the released package version."""
         self.assertEqual(__version__, "2.2.0")
 
     def test_mcp_server_info_is_discovery_only(self) -> None:

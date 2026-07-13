@@ -9,10 +9,11 @@ PyProcore focuses on safe, read-oriented automation. It is designed for listing,
 retrieving, downloading, exporting, packaging, and reviewing project information
 locally. The current workflow examples do not mutate Procore data.
 
-Current published stable release: `2.1.0`.
+Current stable release: `2.2.0`.
 
-Prepared next release: `2.2.0`, which includes the completed Phase 7
-agent-layer infrastructure. `2.2.0` has not been published to PyPI yet.
+PyProcore `2.2.0` includes the completed Phase 7 Agent Layer: local discovery,
+schema, replay, MCP discovery, and deterministic eval infrastructure for future
+assistant integrations. Tool execution remains disabled.
 
 ## What PyProcore Can Do
 

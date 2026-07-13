@@ -22,14 +22,14 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         return (PROJECT_ROOT / relative_path).read_text(encoding="utf-8")
 
     def test_source_version_is_2_2_0(self) -> None:
-        """Package and pyproject versions should be prepared as 2.2.0."""
+        """Package and pyproject versions should remain at 2.2.0."""
         pyproject = tomllib.loads(self.read_text("pyproject.toml"))
 
         self.assertEqual(pyprocore.__version__, "2.2.0")
         self.assertEqual(pyproject["project"]["version"], "2.2.0")
 
     def test_cli_version_returns_2_2_0(self) -> None:
-        """The CLI version output should reflect the prepared source version."""
+        """The CLI version output should reflect the package version."""
         env = {**os.environ, "PYTHONPATH": str(PROJECT_ROOT)}
         completed = subprocess.run(
             [sys.executable, "-m", "pyprocore.app", "--version"],
@@ -43,27 +43,22 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         self.assertEqual(completed.returncode, 0, completed.stderr)
         self.assertIn("pyprocore 2.2.0", completed.stdout)
 
-    def test_readme_highlights_phase_7_and_project_status_tracks_versions(self):
-        readme = Path("README.md").read_text(encoding="utf-8")
-        project_status = Path("docs/project-status.md").read_text(encoding="utf-8")
-        release_docs = Path("docs/release.md").read_text(encoding="utf-8")
-        public_status_text = f"{project_status}\n{release_docs}"
+    def test_readme_positions_sdk_automation_and_agent_layer(self) -> None:
+        """README should explain the SDK, automation toolkit, and agent layer."""
+        readme = self.read_text("README.md")
 
+        self.assertIn("open-source Python SDK, automation toolkit, and agent-ready", readme)
+        self.assertIn("python3 -m pip install pyprocore==2.2.0", readme)
         self.assertIn("Phase 7 Agent Layer", readme)
-        self.assertIn("Agent Tool Registry", readme)
-        self.assertIn("Local Agent API Server", readme)
-        self.assertIn("OpenAPI / JSON Schema Export", readme)
-        self.assertIn("Agent Run Logs + Replay", readme)
-        self.assertIn("Discovery-only MCP Adapter", readme)
-        self.assertIn("Agent Evaluation Harness", readme)
-        self.assertIn("2.2.0", readme)
-
-        self.assertIn("2.1.0", public_status_text)
-        self.assertIn("2.2.0", public_status_text)
-        self.assertTrue(
-            "not yet published" in public_status_text.lower()
-            or "not been published" in public_status_text.lower()
-        )
+        for phrase in (
+            "Agent Tool Registry",
+            "Local Agent API Server",
+            "OpenAPI / JSON Schema Export",
+            "Agent Run Logs + Replay",
+            "Discovery-only MCP Adapter",
+            "Agent Evaluation Harness",
+        ):
+            self.assertIn(phrase, readme)
 
     def test_project_status_page_and_mkdocs_nav_exist(self) -> None:
         """Project status page should exist and be included in docs navigation."""
@@ -71,8 +66,9 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         mkdocs = self.read_text("mkdocs.yml")
         index = self.read_text("docs/index.md")
 
-        self.assertIn("Published stable release: `2.1.0`", status)
-        self.assertIn("Prepared next release: `2.2.0`", status)
+        self.assertIn("Current stable release: `2.2.0`", status)
+        self.assertIn("Previous stable release: `2.1.0`", status)
+        self.assertIn("PyPI release completed", self.read_text("docs/release.md"))
         self.assertIn("Tool execution remains disabled", status)
         self.assertIn("MCP adapter remains discovery-only", status)
         self.assertIn("project-status.md", mkdocs)
@@ -80,45 +76,29 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         self.assertNotIn("final-release-readiness.md", mkdocs)
         self.assertFalse((PROJECT_ROOT / "docs/final-release-readiness.md").exists())
 
-    def test_roadmap_marks_phase_7_prepared_for_2_2_0(self) -> None:
-        """Roadmap should show Phase 7 as completed and prepared for 2.2.0."""
+    def test_roadmap_places_future_items_under_future(self) -> None:
+        """Roadmap should separate released and future work."""
         roadmap = self.read_text("docs/roadmap.md")
+        completed_section = roadmap.split("## Future", 1)[0]
+        future_section = roadmap.split("## Future", 1)[1]
 
-        self.assertIn("Released in 2.1.0", roadmap)
-        self.assertIn("Prepared for 2.2.0", roadmap)
-        self.assertIn("Phase 7A: Agent Tool Registry", roadmap)
-        self.assertIn("Tool execution remains disabled", roadmap)
-
-    def test_public_roadmap_keeps_future_ideas_in_future_section(self):
-        roadmap = Path("docs/roadmap.md").read_text(encoding="utf-8")
-        readme = Path("README.md").read_text(encoding="utf-8")
-        public_roadmap_text = f"{readme}\n{roadmap}"
-
-        future_phrases = [
-            "Async client",
+        self.assertIn("### v2.2.0", roadmap)
+        self.assertIn("Phase 7 Agent Layer", completed_section)
+        for phrase in (
             "Observations",
             "Correspondence",
-            "Plugin architecture",
-            "Vector DB examples",
-            "Engineering assistant examples",
-            "Guarded tool execution",
-            "Human approval gates",
-            "Write-action safety model",
-            "Real MCP execution",
-            "Golden datasets",
-            "Private deployment patterns",
-            "Richer MCP integration",
-        ]
-
-        self.assertIn("Future", roadmap)
-        for phrase in future_phrases:
-            self.assertIn(phrase, public_roadmap_text)
-
-        completed_section = roadmap.split("Future", 1)[0]
-        for phrase in future_phrases:
+            "async client",
+            "plugin architecture",
+            "vector DB examples",
+            "engineering assistant examples",
+            "golden datasets",
+            "private deployment patterns",
+            "richer MCP integration",
+        ):
+            self.assertIn(phrase, future_section)
             self.assertNotIn(phrase, completed_section)
 
-    def test_changelog_has_phase_7_under_2_2_0_not_2_1_0(self) -> None:
+    def test_changelog_has_released_2_2_0_section(self) -> None:
         """Changelog should place Phase 7 release notes under 2.2.0."""
         changelog = self.read_text("CHANGELOG.md")
         section_2_2 = changelog.split("## [2.2.0] - 2026-07-12", 1)[1].split(
@@ -127,22 +107,24 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         )[0]
         section_2_1 = changelog.split("## [2.1.0] - 2026-07-11", 1)[1]
 
+        self.assertIn("published to PyPI", section_2_2)
         self.assertIn("Phase 7A agent tool registry", section_2_2)
         self.assertIn("Phase 7F local deterministic agent eval harness", section_2_2)
         self.assertNotIn("Phase 7A", section_2_1)
         self.assertNotIn("Phase 7F", section_2_1)
 
-    def test_examples_readme_separates_stable_and_agent_examples(self) -> None:
-        """Examples README should separate 2.1.0-era and 2.2.0 agent examples."""
+    def test_examples_readme_documents_agent_examples_as_released(self) -> None:
+        """Examples README should describe 53-63 as v2.2.0 agent examples."""
         examples = self.read_text("examples/README.md")
 
         self.assertIn("Examples `01` through `52`", examples)
         self.assertIn("Examples `53` through `63`", examples)
-        self.assertIn("prepared for `2.2.0`", examples)
+        self.assertIn("cover the `v2.2.0` Phase 7", examples)
         self.assertIn("do not require Procore credentials or execute tools", examples)
+        self.assertNotIn("prepared for `2.2.0`", examples)
 
-    def test_docs_do_not_claim_2_2_0_is_published_or_execution_enabled(self) -> None:
-        """Docs should not overstate publication, live verification, or execution."""
+    def test_docs_do_not_claim_unpublished_state_or_execution_enabled(self) -> None:
+        """Docs should not keep stale pre-release or unsafe execution claims."""
         docs = "\n".join(
             path.read_text(encoding="utf-8")
             for path in [PROJECT_ROOT / "README.md", PROJECT_ROOT / "CHANGELOG.md"]
@@ -151,8 +133,10 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         )
 
         forbidden = (
-            "2.2.0 has been published",
-            "2.1.0 includes Phase 7",
+            "2.2.0 has not been published",
+            "2.2.0 is prepared",
+            "prepared next release",
+            "current stable PyPI release: `2.1.0`",
             "tool execution enabled",
             "MCP execution enabled",
             "live Procore verification complete",

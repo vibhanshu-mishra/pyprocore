@@ -1,6 +1,6 @@
 # PyProcore
 
-> PyProcore is the open-source automation layer for Procore built for developers, consultants, and construction teams who want typed API access, reliable file downloads, project exports, and AI-ready workflow packages without rebuilding OAuth, pagination, retries, and Procore-specific plumbing.
+> PyProcore is an open-source Python SDK, automation toolkit, and agent-ready infrastructure layer for Procore.
 
 [![PyPI](https://img.shields.io/pypi/v/pyprocore.svg)](https://pypi.org/project/pyprocore/)
 ![Python](https://img.shields.io/badge/python-3.12%2B-blue.svg)
@@ -8,192 +8,46 @@
 [![Tests](https://github.com/vibhanshu-mishra/pyprocore/actions/workflows/tests.yml/badge.svg)](https://github.com/vibhanshu-mishra/pyprocore/actions/workflows/tests.yml)
 ![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)
 
-PyProcore handles the parts of a Procore integration that are tedious and easy to get wrong, like OAuth, token refresh, pagination, retries, typed responses, structured logging, and attachment downloads, so you work with Python objects instead of raw JSON and API plumbing.
+PyProcore helps developers, consultants, and construction teams build safe Procore integrations without rebuilding OAuth, token refresh, pagination, retries, typed response parsing, file downloads, exports, and local automation plumbing from scratch.
 
-It is built for safe read-oriented automation: project exports, local syncs,
-workflow packages, AI-ready review folders, and CLI-driven diagnostics without
-hardcoding credentials or requiring live Procore calls in tests.
-
----
-
-## Phase 7 Agent Layer
-
-PyProcore is becoming an open, model-agnostic agent layer for Procore
-automation. The prepared `2.2.0` source adds local-first infrastructure that
-lets assistants discover what PyProcore can do without giving them permission
-to execute Procore actions.
-
-Phase 7 includes:
-
-- Agent Tool Registry
-- Local Agent API Server
-- OpenAPI / JSON Schema Export
-- Agent Run Logs + Replay
-- Discovery-only MCP Adapter
-- Agent Evaluation Harness
-
-This layer is discovery/spec/eval/replay infrastructure. It does not call
-external AI/model APIs, does not call live Procore APIs for metadata, schema,
-MCP discovery, replay, or eval commands, and does not enable Procore tool
-execution. The MCP adapter is discovery-only.
-
-Try the local metadata and eval commands from a checkout:
+It is model-agnostic, local-first, and safety-first. The current stable release, `2.2.0`, includes the Phase 7 Agent Layer: local discovery/spec/eval/replay infrastructure for future assistant workflows. Procore tool execution remains disabled, the MCP adapter is discovery-only, and Phase 7 commands do not call external AI/model APIs.
 
 ```bash
-PYTHONPATH=. procore-sdk agent tools
-PYTHONPATH=. procore-sdk agent manifest --json
-PYTHONPATH=. procore-sdk agent openapi --pretty
-PYTHONPATH=. procore-sdk agent schemas --pretty
-PYTHONPATH=. procore-sdk agent mcp tools --pretty
-PYTHONPATH=. procore-sdk agent evals run
+python3 -m pip install pyprocore==2.2.0
 ```
 
 ---
 
-## Why PyProcore
+## What PyProcore Does
 
-Calling the Procore REST API directly means managing the OAuth handshake, refreshing expired tokens, following pagination headers, retrying failed requests, and parsing untyped JSON on every call.
+PyProcore turns Procore REST API responses into typed Python objects and gives you a practical toolkit for read-oriented automation:
 
-PyProcore does that once, correctly, behind a clean interface. You call a service method and get back a typed Pydantic object. It is designed as the foundation layer for higher-level tools built on Procore data: reporting, document analysis, workflow automation, and AI-powered review.
+- Authenticate with Procore through OAuth 2.0 and refresh tokens automatically.
+- Work with typed Pydantic models instead of raw JSON dictionaries.
+- List, fetch, search, export, sync, and download supported Procore resources.
+- Build local review packages for RFIs, submittals, documents, and project context.
+- Use CLI diagnostics and automation commands without hardcoding credentials.
+- Expose local agent metadata, OpenAPI/JSON Schema, run logs, replay, MCP discovery, and deterministic evals for future assistant integrations.
 
----
-
-## Features
-
-**Core SDK**
-
-- OAuth 2.0 authorization-code flow with refresh-token handling
-- `requests.Session` HTTP client with retries, pagination, logging, and custom exceptions
-- Typed Pydantic response models that serialize back to JSON
-- Companies, projects, RFIs, submittals, documents, drawings, specifications, photos, and Daily Logs
-- Attachment and file downloads when Procore returns usable URLs
-- Human-friendly search/resolver helpers for common resources
-- CLI diagnostics, auth helpers, examples, recipes, and mocked tests with no live Procore dependency
-
-**Workflow and AI-ready exports**
-
-- CSV, JSONL, Markdown, manifest, and local folder exports
-- RFI, submittal, document, and project sync helpers
-- Project context packages for downstream review workflows
-- Enhanced RFI and submittal packages with related context
-- Local AI review exports and prompt packs that do not call AI services
-- JSON workflow-plan runner, scheduled automation examples, local webhook helpers, Docker templates, and CI dry-run templates
-
-**Phase 7 Agent Layer, prepared for 2.2.0**
-
-- Agent Tool Registry
-- Local Agent API Server
-- OpenAPI / JSON Schema Export
-- Agent Run Logs + Replay
-- Discovery-only MCP Adapter
-- Agent Evaluation Harness
-- Discovery/spec/eval/replay only; no Procore tool execution and no external model calls
-
----
-
-## Architecture
-
-| Package               | Responsibility                                                                                           |
-| --------------------- | -------------------------------------------------------------------------------------------------------- |
-| `pyprocore/auth/`     | OAuth exchange, token persistence, token refresh                                                         |
-| `pyprocore/core/`     | Configuration, endpoint paths, HTTP client, logging, exceptions                                          |
-| `pyprocore/models/`   | Pydantic response models                                                                                 |
-| `pyprocore/services/` | Company, project, RFI, submittal, document, drawing, specification, photo, Daily Logs, and file services |
-| `pyprocore/parser/`   | Email parsing utilities for future automation                                                            |
-| `tests/`              | Mocked unit tests with no live Procore dependency                                                        |
-
----
-
-## Installation
-
-Requires Python 3.12+. The latest published stable package is currently
-`2.1.0`; the repository source is prepared for `2.2.0`.
-
-```bash
-python3 -m pip install pyprocore==2.1.0
-```
-
-For local development:
-
-```bash
-git clone https://github.com/vibhanshu-mishra/pyprocore.git
-cd pyprocore
-python3 -m venv .venv
-python3 -m pip install --upgrade pip
-python3 -m pip install -e .
-```
-
-When testing unreleased local CLI changes, run commands with `PYTHONPATH=.` so
-Python resolves the local checkout before any installed copy:
-
-```bash
-PYTHONPATH=. procore-sdk --help
-PYTHONPATH=. procore-sdk doctor
-PYTHONPATH=. procore-sdk auth status
-PYTHONPATH=. python3 -m pyprocore.app --help
-```
+PyProcore is independent and not affiliated with or endorsed by Procore Technologies.
 
 ---
 
 ## Quick Start
 
-```bash
-python3 -m pip install pyprocore
-cp .env.example .env
-procore-sdk doctor
-procore-sdk auth login-url
-```
-
-Open the login URL, approve access, then exchange the returned authorization
-code:
+Install the current stable release:
 
 ```bash
-procore-sdk auth exchange-code YOUR_AUTHORIZATION_CODE
-procore-sdk companies
+python3 -m pip install pyprocore==2.2.0
 ```
 
-Do not commit `.env`, token stores, logs, downloads, or generated workflow
-outputs. PyProcore redacts secrets in SDK logs, but you should still keep local
-configuration and OAuth tokens private.
-
----
-
-## Quick Example
-
-Function style:
-
-```python
-from pyprocore.services import list_projects
-
-projects = list_projects(company_id=123456)
-
-for project in projects:
-    print(project.name)
-```
-
-Client style:
-
-```python
-from pyprocore import Procore
-
-client = Procore()
-projects = client.projects.list(company_id=123456)
-
-for project in projects:
-    print(project.name)
-```
-
----
-
-## Configuration
-
-Copy the example file and fill in real values:
+Create a `.env` file:
 
 ```bash
 cp .env.example .env
 ```
 
-Required variables:
+Fill in your Procore OAuth and API values:
 
 ```bash
 PROCORE_CLIENT_ID=your_client_id
@@ -204,373 +58,123 @@ PROCORE_API_BASE=https://api.procore.com
 PROCORE_COMPANY_ID=123456
 ```
 
-PyProcore loads `.env` automatically from your current working directory and
-does not override environment variables that are already set.
-
-Secrets, tokens, URLs, and company IDs are never hardcoded in source.
-
----
-
-## Authentication
-
-Use the auth helper commands to inspect and repair local setup:
+Check setup and complete OAuth:
 
 ```bash
 procore-sdk doctor
 procore-sdk auth login-url
 procore-sdk auth exchange-code YOUR_AUTHORIZATION_CODE
-procore-sdk auth status
-procore-sdk auth refresh
+procore-sdk companies
 ```
 
-First, run `procore-sdk auth login-url` and open the printed URL. After you
-approve access, Procore redirects to your redirect URI with a `code` value. Copy
-that value and run `procore-sdk auth exchange-code YOUR_AUTHORIZATION_CODE` to
-save tokens locally.
-
-After that, SDK clients read the token automatically:
-
-```python
-from pyprocore.auth.token_manager import get_access_token
-
-access_token = get_access_token()
-```
-
-Expired access tokens refresh automatically whenever a refresh token is available.
-You can also refresh manually with `procore-sdk auth refresh`.
+PyProcore loads `.env` from the current working directory and does not override environment variables that are already set.
 
 ---
 
-## Usage
+## Feature Overview
 
-Once `.env` is configured and the one-time OAuth exchange is complete, calls return typed objects:
+### Core SDK
 
-```python
-from pyprocore.services import list_projects
+- OAuth 2.0 authorization-code flow
+- Automatic token refresh
+- Typed Pydantic models
+- `requests.Session` transport
+- Retries and transient failure handling
+- Automatic pagination
+- Structured logging with secret redaction
+- Custom SDK exceptions
+- Object-oriented `Procore` client
+- Function-style service helpers
+- Human-friendly resolver/search helpers
+- CLI diagnostics and auth helpers
 
-for project in list_projects(company_id=123456):
-    print(project.name)
-```
+### Procore API Coverage
 
-You can also use the object-oriented client interface:
+PyProcore is mostly read-oriented and built for safe automation. Current supported resource families include:
+
+- Companies
+- Projects
+- RFIs
+- Submittals
+- Documents
+- Drawings
+- Specifications
+- Photos
+- Daily Logs
+- Attachments and files when Procore returns usable URLs
+
+See [API Coverage](docs/api-coverage.md) for endpoint notes, live-verification limitations, and Procore permission context.
+
+### Workflow Automation
+
+- CSV exports
+- JSONL exports
+- Local folder sync
+- Document sync
+- Project sync
+- Incremental sync state
+- Workflow plans
+- Scheduled sync examples
+- Local webhook helpers
+- Docker and CI examples
+
+Workflow helpers create local files and do not mutate Procore data.
+
+### AI-Ready Local Packages
+
+- Project context packages
+- Enhanced RFI packages
+- Enhanced submittal packages
+- AI review exports
+- AI prompt packs
+- JSON, JSONL, Markdown, manifest, source-index, prompt, and checklist files
+
+AI-ready package builders write local files only. They do not call external AI/model services by default.
+
+### Phase 7 Agent Layer
+
+Included in `v2.2.0`:
+
+- Agent Tool Registry
+- Local agent API server
+- OpenAPI / JSON Schema Export
+- Agent Run Logs + Replay
+- Discovery-only MCP Adapter
+- Agent Evaluation Harness
+
+The Phase 7 layer is local-first discovery/spec/eval/replay infrastructure. Tool execution remains disabled, MCP remains discovery-only, evals are local and deterministic, and metadata/schema/replay/MCP/eval commands do not call live Procore APIs.
+
+---
+
+## Python Examples
+
+Use the object client:
 
 ```python
 from pyprocore import Procore
 
 client = Procore()
 
-companies = client.companies.list()
 projects = client.projects.list(company_id=123456)
-rfi = client.rfis.get(project_id=352338, rfi_id=102784)
+for project in projects:
+    print(project.id, project.name)
+```
+
+List RFIs and submittals:
+
+```python
+from pyprocore import Procore
+
+client = Procore()
+
 open_rfis = client.rfis.list(project_id=352338, status="open")
 pending_submittals = client.submittals.list(project_id=352338, status="pending")
-documents = client.documents.list(project_id=352338)
-documents_recursive = client.documents.list(project_id=352338, recursive=True)
-document = client.documents.get(project_id=352338, document_id=456)
-drawing_areas = client.drawings.list_areas(project_id=352338)
-drawings = client.drawings.list(project_id=352338, drawing_area_id=123, current=True)
-drawing = client.drawings.get(project_id=352338, drawing_id=789, drawing_area_id=123)
-specification_sets = client.specifications.list_sets(project_id=352338)
-specification_sections = client.specifications.list_sections(project_id=352338)
-specification_section = client.specifications.find_section(
-    project_id=352338,
-    number="03 3000",
-)
-photo_albums = client.photos.list_albums(project_id=352338)
-photos = client.photos.list(project_id=352338, album_id=123)
-photo = client.photos.get(project_id=352338, photo_id=789)
+
+print(len(open_rfis))
+print(len(pending_submittals))
 ```
 
-Full service surface:
-
-```python
-from pyprocore.services import (
-    download_rfi_attachments,
-    download_submittal_attachments,
-    download_document,
-    download_drawing,
-    get_document,
-    get_document_folder,
-    get_drawing,
-    get_drawing_area,
-    get_rfi,
-    get_submittal,
-    list_companies,
-    list_document_folders,
-    list_documents,
-    list_drawing_areas,
-    list_drawing_disciplines,
-    list_drawings,
-    list_photo_albums,
-    list_photos,
-    list_projects,
-    list_rfis,
-    list_specification_section_revisions,
-    list_specification_sections,
-    list_specification_sets,
-    list_submittals,
-)
-
-companies = list_companies()
-projects = list_projects(company_id=123456)
-
-rfis = list_rfis(project_id=352338)
-open_rfis = list_rfis(project_id=352338, status="open")
-rfi = get_rfi(project_id=352338, rfi_id=102784)
-first_attachment_url = rfi.questions[0].attachments[0].url
-
-submittals = list_submittals(project_id=352338)
-pending_submittals = list_submittals(project_id=352338, status="pending")
-submittal = get_submittal(project_id=352338, submittal_id=309641)
-
-folders = list_document_folders(project_id=352338)
-documents = list_documents(project_id=352338)
-folder_documents = list_documents(project_id=352338, folder_id=123)
-all_documents = list_documents(project_id=352338, recursive=True)
-document = get_document(project_id=352338, document_id=456)
-saved_document = download_document(project_id=352338, document_id=456)
-
-drawing_areas = list_drawing_areas(project_id=352338)
-drawing_disciplines = list_drawing_disciplines(project_id=352338)
-drawings = list_drawings(project_id=352338, current=True)
-area_drawings = list_drawings(project_id=352338, drawing_area_id=123)
-drawing = get_drawing(project_id=352338, drawing_id=789, drawing_area_id=123)
-saved_drawing = download_drawing(project_id=352338, drawing_id=789, drawing_area_id=123)
-
-specification_sets = list_specification_sets(project_id=352338)
-specification_sections = list_specification_sections(project_id=352338, sort="number")
-specification_revisions = list_specification_section_revisions(
-    project_id=352338,
-    per_page=1000,
-)
-photo_albums = list_photo_albums(project_id=352338)
-photos = list_photos(project_id=352338, album_id=123)
-```
-
-Documents, drawings, specifications, photos, and Daily Logs each have
-Procore-specific shape and permission details. See
-[API Coverage](docs/api-coverage.md), [CLI](docs/cli.md), and the task recipes
-for endpoint notes, live-verification guidance, and project/company access
-troubleshooting.
-
-Procore Daily Logs are organized by log type. PyProcore supports read-only
-counts, headers, type-specific listing, local lookup by ID/date, and grouped
-date summaries:
-
-```python
-from pyprocore import Procore, list_manpower_logs
-
-client = Procore()
-counts = client.daily_logs.counts(project_id=352338)
-headers = client.daily_logs.headers(project_id=352338, log_date="2026-07-10")
-manpower = list_manpower_logs(project_id=352338, log_date="2026-07-10")
-summary = client.daily_logs.list_for_date(
-    project_id=352338,
-    log_date="2026-07-10",
-    log_types=["manpower", "notes", "delay"],
-)
-```
-
-Project context packages gather available project data into a local AI-friendly
-folder with JSON, JSONL, Markdown summaries, a manifest, and recorded section
-errors:
-
-```python
-from pyprocore.workflows import build_project_context_package
-
-result = build_project_context_package(
-    project_id=352338,
-    company_id=4286480,
-    output_dir="project-context",
-    include=["project", "rfis", "submittals", "daily_logs"],
-    max_items=100,
-)
-print(result.summary_path)
-```
-
-RFI and submittal list calls also accept optional date filters:
-
-```python
-recent_rfis = list_rfis(project_id=352338, updated_after="2026-07-01")
-recent_submittals = client.submittals.list(
-    project_id=352338,
-    updated_after="2026-07-01",
-)
-```
-
-Human-friendly resolvers are available when you do not already know Procore IDs:
-
-```python
-from pyprocore import (
-    find_company,
-    find_document,
-    find_document_folder,
-    find_drawing,
-    find_drawings_contains,
-    find_specification_section,
-    find_project,
-    find_rfi,
-    find_submittal,
-)
-from pyprocore.services import find_project_contains
-
-company = find_company("Tracker")
-project = find_project("Sandbox Test Project")
-project_by_number = find_project(number="001")
-hospital_project = find_project_contains("Hospital")
-
-rfi = find_rfi(project_id=352338, number="15")
-submittal = find_submittal(project_id=352338, number="27")
-folder = find_document_folder(project_id=352338, name="Drawings")
-document = find_document(project_id=352338, filename="plan.pdf")
-drawing = find_drawing(project_id=352338, number="S-101")
-stair_drawings = find_drawings_contains(project_id=352338, text="stair")
-spec_section = find_specification_section(project_id=352338, number="03 3000")
-```
-
-Resolvers use case-insensitive exact matching first, then partial matching. They raise `NotFoundError`, `DuplicateMatchError`, or `MultipleResultsError` when a lookup cannot produce exactly one typed result.
-
-## Automation Layer
-
-The automation layer builds a single typed package for downstream workflows. It resolves project and item identifiers, fetches full metadata, optionally downloads attachments, and returns one JSON-serializable `WorkflowPackage`.
-
-```python
-from pyprocore.automation import AutomationInput, build_workflow_package
-
-package = build_workflow_package(
-    AutomationInput(
-        project_name="Sandbox Test Project",
-        item_type="rfi",
-        item_number="15",
-    )
-)
-
-print(package.title)
-print(package.attachments)
-```
-
-Convenience builders are available when you already know the workflow type:
-
-```python
-from pyprocore.automation import build_rfi_package, build_submittal_package
-
-rfi_package = build_rfi_package(project_id=352338, rfi_id=102784)
-submittal_package = build_submittal_package(
-    project_name="Sandbox Test Project",
-    number="27",
-    download_attachments=False,
-)
-```
-
-Default attachment output directories are created under `downloads/`, for example `downloads/rfi_15/` or `downloads/submittal_27/`. Pass `output_dir` to choose a custom destination.
-
-The object client exposes the same builders:
-
-```python
-from pyprocore import Procore
-
-client = Procore()
-package = client.automation.build_rfi_package(project_id=352338, number="15")
-```
-
-## Workflow Automation
-
-Workflow helpers create local files for reporting, handoff, and AI workflows.
-They build on the existing typed services and do not require you to
-request additional pages manually.
-
-```python
-from pyprocore.workflows import export_rfis_to_csv, sync_rfis_to_folder
-
-csv_path = export_rfis_to_csv(
-    project_id=352338,
-    output_path="exports/rfis.csv",
-    status="open",
-)
-
-sync_result = sync_rfis_to_folder(
-    project_id=352338,
-    output_dir="exports/rfi-sync",
-    download_attachments=True,
-)
-
-print(csv_path)
-print(sync_result.manifest_path)
-```
-
-Available helpers:
-
-- `build_enhanced_rfi_package()`
-- `build_enhanced_submittal_package()`
-- `build_project_context_package()`
-- `export_rfis_to_csv()`
-- `export_submittals_to_csv()`
-- `export_rfis_to_jsonl()`
-- `export_submittals_to_jsonl()`
-- `sync_rfis_to_folder()`
-- `sync_submittals_to_folder()`
-- `sync_documents_to_folder()`
-
-The object client exposes these under `client.workflows`.
-
-CSV exports are best when you want a spreadsheet-friendly tracker. JSONL
-exports are best when another tool should process one complete typed item per
-line. Folder sync creates:
-
-- `rfis/`, `submittals/`, or `documents/` item folders
-- `item.json` metadata for each item
-- optional `summary.md` files
-- a tracker CSV when enabled
-- `sync_manifest.json` with project, item, folder, attachment, warning, and error metadata
-- optional downloaded attachments
-
-Attachment downloads skip existing files unless `overwrite=True`. Tracker CSV,
-manifest, item JSON, and Markdown summary files are regenerated when sync runs.
-Use `dry_run=True` or `--dry-run` to list/fetch items and preview paths without
-writing files or downloading attachments.
-
-Incremental sync skips unchanged items by comparing each item ID and
-`updated_at` value against a local state file:
-
-```python
-from pyprocore.workflows import sync_project_to_folder
-
-result = sync_project_to_folder(
-    project_id=352338,
-    output_dir="exports/project-sync",
-    incremental=True,
-)
-
-print(result.synced_count)
-print(result.skipped_count)
-```
-
-Project sync combines RFIs and submittals into one output folder and writes
-`project_sync_manifest.json` plus `project_sync_summary.md`.
-
-Document sync downloads project documents and writes `document_tracker.csv`,
-`document_sync_manifest.json`, and `document_sync_summary.md`:
-
-```python
-from pyprocore.workflows import sync_documents_to_folder
-
-result = sync_documents_to_folder(
-    project_id=352338,
-    output_dir="exports/documents",
-    incremental=True,
-    recursive=True,
-)
-```
-
-Document downloads use `download_url` or `url` fields when Procore includes
-them in the file payload. Some Procore environments may require a separate
-secure file access step before a direct download URL is available.
-
-Enhanced RFI packages create a read-only, AI-friendly review folder for one RFI.
-They can include keyword-matched related submittals, documents, drawings,
-specifications, photos, and Daily Logs. Downloads are off by default; related
-section failures are recorded by default, and generated risk flags are only
-possible review flags:
+Build an enhanced RFI package:
 
 ```python
 from pyprocore.workflows import build_enhanced_rfi_package
@@ -579,338 +183,184 @@ result = build_enhanced_rfi_package(
     project_id=352338,
     company_id=4286480,
     rfi_number="15",
-    output_dir="rfi-package",
+    output_dir="exports/rfi-15",
     related_sections=["drawings", "specifications", "submittals"],
-    max_related_items=10,
     download_files=False,
 )
 
 print(result.review_context_path)
 ```
 
-Enhanced submittal packages follow the same conservative pattern for submittal
-review. They include `ai/approval_review.md` for structured human review
-assistance and never approve, reject, or revise anything:
+Build a project context package:
 
 ```python
-from pyprocore.workflows import build_enhanced_submittal_package
+from pyprocore.workflows import build_project_context_package
 
-result = build_enhanced_submittal_package(
+result = build_project_context_package(
     project_id=352338,
     company_id=4286480,
-    submittal_number="27",
-    output_dir="enhanced-submittal-package",
-    related_sections=["rfis", "drawings", "specifications"],
-    max_related_items=10,
-    download_files=False,
+    output_dir="exports/project-context",
+    include=["project", "rfis", "submittals", "daily_logs"],
+    max_items=100,
 )
 
-print(result.approval_review_path)
+print(result.summary_path)
 ```
 
-AI review exports are local-file-only. They read an existing PyProcore package
-folder and write an `ai-export/` folder with prompts, source indexes, chunks,
-and checklists for downstream review tools:
+Inspect the local agent registry:
 
 ```python
-from pyprocore.workflows import build_ai_review_export, build_ai_prompt_pack
+from pyprocore.agent.registry import get_default_agent_registry
 
-review_export = build_ai_review_export("rfi-package")
-prompt_pack = build_ai_prompt_pack("enhanced-submittal-package", review_type="submittal")
-
-print(review_export.ai_review_path)
-print(prompt_pack.prompt_path)
-```
-
-Every typed model serializes back to JSON:
-
-```python
-json_payload = rfi.model_dump(mode="json")
-json_string = rfi.model_dump_json()
+registry = get_default_agent_registry()
+for tool in registry.list_tools():
+    print(tool.name, tool.description)
 ```
 
 ---
 
-## Downloading Attachments
+## CLI Overview
 
-Attachment URLs live at:
-
-```text
-RFI:        questions[].attachments[].url
-Submittal:  attachments[].url
-```
-
-Download through the service functions:
-
-```python
-rfi_files = download_rfi_attachments(project_id=352338, rfi_id=102784)
-submittal_files = download_submittal_attachments(
-    project_id=352338,
-    submittal_id=309641,
-)
-```
-
-The shared file service supports safe filenames, streaming writes, retries, progress logging, batch downloads, and skip-existing behavior by default:
-
-```python
-from pyprocore.services.files import FileDownloadService
-
-files = FileDownloadService().download_attachments(
-    attachments,
-    "downloads/custom",
-    fallback_prefix="attachment",
-    overwrite=False,
-)
-```
-
----
-
-## CLI
+Use `procore-sdk --help` for the full command list. Common command groups include:
 
 ```bash
+procore-sdk doctor
+procore-sdk auth status
 procore-sdk companies
 procore-sdk projects
-procore-sdk rfis --project 352338 --status open
-procore-sdk submittals --project 352338 --status pending
-procore-sdk find-project Hospital
-procore-sdk find-rfi --project 352338 --number 15
-procore-sdk download-rfi --project 352338 --id 102784
-procore-sdk project-context --project 352338 --company 4286480 --output ./project-context
+procore-sdk rfis --project 352338
+procore-sdk submittals --project 352338
+procore-sdk documents --project 352338
+procore-sdk drawings --project 352338
+procore-sdk specification-sections --project 352338
+procore-sdk photo-albums --project 352338
+procore-sdk daily-log-counts --project 352338
+procore-sdk project-context --project 352338 --company 4286480
 procore-sdk enhanced-rfi-package --project 352338 --company 4286480 --rfi-number 15
 procore-sdk enhanced-submittal-package --project 352338 --company 4286480 --submittal-number 27
-procore-sdk ai-review-export --package-dir ./rfi-package
-procore-sdk ai-prompt-pack --package-dir ./submittal-package --review-type submittal
-procore-sdk workflow-plan list
-procore-sdk workflow-plan validate ./workflow.json
-procore-sdk workflow-plan run ./workflow.json --dry-run
+procore-sdk ai-review-export --package-dir ./exports/rfi-15
+procore-sdk ai-prompt-pack --package-dir ./exports/rfi-15
+procore-sdk workflow-plan validate examples/workflow_plans/project_context_and_ai_export.json
 procore-sdk webhook validate examples/webhooks/rfi_created_event.json
-procore-sdk agent tools
-procore-sdk auth status
 ```
 
-Most CLI commands print formatted JSON. Export and sync workflow commands print
-short human-readable summaries. See [CLI](docs/cli.md) for the full command
-reference.
+See [CLI](docs/cli.md) for the full command reference.
 
 ---
 
-## Examples and Recipes
+## Agent Layer
 
-Runnable example scripts live in [examples/](examples/README.md). They show
-common SDK tasks such as listing projects, fetching RFIs, downloading
-attachments, documents, drawings, specification revisions, photos, and Daily
-Logs, building workflow packages, exporting CSVs, syncing local review folders,
-building AI-ready project context packages, and creating enhanced RFI review
-and submittal review packages. The local AI export examples show how to turn an
-existing package folder into prompt, chunk, source-index, and checklist files
-without calling Procore or an AI service.
-
-Local workflow plans let you repeat existing PyProcore workflows from JSON files
-for scheduled syncs, repeatable exports, and AI review package generation.
-Plans do not execute shell commands and do not mutate Procore data. Validate and
-dry-run plans before scheduling them:
-
-```bash
-procore-sdk workflow-plan list
-procore-sdk workflow-plan validate examples/workflow_plans/project_context_and_ai_export.json
-procore-sdk workflow-plan run examples/workflow_plans/project_context_and_ai_export.json --dry-run
-```
-
-Scheduled automation examples are available for cron, macOS launchd, Windows
-Task Scheduler, GitHub Actions, and local shell/PowerShell runners. Start with
-the templates in `examples/scheduled/`, `examples/github-actions/`, and the
-[Schedule a Workflow Plan](docs/recipes/schedule-workflow-plan.md) recipe.
-
-Examples can be syntax-checked without credentials or live Procore access:
-
-```bash
-make examples-check
-```
-
-Task-based guides live in [docs/recipes/](docs/recipes/). Recipes explain when
-to use each pattern, which environment variables are needed, what output to
-expect, and how to troubleshoot beginner-friendly issues.
-
-For AI-ready RFI review workflows, start with
-[Build Enhanced RFI Package](docs/recipes/build-enhanced-rfi-package.md) or
-[RFI AI Review Context](docs/recipes/rfi-ai-review-context.md).
-
-For AI-ready submittal review workflows, start with
-[Build Enhanced Submittal Package](docs/recipes/build-enhanced-submittal-package.md)
-or [Submittal AI Review Context](docs/recipes/submittal-ai-review-context.md).
-
-For local-file-only AI review exports, start with
-[Build an AI Review Export](docs/recipes/build-ai-review-export.md),
-[Build an AI Prompt Pack](docs/recipes/build-ai-prompt-pack.md), or
-[Review a Procore Package with AI](docs/recipes/review-procore-package-with-ai.md).
-
-For local automation plans, start with
-[Validate a Workflow Plan](docs/recipes/validate-workflow-plan.md),
-[Run a Workflow Plan](docs/recipes/run-workflow-plan.md), or
-[Workflow Plan Examples](docs/recipes/workflow-plan-examples.md).
-
-For scheduled automation, see
-[Schedule a Workflow Plan](docs/recipes/schedule-workflow-plan.md),
-[Cron](docs/automation/cron.md),
-[macOS launchd](docs/automation/launchd.md),
-[Windows Task Scheduler](docs/automation/windows-task-scheduler.md), or
-[GitHub Actions](docs/automation/github-actions.md).
-
-Local webhook helpers can validate, redact, save, list, and dry-run dispatch
-sample webhook JSON payloads without running a hosted webhook server. Start with
-[Local Webhook Helpers](docs/automation/webhooks.md),
-[Validate a Webhook Event](docs/recipes/validate-webhook-event.md),
-[Save a Webhook Event](docs/recipes/save-webhook-event.md), or
-[Dispatch a Webhook Event to a Workflow Plan](docs/recipes/dispatch-webhook-to-workflow.md).
-
-The prepared `2.2.0` source includes Phase 7 agent-layer infrastructure:
-Agent Tool Registry, Local Agent API Server, OpenAPI / JSON Schema Export,
-Agent Run Logs + Replay, Discovery-only MCP Adapter, and Agent Evaluation
-Harness. These commands are metadata/spec/eval/replay infrastructure
-only. They do not execute Procore tools, do not call external AI/model APIs, and
-do not require Procore credentials unless a separate live SDK workflow is run.
-MCP tool execution remains disabled.
-The older lowercase command names map to the same Phase 7 components:
-local agent API server, OpenAPI and JSON Schema
-exports, agent run logs and replay, a discovery-only MCP adapter, and a local
-deterministic eval harness.
+Phase 7 commands expose local metadata and safety checks for future assistant workflows:
 
 ```bash
 procore-sdk agent tools
-procore-sdk agent tool procore.find_rfi
 procore-sdk agent manifest --json
 procore-sdk agent openapi --pretty
 procore-sdk agent schemas --pretty
 procore-sdk agent serve --port 8765
-procore-sdk agent serve --run-log-dir agent-runs
-procore-sdk agent runs replay RUN_ID --run-log-dir agent-runs
 procore-sdk agent mcp tools --pretty
-procore-sdk agent mcp manifest --pretty
-procore-sdk agent evals list
 procore-sdk agent evals run
 ```
 
-See [Agent API](docs/agent-api.md) and
-[Use the Agent Tool Registry](docs/recipes/use-agent-tool-registry.md), or
-[Run the Local Agent API Server](docs/recipes/run-local-agent-api-server.md), or
-[Export Agent OpenAPI](docs/recipes/export-agent-openapi.md),
-[Inspect Agent Run Logs](docs/recipes/inspect-agent-run-logs.md), or
-[Replay Agent Run](docs/recipes/replay-agent-run.md),
-[Export Agent MCP Tools](docs/recipes/export-agent-mcp-tools.md), or
-[Run MCP Discovery Adapter](docs/recipes/run-mcp-discovery-adapter.md), or
-[Run Agent Evals](docs/recipes/run-agent-evals.md).
+The local agent API server exposes discovery endpoints for manifests, schemas,
+OpenAPI output, and disabled tool-call responses.
 
-Docker and CI templates are optional. They help teams dry-run workflow plans in
-repeatable local or GitHub Actions environments without committing secrets or
-generated outputs. Start with [Docker Automation](docs/automation/docker.md),
-[CI Automation](docs/automation/ci.md), or `examples/docker/`.
+Safety posture:
 
-Release guidance lives in [docs/release.md](docs/release.md). It covers
-versioning, local package validation, changelog updates, and manual publishing
-checklists. The current public release status is captured in
-[docs/project-status.md](docs/project-status.md).
+- Tool execution is disabled.
+- MCP adapter is discovery-only.
+- Agent evals are local and deterministic.
+- Metadata, schema, replay, MCP, and eval commands do not call live Procore APIs.
+- Phase 7 does not call external AI/model APIs.
+
+See [Agent API](docs/agent-api.md) for details.
+
+Docker and CI helpers are documented in [Docker Automation](docs/automation/docker.md)
+and [CI Automation](docs/automation/ci.md). Example Docker assets live under
+[examples/docker](examples/docker/).
 
 ---
 
-## Documentation Site
+## Security And Safety
 
-PyProcore now includes an MkDocs-ready documentation site structure under
-[docs/](docs/index.md). The docs are organized for local browsing and future
-publishing, but they are not published as a hosted site yet.
-
-Install the optional docs tooling when you want to preview or build the site:
-
-```bash
-python3 -m pip install -e ".[docs]"
-make docs-serve
-make docs-build
-```
-
-The MkDocs site links the getting started guide, authentication help, CLI usage,
-API coverage, workflows, AI review guidance, automation docs, recipes,
-contributing guidance, release guide, and changelog.
-
-Detailed endpoint notes, live smoke helper commands, and 403 troubleshooting
-live in [API Coverage](docs/api-coverage.md) and [CLI](docs/cli.md). The
-README stays focused on installation, safe usage, and where to go next.
-
----
-
-## Pagination
-
-Collection methods use `ProcoreClient.get_all()`, which follows Procore pagination headers automatically. Business logic should call the service method or `get_all()` directly and never request page 2 by hand.
-
----
-
-## Logging
-
-Structured logs are written to:
-
-```text
-logs/sdk.log
-logs/errors.log
-```
-
-Request logs record method, endpoint, status, elapsed time, and retry count. Exception logs record stack traces, exception type, request URL, HTTP status, and response body when available. The logger redacts sensitive keys such as authorization headers, access tokens, refresh tokens, and client secrets.
-
----
-
-## Security Checks
-
-PyProcore includes local checks to help avoid committing credentials or generated
-project data. Run the secret scanner before opening a pull request:
+- Never commit `.env` files, OAuth token stores, Authorization headers, access tokens, refresh tokens, client secrets, logs containing credentials, downloads, or private project data.
+- Token stores, logs, downloads, generated exports, build artifacts, and local virtual environments are ignored by default.
+- SDK logs redact common secret fields.
+- The SDK is read-oriented; workflow helpers write local files and do not mutate Procore data.
+- Agent tool execution remains disabled.
+- MCP is discovery-only.
+- Run the local secret scanner before opening pull requests:
 
 ```bash
 make secret-check
 ```
 
-For a broader local quality gate, run:
-
-```bash
-make quality-check
-```
-
-Optional pre-commit hooks are available for whitespace, file format, private-key,
-Black, and isort checks:
-
-```bash
-python3 -m pip install pre-commit
-pre-commit install
-pre-commit run --all-files
-```
-
-Never commit `.env` files, token stores, Authorization headers, access tokens,
-refresh tokens, client secrets, logs containing credentials, downloads, or
-private project data. See [docs/security.md](docs/security.md) and
-[SECURITY.md](SECURITY.md) for details.
+See [Security](docs/security.md) and [SECURITY.md](SECURITY.md).
 
 ---
 
-## API Coverage
+## Documentation Site
 
-See [API Coverage](docs/api-coverage.md) for implemented resource families,
-endpoint notes, live-verification limitations, and Procore permission context.
+- [Documentation Home](docs/index.md)
+- [Project Status](docs/project-status.md)
+- [Getting Started](docs/getting-started.md)
+- [Authentication](docs/authentication.md)
+- [CLI](docs/cli.md)
+- [API Coverage](docs/api-coverage.md)
+- [Workflows](docs/workflows.md)
+- [AI Review](docs/ai-review.md)
+- [Agent API](docs/agent-api.md)
+- [Automation](docs/automation.md)
+- [Recipes](docs/recipes/)
+- [Examples](examples/README.md)
+- [Release Guide](docs/release.md)
+- [Changelog](CHANGELOG.md)
+- [Security Policy](SECURITY.md)
+
+For local docs development:
+
+```bash
+make docs-serve
+make docs-build
+```
+
+---
+
+## Local Development
+
+```bash
+git clone https://github.com/vibhanshu-mishra/pyprocore.git
+cd pyprocore
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -e ".[dev]"
+```
+
+When testing unreleased local CLI changes, use `PYTHONPATH=.` so Python resolves the checkout before any installed copy:
+
+```bash
+PYTHONPATH=. procore-sdk --help
+PYTHONPATH=. python3 -m pyprocore.app --help
+```
+
+Common checks:
+
+```bash
+make examples-check
+make test
+make coverage
+make lint
+make typecheck
+make quality-check
+```
 
 ---
 
 ## Roadmap
 
-### Released in 2.1.0
+### Released in 2.2.0
 
-- Core SDK: OAuth, token refresh, retries, pagination, logging, typed models, and custom exceptions
-- Procore read coverage: companies, projects, RFIs, submittals, documents, drawings, specifications, photos, and Daily Logs
-- Human-friendly resolvers and object-oriented client helpers
-- Attachment/file downloads where Procore returns usable URLs
-- Workflow exports: CSV, JSONL, sync folders, project context packages, enhanced RFI packages, enhanced submittal packages, and local AI review exports
-- Automation foundation: workflow plans, scheduled examples, webhook helpers, Docker templates, CI dry-run examples, documentation site, recipes, security docs, and release tooling
-
-### Phase 7 Agent Layer
-
-PyProcore is becoming an open, model-agnostic agent layer for Procore
-automation. The prepared `2.2.0` source adds local-first infrastructure that
-lets assistants discover what PyProcore can do without giving them permission
-to execute Procore actions.
-
+- Phase 7 Agent Layer
 - Agent Tool Registry
 - Local Agent API Server
 - OpenAPI / JSON Schema Export
@@ -918,179 +368,37 @@ to execute Procore actions.
 - Discovery-only MCP Adapter
 - Agent Evaluation Harness
 
-This layer is discovery/spec/eval/replay infrastructure. It does not call
-external AI/model APIs, does not call live Procore APIs for metadata, schema,
-MCP discovery, replay, or eval commands, and does not enable Procore tool
-execution. The MCP adapter is discovery-only.
-
-Try the local metadata and eval commands from a checkout:
-
-```bash
-PYTHONPATH=. procore-sdk agent tools
-PYTHONPATH=. procore-sdk agent manifest --json
-PYTHONPATH=. procore-sdk agent openapi --pretty
-PYTHONPATH=. procore-sdk agent schemas --pretty
-PYTHONPATH=. procore-sdk agent mcp tools --pretty
-PYTHONPATH=. procore-sdk agent evals run
-```
-
 ### Future
 
-## Phase 8 — Guarded Tool Execution
-- guarded execution design
-- human approval gates
-- write-action safety model
-- real MCP execution after safety design
+- Guarded tool execution and human approval gates
+- Write-action safety model
+- Real MCP execution after explicit safety design
+- Expanded Procore coverage: Observations and Correspondence
+- Developer platform: async client and plugin architecture
+- AI workflow examples: vector DB examples and engineering assistant examples
+- Evaluation: golden datasets and model evals
+- Deployment: private deployment patterns and richer MCP integration
 
-## Phase 9 — Expanded Procore + Platform Layer
-- async client
-- Observations
-- Correspondence
-- plugin architecture
-
-## Phase 10 — AI Workflows, Evals, and Deployment
-- vector DB examples
-- engineering assistant examples
-- golden datasets and model evals
-- private deployment patterns
-- richer MCP integration
+See [Roadmap](docs/roadmap.md).
 
 ---
 
-## Diagnostics
-
-Run:
-
-```bash
-procore-sdk doctor
-```
-
-This checks local configuration, token storage, Python version, and writable SDK
-folders without making live Procore calls.
-
-For an authenticated Procore connectivity check:
-
-```bash
-procore-sdk doctor --live
-```
-
----
-
-## Troubleshooting
-
-| Error                       | Likely cause and fix                                                                                           |
-| --------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `ConfigurationError`        | `.env` is missing or a required key is absent.                                                                 |
-| `AuthenticationError`       | Complete the first OAuth code exchange; confirm `pyprocore/auth/token_store.json` holds a refresh token.       |
-| `AuthorizationError`        | The Procore user lacks access to the target company, project, or resource.                                     |
-| `ResourceNotFoundError`     | Project, RFI, or submittal ID is wrong for the configured company.                                             |
-| Attachments not downloading | Check `logs/errors.log` for HTTP status and response body. Existing files are skipped unless `overwrite=True`. |
-
----
-
-## Tests
-
-Run unit tests:
-
-```bash
-make test
-```
-
-Run coverage:
-
-```bash
-make coverage
-```
-
----
-
-## Development
-
-Clone the repository and install the package in editable mode:
-
-```bash
-git clone https://github.com/vibhanshu-mishra/pyprocore.git
-cd pyprocore
-
-python3 -m venv .venv
-source .venv/bin/activate
-
-pip install -e ".[dev]"
-```
-
-If you're working in a restricted environment where build isolation cannot access PyPI, install with:
-
-```bash
-pip install --no-build-isolation -e ".[dev]"
-```
-
-When testing unreleased local CLI changes, run commands with `PYTHONPATH=.` so
-Python resolves the local checkout before any installed copy:
-
-```bash
-PYTHONPATH=. procore-sdk --help
-PYTHONPATH=. procore-sdk doctor
-PYTHONPATH=. procore-sdk auth status
-PYTHONPATH=. python3 -m pyprocore.app --help
-```
-
-Useful development commands:
-
-```bash
-make lint
-make typecheck
-make test
-make coverage
-```
-
----
-
-## Project Resources
-
-- [Changelog](CHANGELOG.md)
-- [Contributing](CONTRIBUTING.md)
-- [Security](SECURITY.md)
-- [Support](SUPPORT.md)
-- [Code of Conduct](CODE_OF_CONDUCT.md)
-- [Architecture notes](docs/architecture.md)
-- [Roadmap](docs/roadmap.md)
-- [Suggested GitHub labels](docs/github-labels.md)
-- [Documentation site](docs/index.md)
-- [Security guide](docs/security.md)
-- [Project status](docs/project-status.md)
-- [Examples](examples/README.md)
-- [Recipes](docs/recipes/)
-
----
-
-## Supported Environments
-
-- Procore Production
-- Procore Sandbox
-
----
-
-## 👷 About
+## About
 
 Built by **Vibhanshu Mishra, PE** — Structural Engineer at AG&E Structural Engenuity, Austin, TX.
 
-Specialising in steel and mission-critical structures, with a side focus on miscellaneous structures — stairs, platforms, equipment supports. Building AI and automation tools for a niche that nobody else is covering yet.
+Specialising in steel and mission-critical structures, with a side focus on miscellaneous structures: stairs, platforms, and equipment supports. Building AI and automation tools for a niche that deserves better software.
 
-- 🔗 [RISA-3D MCP Server](https://github.com/vibhanshu-mishra/risa3d-mcp-server) — Connect Claude AI to your RISA-3D structural models
-- 🔗 [TSD MCP Server](https://github.com/vibhanshu-mishra/tsd-mcp) — Connect Claude AI to your TSD structural models
+- [RISA-3D MCP Server](https://github.com/vibhanshu-mishra/risa3d-mcp-server) — Connect Claude AI to RISA-3D structural models
+- [TSD MCP Server](https://github.com/vibhanshu-mishra/tsd-mcp) — Connect Claude AI to TSD structural models
 
 ---
 
 ## Contributing and Support
 
-Contributions, issues, and feature requests are welcome. Start with
-[CONTRIBUTING.md](CONTRIBUTING.md), [SUPPORT.md](SUPPORT.md),
-[SECURITY.md](SECURITY.md), and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+Contributions, issues, and feature requests are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md), [SUPPORT.md](SUPPORT.md), [SECURITY.md](SECURITY.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), and [docs/github-labels.md](docs/github-labels.md).
 
-Please open an issue before submitting large changes, and never paste Procore
-client secrets, access tokens, refresh tokens, `.env` values, token stores,
-Authorization headers, or private project data into public issues or pull
-requests.
+Please open an issue before submitting large changes, and never paste Procore client secrets, access tokens, refresh tokens, `.env` values, token stores, Authorization headers, or private project data into public issues or pull requests.
 
 ---
 
@@ -1100,4 +408,4 @@ Released under the MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
-> **Disclaimer** : PyProcore is an independent open-source project and is not affiliated with or endorsed by Procore Technologies.
+> PyProcore is an independent open-source project and is not affiliated with or endorsed by Procore Technologies.

@@ -2,20 +2,13 @@
 
 ## Current Versions
 
-- Published stable release: `2.1.0`
-- Prepared next release: `2.2.0`
-- `2.2.0` has not been published to PyPI yet.
+- Current stable release: `2.2.0`
+- Previous stable release: `2.1.0`
+- `v2.2.0` is published on PyPI and released on GitHub.
 
-## Released In 2.1.0
+## Current Stable Release: 2.2.0
 
-PyProcore `2.1.0` is the current stable PyPI release. It includes expanded
-Procore API coverage, AI-ready local exports, workflow automation foundations,
-documentation, security hardening, release tooling, and package metadata.
-
-## Prepared For 2.2.0
-
-PyProcore `2.2.0` is prepared to include the completed Phase 7 Agent API
-infrastructure:
+PyProcore `2.2.0` includes the Phase 7 Agent Layer:
 
 - Agent Tool Registry
 - Local Agent API Server
@@ -24,12 +17,22 @@ infrastructure:
 - Discovery-only MCP Adapter
 - Agent Evaluation Harness
 
+The `2.2.0` release has been published to PyPI, verified from a clean install,
+tagged as `v2.2.0`, and released on GitHub.
+
+## Previous Stable Release: 2.1.0
+
+PyProcore `2.1.0` delivered expanded API coverage, AI-ready local exports,
+workflow automation foundations, documentation, security hardening, release
+tooling, and package metadata.
+
 ## Safety Status
 
 - Tool execution remains disabled.
 - The MCP adapter remains discovery-only.
 - Agent metadata, schema export, MCP discovery, replay, and eval commands do not
   call live Procore APIs.
+- Agent evals are local and deterministic.
 - PyProcore does not call external AI/model APIs.
 - Live SDK workflows still require valid Procore credentials and permissions.
 
@@ -45,12 +48,13 @@ infrastructure:
   installation, user permissions, enabled tools, and sandbox vs production
   configuration.
 
-## Next Recommended Steps
+## Future Roadmap
 
-1. Run the documentation truth audit.
-2. Run release-candidate validation for `2.2.0`.
-3. Publish to TestPyPI only after local checks pass.
-4. Verify a clean TestPyPI install.
-5. Publish to PyPI only after final manual confirmation.
-6. Create the `v2.2.0` Git tag and GitHub release.
-7. Perform post-release documentation cleanup.
+- Guarded tool execution and human approval gates
+- Write-action safety model
+- Real MCP execution after explicit safety design
+- Expanded Procore coverage for Observations and Correspondence
+- Async client and plugin architecture
+- Vector DB examples and engineering assistant examples
+- Golden datasets and model evals
+- Private deployment patterns and richer MCP integration

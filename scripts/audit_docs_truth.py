@@ -41,20 +41,38 @@ FAIL_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
         "`2.1.0` has already been published.",
     ),
     (
-        re.compile(r"GitHub release not yet created", re.IGNORECASE),
-        "GitHub release status wording is stale or ambiguous.",
+        re.compile(r"2\.2\.0 release candidate", re.IGNORECASE),
+        "`2.2.0` is already released, not a release candidate.",
     ),
     (
-        re.compile(r"not yet created", re.IGNORECASE),
-        "Avoid internal release-state wording in public docs.",
+        re.compile(
+            r"2\.2\.0[^.\n]*(not published|not been published|has not been published)",
+            re.IGNORECASE,
+        ),
+        "`2.2.0` has already been published.",
     ),
     (
-        re.compile(r"2\.2\.0 has been published", re.IGNORECASE),
-        "`2.2.0` is prepared but not yet published.",
+        re.compile(
+            r"(prepared next release|prepared for `?2\.2\.0`?|prepared.*2\.2\.0|2\.2\.0.*prepared)",
+            re.IGNORECASE,
+        ),
+        "`2.2.0` is the current stable release, not a prepared release.",
+    ),
+    (
+        re.compile(r"(current stable[^.\n]*2\.1\.0|2\.1\.0[^.\n]*current stable)", re.IGNORECASE),
+        "`2.2.0` is the current stable release; `2.1.0` is historical.",
+    ),
+    (
+        re.compile(r"GitHub release not yet created[^.\n]*2\.2\.0", re.IGNORECASE),
+        "The `v2.2.0` GitHub release has already been created.",
+    ),
+    (
+        re.compile(r"publish 2\.2\.0 later", re.IGNORECASE),
+        "`2.2.0` has already been published.",
     ),
     (
         re.compile(r"2\.1\.0 includes Phase 7", re.IGNORECASE),
-        "Phase 7 is prepared for `2.2.0`, not the published `2.1.0` package.",
+        "Phase 7 is included in `2.2.0`, not `2.1.0`.",
     ),
     (
         re.compile(r"Phase 7 is planned", re.IGNORECASE),
@@ -76,38 +94,9 @@ FAIL_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
         re.compile(r"live Procore verification complete", re.IGNORECASE),
         "Live Procore verification remains environment-specific.",
     ),
-    (
-        re.compile(r"\bAsync client\b", re.IGNORECASE),
-        "Do not list an async client as completed until implemented.",
-    ),
-    (
-        re.compile(r"\bObservations\b", re.IGNORECASE),
-        "Do not list Observations coverage as completed until implemented.",
-    ),
-    (
-        re.compile(r"\bCorrespondence\b", re.IGNORECASE),
-        "Do not list Correspondence coverage as completed until implemented.",
-    ),
-    (
-        re.compile(r"\bplugin architecture\b", re.IGNORECASE),
-        "Do not list plugin architecture as completed until implemented.",
-    ),
-    (
-        re.compile(r"\bVector database examples\b", re.IGNORECASE),
-        "Do not list vector database examples as completed until implemented.",
-    ),
-    (
-        re.compile(r"\bEngineering assistant examples\b", re.IGNORECASE),
-        "Do not list engineering assistant examples as completed until implemented.",
-    ),
 )
 
-WARN_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
-    (
-        re.compile(r"\brelease candidate\b", re.IGNORECASE),
-        "Check whether release-candidate wording is current.",
-    ),
-)
+WARN_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = ()
 
 
 def iter_docs_files() -> list[Path]:

@@ -63,14 +63,15 @@ class ReleaseReadinessTestCase(unittest.TestCase):
         readme = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
 
         for heading in [
-            "## Installation",
             "## Quick Start",
-            "## Configuration",
-            "## Authentication",
-            "## Examples and Recipes",
+            "## Feature Overview",
+            "## Python Examples",
+            "## CLI Overview",
+            "## Security And Safety",
+            "## Documentation",
         ]:
             self.assertIn(heading, readme)
-        self.assertIn("Do not commit `.env`", readme)
+        self.assertIn("Never commit `.env`", readme)
         self.assertIn("docs/release.md", readme)
 
     def test_changelog_has_expected_unreleased_groups(self) -> None:
@@ -91,7 +92,7 @@ class ReleaseReadinessTestCase(unittest.TestCase):
 
         self.assertIn("Versioning", release_doc)
         self.assertIn("Pre-release Checklist", release_doc)
-        self.assertIn("PyPI Publishing Checklist", release_doc)
+        self.assertIn("Publishing Checklist For Future Releases", release_doc)
         self.assertIn("make release-check", release_doc)
 
     def test_makefile_has_release_check_target(self) -> None:

@@ -4,8 +4,7 @@ PyProcore includes a local agent tool registry for developers who want to build
 AI assistants, workflow planners, or orchestration layers on top of existing
 SDK capabilities.
 
-The agent layer is prepared for the `2.2.0` release. It is not part of the
-current published PyPI `2.1.0` stable release.
+The agent layer is included in the current stable `2.2.0` release.
 
 The registry is metadata only. It does not execute tools, read `.env`, load
 tokens, or call Procore. It describes the safe operations PyProcore can perform
