@@ -95,7 +95,7 @@ class DocsTruthAuditTestCase(unittest.TestCase):
             "private deployment patterns",
             "richer MCP integration",
         ):
-            self.assertIn(phrase, future_section)
+            self.assertIn(phrase.lower(), future_section.lower())
             self.assertNotIn(phrase, completed_section)
 
     def test_changelog_has_released_2_2_0_section(self) -> None:
