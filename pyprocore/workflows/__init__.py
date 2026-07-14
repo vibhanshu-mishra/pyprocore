@@ -10,6 +10,12 @@ from pyprocore.workflows.automation_runner import (
 from pyprocore.workflows.enhanced_rfi import build_enhanced_rfi_package
 from pyprocore.workflows.enhanced_submittal import build_enhanced_submittal_package
 from pyprocore.workflows.exports import (
+    export_correspondences_to_csv,
+    export_correspondences_to_jsonl,
+    export_observations_to_csv,
+    export_observations_to_jsonl,
+    export_punch_items_to_csv,
+    export_punch_items_to_jsonl,
     export_rfis_to_csv,
     export_rfis_to_jsonl,
     export_submittals_to_csv,
@@ -85,6 +91,12 @@ __all__ = [
     "build_enhanced_rfi_package",
     "build_enhanced_submittal_package",
     "build_project_context_package",
+    "export_correspondences_to_csv",
+    "export_correspondences_to_jsonl",
+    "export_observations_to_csv",
+    "export_observations_to_jsonl",
+    "export_punch_items_to_csv",
+    "export_punch_items_to_jsonl",
     "export_rfis_to_csv",
     "export_rfis_to_jsonl",
     "export_submittals_to_csv",

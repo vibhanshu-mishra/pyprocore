@@ -76,16 +76,20 @@ from pyprocore.services import (
     download_specification_section_revision,
     download_submittal_attachments,
     find_company,
+    find_correspondence,
     find_document,
     find_document_folder,
     find_drawing,
     find_drawings_contains,
+    find_observation,
     find_photo,
     find_photo_album,
     find_project,
+    find_punch_item,
     find_rfi,
     find_specification_section,
     find_submittal,
+    get_correspondence,
     get_daily_log,
     get_daily_log_counts,
     get_daily_log_header,
@@ -93,8 +97,11 @@ from pyprocore.services import (
     get_document_folder,
     get_drawing,
     get_drawing_area,
+    get_generic_tool,
+    get_observation,
     get_photo,
     get_photo_album,
+    get_punch_item,
     get_rfi,
     get_specification_section,
     get_specification_section_revision,
@@ -102,6 +109,7 @@ from pyprocore.services import (
     list_accident_logs,
     list_call_logs,
     list_companies,
+    list_correspondences,
     list_daily_construction_report_logs,
     list_daily_log_headers,
     list_daily_logs,
@@ -115,13 +123,16 @@ from pyprocore.services import (
     list_drawing_disciplines,
     list_drawings,
     list_dumpster_logs,
+    list_generic_tools,
     list_manpower_logs,
     list_notes_logs,
+    list_observations,
     list_photo_albums,
     list_photos,
     list_plan_revision_logs,
     list_productivity_logs,
     list_projects,
+    list_punch_items,
     list_rfis,
     list_specification_section_revisions,
     list_specification_sections,
@@ -152,6 +163,9 @@ from pyprocore.workflows import (
     build_enhanced_rfi_package,
     build_enhanced_submittal_package,
     build_project_context_package,
+    export_correspondences_to_csv,
+    export_observations_to_csv,
+    export_punch_items_to_csv,
     export_rfis_to_csv,
     export_submittals_to_csv,
     list_available_workflows,
@@ -545,6 +559,111 @@ def build_parser() -> argparse.ArgumentParser:
         "--id", "--submittal-id", dest="submittal_id", type=int, required=True
     )
     submittal_download_parser.add_argument("--destination-dir", type=Path, default=None)
+
+    observations_parser = subcommands.add_parser(
+        "observations",
+        help="List observation items for a project",
+    )
+    _add_project_company_options(observations_parser)
+    _add_filter_options(observations_parser)
+
+    observation_parser = subcommands.add_parser("observation", help="Get one observation item")
+    _add_project_company_options(observation_parser)
+    observation_parser.add_argument(
+        "--id",
+        "--observation-id",
+        dest="observation_id",
+        type=int,
+        required=True,
+    )
+
+    find_observation_parser = subcommands.add_parser(
+        "find-observation",
+        help="Find one observation by number, title, or text",
+    )
+    _add_project_company_options(find_observation_parser)
+    _add_number_title_query_options(find_observation_parser)
+
+    punch_items_parser = subcommands.add_parser(
+        "punch-items",
+        help="List punch items for a project",
+    )
+    _add_project_company_options(punch_items_parser)
+    _add_filter_options(punch_items_parser)
+
+    punch_item_parser = subcommands.add_parser("punch-item", help="Get one punch item")
+    _add_project_company_options(punch_item_parser)
+    punch_item_parser.add_argument(
+        "--id",
+        "--punch-item-id",
+        dest="punch_item_id",
+        type=int,
+        required=True,
+    )
+
+    find_punch_item_parser = subcommands.add_parser(
+        "find-punch-item",
+        help="Find one punch item by number, title, or text",
+    )
+    _add_project_company_options(find_punch_item_parser)
+    _add_number_title_query_options(find_punch_item_parser)
+
+    generic_tools_parser = subcommands.add_parser(
+        "generic-tools",
+        help="List Generic Tools for a project",
+    )
+    _add_project_company_options(generic_tools_parser)
+
+    generic_tool_parser = subcommands.add_parser("generic-tool", help="Get one Generic Tool")
+    _add_project_company_options(generic_tool_parser)
+    generic_tool_parser.add_argument(
+        "--id",
+        "--generic-tool-id",
+        dest="generic_tool_id",
+        type=int,
+        required=True,
+    )
+
+    correspondences_parser = subcommands.add_parser(
+        "correspondences",
+        help="List correspondence items for a Generic Tool",
+    )
+    _add_project_company_options(correspondences_parser)
+    correspondences_parser.add_argument(
+        "--generic-tool",
+        "--generic-tool-id",
+        dest="generic_tool_id",
+        type=int,
+        required=True,
+    )
+    _add_filter_options(correspondences_parser)
+
+    correspondence_parser = subcommands.add_parser(
+        "correspondence",
+        help="Get one correspondence item",
+    )
+    _add_project_company_options(correspondence_parser)
+    correspondence_parser.add_argument(
+        "--id",
+        "--correspondence-id",
+        dest="correspondence_id",
+        type=int,
+        required=True,
+    )
+
+    find_correspondence_parser = subcommands.add_parser(
+        "find-correspondence",
+        help="Find one correspondence by number, title, subject, or text",
+    )
+    _add_project_company_options(find_correspondence_parser)
+    find_correspondence_parser.add_argument(
+        "--generic-tool",
+        "--generic-tool-id",
+        dest="generic_tool_id",
+        type=int,
+        required=True,
+    )
+    _add_number_title_query_options(find_correspondence_parser)
 
     document_folders_parser = subcommands.add_parser(
         "document-folders",
@@ -1093,6 +1212,55 @@ def build_parser() -> argparse.ArgumentParser:
     _add_project_output_options(export_submittals_parser, output_help="CSV output path")
     _add_filter_options(export_submittals_parser)
 
+    export_observations_parser = subcommands.add_parser(
+        "export-observations",
+        help="Export project observations to CSV",
+    )
+    _add_project_company_options(export_observations_parser)
+    export_observations_parser.add_argument(
+        "--output",
+        dest="output_path",
+        type=Path,
+        required=True,
+        help="CSV output path",
+    )
+    _add_filter_options(export_observations_parser)
+
+    export_punch_items_parser = subcommands.add_parser(
+        "export-punch-items",
+        help="Export project punch items to CSV",
+    )
+    _add_project_company_options(export_punch_items_parser)
+    export_punch_items_parser.add_argument(
+        "--output",
+        dest="output_path",
+        type=Path,
+        required=True,
+        help="CSV output path",
+    )
+    _add_filter_options(export_punch_items_parser)
+
+    export_correspondences_parser = subcommands.add_parser(
+        "export-correspondences",
+        help="Export Generic Tool correspondence items to CSV",
+    )
+    _add_project_company_options(export_correspondences_parser)
+    export_correspondences_parser.add_argument(
+        "--generic-tool",
+        "--generic-tool-id",
+        dest="generic_tool_id",
+        type=int,
+        required=True,
+    )
+    export_correspondences_parser.add_argument(
+        "--output",
+        dest="output_path",
+        type=Path,
+        required=True,
+        help="CSV output path",
+    )
+    _add_filter_options(export_correspondences_parser)
+
     ai_review_export_parser = subcommands.add_parser(
         "ai-review-export",
         help="Build a local AI review export from a package folder",
@@ -1422,6 +1590,19 @@ def _add_spec_project_company_options(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--company-id", "--company", dest="company_id", type=int, default=None)
 
 
+def _add_project_company_options(parser: argparse.ArgumentParser) -> None:
+    """Add shared company/project command options."""
+    parser.add_argument("--project", "--project-id", dest="project_id", type=int, required=True)
+    parser.add_argument("--company-id", "--company", dest="company_id", type=int, default=None)
+
+
+def _add_number_title_query_options(parser: argparse.ArgumentParser) -> None:
+    """Add shared resolver options for number/title/text lookup."""
+    parser.add_argument("--number", default=None)
+    parser.add_argument("--title", default=None)
+    parser.add_argument("--query", default=None)
+
+
 def _add_photo_project_company_options(parser: argparse.ArgumentParser) -> None:
     """Add shared Photos command options."""
     parser.add_argument("--project", "--project-id", dest="project_id", type=int, required=True)
@@ -1730,6 +1911,83 @@ def run_command(args: argparse.Namespace) -> Any:
                 args.destination_dir,
             )
         ]
+
+    if args.command == "observations":
+        return list_observations(
+            args.company_id,
+            args.project_id,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "observation":
+        return get_observation(args.company_id, args.project_id, args.observation_id)
+
+    if args.command == "find-observation":
+        return find_observation(
+            args.company_id,
+            args.project_id,
+            number=args.number,
+            title=args.title,
+            query=args.query,
+        )
+
+    if args.command == "punch-items":
+        return list_punch_items(
+            args.company_id,
+            args.project_id,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "punch-item":
+        return get_punch_item(args.company_id, args.project_id, args.punch_item_id)
+
+    if args.command == "find-punch-item":
+        return find_punch_item(
+            args.company_id,
+            args.project_id,
+            number=args.number,
+            title=args.title,
+            query=args.query,
+        )
+
+    if args.command == "generic-tools":
+        return list_generic_tools(args.company_id, args.project_id)
+
+    if args.command == "generic-tool":
+        return get_generic_tool(args.company_id, args.project_id, args.generic_tool_id)
+
+    if args.command == "correspondences":
+        return list_correspondences(
+            args.company_id,
+            args.project_id,
+            args.generic_tool_id,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "correspondence":
+        return get_correspondence(args.company_id, args.project_id, args.correspondence_id)
+
+    if args.command == "find-correspondence":
+        return find_correspondence(
+            args.company_id,
+            args.project_id,
+            args.generic_tool_id,
+            number=args.number,
+            title=args.title,
+            query=args.query,
+        )
 
     if args.command == "document-folders":
         return list_document_folders(
@@ -2097,6 +2355,43 @@ def run_command(args: argparse.Namespace) -> Any:
     if args.command == "export-submittals":
         return export_submittals_to_csv(
             args.project_id,
+            args.output_path,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "export-observations":
+        return export_observations_to_csv(
+            args.company_id,
+            args.project_id,
+            args.output_path,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "export-punch-items":
+        return export_punch_items_to_csv(
+            args.company_id,
+            args.project_id,
+            args.output_path,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "export-correspondences":
+        return export_correspondences_to_csv(
+            args.company_id,
+            args.project_id,
+            args.generic_tool_id,
             args.output_path,
             status=args.status,
             updated_after=args.updated_after,
@@ -2868,7 +3163,13 @@ def main() -> None:
         print(format_ai_export_summary(result))
         return
 
-    if isinstance(result, Path) and args.command in {"export-rfis", "export-submittals"}:
+    if isinstance(result, Path) and args.command in {
+        "export-correspondences",
+        "export-observations",
+        "export-punch-items",
+        "export-rfis",
+        "export-submittals",
+    }:
         print(format_export_summary(result))
         return
 

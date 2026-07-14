@@ -48,6 +48,32 @@ procore-sdk photos --project 352338
 procore-sdk daily-logs counts --project 352338
 ```
 
+## Observations, Punch Items, And Correspondence
+
+Phase 8A adds read-only commands for observations, punch items, and Generic
+Tool correspondence items in the current unreleased branch:
+
+```bash
+procore-sdk observations --project 352338 --company-id 123456
+procore-sdk observation --project 352338 --company-id 123456 --id 42
+procore-sdk find-observation --project 352338 --company-id 123456 --number 15
+procore-sdk punch-items --project 352338 --company-id 123456
+procore-sdk punch-item --project 352338 --company-id 123456 --id 99
+procore-sdk find-punch-item --project 352338 --company-id 123456 --query "door"
+procore-sdk generic-tools --project 352338 --company-id 123456
+procore-sdk correspondences --project 352338 --company-id 123456 --generic-tool-id 77
+procore-sdk correspondence --project 352338 --company-id 123456 --id 88
+procore-sdk find-correspondence --project 352338 --company-id 123456 --generic-tool-id 77 --query "submittal"
+```
+
+Local CSV exports are also available:
+
+```bash
+procore-sdk export-observations --project 352338 --company-id 123456 --output exports/observations.csv
+procore-sdk export-punch-items --project 352338 --company-id 123456 --output exports/punch-items.csv
+procore-sdk export-correspondences --project 352338 --company-id 123456 --generic-tool-id 77 --output exports/correspondences.csv
+```
+
 ## Workflow And Package Builders
 
 ```bash

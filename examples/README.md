@@ -27,6 +27,9 @@ Agent Layer. Those agent examples are local metadata, schema, replay, MCP
 discovery, or eval examples and do not require Procore credentials or execute
 tools unless an individual example explicitly says otherwise.
 
+Examples `64` through `69` cover unreleased Phase 8A read-only Observations,
+Punch Items, Generic Tool correspondence, and agent registry metadata examples.
+
 Agent examples do not require Procore credentials or execute tools.
 
 ## Environment Variables
@@ -56,6 +59,9 @@ export PROCORE_PHOTO_LIMIT=5
 export PROCORE_LOG_DATE=2026-07-10
 export PROCORE_DAILY_LOG_TYPE=manpower
 export PROCORE_DAILY_LOG_TYPES=manpower,notes,delay
+export PROCORE_OBSERVATION_ID=your_observation_id
+export PROCORE_PUNCH_ITEM_ID=your_punch_item_id
+export PROCORE_GENERIC_TOOL_ID=your_generic_tool_id
 export PROCORE_SPECIFICATION_SET_ID=your_specification_set_id
 export PROCORE_SPECIFICATION_SECTION_ID=your_specification_section_id
 export PROCORE_SPECIFICATION_REVISION_ID=your_specification_revision_id
@@ -99,6 +105,9 @@ python3 examples/47_build_ai_prompt_pack.py
 python3 examples/48_run_workflow_plan.py
 python3 examples/49_validate_workflow_plan.py
 python3 examples/62_run_agent_evals.py
+python3 examples/64_list_observations.py
+python3 examples/66_list_punch_items.py
+python3 examples/68_list_correspondences.py
 ```
 
 Documents use Procore's Project Folders and Files endpoints internally. Before a
@@ -156,7 +165,7 @@ make examples-check
 ## Example Index
 
 The current example set runs from `01_list_companies.py` through
-`63_inspect_agent_eval_results.py`.
+`69_agent_registry_phase8a.py`.
 
 | File | Demonstrates |
 | ---- | ------------ |
@@ -223,6 +232,12 @@ The current example set runs from `01_list_companies.py` through
 | `61_mcp_discovery_only.py` | Show the disabled MCP tool-call response without executing tools |
 | `62_run_agent_evals.py` | Run local deterministic agent evals without Procore or AI credentials |
 | `63_inspect_agent_eval_results.py` | Inspect a saved local agent eval JSON report |
+| `64_list_observations.py` | List read-only observation items for a project |
+| `65_export_observations.py` | Export observation items to a local CSV file |
+| `66_list_punch_items.py` | List read-only punch items for a project |
+| `67_export_punch_items.py` | Export punch items to a local CSV file |
+| `68_list_correspondences.py` | List Generic Tools or correspondence items for a Generic Tool |
+| `69_agent_registry_phase8a.py` | Inspect Phase 8A agent metadata without executing tools |
 
 Sample workflow plans live in `examples/workflow_plans/`:
 

@@ -8,7 +8,10 @@ from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
-from pyprocore.models import RFI, Document, Submittal
+from pyprocore.models import RFI, Correspondence, Document, Observation, PunchItem, Submittal
+from pyprocore.services.correspondence import list_correspondences
+from pyprocore.services.observations import list_observations
+from pyprocore.services.punch_items import list_punch_items
 from pyprocore.services.rfis import list_rfis
 from pyprocore.services.submittals import list_submittals
 from pyprocore.workflows.utils import (
@@ -57,6 +60,51 @@ DOCUMENT_CSV_HEADERS = [
     "created_at",
     "updated_at",
     "download_url",
+]
+
+OBSERVATION_CSV_HEADERS = [
+    "id",
+    "number",
+    "title",
+    "status",
+    "type",
+    "priority",
+    "created_at",
+    "updated_at",
+    "due_date",
+    "assignee",
+    "created_by",
+    "attachment_count",
+]
+
+PUNCH_ITEM_CSV_HEADERS = [
+    "id",
+    "number",
+    "title",
+    "status",
+    "type",
+    "priority",
+    "created_at",
+    "updated_at",
+    "due_date",
+    "assignee",
+    "created_by",
+    "attachment_count",
+]
+
+CORRESPONDENCE_CSV_HEADERS = [
+    "id",
+    "number",
+    "subject",
+    "title",
+    "status",
+    "generic_tool_id",
+    "created_at",
+    "updated_at",
+    "due_date",
+    "assignee",
+    "created_by",
+    "attachment_count",
 ]
 
 
@@ -224,6 +272,74 @@ def export_submittals_to_jsonl(
     return _write_jsonl(submittals, output_path)
 
 
+def export_observations_to_csv(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project observations to a CSV file."""
+    observations = list_observations(company_id, project_id, **filters)
+    return write_observations_csv(observations, output_path)
+
+
+def export_observations_to_jsonl(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project observations to newline-delimited JSON."""
+    observations = list_observations(company_id, project_id, **filters)
+    return _write_jsonl(observations, output_path)
+
+
+def export_punch_items_to_csv(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project punch items to a CSV file."""
+    punch_items = list_punch_items(company_id, project_id, **filters)
+    return write_punch_items_csv(punch_items, output_path)
+
+
+def export_punch_items_to_jsonl(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project punch items to newline-delimited JSON."""
+    punch_items = list_punch_items(company_id, project_id, **filters)
+    return _write_jsonl(punch_items, output_path)
+
+
+def export_correspondences_to_csv(
+    company_id: int | None,
+    project_id: int,
+    generic_tool_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export Generic Tool correspondence items to a CSV file."""
+    correspondences = list_correspondences(company_id, project_id, generic_tool_id, **filters)
+    return write_correspondences_csv(correspondences, output_path)
+
+
+def export_correspondences_to_jsonl(
+    company_id: int | None,
+    project_id: int,
+    generic_tool_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export Generic Tool correspondence items to newline-delimited JSON."""
+    correspondences = list_correspondences(company_id, project_id, generic_tool_id, **filters)
+    return _write_jsonl(correspondences, output_path)
+
+
 def write_rfis_csv(rfis: Sequence[RFI], output_path: Path | str) -> Path:
     """Write already-loaded RFIs to a CSV file."""
     return _write_csv(rfis, output_path, RFI_CSV_HEADERS, _rfi_row)
@@ -237,6 +353,29 @@ def write_submittals_csv(submittals: Sequence[Submittal], output_path: Path | st
 def write_documents_csv(documents: Sequence[Document], output_path: Path | str) -> Path:
     """Write already-loaded documents to a CSV file."""
     return _write_csv(documents, output_path, DOCUMENT_CSV_HEADERS, _document_row)
+
+
+def write_observations_csv(observations: Sequence[Observation], output_path: Path | str) -> Path:
+    """Write already-loaded observations to a CSV file."""
+    return _write_csv(observations, output_path, OBSERVATION_CSV_HEADERS, _observation_row)
+
+
+def write_punch_items_csv(punch_items: Sequence[PunchItem], output_path: Path | str) -> Path:
+    """Write already-loaded punch items to a CSV file."""
+    return _write_csv(punch_items, output_path, PUNCH_ITEM_CSV_HEADERS, _punch_item_row)
+
+
+def write_correspondences_csv(
+    correspondences: Sequence[Correspondence],
+    output_path: Path | str,
+) -> Path:
+    """Write already-loaded correspondences to a CSV file."""
+    return _write_csv(
+        correspondences,
+        output_path,
+        CORRESPONDENCE_CSV_HEADERS,
+        _correspondence_row,
+    )
 
 
 def _load_rfis(
@@ -367,4 +506,58 @@ def _document_row(document: object) -> dict[str, object]:
         "created_at": scalar_text(get_value(document, "created_at")),
         "updated_at": scalar_text(get_value(document, "updated_at")),
         "download_url": scalar_text(get_value(document, "download_url", "url")),
+    }
+
+
+def _observation_row(observation: object) -> dict[str, object]:
+    """Convert one observation model into a CSV row."""
+    return {
+        "id": scalar_text(get_value(observation, "id")),
+        "number": scalar_text(get_value(observation, "number")),
+        "title": item_title(observation),
+        "status": scalar_text(get_value(observation, "status")),
+        "type": scalar_text(get_value(observation, "type", "observation_type")),
+        "priority": scalar_text(get_value(observation, "priority")),
+        "created_at": scalar_text(get_value(observation, "created_at")),
+        "updated_at": scalar_text(get_value(observation, "updated_at")),
+        "due_date": scalar_text(get_value(observation, "due_date")),
+        "assignee": scalar_text(get_value(observation, "assignee")),
+        "created_by": scalar_text(get_value(observation, "created_by")),
+        "attachment_count": attachment_count(observation, item_type="observation"),
+    }
+
+
+def _punch_item_row(punch_item: object) -> dict[str, object]:
+    """Convert one punch item model into a CSV row."""
+    return {
+        "id": scalar_text(get_value(punch_item, "id")),
+        "number": scalar_text(get_value(punch_item, "number")),
+        "title": item_title(punch_item),
+        "status": scalar_text(get_value(punch_item, "status")),
+        "type": scalar_text(get_value(punch_item, "type")),
+        "priority": scalar_text(get_value(punch_item, "priority")),
+        "created_at": scalar_text(get_value(punch_item, "created_at")),
+        "updated_at": scalar_text(get_value(punch_item, "updated_at")),
+        "due_date": scalar_text(get_value(punch_item, "due_date")),
+        "assignee": scalar_text(get_value(punch_item, "assignee", "assigned_to")),
+        "created_by": scalar_text(get_value(punch_item, "created_by")),
+        "attachment_count": attachment_count(punch_item, item_type="punch_item"),
+    }
+
+
+def _correspondence_row(correspondence: object) -> dict[str, object]:
+    """Convert one correspondence model into a CSV row."""
+    return {
+        "id": scalar_text(get_value(correspondence, "id")),
+        "number": scalar_text(get_value(correspondence, "number")),
+        "subject": scalar_text(get_value(correspondence, "subject")),
+        "title": item_title(correspondence),
+        "status": scalar_text(get_value(correspondence, "status")),
+        "generic_tool_id": scalar_text(get_value(correspondence, "generic_tool_id")),
+        "created_at": scalar_text(get_value(correspondence, "created_at")),
+        "updated_at": scalar_text(get_value(correspondence, "updated_at")),
+        "due_date": scalar_text(get_value(correspondence, "due_date")),
+        "assignee": scalar_text(get_value(correspondence, "assignee")),
+        "created_by": scalar_text(get_value(correspondence, "created_by")),
+        "attachment_count": attachment_count(correspondence, item_type="correspondence"),
     }

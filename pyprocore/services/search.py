@@ -7,11 +7,25 @@ from typing import TypeVar
 
 from pyprocore.core.config import ProcoreSettings, get_settings
 from pyprocore.core.exceptions import DuplicateMatchError, MultipleResultsError, NotFoundError
-from pyprocore.models import RFI, Company, Document, DocumentFolder, Drawing, Project, Submittal
+from pyprocore.models import (
+    RFI,
+    Company,
+    Correspondence,
+    Document,
+    DocumentFolder,
+    Drawing,
+    Observation,
+    Project,
+    PunchItem,
+    Submittal,
+)
 from pyprocore.services.companies import list_companies
+from pyprocore.services.correspondence import list_correspondences
 from pyprocore.services.documents import list_document_folders, list_documents
 from pyprocore.services.drawings import list_drawings
+from pyprocore.services.observations import list_observations
 from pyprocore.services.projects import list_projects
+from pyprocore.services.punch_items import list_punch_items
 from pyprocore.services.rfis import list_rfis
 from pyprocore.services.submittals import list_submittals
 
@@ -271,6 +285,108 @@ def find_drawings_contains(
     return matches
 
 
+def find_observation(
+    company_id: int | None,
+    project_id: int,
+    *,
+    number: str | int | None = None,
+    title: str | None = None,
+    query: str | None = None,
+) -> Observation:
+    """Find one observation by number, title, name, or description.
+
+    Args:
+        company_id: Optional company ID sent as ``Procore-Company-Id``.
+        project_id: Procore project ID.
+        number: Observation number or number fragment.
+        title: Observation title or title fragment.
+        query: General text search across common observation fields.
+
+    Returns:
+        The matching observation.
+
+    Raises:
+        NotFoundError: If no observation matches.
+        DuplicateMatchError: If multiple exact matches are found.
+        MultipleResultsError: If multiple partial matches are found.
+    """
+    search_text = _number_title_query(
+        resource_name="observation",
+        number=number,
+        title=title,
+        query=query,
+    )
+    return _resolve_one(
+        resources=list_observations(company_id, project_id),
+        query=search_text,
+        values=lambda observation: [
+            observation.number,
+            observation.title,
+            observation.name,
+            observation.description,
+        ],
+        resource_name="observation",
+    )
+
+
+def find_punch_item(
+    company_id: int | None,
+    project_id: int,
+    *,
+    number: str | int | None = None,
+    title: str | None = None,
+    query: str | None = None,
+) -> PunchItem:
+    """Find one punch item by number, title, name, or description."""
+    search_text = _number_title_query(
+        resource_name="punch item",
+        number=number,
+        title=title,
+        query=query,
+    )
+    return _resolve_one(
+        resources=list_punch_items(company_id, project_id),
+        query=search_text,
+        values=lambda punch_item: [
+            punch_item.number,
+            punch_item.title,
+            punch_item.name,
+            punch_item.description,
+        ],
+        resource_name="punch item",
+    )
+
+
+def find_correspondence(
+    company_id: int | None,
+    project_id: int,
+    generic_tool_id: int,
+    *,
+    number: str | int | None = None,
+    title: str | None = None,
+    query: str | None = None,
+) -> Correspondence:
+    """Find one Generic Tool item by number, subject, title, name, or description."""
+    search_text = _number_title_query(
+        resource_name="correspondence",
+        number=number,
+        title=title,
+        query=query,
+    )
+    return _resolve_one(
+        resources=list_correspondences(company_id, project_id, generic_tool_id),
+        query=search_text,
+        values=lambda correspondence: [
+            correspondence.number,
+            correspondence.subject,
+            correspondence.title,
+            correspondence.name,
+            correspondence.description,
+        ],
+        resource_name="correspondence",
+    )
+
+
 def _resolve_one(
     *,
     resources: Sequence[ResourceT],
@@ -347,6 +463,22 @@ def _drawing_query(number: str | int | None, title: str | None) -> str:
     if number is None and title is None:
         raise ValueError("Drawing number or title is required.")
     return _normalize_query(number if number is not None else title, "drawing")
+
+
+def _number_title_query(
+    *,
+    resource_name: str,
+    number: str | int | None,
+    title: str | None,
+    query: str | None,
+) -> str:
+    """Return a normalized resource search query."""
+    provided = [value for value in (number, title, query) if value is not None]
+    if len(provided) > 1:
+        raise ValueError(f"Pass only one {resource_name} search value.")
+    if not provided:
+        raise ValueError(f"{resource_name.title()} number, title, or query is required.")
+    return _normalize_query(provided[0], resource_name)
 
 
 def _normalize_query(value: object | None, field_name: str) -> str:

@@ -67,6 +67,14 @@ SPECIFICATION_SECTION_REVISION_DOWNLOAD = (
     f"{API_V2_1}/companies/{{company_id}}/projects/{{project_id}}"
     "/specification_section_revisions/{revision_id}/download"
 )
+OBSERVATION_ITEMS = f"{API_V1}/observations/items"
+OBSERVATION_ITEM = f"{API_V1}/observations/items/{{observation_id}}"
+PUNCH_ITEMS = f"{API_V1}/punch_items"
+PUNCH_ITEM = f"{API_V1}/punch_items/{{punch_item_id}}"
+GENERIC_TOOLS = f"{API_V1}/generic_tools"
+GENERIC_TOOL = f"{API_V1}/generic_tools/{{generic_tool_id}}"
+GENERIC_TOOL_ITEMS = f"{API_V1}/generic_tools/{{generic_tool_id}}/generic_tool_items"
+GENERIC_TOOL_ITEM = f"{API_V1}/generic_tool_items/{{generic_tool_item_id}}"
 
 
 def companies() -> str:
@@ -253,6 +261,61 @@ def specification_section_revision_download(
     )
 
 
+def observations(project_id: int) -> str:
+    """Return the observations collection endpoint.
+
+    Args:
+        project_id: Procore project ID. Accepted for API consistency; Procore's
+            observations list endpoint uses ``project_id`` as a query parameter.
+    """
+    return OBSERVATION_ITEMS
+
+
+def observation(project_id: int, observation_id: int) -> str:
+    """Return the endpoint for one observation item."""
+    return OBSERVATION_ITEM.format(observation_id=observation_id)
+
+
+def punch_items(project_id: int) -> str:
+    """Return the punch items collection endpoint.
+
+    Args:
+        project_id: Procore project ID. Accepted for API consistency; Procore's
+            punch item list endpoint uses ``project_id`` as a query parameter.
+    """
+    return PUNCH_ITEMS
+
+
+def punch_item(project_id: int, punch_item_id: int) -> str:
+    """Return the endpoint for one punch item."""
+    return PUNCH_ITEM.format(punch_item_id=punch_item_id)
+
+
+def generic_tools(project_id: int) -> str:
+    """Return the Generic Tools collection endpoint.
+
+    Args:
+        project_id: Procore project ID. Accepted for API consistency; Procore's
+            Generic Tools endpoint uses ``project_id`` as a query parameter.
+    """
+    return GENERIC_TOOLS
+
+
+def generic_tool(project_id: int, generic_tool_id: int) -> str:
+    """Return the endpoint for one Generic Tool."""
+    return GENERIC_TOOL.format(generic_tool_id=generic_tool_id)
+
+
+def generic_tool_items(project_id: int, generic_tool_id: int) -> str:
+    """Return the Generic Tool Items collection endpoint."""
+    return GENERIC_TOOL_ITEMS.format(generic_tool_id=generic_tool_id)
+
+
+def generic_tool_item(project_id: int, generic_tool_item_id: int) -> str:
+    """Return the endpoint for one Generic Tool Item."""
+    return GENERIC_TOOL_ITEM.format(generic_tool_item_id=generic_tool_item_id)
+
+
 class Endpoints:
     """Backward-compatible namespace for endpoint path templates."""
 
@@ -286,3 +349,11 @@ class Endpoints:
     SPECIFICATION_SECTION_REVISIONS = SPECIFICATION_SECTION_REVISIONS
     SPECIFICATION_SECTION_REVISION = SPECIFICATION_SECTION_REVISION
     SPECIFICATION_SECTION_REVISION_DOWNLOAD = SPECIFICATION_SECTION_REVISION_DOWNLOAD
+    OBSERVATION_ITEMS = OBSERVATION_ITEMS
+    OBSERVATION_ITEM = OBSERVATION_ITEM
+    PUNCH_ITEMS = PUNCH_ITEMS
+    PUNCH_ITEM = PUNCH_ITEM
+    GENERIC_TOOLS = GENERIC_TOOLS
+    GENERIC_TOOL = GENERIC_TOOL
+    GENERIC_TOOL_ITEMS = GENERIC_TOOL_ITEMS
+    GENERIC_TOOL_ITEM = GENERIC_TOOL_ITEM

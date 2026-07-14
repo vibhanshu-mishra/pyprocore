@@ -31,15 +31,31 @@ Safety status for `v2.2.0`:
 - Local workflow plans, scheduled examples, webhook helpers, Docker templates, and CI examples
 - Documentation site, recipes, examples, security docs, contributor docs, and release tooling
 
+## Unreleased Branch Work
+
+### Phase 8A — Expanded Procore API Coverage
+
+Implemented in the current branch and not yet published:
+
+- Observation item read helpers
+- Punch item read helpers
+- Generic Tool metadata helpers
+- Generic Tool correspondence item read helpers
+- Search/resolver helpers for observations, punch items, and correspondence
+- CSV/JSONL local exports
+- CLI commands
+- Agent registry metadata for discovery only
+- Examples and docs
+
+Focus: read-oriented coverage only. No create/update/delete/write actions are
+included.
+
 ## Future
 
-### Phase 8 — Expanded Procore API Coverage
+### Phase 8B+ — Expanded Procore API Coverage
 
 Planned modules:
 
-- Observations
-- Correspondence
-- Punch Items
 - Meetings
 - Inspections
 - Incidents

@@ -19,6 +19,7 @@ from pyprocore.core.exceptions import ValidationError
 from pyprocore.models import (
     RFI,
     Company,
+    Correspondence,
     DailyLogCount,
     DailyLogEntry,
     DailyLogHeader,
@@ -29,10 +30,13 @@ from pyprocore.models import (
     Drawing,
     DrawingArea,
     DrawingDiscipline,
+    GenericTool,
+    Observation,
     PhotoAlbum,
     PhotoAlbumDownloadResult,
     PhotoImage,
     Project,
+    PunchItem,
     SpecificationSection,
     SpecificationSectionRevision,
     SpecificationSet,
@@ -47,17 +51,21 @@ from pyprocore.services import (
     download_specification_section_revision,
     download_submittal_attachments,
     find_company,
+    find_correspondence,
     find_document,
     find_document_folder,
     find_drawing,
     find_drawings_contains,
+    find_observation,
     find_photo,
     find_photo_album,
     find_project,
     find_project_contains,
+    find_punch_item,
     find_rfi,
     find_specification_section,
     find_submittal,
+    get_correspondence,
     get_daily_log,
     get_daily_log_counts,
     get_daily_log_header,
@@ -65,9 +73,12 @@ from pyprocore.services import (
     get_document_folder,
     get_drawing,
     get_drawing_area,
+    get_generic_tool,
+    get_observation,
     get_photo,
     get_photo_album,
     get_project,
+    get_punch_item,
     get_rfi,
     get_specification_section,
     get_specification_section_revision,
@@ -75,6 +86,7 @@ from pyprocore.services import (
     list_accident_logs,
     list_call_logs,
     list_companies,
+    list_correspondences,
     list_daily_construction_report_logs,
     list_daily_log_headers,
     list_daily_logs,
@@ -88,13 +100,16 @@ from pyprocore.services import (
     list_drawing_disciplines,
     list_drawings,
     list_dumpster_logs,
+    list_generic_tools,
     list_manpower_logs,
     list_notes_logs,
+    list_observations,
     list_photo_albums,
     list_photos,
     list_plan_revision_logs,
     list_productivity_logs,
     list_projects,
+    list_punch_items,
     list_rfis,
     list_specification_section_revisions,
     list_specification_sections,
@@ -116,6 +131,12 @@ from pyprocore.workflows import (
     build_enhanced_rfi_package,
     build_enhanced_submittal_package,
     build_project_context_package,
+    export_correspondences_to_csv,
+    export_correspondences_to_jsonl,
+    export_observations_to_csv,
+    export_observations_to_jsonl,
+    export_punch_items_to_csv,
+    export_punch_items_to_jsonl,
     export_rfis_to_csv,
     export_rfis_to_jsonl,
     export_submittals_to_csv,
@@ -394,6 +415,167 @@ class SubmittalsClient:
             submittal_id=submittal_id,
             destination_dir=output_dir,
             overwrite=overwrite,
+        )
+
+
+class ObservationsClient:
+    """Convenience methods for Procore observation item resources."""
+
+    def list(
+        self,
+        company_id: int | None,
+        project_id: int,
+        *,
+        status: str | None = None,
+        params: Mapping[str, Any] | None = None,
+        **filters: Any,
+    ) -> list[Observation]:
+        """List observation items for a Procore project."""
+        return list_observations(
+            company_id,
+            project_id,
+            status=status,
+            params=params,
+            **filters,
+        )
+
+    def get(self, company_id: int | None, project_id: int, observation_id: int) -> Observation:
+        """Get one observation item."""
+        return get_observation(company_id, project_id, observation_id)
+
+    def find(
+        self,
+        company_id: int | None,
+        project_id: int,
+        *,
+        number: str | int | None = None,
+        title: str | None = None,
+        query: str | None = None,
+    ) -> Observation:
+        """Find one observation item by number, title, or text."""
+        return find_observation(
+            company_id,
+            project_id,
+            number=number,
+            title=title,
+            query=query,
+        )
+
+
+class PunchItemsClient:
+    """Convenience methods for Procore punch item resources."""
+
+    def list(
+        self,
+        company_id: int | None,
+        project_id: int,
+        *,
+        status: str | None = None,
+        params: Mapping[str, Any] | None = None,
+        **filters: Any,
+    ) -> list[PunchItem]:
+        """List punch items for a Procore project."""
+        return list_punch_items(
+            company_id,
+            project_id,
+            status=status,
+            params=params,
+            **filters,
+        )
+
+    def get(self, company_id: int | None, project_id: int, punch_item_id: int) -> PunchItem:
+        """Get one punch item."""
+        return get_punch_item(company_id, project_id, punch_item_id)
+
+    def find(
+        self,
+        company_id: int | None,
+        project_id: int,
+        *,
+        number: str | int | None = None,
+        title: str | None = None,
+        query: str | None = None,
+    ) -> PunchItem:
+        """Find one punch item by number, title, or text."""
+        return find_punch_item(
+            company_id,
+            project_id,
+            number=number,
+            title=title,
+            query=query,
+        )
+
+
+class CorrespondenceClient:
+    """Convenience methods for Procore Generic Tools and correspondence items."""
+
+    def list_generic_tools(
+        self,
+        company_id: int | None,
+        project_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **filters: Any,
+    ) -> list[GenericTool]:
+        """List Generic Tool metadata for a Procore project."""
+        return list_generic_tools(company_id, project_id, params=params, **filters)
+
+    def get_generic_tool(
+        self,
+        company_id: int | None,
+        project_id: int,
+        generic_tool_id: int,
+    ) -> GenericTool:
+        """Get one Generic Tool metadata resource."""
+        return get_generic_tool(company_id, project_id, generic_tool_id)
+
+    def list(
+        self,
+        company_id: int | None,
+        project_id: int,
+        generic_tool_id: int,
+        *,
+        status: str | None = None,
+        params: Mapping[str, Any] | None = None,
+        **filters: Any,
+    ) -> list[Correspondence]:
+        """List correspondence items for one Generic Tool."""
+        return list_correspondences(
+            company_id,
+            project_id,
+            generic_tool_id,
+            status=status,
+            params=params,
+            **filters,
+        )
+
+    def get(
+        self,
+        company_id: int | None,
+        project_id: int,
+        correspondence_id: int,
+    ) -> Correspondence:
+        """Get one correspondence item."""
+        return get_correspondence(company_id, project_id, correspondence_id)
+
+    def find(
+        self,
+        company_id: int | None,
+        project_id: int,
+        generic_tool_id: int,
+        *,
+        number: str | int | None = None,
+        title: str | None = None,
+        query: str | None = None,
+    ) -> Correspondence:
+        """Find one correspondence item by number, title, subject, or text."""
+        return find_correspondence(
+            company_id,
+            project_id,
+            generic_tool_id,
+            number=number,
+            title=title,
+            query=query,
         )
 
 
@@ -1432,6 +1614,80 @@ class WorkflowsClient:
         """Export submittals to newline-delimited JSON."""
         return export_submittals_to_jsonl(project_id, output_path, status=status, **filters)
 
+    def export_observations_to_csv(
+        self,
+        company_id: int | None,
+        project_id: int,
+        output_path: Path | str,
+        **filters: Any,
+    ) -> Path:
+        """Export observations to CSV."""
+        return export_observations_to_csv(company_id, project_id, output_path, **filters)
+
+    def export_observations_to_jsonl(
+        self,
+        company_id: int | None,
+        project_id: int,
+        output_path: Path | str,
+        **filters: Any,
+    ) -> Path:
+        """Export observations to newline-delimited JSON."""
+        return export_observations_to_jsonl(company_id, project_id, output_path, **filters)
+
+    def export_punch_items_to_csv(
+        self,
+        company_id: int | None,
+        project_id: int,
+        output_path: Path | str,
+        **filters: Any,
+    ) -> Path:
+        """Export punch items to CSV."""
+        return export_punch_items_to_csv(company_id, project_id, output_path, **filters)
+
+    def export_punch_items_to_jsonl(
+        self,
+        company_id: int | None,
+        project_id: int,
+        output_path: Path | str,
+        **filters: Any,
+    ) -> Path:
+        """Export punch items to newline-delimited JSON."""
+        return export_punch_items_to_jsonl(company_id, project_id, output_path, **filters)
+
+    def export_correspondences_to_csv(
+        self,
+        company_id: int | None,
+        project_id: int,
+        generic_tool_id: int,
+        output_path: Path | str,
+        **filters: Any,
+    ) -> Path:
+        """Export Generic Tool correspondence items to CSV."""
+        return export_correspondences_to_csv(
+            company_id,
+            project_id,
+            generic_tool_id,
+            output_path,
+            **filters,
+        )
+
+    def export_correspondences_to_jsonl(
+        self,
+        company_id: int | None,
+        project_id: int,
+        generic_tool_id: int,
+        output_path: Path | str,
+        **filters: Any,
+    ) -> Path:
+        """Export Generic Tool correspondence items to newline-delimited JSON."""
+        return export_correspondences_to_jsonl(
+            company_id,
+            project_id,
+            generic_tool_id,
+            output_path,
+            **filters,
+        )
+
     def sync_rfis_to_folder(
         self,
         project_id: int,
@@ -1675,6 +1931,9 @@ class Procore:
         self.projects = ProjectsClient()
         self.rfis = RFIsClient()
         self.submittals = SubmittalsClient()
+        self.observations = ObservationsClient()
+        self.punch_items = PunchItemsClient()
+        self.correspondence = CorrespondenceClient()
         self.documents = DocumentsClient()
         self.drawings = DrawingsClient()
         self.specifications = SpecificationsClient()
@@ -1687,12 +1946,15 @@ class Procore:
 __all__ = [
     "AutomationClient",
     "CompaniesClient",
+    "CorrespondenceClient",
     "DailyLogsClient",
     "DocumentsClient",
     "DrawingsClient",
+    "ObservationsClient",
     "Procore",
     "ProjectsClient",
     "PhotosClient",
+    "PunchItemsClient",
     "RFIsClient",
     "SpecificationsClient",
     "SubmittalsClient",

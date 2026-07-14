@@ -131,6 +131,32 @@ def _project_company_schema() -> dict[str, Any]:
     )
 
 
+def _project_company_search_schema() -> dict[str, Any]:
+    """Return common project/company search input schema."""
+    return _object_schema(
+        {
+            "project_id": {"type": "integer"},
+            "company_id": {"type": "integer"},
+            "number": {"type": "string"},
+            "title": {"type": "string"},
+            "query": {"type": "string"},
+        },
+        ["project_id"],
+    )
+
+
+def _generic_tool_item_schema() -> dict[str, Any]:
+    """Return project/company/generic-tool input schema."""
+    return _object_schema(
+        {
+            "project_id": {"type": "integer"},
+            "company_id": {"type": "integer"},
+            "generic_tool_id": {"type": "integer"},
+        },
+        ["project_id", "generic_tool_id"],
+    )
+
+
 def _build_tools() -> list[AgentTool]:
     """Build the complete static tool list."""
     tools = [
@@ -265,6 +291,158 @@ def _build_tools() -> list[AgentTool]:
             operation_path="pyprocore.services.search.find_submittal",
             cli_command="procore-sdk find-submittal --project PROJECT_ID --number NUMBER",
             examples=['submittal = find_submittal(project_id, number="27")'],
+            category=AgentToolCategory.SEARCH,
+        ),
+        _resource_tool(
+            name="procore.list_observations",
+            title="List Observations",
+            description="List observation items for a project.",
+            input_schema=_project_company_schema(),
+            output_schema=_array_output("Observation"),
+            service_path="pyprocore.services.observations",
+            operation_path="pyprocore.services.observations.list_observations",
+            cli_command="procore-sdk observations --project PROJECT_ID --company-id COMPANY_ID",
+            examples=["observations = list_observations(company_id, project_id)"],
+        ),
+        _resource_tool(
+            name="procore.get_observation",
+            title="Get Observation",
+            description="Get one observation item by project ID and observation ID.",
+            input_schema=_object_schema(
+                {
+                    "project_id": {"type": "integer"},
+                    "company_id": {"type": "integer"},
+                    "observation_id": {"type": "integer"},
+                },
+                ["project_id", "observation_id"],
+            ),
+            output_schema=_model_output("Observation"),
+            service_path="pyprocore.services.observations",
+            operation_path="pyprocore.services.observations.get_observation",
+            cli_command="procore-sdk observation --project PROJECT_ID --id OBSERVATION_ID",
+            examples=["observation = get_observation(company_id, project_id, observation_id)"],
+        ),
+        _resource_tool(
+            name="procore.find_observation",
+            title="Find Observation",
+            description="Find one observation by number, title, or text.",
+            input_schema=_project_company_search_schema(),
+            output_schema=_model_output("Observation"),
+            service_path="pyprocore.services.search",
+            operation_path="pyprocore.services.search.find_observation",
+            cli_command="procore-sdk find-observation --project PROJECT_ID --number NUMBER",
+            examples=['observation = find_observation(company_id, project_id, number="15")'],
+            category=AgentToolCategory.SEARCH,
+        ),
+        _resource_tool(
+            name="procore.list_punch_items",
+            title="List Punch Items",
+            description="List punch items for a project.",
+            input_schema=_project_company_schema(),
+            output_schema=_array_output("PunchItem"),
+            service_path="pyprocore.services.punch_items",
+            operation_path="pyprocore.services.punch_items.list_punch_items",
+            cli_command="procore-sdk punch-items --project PROJECT_ID --company-id COMPANY_ID",
+            examples=["punch_items = list_punch_items(company_id, project_id)"],
+        ),
+        _resource_tool(
+            name="procore.get_punch_item",
+            title="Get Punch Item",
+            description="Get one punch item by project ID and punch item ID.",
+            input_schema=_object_schema(
+                {
+                    "project_id": {"type": "integer"},
+                    "company_id": {"type": "integer"},
+                    "punch_item_id": {"type": "integer"},
+                },
+                ["project_id", "punch_item_id"],
+            ),
+            output_schema=_model_output("PunchItem"),
+            service_path="pyprocore.services.punch_items",
+            operation_path="pyprocore.services.punch_items.get_punch_item",
+            cli_command="procore-sdk punch-item --project PROJECT_ID --id PUNCH_ITEM_ID",
+            examples=["punch_item = get_punch_item(company_id, project_id, punch_item_id)"],
+        ),
+        _resource_tool(
+            name="procore.find_punch_item",
+            title="Find Punch Item",
+            description="Find one punch item by number, title, or text.",
+            input_schema=_project_company_search_schema(),
+            output_schema=_model_output("PunchItem"),
+            service_path="pyprocore.services.search",
+            operation_path="pyprocore.services.search.find_punch_item",
+            cli_command="procore-sdk find-punch-item --project PROJECT_ID --number NUMBER",
+            examples=['punch_item = find_punch_item(company_id, project_id, number="2")'],
+            category=AgentToolCategory.SEARCH,
+        ),
+        _resource_tool(
+            name="procore.list_generic_tools",
+            title="List Generic Tools",
+            description="List Generic Tool metadata for a project.",
+            input_schema=_project_company_schema(),
+            output_schema=_array_output("GenericTool"),
+            service_path="pyprocore.services.correspondence",
+            operation_path="pyprocore.services.correspondence.list_generic_tools",
+            cli_command="procore-sdk generic-tools --project PROJECT_ID --company-id COMPANY_ID",
+            examples=["tools = list_generic_tools(company_id, project_id)"],
+        ),
+        _resource_tool(
+            name="procore.list_correspondences",
+            title="List Correspondences",
+            description="List correspondence items for a Generic Tool.",
+            input_schema=_generic_tool_item_schema(),
+            output_schema=_array_output("Correspondence"),
+            service_path="pyprocore.services.correspondence",
+            operation_path="pyprocore.services.correspondence.list_correspondences",
+            cli_command=(
+                "procore-sdk correspondences --project PROJECT_ID "
+                "--generic-tool-id GENERIC_TOOL_ID"
+            ),
+            examples=["items = list_correspondences(company_id, project_id, generic_tool_id)"],
+        ),
+        _resource_tool(
+            name="procore.get_correspondence",
+            title="Get Correspondence",
+            description="Get one Generic Tool correspondence item.",
+            input_schema=_object_schema(
+                {
+                    "project_id": {"type": "integer"},
+                    "company_id": {"type": "integer"},
+                    "correspondence_id": {"type": "integer"},
+                },
+                ["project_id", "correspondence_id"],
+            ),
+            output_schema=_model_output("Correspondence"),
+            service_path="pyprocore.services.correspondence",
+            operation_path="pyprocore.services.correspondence.get_correspondence",
+            cli_command="procore-sdk correspondence --project PROJECT_ID --id CORRESPONDENCE_ID",
+            examples=["item = get_correspondence(company_id, project_id, correspondence_id)"],
+        ),
+        _resource_tool(
+            name="procore.find_correspondence",
+            title="Find Correspondence",
+            description="Find one Generic Tool correspondence item by number, title, or text.",
+            input_schema=_object_schema(
+                {
+                    "project_id": {"type": "integer"},
+                    "company_id": {"type": "integer"},
+                    "generic_tool_id": {"type": "integer"},
+                    "number": {"type": "string"},
+                    "title": {"type": "string"},
+                    "query": {"type": "string"},
+                },
+                ["project_id", "generic_tool_id"],
+            ),
+            output_schema=_model_output("Correspondence"),
+            service_path="pyprocore.services.search",
+            operation_path="pyprocore.services.search.find_correspondence",
+            cli_command=(
+                "procore-sdk find-correspondence --project PROJECT_ID "
+                "--generic-tool-id GENERIC_TOOL_ID --query TEXT"
+            ),
+            examples=[
+                "item = find_correspondence(company_id, project_id, generic_tool_id, query='RFI')"
+            ],
             category=AgentToolCategory.SEARCH,
         ),
         _resource_tool(

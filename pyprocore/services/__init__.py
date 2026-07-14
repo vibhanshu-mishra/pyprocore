@@ -1,6 +1,13 @@
 """Service layer exports for Procore resources."""
 
 from pyprocore.services.companies import CompaniesService, list_companies
+from pyprocore.services.correspondence import (
+    CorrespondenceService,
+    get_correspondence,
+    get_generic_tool,
+    list_correspondences,
+    list_generic_tools,
+)
 from pyprocore.services.daily_logs import (
     DAILY_LOG_PATHS,
     DAILY_LOG_TYPES,
@@ -42,6 +49,11 @@ from pyprocore.services.drawings import (
     list_drawings,
 )
 from pyprocore.services.files import FileDownloadService, attachment_filename, download_url
+from pyprocore.services.observations import (
+    ObservationsService,
+    get_observation,
+    list_observations,
+)
 from pyprocore.services.photos import (
     PhotosService,
     download_photo,
@@ -54,15 +66,19 @@ from pyprocore.services.photos import (
     list_photos,
 )
 from pyprocore.services.projects import ProjectsService, get_project, list_projects
+from pyprocore.services.punch_items import PunchItemsService, get_punch_item, list_punch_items
 from pyprocore.services.rfis import RFIsService, download_rfi_attachments, get_rfi, list_rfis
 from pyprocore.services.search import (
     find_company,
+    find_correspondence,
     find_document,
     find_document_folder,
     find_drawing,
     find_drawings_contains,
+    find_observation,
     find_project,
     find_project_contains,
+    find_punch_item,
     find_rfi,
     find_submittal,
 )
@@ -85,13 +101,16 @@ from pyprocore.services.submittals import (
 
 __all__ = [
     "CompaniesService",
+    "CorrespondenceService",
     "DAILY_LOG_PATHS",
     "DAILY_LOG_TYPES",
     "DailyLogsService",
     "DocumentsService",
     "DrawingsService",
     "FileDownloadService",
+    "ObservationsService",
     "PhotosService",
+    "PunchItemsService",
     "ProjectsService",
     "RFIsService",
     "SpecificationsService",
@@ -106,32 +125,40 @@ __all__ = [
     "download_submittal_attachments",
     "download_url",
     "find_company",
+    "find_correspondence",
     "find_document",
     "find_document_folder",
     "find_drawing",
     "find_drawings_contains",
+    "find_observation",
     "find_photo",
     "find_photo_album",
     "find_project",
     "find_project_contains",
+    "find_punch_item",
     "find_rfi",
     "find_specification_section",
     "find_submittal",
     "get_document",
+    "get_correspondence",
     "get_document_folder",
     "get_daily_log",
     "get_daily_log_counts",
     "get_daily_log_header",
     "get_drawing",
     "get_drawing_area",
+    "get_generic_tool",
+    "get_observation",
     "get_photo",
     "get_photo_album",
     "get_project",
+    "get_punch_item",
     "get_rfi",
     "get_specification_section",
     "get_specification_section_revision",
     "get_submittal",
     "list_companies",
+    "list_correspondences",
     "list_accident_logs",
     "list_call_logs",
     "list_daily_construction_report_logs",
@@ -147,13 +174,16 @@ __all__ = [
     "list_drawing_disciplines",
     "list_drawings",
     "list_dumpster_logs",
+    "list_generic_tools",
     "list_manpower_logs",
     "list_notes_logs",
+    "list_observations",
     "list_photo_albums",
     "list_photos",
     "list_plan_revision_logs",
     "list_productivity_logs",
     "list_projects",
+    "list_punch_items",
     "list_rfis",
     "list_specification_section_revisions",
     "list_specification_sections",

@@ -81,12 +81,16 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         roadmap = self.read_text("docs/roadmap.md")
         completed_section = roadmap.split("## Future", 1)[0]
         future_section = roadmap.split("## Future", 1)[1]
+        unreleased_section = roadmap.split("## Unreleased Branch Work", 1)[1].split(
+            "## Future",
+            1,
+        )[0]
 
         self.assertIn("### v2.2.0", roadmap)
         self.assertIn("Phase 7 Agent Layer", completed_section)
+        for phrase in ("Observations", "Punch item", "correspondence"):
+            self.assertIn(phrase.lower(), unreleased_section.lower())
         for phrase in (
-            "Observations",
-            "Correspondence",
             "async client",
             "plugin architecture",
             "vector DB examples",
@@ -119,6 +123,7 @@ class DocsTruthAuditTestCase(unittest.TestCase):
 
         self.assertIn("Examples `01` through `52`", examples)
         self.assertIn("Examples `53` through `63`", examples)
+        self.assertIn("Examples `64` through `69`", examples)
         self.assertIn("cover the `v2.2.0` Phase 7", examples)
         self.assertIn("do not require Procore credentials or execute tools", examples)
         self.assertNotIn("prepared for `2.2.0`", examples)

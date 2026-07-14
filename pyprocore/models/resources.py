@@ -86,6 +86,79 @@ class Submittal(ProcoreModel):
     attachments: list[Attachment] = Field(default_factory=list)
 
 
+class Observation(ProcoreModel):
+    """Flexible Procore observation item resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    title: str | None = None
+    name: str | None = None
+    description: str | None = None
+    status: Status | str | None = None
+    type: str | None = None
+    observation_type: str | dict[str, Any] | None = None
+    priority: str | Status | None = None
+    assignee: User | dict[str, Any] | None = None
+    created_by: User | dict[str, Any] | None = None
+    due_date: str | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+    attachments: list[Attachment] = Field(default_factory=list)
+
+
+class PunchItem(ProcoreModel):
+    """Flexible Procore punch item resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    title: str | None = None
+    name: str | None = None
+    description: str | None = None
+    status: Status | str | None = None
+    type: str | None = None
+    priority: str | Status | None = None
+    assignee: User | dict[str, Any] | None = None
+    assigned_to: User | dict[str, Any] | None = None
+    created_by: User | dict[str, Any] | None = None
+    due_date: str | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+    attachments: list[Attachment] = Field(default_factory=list)
+
+
+class GenericTool(ProcoreModel):
+    """Flexible Procore Generic Tool metadata resource."""
+
+    id: int | None = None
+    name: str | None = None
+    title: str | None = None
+    tool_type: str | None = None
+    type: str | None = None
+    slug: str | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class Correspondence(ProcoreModel):
+    """Flexible Procore correspondence or Generic Tool Item resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    subject: str | None = None
+    title: str | None = None
+    name: str | None = None
+    description: str | None = None
+    status: Status | str | None = None
+    generic_tool_id: int | None = None
+    generic_tool: GenericTool | dict[str, Any] | None = None
+    assignee: User | dict[str, Any] | None = None
+    created_by: User | dict[str, Any] | None = None
+    due_date: str | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+    attachments: list[Attachment] = Field(default_factory=list)
+
+
 class DocumentFolder(ProcoreModel):
     """Procore document folder resource."""
 

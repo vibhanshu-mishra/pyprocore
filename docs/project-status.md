@@ -5,6 +5,8 @@
 - Current stable release: `2.2.0`
 - Previous stable release: `2.1.0`
 - `v2.2.0` is published on PyPI and released on GitHub.
+- Current unreleased branch work: Phase 8A read-only Observations, Punch Items,
+  and Generic Tool correspondence helpers.
 
 ## Current Stable Release: 2.2.0
 
@@ -25,6 +27,14 @@ tagged as `v2.2.0`, and released on GitHub.
 PyProcore `2.1.0` delivered expanded API coverage, AI-ready local exports,
 workflow automation foundations, documentation, security hardening, release
 tooling, and package metadata.
+
+## Current Unreleased Branch Work
+
+Phase 8A adds read-only SDK coverage for Observations, Punch Items, Generic
+Tools, and Generic Tool correspondence items. It includes service helpers,
+typed flexible models, search helpers, local CSV/JSONL exports, CLI commands,
+agent registry metadata, docs, examples, and mocked tests. It does not add
+create/update/delete actions and does not enable agent tool execution.
 
 ## Safety Status
 
@@ -53,7 +63,7 @@ tooling, and package metadata.
 - Guarded tool execution and human approval gates
 - Write-action safety model
 - Real MCP execution after explicit safety design
-- Expanded Procore coverage for Observations and Correspondence
+- Additional read-only Procore coverage beyond Phase 8A
 - Async client and plugin architecture
 - Vector DB examples and engineering assistant examples
 - Golden datasets and model evals

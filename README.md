@@ -12,6 +12,12 @@ PyProcore helps developers, consultants, and construction teams build safe Proco
 
 It is model-agnostic, local-first, and safety-first. The current stable release, `2.2.0`, includes the Phase 7 Agent Layer: local discovery/spec/eval/replay infrastructure for future assistant workflows. Procore tool execution remains disabled, the MCP adapter is discovery-only, and Phase 7 commands do not call external AI/model APIs.
 
+Current repository status:
+
+- Published stable release: `2.2.0`
+- Unreleased branch work: Phase 8A read-only API coverage for Observations, Punch Items, and Generic Tool correspondence items
+- Procore tool execution remains disabled
+
 ```bash
 python3 -m pip install pyprocore==2.2.0
 ```
@@ -99,6 +105,7 @@ PyProcore is mostly read-oriented and built for safe automation. Current support
 - Specifications
 - Photos
 - Daily Logs
+- Observations, Punch Items, and Generic Tool correspondence items in the current unreleased branch
 - Attachments and files when Procore returns usable URLs
 
 See [API Coverage](docs/api-coverage.md) for endpoint notes, live-verification limitations, and Procore permission context.
@@ -368,10 +375,10 @@ make quality-check
 
 ### Future
 
+- Phase 8B+ read-only coverage for Meetings, Inspections, Incidents, Directory, Locations, Commitments, Change Events, Change Orders, and budget/financial resources where appropriate
 - Guarded tool execution and human approval gates
 - Write-action safety model
 - Real MCP execution after explicit safety design
-- Expanded Procore coverage: Observations and Correspondence
 - Developer platform: async client and plugin architecture
 - AI workflow examples: vector DB examples and engineering assistant examples
 - Evaluation: golden datasets and model evals

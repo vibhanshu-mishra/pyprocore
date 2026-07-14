@@ -7,7 +7,17 @@ and this project follows semantic versioning.
 
 ## [Unreleased]
 
-No unreleased changes yet.
+### Added
+
+- Phase 8A read-only API coverage for Observations, Punch Items, and Generic Tool correspondence items.
+- Typed flexible models for `Observation`, `PunchItem`, `GenericTool`, and `Correspondence`.
+- Service, search, object-client, CLI, CSV/JSONL export, and agent registry metadata support for Phase 8A resources.
+- Beginner-friendly Phase 8A examples and documentation.
+
+### Security
+
+- Phase 8A remains read-only and does not add create/update/delete Procore actions.
+- Agent tool execution remains disabled; new Phase 8A agent entries are metadata only.
 
 ## [2.2.0] - 2026-07-12
 

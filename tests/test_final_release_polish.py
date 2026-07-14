@@ -91,7 +91,7 @@ class FinalReleasePolishTestCase(unittest.TestCase):
             self.assertTrue((PROJECT_ROOT / relative_path).exists(), relative_path)
 
     def test_examples_readme_mentions_latest_example_range(self) -> None:
-        """Examples README should document the current 01 through 63 examples."""
+        """Examples README should document the current 01 through 69 examples."""
         examples = self.read_text("examples/README.md")
 
         self.assertIn("01_list_companies.py", examples)
@@ -102,6 +102,8 @@ class FinalReleasePolishTestCase(unittest.TestCase):
         self.assertIn("59_replay_agent_run.py", examples)
         self.assertIn("61_mcp_discovery_only.py", examples)
         self.assertIn("63_inspect_agent_eval_results.py", examples)
+        self.assertIn("64_list_observations.py", examples)
+        self.assertIn("69_agent_registry_phase8a.py", examples)
         self.assertIn("runs from `01_list_companies.py` through", examples)
 
     def test_docs_claim_2_2_0_release_is_complete(self) -> None:
