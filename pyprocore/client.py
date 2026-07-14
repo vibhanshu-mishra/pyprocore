@@ -18,15 +18,28 @@ from pyprocore.core.config import get_settings
 from pyprocore.core.exceptions import ValidationError
 from pyprocore.models import (
     RFI,
+    BudgetDetailColumn,
+    BudgetDetailRow,
+    BudgetSummaryRow,
+    BudgetView,
+    ChangeEvent,
+    ChangeEventSettings,
+    ChangeEventStatus,
+    ChangeEventType,
+    ChangeOrderPackage,
+    Commitment,
+    CommitmentChangeOrder,
     Company,
     CompanyUser,
     Correspondence,
+    CostCode,
     DailyLogCount,
     DailyLogEntry,
     DailyLogHeader,
     DailyLogsByType,
     DelayLogType,
     Department,
+    DirectCost,
     DistributionGroup,
     Document,
     DocumentFolder,
@@ -43,6 +56,7 @@ from pyprocore.models import (
     PhotoAlbum,
     PhotoAlbumDownloadResult,
     PhotoImage,
+    PrimeChangeOrder,
     Project,
     ProjectUser,
     PunchItem,
@@ -51,6 +65,7 @@ from pyprocore.models import (
     SpecificationSet,
     Submittal,
     Vendor,
+    WbsCode,
 )
 from pyprocore.services import (
     download_document,
@@ -60,10 +75,13 @@ from pyprocore.services import (
     download_rfi_attachments,
     download_specification_section_revision,
     download_submittal_attachments,
+    find_change_event,
+    find_commitment,
     find_company,
     find_company_user,
     find_correspondence,
     find_department,
+    find_direct_cost,
     find_document,
     find_document_folder,
     find_drawing,
@@ -75,6 +93,7 @@ from pyprocore.services import (
     find_observation,
     find_photo,
     find_photo_album,
+    find_prime_change_order,
     find_project,
     find_project_contains,
     find_project_distribution_group,
@@ -84,12 +103,19 @@ from pyprocore.services import (
     find_specification_section,
     find_submittal,
     find_vendor,
+    get_budget_view,
+    get_change_event,
+    get_change_event_settings,
+    get_change_order_package,
+    get_commitment,
+    get_commitment_change_order,
     get_company_user,
     get_correspondence,
     get_daily_log,
     get_daily_log_counts,
     get_daily_log_header,
     get_department,
+    get_direct_cost,
     get_document,
     get_document_folder,
     get_drawing,
@@ -102,6 +128,7 @@ from pyprocore.services import (
     get_observation,
     get_photo,
     get_photo_album,
+    get_prime_change_order,
     get_project,
     get_project_distribution_group,
     get_project_incident_configuration,
@@ -113,11 +140,22 @@ from pyprocore.services import (
     get_submittal,
     get_vendor,
     list_accident_logs,
+    list_budget_detail_columns,
+    list_budget_details,
+    list_budget_view_summary_rows,
+    list_budget_views,
     list_call_logs,
+    list_change_event_statuses,
+    list_change_event_types,
+    list_change_events,
+    list_change_order_packages,
+    list_commitment_change_orders,
+    list_commitments,
     list_companies,
     list_company_inactive_users,
     list_company_users,
     list_correspondences,
+    list_cost_codes,
     list_daily_construction_report_logs,
     list_daily_log_headers,
     list_daily_logs,
@@ -126,6 +164,7 @@ from pyprocore.services import (
     list_delay_logs,
     list_delivery_logs,
     list_departments,
+    list_direct_costs,
     list_document_folders,
     list_documents,
     list_drawing_areas,
@@ -143,6 +182,7 @@ from pyprocore.services import (
     list_photo_albums,
     list_photos,
     list_plan_revision_logs,
+    list_prime_change_orders,
     list_productivity_logs,
     list_project_distribution_groups,
     list_project_users,
@@ -153,9 +193,11 @@ from pyprocore.services import (
     list_specification_section_revisions,
     list_specification_sections,
     list_specification_sets,
+    list_standard_cost_codes,
     list_submittals,
     list_vendors,
     list_visitor_logs,
+    list_wbs_codes,
 )
 from pyprocore.workflows import (
     AIExportResult,
@@ -171,12 +213,23 @@ from pyprocore.workflows import (
     build_enhanced_rfi_package,
     build_enhanced_submittal_package,
     build_project_context_package,
+    export_budget_details_to_csv,
+    export_budget_summary_rows_to_csv,
+    export_budget_views_to_csv,
+    export_change_events_to_csv,
+    export_change_events_to_jsonl,
+    export_change_order_packages_to_csv,
+    export_commitment_change_orders_to_csv,
+    export_commitments_to_csv,
     export_company_users_to_csv,
     export_company_users_to_jsonl,
     export_correspondences_to_csv,
     export_correspondences_to_jsonl,
+    export_cost_codes_to_csv,
     export_departments_to_csv,
     export_departments_to_jsonl,
+    export_direct_costs_to_csv,
+    export_direct_costs_to_jsonl,
     export_distribution_groups_to_csv,
     export_distribution_groups_to_jsonl,
     export_incidents_to_csv,
@@ -189,6 +242,8 @@ from pyprocore.workflows import (
     export_meetings_to_jsonl,
     export_observations_to_csv,
     export_observations_to_jsonl,
+    export_prime_change_orders_to_csv,
+    export_prime_change_orders_to_jsonl,
     export_project_users_to_csv,
     export_project_users_to_jsonl,
     export_punch_items_to_csv,
@@ -1657,6 +1712,244 @@ class LocationsClient:
         return find_location(company_id, project_id, name=name, code=code, query=query)
 
 
+class ChangeEventsClient:
+    """Convenience methods for read-only change events."""
+
+    def list(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[ChangeEvent]:
+        """List project change events."""
+        return list_change_events(company_id, project_id, **filters)
+
+    def get(
+        self, project_id: int, change_event_id: int, company_id: int | None = None
+    ) -> ChangeEvent:
+        """Get one project change event."""
+        return get_change_event(company_id, project_id, change_event_id)
+
+    def find(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        *,
+        number: str | int | None = None,
+        name: str | None = None,
+    ) -> ChangeEvent:
+        """Find one project change event by number, title, or name."""
+        return find_change_event(project_id, company_id=company_id, number=number, name=name)
+
+    def statuses(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[ChangeEventStatus]:
+        """List project change event statuses."""
+        return list_change_event_statuses(company_id, project_id, **filters)
+
+    def types(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[ChangeEventType]:
+        """List project change event types."""
+        return list_change_event_types(company_id, project_id, **filters)
+
+    def settings(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> ChangeEventSettings:
+        """Get project change event settings."""
+        return get_change_event_settings(company_id, project_id, **filters)
+
+
+class PrimeChangeOrdersClient:
+    """Convenience methods for read-only prime change orders."""
+
+    def list(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[PrimeChangeOrder]:
+        """List project prime change orders."""
+        return list_prime_change_orders(company_id, project_id, **filters)
+
+    def get(
+        self,
+        project_id: int,
+        prime_change_order_id: int,
+        company_id: int | None = None,
+    ) -> PrimeChangeOrder:
+        """Get one prime change order."""
+        return get_prime_change_order(company_id, project_id, prime_change_order_id)
+
+    def find(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        *,
+        number: str | int | None = None,
+        name: str | None = None,
+    ) -> PrimeChangeOrder:
+        """Find one prime change order by number, title, or name."""
+        return find_prime_change_order(project_id, company_id=company_id, number=number, name=name)
+
+
+class CommitmentChangeOrdersClient:
+    """Convenience methods for read-only commitment change orders."""
+
+    def list(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[CommitmentChangeOrder]:
+        """List project commitment change orders."""
+        return list_commitment_change_orders(company_id, project_id, **filters)
+
+    def get(
+        self,
+        project_id: int,
+        commitment_change_order_id: int,
+        company_id: int | None = None,
+    ) -> CommitmentChangeOrder:
+        """Get one commitment change order."""
+        return get_commitment_change_order(
+            company_id,
+            project_id,
+            commitment_change_order_id,
+        )
+
+
+class ChangeOrderPackagesClient:
+    """Convenience methods for read-only change order packages."""
+
+    def list(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[ChangeOrderPackage]:
+        """List project change order packages."""
+        return list_change_order_packages(company_id, project_id, **filters)
+
+    def get(
+        self,
+        project_id: int,
+        change_order_package_id: int,
+        company_id: int | None = None,
+    ) -> ChangeOrderPackage:
+        """Get one change order package."""
+        return get_change_order_package(company_id, project_id, change_order_package_id)
+
+
+class DirectCostsClient:
+    """Convenience methods for read-only direct costs."""
+
+    def list(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[DirectCost]:
+        """List project direct costs."""
+        return list_direct_costs(company_id, project_id, **filters)
+
+    def get(
+        self, project_id: int, direct_cost_id: int, company_id: int | None = None
+    ) -> DirectCost:
+        """Get one direct cost."""
+        return get_direct_cost(company_id, project_id, direct_cost_id)
+
+    def find(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        *,
+        number: str | int | None = None,
+        name: str | None = None,
+    ) -> DirectCost:
+        """Find one direct cost by number, title, or name."""
+        return find_direct_cost(project_id, company_id=company_id, number=number, name=name)
+
+
+class BudgetClient:
+    """Convenience methods for read-only budget views and rows."""
+
+    def views(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[BudgetView]:
+        """List project budget views."""
+        return list_budget_views(company_id, project_id, **filters)
+
+    def get_view(
+        self, project_id: int, budget_view_id: int, company_id: int | None = None
+    ) -> BudgetView:
+        """Get one budget view."""
+        return get_budget_view(company_id, project_id, budget_view_id)
+
+    def detail_columns(
+        self,
+        project_id: int,
+        budget_view_id: int,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> builtins.list[BudgetDetailColumn]:
+        """List budget detail columns."""
+        return list_budget_detail_columns(company_id, project_id, budget_view_id, **filters)
+
+    def details(
+        self,
+        project_id: int,
+        budget_view_id: int,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> builtins.list[BudgetDetailRow]:
+        """List budget detail rows."""
+        return list_budget_details(company_id, project_id, budget_view_id, **filters)
+
+    def summary_rows(
+        self,
+        project_id: int,
+        budget_view_id: int,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> builtins.list[BudgetSummaryRow]:
+        """List budget summary rows."""
+        return list_budget_view_summary_rows(company_id, project_id, budget_view_id, **filters)
+
+
+class CostCodesClient:
+    """Convenience methods for read-only cost and WBS codes."""
+
+    def list(self, company_id: int | None = None, **filters: Any) -> builtins.list[CostCode]:
+        """List company cost codes."""
+        return list_cost_codes(company_id, **filters)
+
+    def standard(
+        self,
+        standard_cost_code_list_id: int,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> builtins.list[CostCode]:
+        """List cost codes for one standard cost code list."""
+        return list_standard_cost_codes(company_id, standard_cost_code_list_id, **filters)
+
+    def wbs(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[WbsCode]:
+        """List project WBS codes."""
+        return list_wbs_codes(company_id, project_id, **filters)
+
+
+class CommitmentsClient:
+    """Convenience methods for read-only commitments."""
+
+    def list(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[Commitment]:
+        """List project commitments."""
+        return list_commitments(company_id, project_id, **filters)
+
+    def get(self, project_id: int, commitment_id: int, company_id: int | None = None) -> Commitment:
+        """Get one commitment."""
+        return get_commitment(company_id, project_id, commitment_id)
+
+    def find(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        *,
+        number: str | int | None = None,
+        name: str | None = None,
+    ) -> Commitment:
+        """Find one commitment by number, title, or name."""
+        return find_commitment(project_id, company_id=company_id, number=number, name=name)
+
+
 class AutomationClient:
     """Convenience methods for AI-ready automation workflow packages."""
 
@@ -2228,6 +2521,108 @@ class WorkflowsClient:
         """Export locations to newline-delimited JSON."""
         return export_locations_to_jsonl(company_id, project_id, output_path, **filters)
 
+    def export_change_events_to_csv(
+        self, company_id: int | None, project_id: int, output_path: Path | str, **filters: Any
+    ) -> Path:
+        """Export change events to CSV."""
+        return export_change_events_to_csv(company_id, project_id, output_path, **filters)
+
+    def export_change_events_to_jsonl(
+        self, company_id: int | None, project_id: int, output_path: Path | str, **filters: Any
+    ) -> Path:
+        """Export change events to newline-delimited JSON."""
+        return export_change_events_to_jsonl(company_id, project_id, output_path, **filters)
+
+    def export_prime_change_orders_to_csv(
+        self, company_id: int | None, project_id: int, output_path: Path | str, **filters: Any
+    ) -> Path:
+        """Export prime change orders to CSV."""
+        return export_prime_change_orders_to_csv(company_id, project_id, output_path, **filters)
+
+    def export_prime_change_orders_to_jsonl(
+        self, company_id: int | None, project_id: int, output_path: Path | str, **filters: Any
+    ) -> Path:
+        """Export prime change orders to newline-delimited JSON."""
+        return export_prime_change_orders_to_jsonl(company_id, project_id, output_path, **filters)
+
+    def export_commitment_change_orders_to_csv(
+        self, company_id: int | None, project_id: int, output_path: Path | str, **filters: Any
+    ) -> Path:
+        """Export commitment change orders to CSV."""
+        return export_commitment_change_orders_to_csv(
+            company_id, project_id, output_path, **filters
+        )
+
+    def export_change_order_packages_to_csv(
+        self, company_id: int | None, project_id: int, output_path: Path | str, **filters: Any
+    ) -> Path:
+        """Export change order packages to CSV."""
+        return export_change_order_packages_to_csv(company_id, project_id, output_path, **filters)
+
+    def export_direct_costs_to_csv(
+        self, company_id: int | None, project_id: int, output_path: Path | str, **filters: Any
+    ) -> Path:
+        """Export direct costs to CSV."""
+        return export_direct_costs_to_csv(company_id, project_id, output_path, **filters)
+
+    def export_direct_costs_to_jsonl(
+        self, company_id: int | None, project_id: int, output_path: Path | str, **filters: Any
+    ) -> Path:
+        """Export direct costs to newline-delimited JSON."""
+        return export_direct_costs_to_jsonl(company_id, project_id, output_path, **filters)
+
+    def export_budget_views_to_csv(
+        self, company_id: int | None, project_id: int, output_path: Path | str, **filters: Any
+    ) -> Path:
+        """Export budget views to CSV."""
+        return export_budget_views_to_csv(company_id, project_id, output_path, **filters)
+
+    def export_budget_details_to_csv(
+        self,
+        company_id: int | None,
+        project_id: int,
+        budget_view_id: int,
+        output_path: Path | str,
+        **filters: Any,
+    ) -> Path:
+        """Export budget detail rows to CSV."""
+        return export_budget_details_to_csv(
+            company_id,
+            project_id,
+            budget_view_id,
+            output_path,
+            **filters,
+        )
+
+    def export_budget_summary_rows_to_csv(
+        self,
+        company_id: int | None,
+        project_id: int,
+        budget_view_id: int,
+        output_path: Path | str,
+        **filters: Any,
+    ) -> Path:
+        """Export budget summary rows to CSV."""
+        return export_budget_summary_rows_to_csv(
+            company_id,
+            project_id,
+            budget_view_id,
+            output_path,
+            **filters,
+        )
+
+    def export_cost_codes_to_csv(
+        self, company_id: int | None, output_path: Path | str, **filters: Any
+    ) -> Path:
+        """Export cost codes to CSV."""
+        return export_cost_codes_to_csv(company_id, output_path, **filters)
+
+    def export_commitments_to_csv(
+        self, company_id: int | None, project_id: int, output_path: Path | str, **filters: Any
+    ) -> Path:
+        """Export commitments to CSV."""
+        return export_commitments_to_csv(company_id, project_id, output_path, **filters)
+
     def sync_rfis_to_folder(
         self,
         project_id: int,
@@ -2488,17 +2883,32 @@ class Procore:
         self.departments = DepartmentsClient()
         self.distribution_groups = DistributionGroupsClient()
         self.locations = LocationsClient()
+        self.change_events = ChangeEventsClient()
+        self.prime_change_orders = PrimeChangeOrdersClient()
+        self.commitment_change_orders = CommitmentChangeOrdersClient()
+        self.change_order_packages = ChangeOrderPackagesClient()
+        self.direct_costs = DirectCostsClient()
+        self.budget = BudgetClient()
+        self.cost_codes = CostCodesClient()
+        self.commitments = CommitmentsClient()
         self.automation = AutomationClient()
         self.workflows = WorkflowsClient()
 
 
 __all__ = [
     "AutomationClient",
+    "BudgetClient",
+    "ChangeEventsClient",
+    "ChangeOrderPackagesClient",
     "CompaniesClient",
     "CompanyUsersClient",
+    "CommitmentChangeOrdersClient",
+    "CommitmentsClient",
     "CorrespondenceClient",
+    "CostCodesClient",
     "DailyLogsClient",
     "DepartmentsClient",
+    "DirectCostsClient",
     "DistributionGroupsClient",
     "DocumentsClient",
     "DrawingsClient",
@@ -2511,6 +2921,7 @@ __all__ = [
     "ProjectsClient",
     "ProjectUsersClient",
     "PhotosClient",
+    "PrimeChangeOrdersClient",
     "PunchItemsClient",
     "RFIsClient",
     "SpecificationsClient",

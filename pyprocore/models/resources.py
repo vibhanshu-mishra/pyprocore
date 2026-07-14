@@ -347,6 +347,202 @@ class Location(ProcoreModel):
     updated_at: str | None = None
 
 
+class ChangeEvent(ProcoreModel):
+    """Flexible read-only Procore change event resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    title: str | None = None
+    name: str | None = None
+    description: str | None = None
+    status: str | Status | None = None
+    type: str | dict[str, Any] | None = None
+    change_event_type: str | dict[str, Any] | None = None
+    scope: str | None = None
+    reason: str | dict[str, Any] | None = None
+    estimated_cost: float | int | str | None = None
+    amount: float | int | str | None = None
+    project_id: int | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class ChangeEventStatus(ProcoreModel):
+    """Flexible read-only Procore change event status resource."""
+
+    id: int | None = None
+    name: str | None = None
+    status: str | None = None
+    label: str | None = None
+    position: int | None = None
+
+
+class ChangeEventType(ProcoreModel):
+    """Flexible read-only Procore change event type resource."""
+
+    id: int | None = None
+    name: str | None = None
+    type: str | None = None
+    description: str | None = None
+    position: int | None = None
+
+
+class ChangeEventSettings(ProcoreModel):
+    """Flexible read-only Procore change event settings resource."""
+
+    id: int | None = None
+    project_id: int | None = None
+    enabled: bool | None = None
+    settings: dict[str, Any] | None = None
+    configuration: dict[str, Any] | None = None
+
+
+class PrimeChangeOrder(ProcoreModel):
+    """Flexible read-only Procore prime change order resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    title: str | None = None
+    name: str | None = None
+    description: str | None = None
+    status: str | Status | None = None
+    amount: float | int | str | None = None
+    contract_id: int | None = None
+    project_id: int | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class CommitmentChangeOrder(ProcoreModel):
+    """Flexible read-only Procore commitment change order resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    title: str | None = None
+    name: str | None = None
+    description: str | None = None
+    status: str | Status | None = None
+    amount: float | int | str | None = None
+    commitment_id: int | None = None
+    contract_id: int | None = None
+    project_id: int | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class ChangeOrderPackage(ProcoreModel):
+    """Flexible read-only Procore change order package resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    title: str | None = None
+    name: str | None = None
+    description: str | None = None
+    status: str | Status | None = None
+    project_id: int | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class DirectCost(ProcoreModel):
+    """Flexible read-only Procore direct cost resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    title: str | None = None
+    name: str | None = None
+    description: str | None = None
+    status: str | Status | None = None
+    amount: float | int | str | None = None
+    cost_code: str | dict[str, Any] | None = None
+    vendor: str | dict[str, Any] | None = None
+    project_id: int | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class BudgetView(ProcoreModel):
+    """Flexible read-only Procore budget view resource."""
+
+    id: int | None = None
+    name: str | None = None
+    description: str | None = None
+    project_id: int | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class BudgetDetailColumn(ProcoreModel):
+    """Flexible read-only Procore budget detail column resource."""
+
+    id: int | None = None
+    name: str | None = None
+    label: str | None = None
+    field: str | None = None
+    column_type: str | None = None
+    position: int | None = None
+
+
+class BudgetDetailRow(ProcoreModel):
+    """Flexible read-only Procore budget detail row resource."""
+
+    id: int | None = None
+    name: str | None = None
+    cost_code: str | dict[str, Any] | None = None
+    cost_type: str | dict[str, Any] | None = None
+    values: dict[str, Any] | None = None
+    project_id: int | None = None
+
+
+class BudgetSummaryRow(ProcoreModel):
+    """Flexible read-only Procore budget summary row resource."""
+
+    id: int | None = None
+    name: str | None = None
+    group: str | None = None
+    values: dict[str, Any] | None = None
+    project_id: int | None = None
+
+
+class CostCode(ProcoreModel):
+    """Flexible read-only Procore cost code resource."""
+
+    id: int | None = None
+    code: str | int | None = None
+    name: str | None = None
+    full_code: str | None = None
+    description: str | None = None
+    parent_id: int | None = None
+    company_id: int | None = None
+
+
+class WbsCode(ProcoreModel):
+    """Flexible read-only Procore WBS code resource."""
+
+    id: int | None = None
+    code: str | int | None = None
+    name: str | None = None
+    full_code: str | None = None
+    description: str | None = None
+    project_id: int | None = None
+
+
+class Commitment(ProcoreModel):
+    """Flexible read-only Procore commitment/commitment contract resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    title: str | None = None
+    name: str | None = None
+    description: str | None = None
+    status: str | Status | None = None
+    amount: float | int | str | None = None
+    vendor: str | dict[str, Any] | None = None
+    project_id: int | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
 class DocumentFolder(ProcoreModel):
     """Procore document folder resource."""
 

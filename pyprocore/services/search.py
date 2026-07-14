@@ -9,10 +9,13 @@ from pyprocore.core.config import ProcoreSettings, get_settings
 from pyprocore.core.exceptions import DuplicateMatchError, MultipleResultsError, NotFoundError
 from pyprocore.models import (
     RFI,
+    ChangeEvent,
+    Commitment,
     Company,
     CompanyUser,
     Correspondence,
     Department,
+    DirectCost,
     DistributionGroup,
     Document,
     DocumentFolder,
@@ -22,6 +25,7 @@ from pyprocore.models import (
     Location,
     Meeting,
     Observation,
+    PrimeChangeOrder,
     Project,
     ProjectUser,
     PunchItem,
@@ -40,6 +44,12 @@ from pyprocore.services.directory import (
 )
 from pyprocore.services.documents import list_document_folders, list_documents
 from pyprocore.services.drawings import list_drawings
+from pyprocore.services.financials import (
+    list_change_events,
+    list_commitments,
+    list_direct_costs,
+    list_prime_change_orders,
+)
 from pyprocore.services.observations import list_observations
 from pyprocore.services.operations import list_incidents, list_inspections, list_meetings
 from pyprocore.services.projects import list_projects
@@ -181,6 +191,98 @@ def find_submittal(project_id: int, *, number: str | int) -> Submittal:
         query=query,
         values=lambda submittal: [submittal.number],
         resource_name="submittal",
+    )
+
+
+def find_change_event(
+    project_id: int,
+    *,
+    number: str | int | None = None,
+    name: str | None = None,
+    query: str | None = None,
+    company_id: int | None = None,
+) -> ChangeEvent:
+    """Find one change event by number, title, or name within a project."""
+    search_query = _name_number_query(
+        resource_name="change event",
+        name=name,
+        number=number,
+        query=query,
+    )
+    return _resolve_one(
+        resources=list_change_events(company_id, project_id),
+        query=search_query,
+        values=lambda item: [item.number, item.title, item.name],
+        resource_name="change event",
+    )
+
+
+def find_prime_change_order(
+    project_id: int,
+    *,
+    number: str | int | None = None,
+    name: str | None = None,
+    query: str | None = None,
+    company_id: int | None = None,
+) -> PrimeChangeOrder:
+    """Find one prime change order by number, title, or name within a project."""
+    search_query = _name_number_query(
+        resource_name="prime change order",
+        name=name,
+        number=number,
+        query=query,
+    )
+    return _resolve_one(
+        resources=list_prime_change_orders(company_id, project_id),
+        query=search_query,
+        values=lambda item: [item.number, item.title, item.name],
+        resource_name="prime change order",
+    )
+
+
+def find_direct_cost(
+    project_id: int,
+    *,
+    number: str | int | None = None,
+    name: str | None = None,
+    query: str | None = None,
+    company_id: int | None = None,
+) -> DirectCost:
+    """Find one direct cost by number, title, or name within a project."""
+    search_query = _name_number_query(
+        resource_name="direct cost",
+        name=name,
+        number=number,
+        query=query,
+    )
+    return _resolve_one(
+        resources=list_direct_costs(company_id, project_id),
+        query=search_query,
+        values=lambda item: [item.number, item.title, item.name],
+        resource_name="direct cost",
+    )
+
+
+def find_commitment(
+    project_id: int,
+    *,
+    number: str | int | None = None,
+    name: str | None = None,
+    query: str | None = None,
+    company_id: int | None = None,
+) -> Commitment:
+    """Find one commitment by number, title, or name within a project."""
+    search_query = _name_number_query(
+        resource_name="commitment",
+        name=name,
+        number=number,
+        query=query,
+    )
+    return _resolve_one(
+        resources=list_commitments(company_id, project_id),
+        query=search_query,
+        values=lambda item: [item.number, item.title, item.name],
+        resource_name="commitment",
     )
 
 

@@ -97,6 +97,42 @@ PROJECT_DISTRIBUTION_GROUP = (
 )
 LOCATIONS = f"{API_V1}/projects/{{project_id}}/locations"
 LOCATION = f"{API_V1}/projects/{{project_id}}/locations/{{location_id}}"
+CHANGE_EVENTS = f"{API_V1}/projects/{{project_id}}/change_events"
+CHANGE_EVENT = f"{API_V1}/projects/{{project_id}}/change_events/{{change_event_id}}"
+CHANGE_EVENT_STATUSES = f"{API_V1}/projects/{{project_id}}/change_event_statuses"
+CHANGE_EVENT_TYPES = f"{API_V1}/projects/{{project_id}}/change_event_types"
+CHANGE_EVENT_SETTINGS = f"{API_V1}/projects/{{project_id}}/change_event_settings"
+PRIME_CHANGE_ORDERS = f"{API_V1}/projects/{{project_id}}/prime_change_orders"
+PRIME_CHANGE_ORDER = (
+    f"{API_V1}/projects/{{project_id}}/prime_change_orders/{{prime_change_order_id}}"
+)
+COMMITMENT_CHANGE_ORDERS = f"{API_V1}/projects/{{project_id}}/commitment_change_orders"
+COMMITMENT_CHANGE_ORDER = (
+    f"{API_V1}/projects/{{project_id}}" "/commitment_change_orders/{commitment_change_order_id}"
+)
+CHANGE_ORDER_PACKAGES = f"{API_V1}/projects/{{project_id}}/change_order_packages"
+CHANGE_ORDER_PACKAGE = (
+    f"{API_V1}/projects/{{project_id}}/change_order_packages/{{change_order_package_id}}"
+)
+DIRECT_COSTS = f"{API_V1}/projects/{{project_id}}/direct_costs"
+DIRECT_COST = f"{API_V1}/projects/{{project_id}}/direct_costs/{{direct_cost_id}}"
+BUDGET_VIEWS = f"{API_V1}/projects/{{project_id}}/budget_views"
+BUDGET_VIEW = f"{API_V1}/projects/{{project_id}}/budget_views/{{budget_view_id}}"
+BUDGET_DETAIL_COLUMNS = (
+    f"{API_V1}/projects/{{project_id}}/budget_views/{{budget_view_id}}" "/budget_detail_columns"
+)
+BUDGET_DETAILS = f"{API_V1}/projects/{{project_id}}/budget_views/{{budget_view_id}}/budget_details"
+BUDGET_VIEW_SUMMARY_ROWS = (
+    f"{API_V1}/projects/{{project_id}}/budget_views/{{budget_view_id}}/summary_rows"
+)
+COST_CODES = f"{API_V1}/companies/{{company_id}}/cost_codes"
+STANDARD_COST_CODES = (
+    f"{API_V1}/companies/{{company_id}}"
+    "/standard_cost_code_lists/{standard_cost_code_list_id}/cost_codes"
+)
+WBS_CODES = f"{API_V1}/projects/{{project_id}}/wbs_codes"
+COMMITMENTS = f"{API_V1}/projects/{{project_id}}/commitments"
+COMMITMENT = f"{API_V1}/projects/{{project_id}}/commitments/{{commitment_id}}"
 
 
 def companies() -> str:
@@ -446,6 +482,139 @@ def location(project_id: int, location_id: int) -> str:
     return LOCATION.format(project_id=project_id, location_id=location_id)
 
 
+def change_events(project_id: int) -> str:
+    """Return the project change events collection endpoint."""
+    return CHANGE_EVENTS.format(project_id=project_id)
+
+
+def change_event(project_id: int, change_event_id: int) -> str:
+    """Return the endpoint for one project change event."""
+    return CHANGE_EVENT.format(project_id=project_id, change_event_id=change_event_id)
+
+
+def change_event_statuses(project_id: int) -> str:
+    """Return the project change event statuses collection endpoint."""
+    return CHANGE_EVENT_STATUSES.format(project_id=project_id)
+
+
+def change_event_types(project_id: int) -> str:
+    """Return the project change event types collection endpoint."""
+    return CHANGE_EVENT_TYPES.format(project_id=project_id)
+
+
+def change_event_settings(project_id: int) -> str:
+    """Return the project change event settings endpoint."""
+    return CHANGE_EVENT_SETTINGS.format(project_id=project_id)
+
+
+def prime_change_orders(project_id: int) -> str:
+    """Return the project prime change orders collection endpoint."""
+    return PRIME_CHANGE_ORDERS.format(project_id=project_id)
+
+
+def prime_change_order(project_id: int, prime_change_order_id: int) -> str:
+    """Return the endpoint for one prime change order."""
+    return PRIME_CHANGE_ORDER.format(
+        project_id=project_id,
+        prime_change_order_id=prime_change_order_id,
+    )
+
+
+def commitment_change_orders(project_id: int) -> str:
+    """Return the project commitment change orders collection endpoint."""
+    return COMMITMENT_CHANGE_ORDERS.format(project_id=project_id)
+
+
+def commitment_change_order(project_id: int, commitment_change_order_id: int) -> str:
+    """Return the endpoint for one commitment change order."""
+    return COMMITMENT_CHANGE_ORDER.format(
+        project_id=project_id,
+        commitment_change_order_id=commitment_change_order_id,
+    )
+
+
+def change_order_packages(project_id: int) -> str:
+    """Return the project change order packages collection endpoint."""
+    return CHANGE_ORDER_PACKAGES.format(project_id=project_id)
+
+
+def change_order_package(project_id: int, change_order_package_id: int) -> str:
+    """Return the endpoint for one change order package."""
+    return CHANGE_ORDER_PACKAGE.format(
+        project_id=project_id,
+        change_order_package_id=change_order_package_id,
+    )
+
+
+def direct_costs(project_id: int) -> str:
+    """Return the project direct costs collection endpoint."""
+    return DIRECT_COSTS.format(project_id=project_id)
+
+
+def direct_cost(project_id: int, direct_cost_id: int) -> str:
+    """Return the endpoint for one direct cost."""
+    return DIRECT_COST.format(project_id=project_id, direct_cost_id=direct_cost_id)
+
+
+def budget_views(project_id: int) -> str:
+    """Return the project budget views collection endpoint."""
+    return BUDGET_VIEWS.format(project_id=project_id)
+
+
+def budget_view(project_id: int, budget_view_id: int) -> str:
+    """Return the endpoint for one budget view."""
+    return BUDGET_VIEW.format(project_id=project_id, budget_view_id=budget_view_id)
+
+
+def budget_detail_columns(project_id: int, budget_view_id: int) -> str:
+    """Return budget detail columns for one budget view."""
+    return BUDGET_DETAIL_COLUMNS.format(
+        project_id=project_id,
+        budget_view_id=budget_view_id,
+    )
+
+
+def budget_details(project_id: int, budget_view_id: int) -> str:
+    """Return budget detail rows for one budget view."""
+    return BUDGET_DETAILS.format(project_id=project_id, budget_view_id=budget_view_id)
+
+
+def budget_view_summary_rows(project_id: int, budget_view_id: int) -> str:
+    """Return budget summary rows for one budget view."""
+    return BUDGET_VIEW_SUMMARY_ROWS.format(
+        project_id=project_id,
+        budget_view_id=budget_view_id,
+    )
+
+
+def cost_codes(company_id: int) -> str:
+    """Return the company cost codes collection endpoint."""
+    return COST_CODES.format(company_id=company_id)
+
+
+def standard_cost_codes(company_id: int, standard_cost_code_list_id: int) -> str:
+    """Return cost codes for one standard cost code list."""
+    return STANDARD_COST_CODES.format(
+        company_id=company_id,
+        standard_cost_code_list_id=standard_cost_code_list_id,
+    )
+
+
+def wbs_codes(project_id: int) -> str:
+    """Return the project WBS codes collection endpoint."""
+    return WBS_CODES.format(project_id=project_id)
+
+
+def commitments(project_id: int) -> str:
+    """Return the project commitments collection endpoint."""
+    return COMMITMENTS.format(project_id=project_id)
+
+
+def commitment(project_id: int, commitment_id: int) -> str:
+    """Return the endpoint for one commitment."""
+    return COMMITMENT.format(project_id=project_id, commitment_id=commitment_id)
+
+
 class Endpoints:
     """Backward-compatible namespace for endpoint path templates."""
 
@@ -506,3 +675,26 @@ class Endpoints:
     PROJECT_DISTRIBUTION_GROUP = PROJECT_DISTRIBUTION_GROUP
     LOCATIONS = LOCATIONS
     LOCATION = LOCATION
+    CHANGE_EVENTS = CHANGE_EVENTS
+    CHANGE_EVENT = CHANGE_EVENT
+    CHANGE_EVENT_STATUSES = CHANGE_EVENT_STATUSES
+    CHANGE_EVENT_TYPES = CHANGE_EVENT_TYPES
+    CHANGE_EVENT_SETTINGS = CHANGE_EVENT_SETTINGS
+    PRIME_CHANGE_ORDERS = PRIME_CHANGE_ORDERS
+    PRIME_CHANGE_ORDER = PRIME_CHANGE_ORDER
+    COMMITMENT_CHANGE_ORDERS = COMMITMENT_CHANGE_ORDERS
+    COMMITMENT_CHANGE_ORDER = COMMITMENT_CHANGE_ORDER
+    CHANGE_ORDER_PACKAGES = CHANGE_ORDER_PACKAGES
+    CHANGE_ORDER_PACKAGE = CHANGE_ORDER_PACKAGE
+    DIRECT_COSTS = DIRECT_COSTS
+    DIRECT_COST = DIRECT_COST
+    BUDGET_VIEWS = BUDGET_VIEWS
+    BUDGET_VIEW = BUDGET_VIEW
+    BUDGET_DETAIL_COLUMNS = BUDGET_DETAIL_COLUMNS
+    BUDGET_DETAILS = BUDGET_DETAILS
+    BUDGET_VIEW_SUMMARY_ROWS = BUDGET_VIEW_SUMMARY_ROWS
+    COST_CODES = COST_CODES
+    STANDARD_COST_CODES = STANDARD_COST_CODES
+    WBS_CODES = WBS_CODES
+    COMMITMENTS = COMMITMENTS
+    COMMITMENT = COMMITMENT

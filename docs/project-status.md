@@ -5,7 +5,7 @@
 - Current stable release: `2.2.0`
 - Previous stable release: `2.1.0`
 - `v2.2.0` is published on PyPI and released on GitHub.
-- Current unreleased branch work: Phase 8A, Phase 8C, and Phase 8D read-only
+- Current unreleased branch work: Phase 8A, Phase 8C, Phase 8D, and Phase 8E read-only
   API coverage, plus Phase 8B client-credentials auth support for Data
   Connection Apps.
 
@@ -54,6 +54,13 @@ service helpers, typed flexible models, search helpers, local CSV/JSONL exports,
 CLI commands, agent registry metadata, docs, examples, and mocked tests. It does
 not add create/update/delete actions and does not enable agent tool execution.
 
+Phase 8E adds read-only SDK coverage for financial and change-management
+resources such as Change Events, Prime Change Orders, Commitment Change Orders,
+Change Order Packages, Direct Costs, Budget Views/Details, Cost Codes, WBS
+Codes, and Commitments. It does not add financial writes, approvals, status
+changes, budget modifications, invoices, payment mutations, or commitment
+creation.
+
 ## Safety Status
 
 - Tool execution remains disabled.
@@ -64,7 +71,7 @@ not add create/update/delete actions and does not enable agent tool execution.
 - PyProcore does not call external AI/model APIs.
 - Live SDK workflows still require valid Procore credentials and permissions.
 - Client credentials support does not enable Procore tool execution.
-- Phase 8C and Phase 8D service helpers are read-only.
+- Phase 8C, Phase 8D, and Phase 8E service helpers are read-only.
 
 ## Known Limitations
 
@@ -83,7 +90,7 @@ not add create/update/delete actions and does not enable agent tool execution.
 - Guarded tool execution and human approval gates
 - Write-action safety model
 - Real MCP execution after explicit safety design
-- Additional read-only Procore coverage beyond Phase 8D
+- Additional read-only Procore coverage beyond Phase 8E
 - Async client and plugin architecture
 - Vector DB examples and engineering assistant examples
 - Golden datasets and model evals

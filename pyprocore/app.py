@@ -78,10 +78,13 @@ from pyprocore.services import (
     download_rfi_attachments,
     download_specification_section_revision,
     download_submittal_attachments,
+    find_change_event,
+    find_commitment,
     find_company,
     find_company_user,
     find_correspondence,
     find_department,
+    find_direct_cost,
     find_document,
     find_document_folder,
     find_drawing,
@@ -93,6 +96,7 @@ from pyprocore.services import (
     find_observation,
     find_photo,
     find_photo_album,
+    find_prime_change_order,
     find_project,
     find_project_distribution_group,
     find_project_user,
@@ -101,12 +105,16 @@ from pyprocore.services import (
     find_specification_section,
     find_submittal,
     find_vendor,
+    get_change_event,
+    get_change_event_settings,
+    get_commitment,
     get_company_user,
     get_correspondence,
     get_daily_log,
     get_daily_log_counts,
     get_daily_log_header,
     get_department,
+    get_direct_cost,
     get_document,
     get_document_folder,
     get_drawing,
@@ -119,6 +127,7 @@ from pyprocore.services import (
     get_observation,
     get_photo,
     get_photo_album,
+    get_prime_change_order,
     get_project_distribution_group,
     get_project_incident_configuration,
     get_project_user,
@@ -129,11 +138,22 @@ from pyprocore.services import (
     get_submittal,
     get_vendor,
     list_accident_logs,
+    list_budget_detail_columns,
+    list_budget_details,
+    list_budget_view_summary_rows,
+    list_budget_views,
     list_call_logs,
+    list_change_event_statuses,
+    list_change_event_types,
+    list_change_events,
+    list_change_order_packages,
+    list_commitment_change_orders,
+    list_commitments,
     list_companies,
     list_company_inactive_users,
     list_company_users,
     list_correspondences,
+    list_cost_codes,
     list_daily_construction_report_logs,
     list_daily_log_headers,
     list_daily_logs,
@@ -142,6 +162,7 @@ from pyprocore.services import (
     list_delay_logs,
     list_delivery_logs,
     list_departments,
+    list_direct_costs,
     list_document_folders,
     list_documents,
     list_drawing_areas,
@@ -159,6 +180,7 @@ from pyprocore.services import (
     list_photo_albums,
     list_photos,
     list_plan_revision_logs,
+    list_prime_change_orders,
     list_productivity_logs,
     list_project_distribution_groups,
     list_project_users,
@@ -172,6 +194,7 @@ from pyprocore.services import (
     list_submittals,
     list_vendors,
     list_visitor_logs,
+    list_wbs_codes,
 )
 from pyprocore.webhooks import (
     WebhookDispatchResult,
@@ -196,15 +219,25 @@ from pyprocore.workflows import (
     build_enhanced_rfi_package,
     build_enhanced_submittal_package,
     build_project_context_package,
+    export_budget_details_to_csv,
+    export_budget_summary_rows_to_csv,
+    export_budget_views_to_csv,
+    export_change_events_to_csv,
+    export_change_order_packages_to_csv,
+    export_commitment_change_orders_to_csv,
+    export_commitments_to_csv,
     export_company_users_to_csv,
     export_correspondences_to_csv,
+    export_cost_codes_to_csv,
     export_departments_to_csv,
+    export_direct_costs_to_csv,
     export_distribution_groups_to_csv,
     export_incidents_to_csv,
     export_inspections_to_csv,
     export_locations_to_csv,
     export_meetings_to_csv,
     export_observations_to_csv,
+    export_prime_change_orders_to_csv,
     export_project_users_to_csv,
     export_punch_items_to_csv,
     export_rfis_to_csv,
@@ -901,6 +934,127 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_project_company_options(find_location_parser)
     _add_name_code_query_options(find_location_parser)
+
+    change_events_parser = subcommands.add_parser("change-events", help="List change events")
+    _add_project_company_options(change_events_parser)
+    _add_filter_options(change_events_parser)
+
+    change_event_parser = subcommands.add_parser("change-event", help="Get one change event")
+    _add_project_company_options(change_event_parser)
+    change_event_parser.add_argument(
+        "--id", "--change-event-id", dest="change_event_id", type=int, required=True
+    )
+
+    find_change_event_parser = subcommands.add_parser(
+        "find-change-event", help="Find one change event"
+    )
+    _add_project_company_options(find_change_event_parser)
+    _add_name_number_query_options(find_change_event_parser)
+
+    change_event_statuses_parser = subcommands.add_parser(
+        "change-event-statuses", help="List change event statuses"
+    )
+    _add_project_company_options(change_event_statuses_parser)
+
+    change_event_types_parser = subcommands.add_parser(
+        "change-event-types", help="List change event types"
+    )
+    _add_project_company_options(change_event_types_parser)
+
+    change_event_settings_parser = subcommands.add_parser(
+        "change-event-settings", help="Get change event settings"
+    )
+    _add_project_company_options(change_event_settings_parser)
+
+    prime_change_orders_parser = subcommands.add_parser(
+        "prime-change-orders", help="List prime change orders"
+    )
+    _add_project_company_options(prime_change_orders_parser)
+    _add_filter_options(prime_change_orders_parser)
+
+    prime_change_order_parser = subcommands.add_parser(
+        "prime-change-order", help="Get one prime change order"
+    )
+    _add_project_company_options(prime_change_order_parser)
+    prime_change_order_parser.add_argument(
+        "--id", "--prime-change-order-id", dest="prime_change_order_id", type=int, required=True
+    )
+
+    find_prime_change_order_parser = subcommands.add_parser(
+        "find-prime-change-order", help="Find one prime change order"
+    )
+    _add_project_company_options(find_prime_change_order_parser)
+    _add_name_number_query_options(find_prime_change_order_parser)
+
+    commitment_change_orders_parser = subcommands.add_parser(
+        "commitment-change-orders", help="List commitment change orders"
+    )
+    _add_project_company_options(commitment_change_orders_parser)
+
+    change_order_packages_parser = subcommands.add_parser(
+        "change-order-packages", help="List change order packages"
+    )
+    _add_project_company_options(change_order_packages_parser)
+
+    direct_costs_parser = subcommands.add_parser("direct-costs", help="List direct costs")
+    _add_project_company_options(direct_costs_parser)
+    _add_filter_options(direct_costs_parser)
+
+    direct_cost_parser = subcommands.add_parser("direct-cost", help="Get one direct cost")
+    _add_project_company_options(direct_cost_parser)
+    direct_cost_parser.add_argument(
+        "--id", "--direct-cost-id", dest="direct_cost_id", type=int, required=True
+    )
+
+    find_direct_cost_parser = subcommands.add_parser(
+        "find-direct-cost", help="Find one direct cost"
+    )
+    _add_project_company_options(find_direct_cost_parser)
+    _add_name_number_query_options(find_direct_cost_parser)
+
+    budget_views_parser = subcommands.add_parser("budget-views", help="List budget views")
+    _add_project_company_options(budget_views_parser)
+
+    budget_detail_columns_parser = subcommands.add_parser(
+        "budget-detail-columns", help="List budget detail columns"
+    )
+    _add_project_company_options(budget_detail_columns_parser)
+    budget_detail_columns_parser.add_argument(
+        "--budget-view", "--budget-view-id", dest="budget_view_id", type=int, required=True
+    )
+
+    budget_details_parser = subcommands.add_parser("budget-details", help="List budget details")
+    _add_project_company_options(budget_details_parser)
+    budget_details_parser.add_argument(
+        "--budget-view", "--budget-view-id", dest="budget_view_id", type=int, required=True
+    )
+
+    budget_summary_rows_parser = subcommands.add_parser(
+        "budget-summary-rows", help="List budget summary rows"
+    )
+    _add_project_company_options(budget_summary_rows_parser)
+    budget_summary_rows_parser.add_argument(
+        "--budget-view", "--budget-view-id", dest="budget_view_id", type=int, required=True
+    )
+
+    cost_codes_parser = subcommands.add_parser("cost-codes", help="List company cost codes")
+    _add_company_options(cost_codes_parser)
+
+    wbs_codes_parser = subcommands.add_parser("wbs-codes", help="List project WBS codes")
+    _add_project_company_options(wbs_codes_parser)
+
+    commitments_parser = subcommands.add_parser("commitments", help="List commitments")
+    _add_project_company_options(commitments_parser)
+
+    commitment_parser = subcommands.add_parser("commitment", help="Get one commitment")
+    _add_project_company_options(commitment_parser)
+    commitment_parser.add_argument(
+        "--id", "--commitment-id", dest="commitment_id", type=int, required=True
+    )
+
+    find_commitment_parser = subcommands.add_parser("find-commitment", help="Find one commitment")
+    _add_project_company_options(find_commitment_parser)
+    _add_name_number_query_options(find_commitment_parser)
 
     document_folders_parser = subcommands.add_parser(
         "document-folders",
@@ -1611,6 +1765,52 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_project_company_options(export_locations_parser)
     export_locations_parser.add_argument(
+        "--output",
+        dest="output_path",
+        type=Path,
+        required=True,
+        help="CSV output path",
+    )
+
+    for command_name, help_text, needs_budget_view in (
+        ("export-change-events", "Export project change events to CSV", False),
+        ("export-prime-change-orders", "Export project prime change orders to CSV", False),
+        (
+            "export-commitment-change-orders",
+            "Export project commitment change orders to CSV",
+            False,
+        ),
+        ("export-change-order-packages", "Export project change order packages to CSV", False),
+        ("export-direct-costs", "Export project direct costs to CSV", False),
+        ("export-budget-views", "Export project budget views to CSV", False),
+        ("export-budget-details", "Export project budget details to CSV", True),
+        ("export-budget-summary-rows", "Export project budget summary rows to CSV", True),
+        ("export-commitments", "Export project commitments to CSV", False),
+    ):
+        export_parser = subcommands.add_parser(command_name, help=help_text)
+        _add_project_company_options(export_parser)
+        if needs_budget_view:
+            export_parser.add_argument(
+                "--budget-view",
+                "--budget-view-id",
+                dest="budget_view_id",
+                type=int,
+                required=True,
+            )
+        export_parser.add_argument(
+            "--output",
+            dest="output_path",
+            type=Path,
+            required=True,
+            help="CSV output path",
+        )
+
+    export_cost_codes_parser = subcommands.add_parser(
+        "export-cost-codes",
+        help="Export company cost codes to CSV",
+    )
+    _add_company_options(export_cost_codes_parser)
+    export_cost_codes_parser.add_argument(
         "--output",
         dest="output_path",
         type=Path,
@@ -2550,6 +2750,123 @@ def run_command(args: argparse.Namespace) -> Any:
             query=args.query,
         )
 
+    if args.command == "change-events":
+        return list_change_events(
+            args.company_id,
+            args.project_id,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "change-event":
+        return get_change_event(args.company_id, args.project_id, args.change_event_id)
+
+    if args.command == "find-change-event":
+        return find_change_event(
+            args.project_id,
+            company_id=args.company_id,
+            number=args.number,
+            name=args.name,
+            query=args.query,
+        )
+
+    if args.command == "change-event-statuses":
+        return list_change_event_statuses(args.company_id, args.project_id)
+
+    if args.command == "change-event-types":
+        return list_change_event_types(args.company_id, args.project_id)
+
+    if args.command == "change-event-settings":
+        return get_change_event_settings(args.company_id, args.project_id)
+
+    if args.command == "prime-change-orders":
+        return list_prime_change_orders(
+            args.company_id,
+            args.project_id,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "prime-change-order":
+        return get_prime_change_order(args.company_id, args.project_id, args.prime_change_order_id)
+
+    if args.command == "find-prime-change-order":
+        return find_prime_change_order(
+            args.project_id,
+            company_id=args.company_id,
+            number=args.number,
+            name=args.name,
+            query=args.query,
+        )
+
+    if args.command == "commitment-change-orders":
+        return list_commitment_change_orders(args.company_id, args.project_id)
+
+    if args.command == "change-order-packages":
+        return list_change_order_packages(args.company_id, args.project_id)
+
+    if args.command == "direct-costs":
+        return list_direct_costs(
+            args.company_id,
+            args.project_id,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "direct-cost":
+        return get_direct_cost(args.company_id, args.project_id, args.direct_cost_id)
+
+    if args.command == "find-direct-cost":
+        return find_direct_cost(
+            args.project_id,
+            company_id=args.company_id,
+            number=args.number,
+            name=args.name,
+            query=args.query,
+        )
+
+    if args.command == "budget-views":
+        return list_budget_views(args.company_id, args.project_id)
+
+    if args.command == "budget-detail-columns":
+        return list_budget_detail_columns(args.company_id, args.project_id, args.budget_view_id)
+
+    if args.command == "budget-details":
+        return list_budget_details(args.company_id, args.project_id, args.budget_view_id)
+
+    if args.command == "budget-summary-rows":
+        return list_budget_view_summary_rows(args.company_id, args.project_id, args.budget_view_id)
+
+    if args.command == "cost-codes":
+        return list_cost_codes(args.company_id)
+
+    if args.command == "wbs-codes":
+        return list_wbs_codes(args.company_id, args.project_id)
+
+    if args.command == "commitments":
+        return list_commitments(args.company_id, args.project_id)
+
+    if args.command == "commitment":
+        return get_commitment(args.company_id, args.project_id, args.commitment_id)
+
+    if args.command == "find-commitment":
+        return find_commitment(
+            args.project_id,
+            company_id=args.company_id,
+            number=args.number,
+            name=args.name,
+            query=args.query,
+        )
+
     if args.command == "document-folders":
         return list_document_folders(
             args.project_id,
@@ -3018,6 +3335,52 @@ def run_command(args: argparse.Namespace) -> Any:
 
     if args.command == "export-locations":
         return export_locations_to_csv(args.company_id, args.project_id, args.output_path)
+
+    if args.command == "export-change-events":
+        return export_change_events_to_csv(args.company_id, args.project_id, args.output_path)
+
+    if args.command == "export-prime-change-orders":
+        return export_prime_change_orders_to_csv(args.company_id, args.project_id, args.output_path)
+
+    if args.command == "export-commitment-change-orders":
+        return export_commitment_change_orders_to_csv(
+            args.company_id,
+            args.project_id,
+            args.output_path,
+        )
+
+    if args.command == "export-change-order-packages":
+        return export_change_order_packages_to_csv(
+            args.company_id, args.project_id, args.output_path
+        )
+
+    if args.command == "export-direct-costs":
+        return export_direct_costs_to_csv(args.company_id, args.project_id, args.output_path)
+
+    if args.command == "export-budget-views":
+        return export_budget_views_to_csv(args.company_id, args.project_id, args.output_path)
+
+    if args.command == "export-budget-details":
+        return export_budget_details_to_csv(
+            args.company_id,
+            args.project_id,
+            args.budget_view_id,
+            args.output_path,
+        )
+
+    if args.command == "export-budget-summary-rows":
+        return export_budget_summary_rows_to_csv(
+            args.company_id,
+            args.project_id,
+            args.budget_view_id,
+            args.output_path,
+        )
+
+    if args.command == "export-cost-codes":
+        return export_cost_codes_to_csv(args.company_id, args.output_path)
+
+    if args.command == "export-commitments":
+        return export_commitments_to_csv(args.company_id, args.project_id, args.output_path)
 
     if args.command == "ai-review-export":
         return build_ai_review_export(
@@ -3787,9 +4150,18 @@ def main() -> None:
         return
 
     if isinstance(result, Path) and args.command in {
+        "export-budget-details",
+        "export-budget-summary-rows",
+        "export-budget-views",
+        "export-change-events",
+        "export-change-order-packages",
         "export-company-users",
+        "export-commitment-change-orders",
+        "export-commitments",
         "export-correspondences",
+        "export-cost-codes",
         "export-departments",
+        "export-direct-costs",
         "export-distribution-groups",
         "export-incidents",
         "export-inspections",
@@ -3797,6 +4169,7 @@ def main() -> None:
         "export-meetings",
         "export-observations",
         "export-project-users",
+        "export-prime-change-orders",
         "export-punch-items",
         "export-rfis",
         "export-submittals",

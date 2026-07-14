@@ -143,6 +143,41 @@ procore-sdk export-distribution-groups --project 352338 --company-id 123456 --ou
 procore-sdk export-locations --project 352338 --company-id 123456 --output exports/locations.csv
 ```
 
+## Financial And Change Management Read Commands
+
+Phase 8E adds read-oriented commands for financial and change-management
+resources in the current unreleased branch. These commands do not create,
+update, delete, approve, change statuses, modify budgets, create commitments,
+create invoices, or mutate payments.
+
+```bash
+procore-sdk change-events --project 352338 --company-id 123456
+procore-sdk change-event --project 352338 --company-id 123456 --id 10
+procore-sdk find-change-event --project 352338 --company-id 123456 --number CE-001
+procore-sdk change-event-statuses --project 352338 --company-id 123456
+procore-sdk change-event-types --project 352338 --company-id 123456
+procore-sdk change-event-settings --project 352338 --company-id 123456
+procore-sdk prime-change-orders --project 352338 --company-id 123456
+procore-sdk direct-costs --project 352338 --company-id 123456
+procore-sdk budget-views --project 352338 --company-id 123456
+procore-sdk budget-details --project 352338 --company-id 123456 --budget-view 1
+procore-sdk cost-codes --company-id 123456
+procore-sdk wbs-codes --project 352338 --company-id 123456
+procore-sdk commitments --project 352338 --company-id 123456
+```
+
+Local CSV exports are also available:
+
+```bash
+procore-sdk export-change-events --project 352338 --company-id 123456 --output exports/change-events.csv
+procore-sdk export-prime-change-orders --project 352338 --company-id 123456 --output exports/prime-change-orders.csv
+procore-sdk export-direct-costs --project 352338 --company-id 123456 --output exports/direct-costs.csv
+procore-sdk export-budget-views --project 352338 --company-id 123456 --output exports/budget-views.csv
+procore-sdk export-budget-details --project 352338 --company-id 123456 --budget-view 1 --output exports/budget-details.csv
+procore-sdk export-cost-codes --company-id 123456 --output exports/cost-codes.csv
+procore-sdk export-commitments --project 352338 --company-id 123456 --output exports/commitments.csv
+```
+
 ## Workflow And Package Builders
 
 ```bash

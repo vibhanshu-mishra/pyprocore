@@ -182,7 +182,7 @@ make examples-check
 ## Example Index
 
 The current example set runs from `01_list_companies.py` through
-`87_agent_registry_phase8d.py`.
+`95_agent_registry_phase8e.py`.
 
 | File | Demonstrates |
 | ---- | ------------ |
@@ -273,6 +273,14 @@ The current example set runs from `01_list_companies.py` through
 | `85_list_distribution_groups.py` | List read-only project distribution groups |
 | `86_list_locations.py` | List read-only project locations |
 | `87_agent_registry_phase8d.py` | Inspect Phase 8D agent metadata without executing tools |
+| `88_list_change_events.py` | List read-only project change events |
+| `89_export_change_events.py` | Export change events to a local CSV file |
+| `90_list_prime_change_orders.py` | List read-only prime change orders |
+| `91_list_direct_costs.py` | List read-only direct costs |
+| `92_list_budget_views.py` | List read-only budget views |
+| `93_export_budget_details.py` | Export budget detail rows to a local CSV file |
+| `94_list_cost_codes.py` | List read-only company cost codes |
+| `95_agent_registry_phase8e.py` | Inspect Phase 8E agent metadata without executing tools |
 
 Sample workflow plans live in `examples/workflow_plans/`:
 

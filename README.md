@@ -15,7 +15,7 @@ It is model-agnostic, local-first, and safety-first. The current stable release,
 Current repository status:
 
 - Published stable release: `2.2.0`
-- Unreleased branch work: Phase 8A, Phase 8C, and Phase 8D read-only API coverage, plus Phase 8B client-credentials auth support
+- Unreleased branch work: Phase 8A, Phase 8C, Phase 8D, and Phase 8E read-only API coverage, plus Phase 8B client-credentials auth support
 - Procore tool execution remains disabled
 
 ```bash
@@ -381,10 +381,14 @@ make quality-check
 - Phase 8B client-credentials auth support
 - Phase 8C read-only coverage for Meetings, Inspections, and Incidents
 - Phase 8D read-only coverage for Directory users, Vendors, Departments, Distribution Groups, and Locations
+- Phase 8E read-only coverage for financial and change-management resources:
+  Change Events, Prime Change Orders, Commitment Change Orders, Change Order
+  Packages, Direct Costs, Budget Views/Details, Cost Codes, WBS Codes, and
+  Commitments
 
 ### Future
 
-- Additional read-only coverage for Commitments, Change Events, Change Orders, and budget/financial resources where appropriate
+- Additional read-only Procore coverage where endpoint shapes are safe and clear
 - Guarded tool execution and human approval gates
 - Write-action safety model
 - Real MCP execution after explicit safety design

@@ -26,6 +26,14 @@ Procore environment.
 | Departments | Unreleased Phase 8D | List, get, find, CSV/JSONL export | Company-scoped read-only department helpers. |
 | Distribution Groups | Unreleased Phase 8D | List, get, find, CSV/JSONL export | Project-scoped distribution group helpers. |
 | Locations | Unreleased Phase 8D | List, get, find, CSV/JSONL export | Project-scoped location helpers. |
+| Change Events | Unreleased Phase 8E | List, get, find, statuses, types, settings, CSV/JSONL export | Read-only change-management helpers. No comments, writes, approvals, or status changes. |
+| Prime Change Orders | Unreleased Phase 8E | List, get, find, CSV/JSONL export | Read-only helpers only. No create/update/delete or approval behavior. |
+| Commitment Change Orders | Unreleased Phase 8E | List, get, CSV/JSONL export | Read-only helpers only. |
+| Change Order Packages | Unreleased Phase 8E | List, get, CSV/JSONL export | Read-only helpers only. |
+| Direct Costs | Unreleased Phase 8E | List, get, find, CSV/JSONL export | Read-only helpers only. No direct cost writes. |
+| Budget Views and Details | Unreleased Phase 8E | List views, columns, detail rows, summary rows, CSV/JSONL export | Read-only budget reporting helpers. No budget modification or forecast writes. |
+| Cost Codes / WBS Codes | Unreleased Phase 8E | List company cost codes, standard cost codes, project WBS codes, CSV/JSONL export | Read-only coding helpers. No WBS or cost code writes. |
+| Commitments | Unreleased Phase 8E | List, get, find, CSV/JSONL export | Read-only commitment helpers. No commitment, invoice, line-item, or compliance-document writes. |
 | Attachments/downloads | Supported | Streaming downloads, skip existing files, overwrite option | Downloads are local file operations only. |
 | Workflows | Supported | CSV, JSONL, folder sync, project context, AI-ready packages | Workflows create local files and do not mutate Procore data. |
 | Webhooks | Local helpers | Validate, redact, save, list, dry-run dispatch | No hosted webhook server is included. |
@@ -87,6 +95,18 @@ endpoint helpers and mocked unit tests only:
 These helpers do not create, update, delete, or mutate Procore data. They include
 flexible typed models, search helpers, CSV/JSONL exports, CLI commands, examples,
 and agent registry metadata for discovery only.
+
+## Phase 8E Endpoint Notes
+
+Phase 8E adds read-oriented SDK coverage for financial and change-management
+resources. The implementation intentionally exposes list/get/find and local
+CSV/JSONL export helpers only.
+
+These helpers do not create, update, delete, approve, change statuses, modify
+budgets or forecasts, create commitments, create invoices, mutate payments, or
+write compliance documents. Agent registry entries are metadata only, Procore
+tool execution remains disabled, MCP remains discovery-only, and no external
+AI/model APIs are called.
 
 ## Live Verification Notes
 

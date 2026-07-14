@@ -25,6 +25,10 @@ and this project follows semantic versioning.
 - Typed flexible models for `CompanyUser`, `ProjectUser`, `Vendor`, `Department`, `DistributionGroup`, and `Location`.
 - Service, search, object-client, CLI, CSV/JSONL export, and agent registry metadata support for Phase 8D resources.
 - Beginner-friendly Phase 8D examples and documentation.
+- Phase 8E read-only API coverage for financial and change-management resources, including Change Events, Prime Change Orders, Commitment Change Orders, Change Order Packages, Direct Costs, Budget Views/Details, Cost Codes, WBS Codes, and Commitments.
+- Typed flexible models for Phase 8E financial and change-management resources.
+- Service, search, object-client, CLI, CSV/JSONL export, and agent registry metadata support for Phase 8E resources.
+- Beginner-friendly Phase 8E examples and documentation.
 
 ### Security
 
@@ -35,6 +39,8 @@ and this project follows semantic versioning.
 - New Phase 8C agent entries are metadata only.
 - Phase 8D remains read-only and does not add create/update/delete Procore actions.
 - New Phase 8D agent entries are metadata only.
+- Phase 8E remains read-oriented and does not add financial writes, approvals, status changes, budget modifications, commitments writes, invoices, or payment mutations.
+- New Phase 8E agent entries are metadata only; Procore tool execution remains disabled and MCP remains discovery-only.
 
 ## [2.2.0] - 2026-07-12
 

@@ -95,16 +95,35 @@ Implemented in the current branch and not yet published:
 Focus: read-oriented coverage only. No create/update/delete/write actions are
 included.
 
+### Phase 8E — Financial and Change Management Read Coverage
+
+Implemented in the current branch and not yet published:
+
+- Change Events
+- Prime Change Orders
+- Commitment Change Orders
+- Change Order Packages
+- Direct Costs
+- Budget Views, Detail Columns, Details, and Summary Rows
+- Cost Codes and WBS Codes
+- Commitments
+- CSV/JSONL local exports
+- CLI commands
+- Agent registry metadata for discovery only
+- Examples and docs
+
+Focus: read-oriented coverage only. No financial writes, approvals, status
+changes, budget modifications, invoices, payment mutations, or commitment
+creation are included.
+
 ## Future
 
-### Phase 8E+ — Expanded Procore API Coverage
+### Phase 8F+ — Expanded Procore API Coverage
 
 Planned modules:
 
-- Commitments
-- Change Events
-- Change Orders
-- Budget/financial read coverage where appropriate
+- Additional read-only Procore resources where endpoint shapes are safe and
+  clear
 
 Focus: read-oriented coverage first.
 
