@@ -84,6 +84,9 @@ from pyprocore.services import (
     find_document_folder,
     find_drawing,
     find_drawings_contains,
+    find_incident,
+    find_inspection,
+    find_meeting,
     find_observation,
     find_photo,
     find_photo_album,
@@ -101,9 +104,13 @@ from pyprocore.services import (
     get_drawing,
     get_drawing_area,
     get_generic_tool,
+    get_incident,
+    get_inspection,
+    get_meeting,
     get_observation,
     get_photo,
     get_photo_album,
+    get_project_incident_configuration,
     get_punch_item,
     get_rfi,
     get_specification_section,
@@ -127,7 +134,10 @@ from pyprocore.services import (
     list_drawings,
     list_dumpster_logs,
     list_generic_tools,
+    list_incidents,
+    list_inspections,
     list_manpower_logs,
+    list_meetings,
     list_notes_logs,
     list_observations,
     list_photo_albums,
@@ -167,6 +177,9 @@ from pyprocore.workflows import (
     build_enhanced_submittal_package,
     build_project_context_package,
     export_correspondences_to_csv,
+    export_incidents_to_csv,
+    export_inspections_to_csv,
+    export_meetings_to_csv,
     export_observations_to_csv,
     export_punch_items_to_csv,
     export_rfis_to_csv,
@@ -673,6 +686,78 @@ def build_parser() -> argparse.ArgumentParser:
         required=True,
     )
     _add_number_title_query_options(find_correspondence_parser)
+
+    meetings_parser = subcommands.add_parser("meetings", help="List meetings for a project")
+    _add_project_company_options(meetings_parser)
+    _add_filter_options(meetings_parser)
+
+    meeting_parser = subcommands.add_parser("meeting", help="Get one meeting")
+    _add_project_company_options(meeting_parser)
+    meeting_parser.add_argument(
+        "--id",
+        "--meeting-id",
+        dest="meeting_id",
+        type=int,
+        required=True,
+    )
+
+    find_meeting_parser = subcommands.add_parser(
+        "find-meeting",
+        help="Find one meeting by number, title, or text",
+    )
+    _add_project_company_options(find_meeting_parser)
+    _add_number_title_query_options(find_meeting_parser)
+
+    inspections_parser = subcommands.add_parser(
+        "inspections",
+        help="List checklist-backed inspections for a project",
+    )
+    _add_project_company_options(inspections_parser)
+    _add_filter_options(inspections_parser)
+
+    inspection_parser = subcommands.add_parser("inspection", help="Get one inspection")
+    _add_project_company_options(inspection_parser)
+    inspection_parser.add_argument(
+        "--id",
+        "--inspection-id",
+        dest="inspection_id",
+        type=int,
+        required=True,
+    )
+
+    find_inspection_parser = subcommands.add_parser(
+        "find-inspection",
+        help="Find one inspection by number, title, or text",
+    )
+    _add_project_company_options(find_inspection_parser)
+    _add_number_title_query_options(find_inspection_parser)
+
+    incidents_parser = subcommands.add_parser("incidents", help="List incidents for a project")
+    _add_project_company_options(incidents_parser)
+    _add_filter_options(incidents_parser)
+
+    incident_parser = subcommands.add_parser("incident", help="Get one incident")
+    _add_project_company_options(incident_parser)
+    incident_parser.add_argument(
+        "--id",
+        "--incident-id",
+        dest="incident_id",
+        type=int,
+        required=True,
+    )
+
+    incident_configuration_parser = subcommands.add_parser(
+        "incident-configuration",
+        help="Get project incident configuration",
+    )
+    _add_project_company_options(incident_configuration_parser)
+
+    find_incident_parser = subcommands.add_parser(
+        "find-incident",
+        help="Find one incident by number, title, or text",
+    )
+    _add_project_company_options(find_incident_parser)
+    _add_number_title_query_options(find_incident_parser)
 
     document_folders_parser = subcommands.add_parser(
         "document-folders",
@@ -1269,6 +1354,48 @@ def build_parser() -> argparse.ArgumentParser:
         help="CSV output path",
     )
     _add_filter_options(export_correspondences_parser)
+
+    export_meetings_parser = subcommands.add_parser(
+        "export-meetings",
+        help="Export project meetings to CSV",
+    )
+    _add_project_company_options(export_meetings_parser)
+    export_meetings_parser.add_argument(
+        "--output",
+        dest="output_path",
+        type=Path,
+        required=True,
+        help="CSV output path",
+    )
+    _add_filter_options(export_meetings_parser)
+
+    export_inspections_parser = subcommands.add_parser(
+        "export-inspections",
+        help="Export project inspections to CSV",
+    )
+    _add_project_company_options(export_inspections_parser)
+    export_inspections_parser.add_argument(
+        "--output",
+        dest="output_path",
+        type=Path,
+        required=True,
+        help="CSV output path",
+    )
+    _add_filter_options(export_inspections_parser)
+
+    export_incidents_parser = subcommands.add_parser(
+        "export-incidents",
+        help="Export project incidents to CSV",
+    )
+    _add_project_company_options(export_incidents_parser)
+    export_incidents_parser.add_argument(
+        "--output",
+        dest="output_path",
+        type=Path,
+        required=True,
+        help="CSV output path",
+    )
+    _add_filter_options(export_incidents_parser)
 
     ai_review_export_parser = subcommands.add_parser(
         "ai-review-export",
@@ -2000,6 +2127,78 @@ def run_command(args: argparse.Namespace) -> Any:
             query=args.query,
         )
 
+    if args.command == "meetings":
+        return list_meetings(
+            args.company_id,
+            args.project_id,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "meeting":
+        return get_meeting(args.company_id, args.project_id, args.meeting_id)
+
+    if args.command == "find-meeting":
+        return find_meeting(
+            args.company_id,
+            args.project_id,
+            number=args.number,
+            title=args.title,
+            query=args.query,
+        )
+
+    if args.command == "inspections":
+        return list_inspections(
+            args.company_id,
+            args.project_id,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "inspection":
+        return get_inspection(args.company_id, args.project_id, args.inspection_id)
+
+    if args.command == "find-inspection":
+        return find_inspection(
+            args.company_id,
+            args.project_id,
+            number=args.number,
+            title=args.title,
+            query=args.query,
+        )
+
+    if args.command == "incidents":
+        return list_incidents(
+            args.company_id,
+            args.project_id,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "incident":
+        return get_incident(args.company_id, args.project_id, args.incident_id)
+
+    if args.command == "incident-configuration":
+        return get_project_incident_configuration(args.company_id, args.project_id)
+
+    if args.command == "find-incident":
+        return find_incident(
+            args.company_id,
+            args.project_id,
+            number=args.number,
+            title=args.title,
+            query=args.query,
+        )
+
     if args.command == "document-folders":
         return list_document_folders(
             args.project_id,
@@ -2403,6 +2602,42 @@ def run_command(args: argparse.Namespace) -> Any:
             args.company_id,
             args.project_id,
             args.generic_tool_id,
+            args.output_path,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "export-meetings":
+        return export_meetings_to_csv(
+            args.company_id,
+            args.project_id,
+            args.output_path,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "export-inspections":
+        return export_inspections_to_csv(
+            args.company_id,
+            args.project_id,
+            args.output_path,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "export-incidents":
+        return export_incidents_to_csv(
+            args.company_id,
+            args.project_id,
             args.output_path,
             status=args.status,
             updated_after=args.updated_after,
@@ -3180,6 +3415,9 @@ def main() -> None:
 
     if isinstance(result, Path) and args.command in {
         "export-correspondences",
+        "export-incidents",
+        "export-inspections",
+        "export-meetings",
         "export-observations",
         "export-punch-items",
         "export-rfis",

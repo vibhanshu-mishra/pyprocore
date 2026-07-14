@@ -31,6 +31,10 @@ from pyprocore.models import (
     DrawingArea,
     DrawingDiscipline,
     GenericTool,
+    Incident,
+    IncidentConfiguration,
+    Inspection,
+    Meeting,
     Observation,
     PhotoAlbum,
     PhotoAlbumDownloadResult,
@@ -56,6 +60,9 @@ from pyprocore.services import (
     find_document_folder,
     find_drawing,
     find_drawings_contains,
+    find_incident,
+    find_inspection,
+    find_meeting,
     find_observation,
     find_photo,
     find_photo_album,
@@ -74,10 +81,14 @@ from pyprocore.services import (
     get_drawing,
     get_drawing_area,
     get_generic_tool,
+    get_incident,
+    get_inspection,
+    get_meeting,
     get_observation,
     get_photo,
     get_photo_album,
     get_project,
+    get_project_incident_configuration,
     get_punch_item,
     get_rfi,
     get_specification_section,
@@ -101,7 +112,10 @@ from pyprocore.services import (
     list_drawings,
     list_dumpster_logs,
     list_generic_tools,
+    list_incidents,
+    list_inspections,
     list_manpower_logs,
+    list_meetings,
     list_notes_logs,
     list_observations,
     list_photo_albums,
@@ -133,6 +147,12 @@ from pyprocore.workflows import (
     build_project_context_package,
     export_correspondences_to_csv,
     export_correspondences_to_jsonl,
+    export_incidents_to_csv,
+    export_incidents_to_jsonl,
+    export_inspections_to_csv,
+    export_inspections_to_jsonl,
+    export_meetings_to_csv,
+    export_meetings_to_jsonl,
     export_observations_to_csv,
     export_observations_to_jsonl,
     export_punch_items_to_csv,
@@ -573,6 +593,128 @@ class CorrespondenceClient:
             company_id,
             project_id,
             generic_tool_id,
+            number=number,
+            title=title,
+            query=query,
+        )
+
+
+class MeetingsClient:
+    """Convenience methods for Procore meeting resources."""
+
+    def list(
+        self,
+        company_id: int | None,
+        project_id: int,
+        *,
+        status: str | None = None,
+        params: Mapping[str, Any] | None = None,
+        **filters: Any,
+    ) -> list[Meeting]:
+        """List meetings for a Procore project."""
+        return list_meetings(company_id, project_id, status=status, params=params, **filters)
+
+    def get(self, company_id: int | None, project_id: int, meeting_id: int) -> Meeting:
+        """Get one meeting."""
+        return get_meeting(company_id, project_id, meeting_id)
+
+    def find(
+        self,
+        company_id: int | None,
+        project_id: int,
+        *,
+        number: str | int | None = None,
+        title: str | None = None,
+        query: str | None = None,
+    ) -> Meeting:
+        """Find one meeting by number, title, or text."""
+        return find_meeting(
+            company_id,
+            project_id,
+            number=number,
+            title=title,
+            query=query,
+        )
+
+
+class InspectionsClient:
+    """Convenience methods for checklist-backed Procore inspection resources."""
+
+    def list(
+        self,
+        company_id: int | None,
+        project_id: int,
+        *,
+        status: str | None = None,
+        params: Mapping[str, Any] | None = None,
+        **filters: Any,
+    ) -> list[Inspection]:
+        """List inspections for a Procore project."""
+        return list_inspections(company_id, project_id, status=status, params=params, **filters)
+
+    def get(self, company_id: int | None, project_id: int, inspection_id: int) -> Inspection:
+        """Get one inspection."""
+        return get_inspection(company_id, project_id, inspection_id)
+
+    def find(
+        self,
+        company_id: int | None,
+        project_id: int,
+        *,
+        number: str | int | None = None,
+        title: str | None = None,
+        query: str | None = None,
+    ) -> Inspection:
+        """Find one inspection by number, title, or text."""
+        return find_inspection(
+            company_id,
+            project_id,
+            number=number,
+            title=title,
+            query=query,
+        )
+
+
+class IncidentsClient:
+    """Convenience methods for Procore incident resources."""
+
+    def list(
+        self,
+        company_id: int | None,
+        project_id: int,
+        *,
+        status: str | None = None,
+        params: Mapping[str, Any] | None = None,
+        **filters: Any,
+    ) -> list[Incident]:
+        """List incidents for a Procore project."""
+        return list_incidents(company_id, project_id, status=status, params=params, **filters)
+
+    def get(self, company_id: int | None, project_id: int, incident_id: int) -> Incident:
+        """Get one incident."""
+        return get_incident(company_id, project_id, incident_id)
+
+    def configuration(
+        self,
+        company_id: int | None,
+        project_id: int,
+    ) -> IncidentConfiguration:
+        """Get project incident configuration."""
+        return get_project_incident_configuration(company_id, project_id)
+
+    def find(
+        self,
+        company_id: int | None,
+        project_id: int,
+        *,
+        number: str | int | None = None,
+        title: str | None = None,
+        query: str | None = None,
+    ) -> Incident:
+        """Find one incident by number, title, or text."""
+        return find_incident(
+            company_id,
+            project_id,
             number=number,
             title=title,
             query=query,
@@ -1688,6 +1830,66 @@ class WorkflowsClient:
             **filters,
         )
 
+    def export_meetings_to_csv(
+        self,
+        company_id: int | None,
+        project_id: int,
+        output_path: Path | str,
+        **filters: Any,
+    ) -> Path:
+        """Export meetings to CSV."""
+        return export_meetings_to_csv(company_id, project_id, output_path, **filters)
+
+    def export_meetings_to_jsonl(
+        self,
+        company_id: int | None,
+        project_id: int,
+        output_path: Path | str,
+        **filters: Any,
+    ) -> Path:
+        """Export meetings to newline-delimited JSON."""
+        return export_meetings_to_jsonl(company_id, project_id, output_path, **filters)
+
+    def export_inspections_to_csv(
+        self,
+        company_id: int | None,
+        project_id: int,
+        output_path: Path | str,
+        **filters: Any,
+    ) -> Path:
+        """Export inspections to CSV."""
+        return export_inspections_to_csv(company_id, project_id, output_path, **filters)
+
+    def export_inspections_to_jsonl(
+        self,
+        company_id: int | None,
+        project_id: int,
+        output_path: Path | str,
+        **filters: Any,
+    ) -> Path:
+        """Export inspections to newline-delimited JSON."""
+        return export_inspections_to_jsonl(company_id, project_id, output_path, **filters)
+
+    def export_incidents_to_csv(
+        self,
+        company_id: int | None,
+        project_id: int,
+        output_path: Path | str,
+        **filters: Any,
+    ) -> Path:
+        """Export incidents to CSV."""
+        return export_incidents_to_csv(company_id, project_id, output_path, **filters)
+
+    def export_incidents_to_jsonl(
+        self,
+        company_id: int | None,
+        project_id: int,
+        output_path: Path | str,
+        **filters: Any,
+    ) -> Path:
+        """Export incidents to newline-delimited JSON."""
+        return export_incidents_to_jsonl(company_id, project_id, output_path, **filters)
+
     def sync_rfis_to_folder(
         self,
         project_id: int,
@@ -1934,6 +2136,9 @@ class Procore:
         self.observations = ObservationsClient()
         self.punch_items = PunchItemsClient()
         self.correspondence = CorrespondenceClient()
+        self.meetings = MeetingsClient()
+        self.inspections = InspectionsClient()
+        self.incidents = IncidentsClient()
         self.documents = DocumentsClient()
         self.drawings = DrawingsClient()
         self.specifications = SpecificationsClient()
@@ -1950,6 +2155,9 @@ __all__ = [
     "DailyLogsClient",
     "DocumentsClient",
     "DrawingsClient",
+    "IncidentsClient",
+    "InspectionsClient",
+    "MeetingsClient",
     "ObservationsClient",
     "Procore",
     "ProjectsClient",

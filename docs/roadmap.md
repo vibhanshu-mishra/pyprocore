@@ -65,15 +65,23 @@ Implemented in the current branch and not yet published:
 Focus: authentication support only. This does not enable Procore tool execution
 or add write APIs.
 
-## Future
+### Phase 8C — Expanded Procore API Coverage
 
-### Phase 8C+ — Expanded Procore API Coverage
-
-Planned modules:
+Implemented in the current branch and not yet published:
 
 - Meetings
 - Inspections
 - Incidents
+
+Focus: read-oriented coverage only. No create/update/delete/write actions are
+included.
+
+## Future
+
+### Phase 8D+ — Expanded Procore API Coverage
+
+Planned modules:
+
 - Directory
 - Locations
 - Commitments

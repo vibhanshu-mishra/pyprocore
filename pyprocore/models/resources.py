@@ -159,6 +159,103 @@ class Correspondence(ProcoreModel):
     attachments: list[Attachment] = Field(default_factory=list)
 
 
+class Meeting(ProcoreModel):
+    """Flexible Procore meeting resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    title: str | None = None
+    name: str | None = None
+    description: str | None = None
+    status: Status | str | None = None
+    meeting_date: str | None = None
+    date: str | None = None
+    start_time: str | None = None
+    end_time: str | None = None
+    location: str | dict[str, Any] | None = None
+    created_by: User | dict[str, Any] | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+    attachments: list[Attachment] = Field(default_factory=list)
+
+
+class InspectionItem(ProcoreModel):
+    """Flexible inspection checklist item resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    title: str | None = None
+    name: str | None = None
+    description: str | None = None
+    status: Status | str | None = None
+    response: str | dict[str, Any] | None = None
+    comments: str | None = None
+    attachments: list[Attachment] = Field(default_factory=list)
+
+
+class Inspection(ProcoreModel):
+    """Flexible Procore inspection/checklist resource.
+
+    Some Procore APIs expose inspections through checklist/checklists
+    terminology. PyProcore keeps the public model name user-friendly while
+    preserving unknown checklist payload fields.
+    """
+
+    id: int | None = None
+    number: str | int | None = None
+    title: str | None = None
+    name: str | None = None
+    description: str | None = None
+    status: Status | str | None = None
+    type: str | dict[str, Any] | None = None
+    inspection_type: str | dict[str, Any] | None = None
+    checklist_type: str | dict[str, Any] | None = None
+    assignee: User | dict[str, Any] | None = None
+    created_by: User | dict[str, Any] | None = None
+    due_date: str | None = None
+    performed_on: str | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+    items: list[InspectionItem] = Field(default_factory=list)
+    checklist_items: list[InspectionItem] = Field(default_factory=list)
+    attachments: list[Attachment] = Field(default_factory=list)
+
+
+class Incident(ProcoreModel):
+    """Flexible Procore incident resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    title: str | None = None
+    name: str | None = None
+    description: str | None = None
+    status: Status | str | None = None
+    type: str | dict[str, Any] | None = None
+    incident_type: str | dict[str, Any] | None = None
+    severity: str | Status | None = None
+    location: str | dict[str, Any] | None = None
+    occurred_at: str | None = None
+    incident_date: str | None = None
+    reported_by: User | dict[str, Any] | None = None
+    created_by: User | dict[str, Any] | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+    attachments: list[Attachment] = Field(default_factory=list)
+
+
+class IncidentConfiguration(ProcoreModel):
+    """Flexible Procore project incident configuration resource."""
+
+    id: int | None = None
+    project_id: int | None = None
+    enabled: bool | None = None
+    incident_types: list[dict[str, Any]] = Field(default_factory=list)
+    statuses: list[dict[str, Any]] = Field(default_factory=list)
+    severity_levels: list[dict[str, Any]] = Field(default_factory=list)
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
 class DocumentFolder(ProcoreModel):
     """Procore document folder resource."""
 

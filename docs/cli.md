@@ -79,6 +79,32 @@ procore-sdk export-punch-items --project 352338 --company-id 123456 --output exp
 procore-sdk export-correspondences --project 352338 --company-id 123456 --generic-tool-id 77 --output exports/correspondences.csv
 ```
 
+## Meetings, Inspections, And Incidents
+
+Phase 8C adds read-only commands for meetings, checklist-backed inspections,
+incidents, and project incident configuration in the current unreleased branch:
+
+```bash
+procore-sdk meetings --project 352338 --company-id 123456
+procore-sdk meeting --project 352338 --company-id 123456 --id 42
+procore-sdk find-meeting --project 352338 --company-id 123456 --query "weekly"
+procore-sdk inspections --project 352338 --company-id 123456
+procore-sdk inspection --project 352338 --company-id 123456 --id 99
+procore-sdk find-inspection --project 352338 --company-id 123456 --query "safety"
+procore-sdk incidents --project 352338 --company-id 123456
+procore-sdk incident --project 352338 --company-id 123456 --id 88
+procore-sdk incident-configuration --project 352338 --company-id 123456
+procore-sdk find-incident --project 352338 --company-id 123456 --query "near miss"
+```
+
+Local CSV exports are also available:
+
+```bash
+procore-sdk export-meetings --project 352338 --company-id 123456 --output exports/meetings.csv
+procore-sdk export-inspections --project 352338 --company-id 123456 --output exports/inspections.csv
+procore-sdk export-incidents --project 352338 --company-id 123456 --output exports/incidents.csv
+```
+
 ## Workflow And Package Builders
 
 ```bash

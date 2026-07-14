@@ -17,12 +17,18 @@ and this project follows semantic versioning.
 - `PROCORE_AUTH_MODE=authorization_code|client_credentials` configuration, defaulting to the existing authorization-code flow.
 - `procore-sdk auth client-credentials-token` for requesting and saving a client credentials access token.
 - Auth diagnostics, doctor checks, examples, and docs for client credentials setups without requiring a redirect URI or refresh token.
+- Phase 8C read-only API coverage for Meetings, checklist-backed Inspections, and Incidents.
+- Typed flexible models for `Meeting`, `Inspection`, `InspectionItem`, `Incident`, and `IncidentConfiguration`.
+- Service, search, object-client, CLI, CSV/JSONL export, and agent registry metadata support for Phase 8C resources.
+- Beginner-friendly Phase 8C examples and documentation.
 
 ### Security
 
 - Phase 8A remains read-only and does not add create/update/delete Procore actions.
 - Agent tool execution remains disabled; new Phase 8A agent entries are metadata only.
 - Phase 8B does not enable Procore tool execution or add write APIs.
+- Phase 8C remains read-only and does not add create/update/delete Procore actions.
+- New Phase 8C agent entries are metadata only.
 
 ## [2.2.0] - 2026-07-12
 

@@ -8,9 +8,20 @@ from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
-from pyprocore.models import RFI, Correspondence, Document, Observation, PunchItem, Submittal
+from pyprocore.models import (
+    RFI,
+    Correspondence,
+    Document,
+    Incident,
+    Inspection,
+    Meeting,
+    Observation,
+    PunchItem,
+    Submittal,
+)
 from pyprocore.services.correspondence import list_correspondences
 from pyprocore.services.observations import list_observations
+from pyprocore.services.operations import list_incidents, list_inspections, list_meetings
 from pyprocore.services.punch_items import list_punch_items
 from pyprocore.services.rfis import list_rfis
 from pyprocore.services.submittals import list_submittals
@@ -103,6 +114,50 @@ CORRESPONDENCE_CSV_HEADERS = [
     "updated_at",
     "due_date",
     "assignee",
+    "created_by",
+    "attachment_count",
+]
+
+MEETING_CSV_HEADERS = [
+    "id",
+    "number",
+    "title",
+    "status",
+    "meeting_date",
+    "location",
+    "created_at",
+    "updated_at",
+    "created_by",
+    "attachment_count",
+]
+
+INSPECTION_CSV_HEADERS = [
+    "id",
+    "number",
+    "title",
+    "status",
+    "type",
+    "created_at",
+    "updated_at",
+    "due_date",
+    "assignee",
+    "created_by",
+    "item_count",
+    "attachment_count",
+]
+
+INCIDENT_CSV_HEADERS = [
+    "id",
+    "number",
+    "title",
+    "status",
+    "type",
+    "severity",
+    "incident_date",
+    "location",
+    "created_at",
+    "updated_at",
+    "reported_by",
     "created_by",
     "attachment_count",
 ]
@@ -340,6 +395,72 @@ def export_correspondences_to_jsonl(
     return _write_jsonl(correspondences, output_path)
 
 
+def export_meetings_to_csv(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project meetings to a CSV file."""
+    meetings = list_meetings(company_id, project_id, **filters)
+    return write_meetings_csv(meetings, output_path)
+
+
+def export_meetings_to_jsonl(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project meetings to newline-delimited JSON."""
+    meetings = list_meetings(company_id, project_id, **filters)
+    return _write_jsonl(meetings, output_path)
+
+
+def export_inspections_to_csv(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project inspections to a CSV file."""
+    inspections = list_inspections(company_id, project_id, **filters)
+    return write_inspections_csv(inspections, output_path)
+
+
+def export_inspections_to_jsonl(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project inspections to newline-delimited JSON."""
+    inspections = list_inspections(company_id, project_id, **filters)
+    return _write_jsonl(inspections, output_path)
+
+
+def export_incidents_to_csv(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project incidents to a CSV file."""
+    incidents = list_incidents(company_id, project_id, **filters)
+    return write_incidents_csv(incidents, output_path)
+
+
+def export_incidents_to_jsonl(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project incidents to newline-delimited JSON."""
+    incidents = list_incidents(company_id, project_id, **filters)
+    return _write_jsonl(incidents, output_path)
+
+
 def write_rfis_csv(rfis: Sequence[RFI], output_path: Path | str) -> Path:
     """Write already-loaded RFIs to a CSV file."""
     return _write_csv(rfis, output_path, RFI_CSV_HEADERS, _rfi_row)
@@ -376,6 +497,24 @@ def write_correspondences_csv(
         CORRESPONDENCE_CSV_HEADERS,
         _correspondence_row,
     )
+
+
+def write_meetings_csv(meetings: Sequence[Meeting], output_path: Path | str) -> Path:
+    """Write already-loaded meetings to a CSV file."""
+    return _write_csv(meetings, output_path, MEETING_CSV_HEADERS, _meeting_row)
+
+
+def write_inspections_csv(
+    inspections: Sequence[Inspection],
+    output_path: Path | str,
+) -> Path:
+    """Write already-loaded inspections to a CSV file."""
+    return _write_csv(inspections, output_path, INSPECTION_CSV_HEADERS, _inspection_row)
+
+
+def write_incidents_csv(incidents: Sequence[Incident], output_path: Path | str) -> Path:
+    """Write already-loaded incidents to a CSV file."""
+    return _write_csv(incidents, output_path, INCIDENT_CSV_HEADERS, _incident_row)
 
 
 def _load_rfis(
@@ -560,4 +699,59 @@ def _correspondence_row(correspondence: object) -> dict[str, object]:
         "assignee": scalar_text(get_value(correspondence, "assignee")),
         "created_by": scalar_text(get_value(correspondence, "created_by")),
         "attachment_count": attachment_count(correspondence, item_type="correspondence"),
+    }
+
+
+def _meeting_row(meeting: object) -> dict[str, object]:
+    """Convert one meeting model into a CSV row."""
+    return {
+        "id": scalar_text(get_value(meeting, "id")),
+        "number": scalar_text(get_value(meeting, "number")),
+        "title": item_title(meeting),
+        "status": scalar_text(get_value(meeting, "status")),
+        "meeting_date": scalar_text(get_value(meeting, "meeting_date", "date")),
+        "location": scalar_text(get_value(meeting, "location")),
+        "created_at": scalar_text(get_value(meeting, "created_at")),
+        "updated_at": scalar_text(get_value(meeting, "updated_at")),
+        "created_by": scalar_text(get_value(meeting, "created_by")),
+        "attachment_count": attachment_count(meeting, item_type="meeting"),
+    }
+
+
+def _inspection_row(inspection: object) -> dict[str, object]:
+    """Convert one inspection model into a CSV row."""
+    items = get_value(inspection, "items", "checklist_items") or []
+    item_count = len(items) if isinstance(items, Sequence) else 0
+    return {
+        "id": scalar_text(get_value(inspection, "id")),
+        "number": scalar_text(get_value(inspection, "number")),
+        "title": item_title(inspection),
+        "status": scalar_text(get_value(inspection, "status")),
+        "type": scalar_text(get_value(inspection, "inspection_type", "checklist_type", "type")),
+        "created_at": scalar_text(get_value(inspection, "created_at")),
+        "updated_at": scalar_text(get_value(inspection, "updated_at")),
+        "due_date": scalar_text(get_value(inspection, "due_date")),
+        "assignee": scalar_text(get_value(inspection, "assignee")),
+        "created_by": scalar_text(get_value(inspection, "created_by")),
+        "item_count": item_count,
+        "attachment_count": attachment_count(inspection, item_type="inspection"),
+    }
+
+
+def _incident_row(incident: object) -> dict[str, object]:
+    """Convert one incident model into a CSV row."""
+    return {
+        "id": scalar_text(get_value(incident, "id")),
+        "number": scalar_text(get_value(incident, "number")),
+        "title": item_title(incident),
+        "status": scalar_text(get_value(incident, "status")),
+        "type": scalar_text(get_value(incident, "incident_type", "type")),
+        "severity": scalar_text(get_value(incident, "severity")),
+        "incident_date": scalar_text(get_value(incident, "incident_date", "occurred_at")),
+        "location": scalar_text(get_value(incident, "location")),
+        "created_at": scalar_text(get_value(incident, "created_at")),
+        "updated_at": scalar_text(get_value(incident, "updated_at")),
+        "reported_by": scalar_text(get_value(incident, "reported_by")),
+        "created_by": scalar_text(get_value(incident, "created_by")),
+        "attachment_count": attachment_count(incident, item_type="incident"),
     }

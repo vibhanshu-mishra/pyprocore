@@ -75,6 +75,14 @@ GENERIC_TOOLS = f"{API_V1}/generic_tools"
 GENERIC_TOOL = f"{API_V1}/generic_tools/{{generic_tool_id}}"
 GENERIC_TOOL_ITEMS = f"{API_V1}/generic_tools/{{generic_tool_id}}/generic_tool_items"
 GENERIC_TOOL_ITEM = f"{API_V1}/generic_tool_items/{{generic_tool_item_id}}"
+MEETINGS = f"{API_V1}/meetings"
+MEETING = f"{API_V1}/meetings/{{meeting_id}}"
+# Procore inspection-style resources may be exposed through checklist APIs.
+CHECKLISTS = f"{API_V1}/checklists"
+CHECKLIST = f"{API_V1}/checklists/{{checklist_id}}"
+INCIDENTS = f"{API_V1}/incidents"
+INCIDENT = f"{API_V1}/incidents/{{incident_id}}"
+PROJECT_INCIDENT_CONFIGURATION = f"{API_V1}/projects/{{project_id}}/incident_configuration"
 
 
 def companies() -> str:
@@ -316,6 +324,46 @@ def generic_tool_item(project_id: int, generic_tool_item_id: int) -> str:
     return GENERIC_TOOL_ITEM.format(generic_tool_item_id=generic_tool_item_id)
 
 
+def meetings(project_id: int) -> str:
+    """Return the meetings collection endpoint.
+
+    Args:
+        project_id: Procore project ID. Accepted for API consistency; the
+            conservative Phase 8C service sends it as a query parameter.
+    """
+    return MEETINGS
+
+
+def meeting(project_id: int, meeting_id: int) -> str:
+    """Return the endpoint for one meeting."""
+    return MEETING.format(meeting_id=meeting_id)
+
+
+def inspections(project_id: int) -> str:
+    """Return the checklist-backed inspections collection endpoint."""
+    return CHECKLISTS
+
+
+def inspection(project_id: int, inspection_id: int) -> str:
+    """Return the checklist-backed endpoint for one inspection."""
+    return CHECKLIST.format(checklist_id=inspection_id)
+
+
+def incidents(project_id: int) -> str:
+    """Return the incidents collection endpoint."""
+    return INCIDENTS
+
+
+def incident(project_id: int, incident_id: int) -> str:
+    """Return the endpoint for one incident."""
+    return INCIDENT.format(incident_id=incident_id)
+
+
+def project_incident_configuration(project_id: int) -> str:
+    """Return the project incident configuration endpoint."""
+    return PROJECT_INCIDENT_CONFIGURATION.format(project_id=project_id)
+
+
 class Endpoints:
     """Backward-compatible namespace for endpoint path templates."""
 
@@ -357,3 +405,10 @@ class Endpoints:
     GENERIC_TOOL = GENERIC_TOOL
     GENERIC_TOOL_ITEMS = GENERIC_TOOL_ITEMS
     GENERIC_TOOL_ITEM = GENERIC_TOOL_ITEM
+    MEETINGS = MEETINGS
+    MEETING = MEETING
+    CHECKLISTS = CHECKLISTS
+    CHECKLIST = CHECKLIST
+    INCIDENTS = INCIDENTS
+    INCIDENT = INCIDENT
+    PROJECT_INCIDENT_CONFIGURATION = PROJECT_INCIDENT_CONFIGURATION

@@ -31,6 +31,8 @@ Examples `64` through `69` cover unreleased Phase 8A read-only Observations,
 Punch Items, Generic Tool correspondence, and agent registry metadata examples.
 Examples `70` through `73` cover unreleased Phase 8B client credentials auth
 patterns for Procore Data Connection Apps.
+Examples `74` through `79` cover unreleased Phase 8C read-only Meetings,
+Inspections, Incidents, and agent registry metadata examples.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -64,6 +66,9 @@ export PROCORE_DAILY_LOG_TYPES=manpower,notes,delay
 export PROCORE_OBSERVATION_ID=your_observation_id
 export PROCORE_PUNCH_ITEM_ID=your_punch_item_id
 export PROCORE_GENERIC_TOOL_ID=your_generic_tool_id
+export PROCORE_MEETING_ID=your_meeting_id
+export PROCORE_INSPECTION_ID=your_inspection_id
+export PROCORE_INCIDENT_ID=your_incident_id
 export PROCORE_SPECIFICATION_SET_ID=your_specification_set_id
 export PROCORE_SPECIFICATION_SECTION_ID=your_specification_section_id
 export PROCORE_SPECIFICATION_REVISION_ID=your_specification_revision_id
@@ -114,6 +119,9 @@ python3 examples/66_list_punch_items.py
 python3 examples/68_list_correspondences.py
 python3 examples/70_configure_client_credentials.py
 python3 examples/73_auth_modes_overview.py
+python3 examples/74_list_meetings.py
+python3 examples/76_list_inspections.py
+python3 examples/78_list_incidents.py
 ```
 
 Documents use Procore's Project Folders and Files endpoints internally. Before a
@@ -171,7 +179,7 @@ make examples-check
 ## Example Index
 
 The current example set runs from `01_list_companies.py` through
-`73_auth_modes_overview.py`.
+`79_agent_registry_phase8c.py`.
 
 | File | Demonstrates |
 | ---- | ------------ |
@@ -248,6 +256,12 @@ The current example set runs from `01_list_companies.py` through
 | `71_client_credentials_token.py` | Show the client credentials token command, with explicit opt-in for a live token request |
 | `72_client_credentials_export_pattern.py` | Print a safe scheduled export pattern for client credentials setups |
 | `73_auth_modes_overview.py` | Compare authorization-code and client-credentials auth modes |
+| `74_list_meetings.py` | List read-only meetings for a project |
+| `75_export_meetings.py` | Export meetings to a local CSV file |
+| `76_list_inspections.py` | List read-only checklist-backed inspections for a project |
+| `77_export_inspections.py` | Export inspections to a local CSV file |
+| `78_list_incidents.py` | List read-only incidents for a project |
+| `79_agent_registry_phase8c.py` | Inspect Phase 8C agent metadata without executing tools |
 
 Sample workflow plans live in `examples/workflow_plans/`:
 

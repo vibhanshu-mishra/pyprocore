@@ -18,6 +18,9 @@ Procore environment.
 | Observations | Unreleased Phase 8A | List, get, find, CSV/JSONL export | Read-only helpers use project context and typed flexible models. |
 | Punch Items | Unreleased Phase 8A | List, get, find, CSV/JSONL export | Read-only helpers use project context and typed flexible models. |
 | Generic Tools / Correspondence | Unreleased Phase 8A | List Generic Tools, list/get/find correspondence items, CSV/JSONL export | Correspondence-like items are modeled through Procore Generic Tools. |
+| Meetings | Unreleased Phase 8C | List, get, find, CSV/JSONL export | Read-only helpers use project context and typed flexible models. |
+| Inspections | Unreleased Phase 8C | List, get, find, CSV/JSONL export | Modeled through checklist-style read endpoints where Procore exposes inspection data. |
+| Incidents | Unreleased Phase 8C | List, get, find, incident configuration, CSV/JSONL export | Read-only helpers include project incident configuration metadata. |
 | Attachments/downloads | Supported | Streaming downloads, skip existing files, overwrite option | Downloads are local file operations only. |
 | Workflows | Supported | CSV, JSONL, folder sync, project context, AI-ready packages | Workflows create local files and do not mutate Procore data. |
 | Webhooks | Local helpers | Validate, redact, save, list, dry-run dispatch | No hosted webhook server is included. |
@@ -46,6 +49,22 @@ endpoint helpers and mocked unit tests only:
 These helpers do not create, update, delete, or mutate Procore data. If a live
 Procore environment returns a different payload shape or permission response,
 open an issue with sanitized endpoint details and no tokens or secrets.
+
+## Phase 8C Endpoint Notes
+
+Phase 8C adds read-only SDK coverage for Meetings, checklist-backed
+Inspections, and Incidents. The implementation follows conservative endpoint
+helpers and mocked unit tests only:
+
+- Meetings: `/rest/v1.0/meetings` with `project_id` as query context.
+- Inspections: `/rest/v1.0/checklists` with `project_id` as query context.
+- Incidents: `/rest/v1.0/incidents` with `project_id` as query context.
+- Incident configuration: `/rest/v1.0/projects/{project_id}/incident_configuration`.
+
+These helpers do not create, update, delete, or mutate Procore data. Inspection
+terminology can vary between Procore API surfaces; PyProcore uses flexible typed
+models so users can serialize the original response data while working with
+common fields.
 
 ## Live Verification Notes
 

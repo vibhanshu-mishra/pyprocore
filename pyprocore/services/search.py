@@ -14,6 +14,9 @@ from pyprocore.models import (
     Document,
     DocumentFolder,
     Drawing,
+    Incident,
+    Inspection,
+    Meeting,
     Observation,
     Project,
     PunchItem,
@@ -24,6 +27,7 @@ from pyprocore.services.correspondence import list_correspondences
 from pyprocore.services.documents import list_document_folders, list_documents
 from pyprocore.services.drawings import list_drawings
 from pyprocore.services.observations import list_observations
+from pyprocore.services.operations import list_incidents, list_inspections, list_meetings
 from pyprocore.services.projects import list_projects
 from pyprocore.services.punch_items import list_punch_items
 from pyprocore.services.rfis import list_rfis
@@ -384,6 +388,90 @@ def find_correspondence(
             correspondence.description,
         ],
         resource_name="correspondence",
+    )
+
+
+def find_meeting(
+    company_id: int | None,
+    project_id: int,
+    *,
+    number: str | int | None = None,
+    title: str | None = None,
+    query: str | None = None,
+) -> Meeting:
+    """Find one meeting by number, title, name, or description."""
+    search_text = _number_title_query(
+        resource_name="meeting",
+        number=number,
+        title=title,
+        query=query,
+    )
+    return _resolve_one(
+        resources=list_meetings(company_id, project_id),
+        query=search_text,
+        values=lambda meeting: [
+            meeting.number,
+            meeting.title,
+            meeting.name,
+            meeting.description,
+        ],
+        resource_name="meeting",
+    )
+
+
+def find_inspection(
+    company_id: int | None,
+    project_id: int,
+    *,
+    number: str | int | None = None,
+    title: str | None = None,
+    query: str | None = None,
+) -> Inspection:
+    """Find one checklist-backed inspection by number, title, name, or description."""
+    search_text = _number_title_query(
+        resource_name="inspection",
+        number=number,
+        title=title,
+        query=query,
+    )
+    return _resolve_one(
+        resources=list_inspections(company_id, project_id),
+        query=search_text,
+        values=lambda inspection: [
+            inspection.number,
+            inspection.title,
+            inspection.name,
+            inspection.description,
+        ],
+        resource_name="inspection",
+    )
+
+
+def find_incident(
+    company_id: int | None,
+    project_id: int,
+    *,
+    number: str | int | None = None,
+    title: str | None = None,
+    query: str | None = None,
+) -> Incident:
+    """Find one incident by number, title, name, or description."""
+    search_text = _number_title_query(
+        resource_name="incident",
+        number=number,
+        title=title,
+        query=query,
+    )
+    return _resolve_one(
+        resources=list_incidents(company_id, project_id),
+        query=search_text,
+        values=lambda incident: [
+            incident.number,
+            incident.title,
+            incident.name,
+            incident.description,
+        ],
+        resource_name="incident",
     )
 
 

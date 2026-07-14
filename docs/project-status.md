@@ -5,9 +5,8 @@
 - Current stable release: `2.2.0`
 - Previous stable release: `2.1.0`
 - `v2.2.0` is published on PyPI and released on GitHub.
-- Current unreleased branch work: Phase 8A read-only Observations, Punch Items,
-  and Generic Tool correspondence helpers, plus Phase 8B client-credentials
-  auth support for Data Connection Apps.
+- Current unreleased branch work: Phase 8A and Phase 8C read-only API coverage,
+  plus Phase 8B client-credentials auth support for Data Connection Apps.
 
 ## Current Stable Release: 2.2.0
 
@@ -42,6 +41,12 @@ Connection Apps. Authorization-code OAuth remains the default. Client
 credentials mode does not require `PROCORE_REDIRECT_URI`, and refresh tokens are
 not required for stored client credentials tokens.
 
+Phase 8C adds read-only SDK coverage for Meetings, checklist-backed
+Inspections, Incidents, and project incident configuration metadata. It includes
+service helpers, typed flexible models, search helpers, local CSV/JSONL exports,
+CLI commands, agent registry metadata, docs, examples, and mocked tests. It does
+not add create/update/delete actions and does not enable agent tool execution.
+
 ## Safety Status
 
 - Tool execution remains disabled.
@@ -52,6 +57,7 @@ not required for stored client credentials tokens.
 - PyProcore does not call external AI/model APIs.
 - Live SDK workflows still require valid Procore credentials and permissions.
 - Client credentials support does not enable Procore tool execution.
+- Phase 8C service helpers are read-only.
 
 ## Known Limitations
 
@@ -70,7 +76,7 @@ not required for stored client credentials tokens.
 - Guarded tool execution and human approval gates
 - Write-action safety model
 - Real MCP execution after explicit safety design
-- Additional read-only Procore coverage beyond Phase 8A
+- Additional read-only Procore coverage beyond Phase 8C
 - Async client and plugin architecture
 - Vector DB examples and engineering assistant examples
 - Golden datasets and model evals
