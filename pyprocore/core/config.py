@@ -10,14 +10,15 @@ from __future__ import annotations
 import os
 from functools import lru_cache
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from dotenv import load_dotenv
-from pydantic import BaseModel, Field, SecretStr, ValidationError, field_validator
+from pydantic import BaseModel, Field, SecretStr, ValidationError, field_validator, model_validator
 
 from pyprocore.core.exceptions import ConfigurationError
 
 ENV_FILE_NAME = ".env"
+AuthMode = Literal["authorization_code", "client_credentials"]
 
 
 class ProcoreSettings(BaseModel):
@@ -25,15 +26,15 @@ class ProcoreSettings(BaseModel):
 
     client_id: str = Field(..., min_length=1)
     client_secret: SecretStr
-    redirect_uri: str = Field(..., min_length=1)
+    redirect_uri: str | None = None
     login_url: str = Field(..., min_length=1)
     api_base: str = Field(..., min_length=1)
     company_id: int = Field(..., gt=0)
+    auth_mode: AuthMode = "authorization_code"
 
     @field_validator(
         "client_id",
         "client_secret",
-        "redirect_uri",
         "login_url",
         "api_base",
         mode="before",
@@ -50,11 +51,35 @@ class ProcoreSettings(BaseModel):
 
         return normalized
 
+    @field_validator("redirect_uri", mode="before")
+    @classmethod
+    def _strip_optional_string(cls, value: Any) -> str | None:
+        """Normalize optional string values."""
+        if value is None:
+            return None
+        normalized = str(value).strip()
+        return normalized or None
+
+    @field_validator("auth_mode", mode="before")
+    @classmethod
+    def _normalize_auth_mode(cls, value: Any) -> str:
+        """Normalize the configured authentication mode."""
+        if value is None or str(value).strip() == "":
+            return "authorization_code"
+        return str(value).strip().casefold().replace("-", "_")
+
     @field_validator("login_url", "api_base")
     @classmethod
     def _normalize_base_url(cls, value: str) -> str:
         """Remove trailing slashes so endpoint paths compose predictably."""
         return value.rstrip("/")
+
+    @model_validator(mode="after")
+    def _validate_auth_mode_requirements(self) -> "ProcoreSettings":
+        """Validate settings required by the selected auth mode."""
+        if self.auth_mode == "authorization_code" and not self.redirect_uri:
+            raise ValueError("redirect_uri is required for authorization_code auth mode")
+        return self
 
 
 def _project_root() -> Path:
@@ -83,6 +108,7 @@ def _read_environment() -> dict[str, str | None]:
         "login_url": os.getenv("PROCORE_LOGIN_URL"),
         "api_base": os.getenv("PROCORE_API_BASE"),
         "company_id": os.getenv("PROCORE_COMPANY_ID"),
+        "auth_mode": os.getenv("PROCORE_AUTH_MODE"),
     }
 
 

@@ -6,7 +6,8 @@
 - Previous stable release: `2.1.0`
 - `v2.2.0` is published on PyPI and released on GitHub.
 - Current unreleased branch work: Phase 8A read-only Observations, Punch Items,
-  and Generic Tool correspondence helpers.
+  and Generic Tool correspondence helpers, plus Phase 8B client-credentials
+  auth support for Data Connection Apps.
 
 ## Current Stable Release: 2.2.0
 
@@ -36,6 +37,11 @@ typed flexible models, search helpers, local CSV/JSONL exports, CLI commands,
 agent registry metadata, docs, examples, and mocked tests. It does not add
 create/update/delete actions and does not enable agent tool execution.
 
+Phase 8B adds `PROCORE_AUTH_MODE=client_credentials` support for Procore Data
+Connection Apps. Authorization-code OAuth remains the default. Client
+credentials mode does not require `PROCORE_REDIRECT_URI`, and refresh tokens are
+not required for stored client credentials tokens.
+
 ## Safety Status
 
 - Tool execution remains disabled.
@@ -45,6 +51,7 @@ create/update/delete actions and does not enable agent tool execution.
 - Agent evals are local and deterministic.
 - PyProcore does not call external AI/model APIs.
 - Live SDK workflows still require valid Procore credentials and permissions.
+- Client credentials support does not enable Procore tool execution.
 
 ## Known Limitations
 

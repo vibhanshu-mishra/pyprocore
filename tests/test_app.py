@@ -11,7 +11,12 @@ from unittest.mock import Mock, patch
 from pydantic import BaseModel
 
 from pyprocore import app
-from pyprocore.auth.diagnostics import AuthExchangeResult, AuthRefreshResult, AuthStatusReport
+from pyprocore.auth.diagnostics import (
+    AuthClientCredentialsResult,
+    AuthExchangeResult,
+    AuthRefreshResult,
+    AuthStatusReport,
+)
 from pyprocore.core.doctor import DoctorReport, DoctorSummary
 from pyprocore.core.exceptions import AuthorizationError, ConfigurationError, ProcoreAPIError
 
@@ -41,6 +46,14 @@ class AppTestCase(unittest.TestCase):
         self.assertTrue(auth_status_args.json_output)
         self.assertEqual(parser.parse_args(["auth", "refresh"]).auth_command, "refresh")
         self.assertEqual(parser.parse_args(["auth", "login-url"]).auth_command, "login-url")
+        self.assertEqual(
+            parser.parse_args(["auth", "client-credentials-token"]).auth_command,
+            "client-credentials-token",
+        )
+        self.assertEqual(
+            parser.parse_args(["auth", "service-token"]).auth_command,
+            "client-credentials-token",
+        )
         exchange_args = parser.parse_args(["auth", "exchange-code", "code-123"])
         self.assertEqual(exchange_args.auth_command, "exchange-code")
         self.assertEqual(exchange_args.code, "code-123")
@@ -869,6 +882,20 @@ class AppTestCase(unittest.TestCase):
         with patch.object(app, "build_authorization_url", return_value="login") as helper:
             result = app.run_command(argparse.Namespace(command="auth", auth_command="login-url"))
         self.assertEqual(result, "login")
+        helper.assert_called_once_with()
+
+        with patch.object(
+            app,
+            "request_client_credentials_token_and_save",
+            return_value="client-token",
+        ) as helper:
+            result = app.run_command(
+                argparse.Namespace(
+                    command="auth",
+                    auth_command="client-credentials-token",
+                )
+            )
+        self.assertEqual(result, "client-token")
         helper.assert_called_once_with()
 
         with patch.object(app, "exchange_code_and_save", return_value="exchange") as helper:
@@ -2381,6 +2408,35 @@ class AppTestCase(unittest.TestCase):
 
         self.assertEqual(context.exception.code, 1)
         print_function.assert_called_once_with("exchange failed")
+
+    def test_main_prints_auth_client_credentials_result(self) -> None:
+        """Client credentials auth output controls CLI exit code."""
+        result = AuthClientCredentialsResult(
+            success=True,
+            message="Client credentials token saved successfully.",
+            token_store_updated=True,
+            access_token_present=True,
+            refresh_token_present=False,
+        )
+
+        with (
+            patch.object(app, "build_parser") as build_parser,
+            patch.object(app, "run_command", return_value=result),
+            patch.object(app, "format_client_credentials_result", return_value="client token ok"),
+            patch("builtins.print") as print_function,
+        ):
+            parser = Mock()
+            parser.parse_args.return_value = argparse.Namespace(
+                command="auth",
+                auth_command="client-credentials-token",
+            )
+            build_parser.return_value = parser
+
+            with self.assertRaises(SystemExit) as context:
+                app.main()
+
+        self.assertEqual(context.exception.code, 0)
+        print_function.assert_called_once_with("client token ok")
 
     def test_main_prints_auth_login_url(self) -> None:
         """Auth login URL output exits successfully."""

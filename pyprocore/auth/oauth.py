@@ -75,6 +75,10 @@ class OAuthClient:
         code = authorization_code.strip()
         if not code:
             raise AuthenticationError("Authorization code is required.")
+        if not self._settings.redirect_uri:
+            raise AuthenticationError(
+                "PROCORE_REDIRECT_URI is required for authorization-code OAuth."
+            )
 
         payload = {
             "grant_type": "authorization_code",
@@ -106,6 +110,33 @@ class OAuthClient:
             "refresh_token": token,
             "client_id": self._settings.client_id,
             "client_secret": self._settings.client_secret.get_secret_value(),
+        }
+        return self._request_token(payload)
+
+    def request_client_credentials_token(self) -> OAuthTokenResponse:
+        """Request a server-to-server client credentials access token.
+
+        Returns:
+            A validated OAuth token response. Procore may omit a refresh token
+            for this grant type.
+
+        Raises:
+            AuthenticationError: If required client credentials are missing or
+                the token request fails.
+        """
+        client_id = self._settings.client_id.strip()
+        client_secret = self._settings.client_secret.get_secret_value().strip()
+        if not client_id:
+            raise AuthenticationError("PROCORE_CLIENT_ID is required for client credentials auth.")
+        if not client_secret:
+            raise AuthenticationError(
+                "PROCORE_CLIENT_SECRET is required for client credentials auth."
+            )
+
+        payload = {
+            "grant_type": "client_credentials",
+            "client_id": client_id,
+            "client_secret": client_secret,
         }
         return self._request_token(payload)
 
@@ -158,3 +189,8 @@ def exchange_authorization_code(authorization_code: str) -> OAuthTokenResponse:
 def refresh_access_token(refresh_token: str) -> OAuthTokenResponse:
     """Refresh an access token using default environment configuration."""
     return OAuthClient().refresh_access_token(refresh_token)
+
+
+def request_client_credentials_token() -> OAuthTokenResponse:
+    """Request a client credentials access token using default configuration."""
+    return OAuthClient().request_client_credentials_token()

@@ -44,6 +44,7 @@ from pyprocore.agent import (
     write_agent_eval_results,
 )
 from pyprocore.auth.diagnostics import (
+    AuthClientCredentialsResult,
     AuthExchangeResult,
     AuthLoginUrlResult,
     AuthRefreshResult,
@@ -53,9 +54,11 @@ from pyprocore.auth.diagnostics import (
     format_auth_exchange,
     format_auth_refresh,
     format_auth_status,
+    format_client_credentials_result,
     format_login_url,
     get_auth_status,
     refresh_auth_token,
+    request_client_credentials_token_and_save,
 )
 from pyprocore.automation import AutomationInput, build_workflow_package
 from pyprocore.core.config import get_settings
@@ -211,6 +214,12 @@ def build_parser() -> argparse.ArgumentParser:
 
     auth_subcommands.add_parser("refresh", help="Refresh the stored access token")
     auth_subcommands.add_parser("login-url", help="Print the OAuth authorization URL")
+    client_credentials_parser = auth_subcommands.add_parser(
+        "client-credentials-token",
+        aliases=["service-token"],
+        help="Request and save a client credentials access token",
+    )
+    client_credentials_parser.set_defaults(auth_command="client-credentials-token")
     auth_exchange_parser = auth_subcommands.add_parser(
         "exchange-code",
         aliases=["exchange"],
@@ -1709,6 +1718,8 @@ def run_command(args: argparse.Namespace) -> Any:
             return refresh_auth_token()
         if args.auth_command == "login-url":
             return build_authorization_url()
+        if args.auth_command == "client-credentials-token":
+            return request_client_credentials_token_and_save()
         if args.auth_command == "exchange-code":
             return exchange_code_and_save(args.code)
         raise ValueError(f"Unsupported auth command: {args.auth_command}")
@@ -3002,6 +3013,10 @@ def main() -> None:
 
     if isinstance(result, AuthExchangeResult):
         print(format_auth_exchange(result))
+        raise SystemExit(result.exit_code)
+
+    if isinstance(result, AuthClientCredentialsResult):
+        print(format_client_credentials_result(result))
         raise SystemExit(result.exit_code)
 
     if isinstance(result, AuthLoginUrlResult):

@@ -12,6 +12,7 @@ from pydantic import SecretStr
 from pyprocore.auth.oauth import OAuthTokenResponse
 from pyprocore.auth.token_manager import TokenManager
 from pyprocore.auth.token_store import StoredToken, TokenStore
+from pyprocore.core.config import ProcoreSettings
 from pyprocore.core.exceptions import AuthenticationError
 
 
@@ -22,10 +23,16 @@ class FakeOAuthClient:
         """Initialize the fake client."""
         self.token_response = token_response
         self.refresh_tokens: list[str] = []
+        self.client_credentials_requests = 0
 
     def refresh_access_token(self, refresh_token: str) -> OAuthTokenResponse:
         """Return the configured token response and record the input token."""
         self.refresh_tokens.append(refresh_token)
+        return self.token_response
+
+    def request_client_credentials_token(self) -> OAuthTokenResponse:
+        """Return the configured token response and record the request."""
+        self.client_credentials_requests += 1
         return self.token_response
 
 
@@ -67,6 +74,32 @@ class TokenManagementTestCase(unittest.TestCase):
 
             with self.assertRaises(AuthenticationError):
                 manager.get_access_token()
+
+    def test_missing_client_credentials_token_requests_and_saves_token(self) -> None:
+        """Client credentials mode requests a token when none is stored."""
+        with TemporaryDirectory() as temporary_directory:
+            store = TokenStore(Path(temporary_directory) / "token.json")
+            oauth_client = FakeOAuthClient(
+                OAuthTokenResponse(
+                    access_token=SecretStr("client-access-token"),
+                    expires_in=3600,
+                )
+            )
+            manager = TokenManager(
+                token_store=store,
+                oauth_client=oauth_client,
+                settings=client_credentials_settings(),
+            )
+
+            access_token = manager.get_access_token()
+            saved_token = store.load()
+
+            self.assertEqual(access_token, "client-access-token")
+            self.assertEqual(oauth_client.client_credentials_requests, 1)
+            self.assertIsNotNone(saved_token)
+            assert saved_token is not None
+            self.assertEqual(saved_token.auth_mode, "client_credentials")
+            self.assertIsNone(saved_token.refresh_token)
 
     def test_expired_token_refresh_reuses_existing_refresh_token(self) -> None:
         """Expired access tokens are refreshed and retain refresh tokens."""
@@ -180,6 +213,41 @@ class TokenManagementTestCase(unittest.TestCase):
             with self.assertRaises(AuthenticationError):
                 manager.refresh_token()
 
+    def test_expired_client_credentials_token_requests_new_token(self) -> None:
+        """Expired client credentials tokens renew without refresh tokens."""
+        with TemporaryDirectory() as temporary_directory:
+            store = TokenStore(Path(temporary_directory) / "token.json")
+            store.save(
+                StoredToken(
+                    access_token="old-client-token",
+                    refresh_token=None,
+                    expires_at=1,
+                    auth_mode="client_credentials",
+                )
+            )
+            oauth_client = FakeOAuthClient(
+                OAuthTokenResponse(
+                    access_token=SecretStr("new-client-token"),
+                    expires_in=3600,
+                )
+            )
+            manager = TokenManager(
+                token_store=store,
+                oauth_client=oauth_client,
+                settings=client_credentials_settings(),
+            )
+
+            access_token = manager.get_access_token()
+            saved_token = store.load()
+
+            self.assertEqual(access_token, "new-client-token")
+            self.assertEqual(oauth_client.refresh_tokens, [])
+            self.assertEqual(oauth_client.client_credentials_requests, 1)
+            self.assertIsNotNone(saved_token)
+            assert saved_token is not None
+            self.assertEqual(saved_token.auth_mode, "client_credentials")
+            self.assertIsNone(saved_token.refresh_token)
+
     def test_save_oauth_response_and_clear_token(self) -> None:
         """Initial OAuth responses can be saved and later cleared."""
         with TemporaryDirectory() as temporary_directory:
@@ -203,6 +271,19 @@ class TokenManagementTestCase(unittest.TestCase):
 
             manager.clear_token()
             self.assertIsNone(store.load())
+
+
+def client_credentials_settings() -> ProcoreSettings:
+    """Return test settings for client credentials auth."""
+    return ProcoreSettings(
+        client_id="client-id",
+        client_secret="client-secret",
+        redirect_uri=None,
+        login_url="https://login.example.com",
+        api_base="https://api.example.com",
+        company_id=123,
+        auth_mode="client_credentials",
+    )
 
 
 if __name__ == "__main__":

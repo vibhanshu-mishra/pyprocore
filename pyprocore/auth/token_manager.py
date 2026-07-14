@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from pyprocore.auth.oauth import OAuthClient, OAuthTokenResponse
 from pyprocore.auth.token_store import StoredToken, TokenStore
+from pyprocore.core.config import ProcoreSettings, get_settings
 from pyprocore.core.exceptions import AuthenticationError
 
 
@@ -19,15 +20,25 @@ class TokenManager:
         self,
         token_store: TokenStore | None = None,
         oauth_client: OAuthClient | None = None,
+        settings: ProcoreSettings | None = None,
     ) -> None:
         """Initialize the token manager.
 
         Args:
             token_store: Optional token persistence backend.
             oauth_client: Optional OAuth client used for token refreshes.
+            settings: Optional SDK settings. Defaults to environment-backed
+                settings.
         """
+        self._settings = settings
+        if oauth_client is None:
+            self._settings = settings or get_settings()
         self._token_store = token_store or TokenStore()
-        self._oauth_client = oauth_client or OAuthClient()
+        if oauth_client is None:
+            assert self._settings is not None
+            self._oauth_client = OAuthClient(settings=self._settings)
+        else:
+            self._oauth_client = oauth_client
 
     def get_access_token(self, force_refresh: bool = False) -> str:
         """Return a valid access token, refreshing it when necessary.
@@ -44,6 +55,9 @@ class TokenManager:
         """
         token = self._token_store.load()
         if token is None:
+            if self._auth_mode() == "client_credentials":
+                token = self.request_client_credentials_token()
+                return token.access_token.get_secret_value()
             raise AuthenticationError(
                 "No Procore token is stored. Complete OAuth authorization first."
             )
@@ -68,7 +82,14 @@ class TokenManager:
         """
         current_token = token or self._token_store.load()
         if current_token is None:
+            if self._auth_mode() == "client_credentials":
+                return self.request_client_credentials_token()
             raise AuthenticationError("No Procore token is available to refresh.")
+
+        if self._auth_mode() == "client_credentials" or (
+            current_token.auth_mode == "client_credentials" and current_token.refresh_token is None
+        ):
+            return self.request_client_credentials_token()
 
         if current_token.refresh_token is None:
             raise AuthenticationError("No Procore refresh token is available.")
@@ -78,9 +99,24 @@ class TokenManager:
         refreshed_token = StoredToken.from_oauth_response(
             refreshed_response,
             existing_refresh_token=refresh_token,
+            auth_mode="authorization_code",
         )
         self._token_store.save(refreshed_token)
         return refreshed_token
+
+    def request_client_credentials_token(self) -> StoredToken:
+        """Request and persist a client credentials access token.
+
+        Returns:
+            The stored token representation.
+        """
+        token_response = self._oauth_client.request_client_credentials_token()
+        token = StoredToken.from_oauth_response(
+            token_response,
+            auth_mode="client_credentials",
+        )
+        self._token_store.save(token)
+        return token
 
     def save_oauth_response(self, token_response: OAuthTokenResponse) -> StoredToken:
         """Persist the token returned by an initial OAuth exchange.
@@ -92,13 +128,19 @@ class TokenManager:
         Returns:
             The stored token representation.
         """
-        token = StoredToken.from_oauth_response(token_response)
+        token = StoredToken.from_oauth_response(token_response, auth_mode="authorization_code")
         self._token_store.save(token)
         return token
 
     def clear_token(self) -> None:
         """Remove the saved token from the local token store."""
         self._token_store.clear()
+
+    def _auth_mode(self) -> str:
+        """Return the configured auth mode, defaulting to authorization code."""
+        if self._settings is None:
+            return "authorization_code"
+        return self._settings.auth_mode
 
 
 def get_access_token() -> str:

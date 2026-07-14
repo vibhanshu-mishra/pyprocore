@@ -15,7 +15,7 @@ It is model-agnostic, local-first, and safety-first. The current stable release,
 Current repository status:
 
 - Published stable release: `2.2.0`
-- Unreleased branch work: Phase 8A read-only API coverage for Observations, Punch Items, and Generic Tool correspondence items
+- Unreleased branch work: Phase 8A read-only API coverage and Phase 8B client-credentials auth support
 - Procore tool execution remains disabled
 
 ```bash
@@ -56,6 +56,7 @@ Fill in your Procore OAuth and API values:
 ```bash
 PROCORE_CLIENT_ID=your_client_id
 PROCORE_CLIENT_SECRET=your_client_secret_keep_private
+PROCORE_AUTH_MODE=authorization_code
 PROCORE_REDIRECT_URI=http://localhost:8080/callback
 PROCORE_LOGIN_URL=https://login.procore.com
 PROCORE_API_BASE=https://api.procore.com
@@ -80,6 +81,7 @@ PyProcore loads `.env` from the current working directory and does not override 
 ### Core SDK
 
 - OAuth 2.0 authorization-code flow
+- Optional client-credentials flow for Data Connection Apps in the current unreleased branch
 - Automatic token refresh
 - Typed Pydantic models
 - `requests.Session` transport

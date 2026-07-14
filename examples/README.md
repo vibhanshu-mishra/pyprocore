@@ -29,6 +29,8 @@ tools unless an individual example explicitly says otherwise.
 
 Examples `64` through `69` cover unreleased Phase 8A read-only Observations,
 Punch Items, Generic Tool correspondence, and agent registry metadata examples.
+Examples `70` through `73` cover unreleased Phase 8B client credentials auth
+patterns for Procore Data Connection Apps.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -76,6 +78,8 @@ export AGENT_EVAL_RESULTS_PATH=example-output/agent-evals/agent-eval-results.jso
 export WORKFLOW_PLAN_PATH=examples/workflow_plans/project_context_and_ai_export.json
 export WORKFLOW_RUN_OUTPUT_DIR=exports/workflow-run
 export WORKFLOW_DRY_RUN=1
+export PROCORE_AUTH_MODE=authorization_code
+export PYPROCORE_RUN_LIVE_EXAMPLE=0
 ```
 
 Use placeholder values while learning. Do not commit real IDs, tokens, secrets,
@@ -108,6 +112,8 @@ python3 examples/62_run_agent_evals.py
 python3 examples/64_list_observations.py
 python3 examples/66_list_punch_items.py
 python3 examples/68_list_correspondences.py
+python3 examples/70_configure_client_credentials.py
+python3 examples/73_auth_modes_overview.py
 ```
 
 Documents use Procore's Project Folders and Files endpoints internally. Before a
@@ -165,7 +171,7 @@ make examples-check
 ## Example Index
 
 The current example set runs from `01_list_companies.py` through
-`69_agent_registry_phase8a.py`.
+`73_auth_modes_overview.py`.
 
 | File | Demonstrates |
 | ---- | ------------ |
@@ -238,6 +244,10 @@ The current example set runs from `01_list_companies.py` through
 | `67_export_punch_items.py` | Export punch items to a local CSV file |
 | `68_list_correspondences.py` | List Generic Tools or correspondence items for a Generic Tool |
 | `69_agent_registry_phase8a.py` | Inspect Phase 8A agent metadata without executing tools |
+| `70_configure_client_credentials.py` | Print a safe `.env` template for Data Connection App auth |
+| `71_client_credentials_token.py` | Show the client credentials token command, with explicit opt-in for a live token request |
+| `72_client_credentials_export_pattern.py` | Print a safe scheduled export pattern for client credentials setups |
+| `73_auth_modes_overview.py` | Compare authorization-code and client-credentials auth modes |
 
 Sample workflow plans live in `examples/workflow_plans/`:
 
@@ -289,4 +299,5 @@ Sample webhook payloads live in `examples/webhooks/`:
 - Scheduled templates should be dry-run tested before use.
 - Docker templates are optional and should be dry-run tested before live use.
 - Unit tests do not run these scripts against Procore.
+- Example `71` does not request a token unless `PYPROCORE_RUN_LIVE_EXAMPLE=1`.
 - Keep secrets out of code, screenshots, logs, and issue reports.

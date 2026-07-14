@@ -20,10 +20,26 @@ from pyprocore.models import ProcoreModel
 
 CheckStatus = Literal["pass", "warn", "fail"]
 
-REQUIRED_ENV_VARS = (
+CONFIG_ENV_VARS = (
     "PROCORE_CLIENT_ID",
     "PROCORE_CLIENT_SECRET",
     "PROCORE_REDIRECT_URI",
+    "PROCORE_LOGIN_URL",
+    "PROCORE_API_BASE",
+    "PROCORE_COMPANY_ID",
+    "PROCORE_AUTH_MODE",
+)
+AUTH_CODE_REQUIRED_ENV_VARS = (
+    "PROCORE_CLIENT_ID",
+    "PROCORE_CLIENT_SECRET",
+    "PROCORE_REDIRECT_URI",
+    "PROCORE_LOGIN_URL",
+    "PROCORE_API_BASE",
+    "PROCORE_COMPANY_ID",
+)
+CLIENT_CREDENTIALS_REQUIRED_ENV_VARS = (
+    "PROCORE_CLIENT_ID",
+    "PROCORE_CLIENT_SECRET",
     "PROCORE_LOGIN_URL",
     "PROCORE_API_BASE",
     "PROCORE_COMPANY_ID",
@@ -152,7 +168,7 @@ def _read_config_values(env_path: Path, environ: Mapping[str, str]) -> dict[str,
     dotenv_config = dotenv_values(env_path) if env_path.exists() else {}
     values: dict[str, str | None] = {}
 
-    for key in REQUIRED_ENV_VARS:
+    for key in CONFIG_ENV_VARS:
         raw_value = environ.get(key)
         if raw_value is None:
             raw_value = dotenv_config.get(key)
@@ -179,7 +195,22 @@ def _configuration_checks(
         )
     ]
 
-    missing_keys = [key for key, value in config_values.items() if not value]
+    auth_mode = _auth_mode(config_values.get("PROCORE_AUTH_MODE"))
+    checks.append(
+        _check(
+            "Auth mode",
+            "pass",
+            auth_mode,
+            details=(
+                "Authorization-code OAuth"
+                if auth_mode == "authorization_code"
+                else "Client credentials / Data Connection App"
+            ),
+        )
+    )
+
+    required_keys = _required_env_vars(auth_mode)
+    missing_keys = [key for key in required_keys if not config_values.get(key)]
     checks.append(
         _check(
             "Required configuration",
@@ -267,8 +298,16 @@ def _token_checks(token_store_path: Path) -> list[DoctorCheck]:
         return checks
 
     checks.append(_token_presence_check(raw_token, "access_token", "Access token", required=True))
+    token_auth_mode = str(raw_token.get("auth_mode") or "authorization_code")
+    refresh_required = token_auth_mode != "client_credentials"
     checks.append(
-        _token_presence_check(raw_token, "refresh_token", "Refresh token", required=False)
+        _token_presence_check(
+            raw_token,
+            "refresh_token",
+            "Refresh token",
+            required=False,
+            client_credentials_optional=not refresh_required,
+        )
     )
     checks.append(_token_expiry_check(raw_token))
     return checks
@@ -362,11 +401,19 @@ def _token_presence_check(
     name: str,
     *,
     required: bool,
+    client_credentials_optional: bool = False,
 ) -> DoctorCheck:
     """Return a safe presence-only token check."""
     present = bool(raw_token.get(key))
     if present:
         return _check(name, "pass", f"{name} is present.")
+
+    if client_credentials_optional:
+        return _check(
+            name,
+            "pass",
+            f"{name} is not required for client credentials auth.",
+        )
 
     return _check(
         name,
@@ -406,7 +453,18 @@ def _token_expiry_check(raw_token: Mapping[str, object]) -> DoctorCheck:
         )
 
     if expires_at <= int(time.time()):
+        auth_mode = str(raw_token.get("auth_mode") or "authorization_code")
         refresh_present = bool(raw_token.get("refresh_token"))
+        if auth_mode == "client_credentials":
+            return _check(
+                "Token expiry",
+                "warn",
+                "Client credentials access token is expired.",
+                suggested_fix=(
+                    "Run `procore-sdk auth client-credentials-token` "
+                    "or any SDK command that requests a fresh token."
+                ),
+            )
         return _check(
             "Token expiry",
             "warn" if refresh_present else "fail",
@@ -468,6 +526,23 @@ def _dependency_check(module_name: str) -> DoctorCheck:
         )
 
     return _check(f"Dependency: {module_name}", "pass", "Importable.")
+
+
+def _auth_mode(value: str | None) -> str:
+    """Return the normalized auth mode used by doctor checks."""
+    if value is None or not value.strip():
+        return "authorization_code"
+    normalized = value.strip().casefold().replace("-", "_")
+    if normalized == "client_credentials":
+        return normalized
+    return "authorization_code"
+
+
+def _required_env_vars(auth_mode: str) -> tuple[str, ...]:
+    """Return required environment variables for the selected auth mode."""
+    if auth_mode == "client_credentials":
+        return CLIENT_CREDENTIALS_REQUIRED_ENV_VARS
+    return AUTH_CODE_REQUIRED_ENV_VARS
 
 
 def _build_report(checks: list[DoctorCheck], *, live: bool) -> DoctorReport:

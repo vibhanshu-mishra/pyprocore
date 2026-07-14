@@ -61,6 +61,7 @@ class DoctorTestCase(unittest.TestCase):
         self.assertEqual(report.exit_code, 0)
         self.assertIn("Required configuration", _statuses(report))
         self.assertEqual(_statuses(report)["Required configuration"], "pass")
+        self.assertEqual(_statuses(report)["Auth mode"], "pass")
 
     def test_missing_required_environment_fails(self) -> None:
         """Missing required Procore settings are reported clearly."""
@@ -136,6 +137,54 @@ class DoctorTestCase(unittest.TestCase):
             )
 
         self.assertEqual(_statuses(report)["Refresh token"], "warn")
+
+    def test_client_credentials_config_does_not_require_redirect_uri(self) -> None:
+        """Client credentials mode does not require redirect URI config."""
+        environment = required_environment()
+        environment.pop("PROCORE_REDIRECT_URI")
+        environment["PROCORE_AUTH_MODE"] = "client_credentials"
+        with TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            token_path = root / "token_store.json"
+            write_token(token_path, refresh_token=None, auth_mode="client_credentials")
+
+            report = run_doctor(
+                env_path=root / ".env",
+                token_store_path=token_path,
+                logs_dir=root / "logs",
+                downloads_dir=root / "downloads",
+                environ=environment,
+            )
+
+        statuses = _statuses(report)
+        self.assertEqual(statuses["Auth mode"], "pass")
+        self.assertEqual(statuses["Required configuration"], "pass")
+        self.assertEqual(statuses["Refresh token"], "pass")
+
+    def test_expired_client_credentials_token_warns_without_refresh_token(self) -> None:
+        """Expired client credentials tokens can be renewed without refresh tokens."""
+        environment = required_environment()
+        environment["PROCORE_AUTH_MODE"] = "client_credentials"
+        with TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            token_path = root / "token_store.json"
+            write_token(
+                token_path,
+                refresh_token=None,
+                expires_at=int(time.time()) - 60,
+                auth_mode="client_credentials",
+            )
+
+            report = run_doctor(
+                env_path=root / ".env",
+                token_store_path=token_path,
+                logs_dir=root / "logs",
+                downloads_dir=root / "downloads",
+                environ=environment,
+            )
+
+        self.assertEqual(_statuses(report)["Token expiry"], "warn")
+        self.assertNotEqual(_statuses(report)["Token expiry"], "fail")
 
     def test_invalid_url_values_fail(self) -> None:
         """Malformed URL settings are reported as failed checks."""

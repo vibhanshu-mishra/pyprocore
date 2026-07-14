@@ -14,7 +14,12 @@ from requests import Response
 
 import pyprocore.auth as auth
 import pyprocore.core as core
-from pyprocore.auth.oauth import OAuthClient, exchange_authorization_code, refresh_access_token
+from pyprocore.auth.oauth import (
+    OAuthClient,
+    exchange_authorization_code,
+    refresh_access_token,
+    request_client_credentials_token,
+)
 from pyprocore.auth.token_store import StoredToken, TokenStore, load_token, save_token
 from pyprocore.core.config import ProcoreSettings, get_settings
 from pyprocore.core.exceptions import AuthenticationError, ConfigurationError
@@ -64,6 +69,22 @@ class ConfigTestCase(unittest.TestCase):
         self.assertEqual(configured.login_url, "https://login.example.com")
         self.assertEqual(configured.api_base, "https://api.example.com")
         self.assertEqual(configured.company_id, 123)
+        self.assertEqual(configured.auth_mode, "authorization_code")
+
+    def test_client_credentials_settings_do_not_require_redirect_uri(self) -> None:
+        """Client credentials mode does not require a redirect URI."""
+        configured = ProcoreSettings(
+            client_id="client-id",
+            client_secret="client-secret",
+            redirect_uri=None,
+            login_url="https://login.example.com/",
+            api_base="https://api.example.com/",
+            company_id=123,
+            auth_mode="client-credentials",
+        )
+
+        self.assertEqual(configured.auth_mode, "client_credentials")
+        self.assertIsNone(configured.redirect_uri)
 
     def test_get_settings_reads_environment(self) -> None:
         """get_settings reads supported Procore variables from the environment."""
@@ -76,11 +97,38 @@ class ConfigTestCase(unittest.TestCase):
             "PROCORE_COMPANY_ID": "456",
         }
 
-        with patch.dict("os.environ", environment, clear=True):
-            configured = get_settings()
+        with TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            with (
+                patch.dict("os.environ", environment, clear=True),
+                patch("pyprocore.core.config.Path.cwd", return_value=root),
+            ):
+                configured = get_settings()
 
         self.assertEqual(configured.company_id, 456)
         self.assertEqual(configured.api_base, "https://api.example.com")
+
+    def test_get_settings_reads_client_credentials_without_redirect_uri(self) -> None:
+        """Client credentials env config can omit PROCORE_REDIRECT_URI."""
+        environment = {
+            "PROCORE_CLIENT_ID": "client-id",
+            "PROCORE_CLIENT_SECRET": "client-secret",
+            "PROCORE_AUTH_MODE": "client_credentials",
+            "PROCORE_LOGIN_URL": "https://login.example.com/",
+            "PROCORE_API_BASE": "https://api.example.com/",
+            "PROCORE_COMPANY_ID": "456",
+        }
+
+        with TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            with (
+                patch.dict("os.environ", environment, clear=True),
+                patch("pyprocore.core.config.Path.cwd", return_value=root),
+            ):
+                configured = get_settings()
+
+        self.assertEqual(configured.auth_mode, "client_credentials")
+        self.assertIsNone(configured.redirect_uri)
 
     def test_get_settings_reads_dotenv_from_current_working_directory(self) -> None:
         """get_settings loads a local .env before reading supported variables."""
@@ -196,6 +244,22 @@ class OAuthClientTestCase(unittest.TestCase):
             self.session.post.call_args.kwargs["data"]["refresh_token"], "refresh-token"
         )
 
+    def test_request_client_credentials_token_posts_expected_payload(self) -> None:
+        """Client credentials flow posts the expected grant payload."""
+        self.session.post.return_value = oauth_response(
+            body=b'{"access_token": "access-token", "expires_in": 3600, "token_type": "Bearer"}'
+        )
+
+        token = self.client.request_client_credentials_token()
+
+        self.assertEqual(token.access_token.get_secret_value(), "access-token")
+        self.assertIsNone(token.refresh_token)
+        payload = self.session.post.call_args.kwargs["data"]
+        self.assertEqual(payload["grant_type"], "client_credentials")
+        self.assertEqual(payload["client_id"], "client-id")
+        self.assertEqual(payload["client_secret"], "client-secret")
+        self.assertNotIn("redirect_uri", payload)
+
     def test_blank_oauth_inputs_raise_authentication_error(self) -> None:
         """Blank authorization codes and refresh tokens are rejected."""
         with self.assertRaises(AuthenticationError):
@@ -239,10 +303,12 @@ class OAuthClientTestCase(unittest.TestCase):
             oauth = Mock()
             oauth.exchange_authorization_code.return_value = "code-token"
             oauth.refresh_access_token.return_value = "refresh-token"
+            oauth.request_client_credentials_token.return_value = "client-token"
             oauth_class.return_value = oauth
 
             self.assertEqual(exchange_authorization_code("code"), "code-token")
             self.assertEqual(refresh_access_token("refresh"), "refresh-token")
+            self.assertEqual(request_client_credentials_token(), "client-token")
 
 
 class TokenStoreTestCase(unittest.TestCase):

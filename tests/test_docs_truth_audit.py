@@ -88,7 +88,7 @@ class DocsTruthAuditTestCase(unittest.TestCase):
 
         self.assertIn("### v2.2.0", roadmap)
         self.assertIn("Phase 7 Agent Layer", completed_section)
-        for phrase in ("Observations", "Punch item", "correspondence"):
+        for phrase in ("Observations", "Punch item", "correspondence", "client credentials"):
             self.assertIn(phrase.lower(), unreleased_section.lower())
         for phrase in (
             "async client",
@@ -124,8 +124,10 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         self.assertIn("Examples `01` through `52`", examples)
         self.assertIn("Examples `53` through `63`", examples)
         self.assertIn("Examples `64` through `69`", examples)
+        self.assertIn("Examples `70` through `73`", examples)
         self.assertIn("cover the `v2.2.0` Phase 7", examples)
         self.assertIn("do not require Procore credentials or execute tools", examples)
+        self.assertIn("client credentials auth", examples)
         self.assertNotIn("prepared for `2.2.0`", examples)
 
     def test_docs_do_not_claim_unpublished_state_or_execution_enabled(self) -> None:

@@ -14,6 +14,7 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, SecretStr, field_validator
 
+from pyprocore.core.config import AuthMode
 from pyprocore.core.exceptions import AuthenticationError
 
 DEFAULT_EXPIRY_SKEW_SECONDS = 60
@@ -28,6 +29,7 @@ class StoredToken(BaseModel):
     refresh_token: SecretStr | None = None
     token_type: str = Field(default="Bearer", min_length=1)
     scope: str | None = None
+    auth_mode: AuthMode = "authorization_code"
 
     model_config = ConfigDict(extra="allow")
 
@@ -42,6 +44,7 @@ class StoredToken(BaseModel):
         cls,
         token_response: Any,
         existing_refresh_token: str | None = None,
+        auth_mode: AuthMode = "authorization_code",
     ) -> "StoredToken":
         """Create a stored token from an OAuth response model or mapping.
 
@@ -71,6 +74,7 @@ class StoredToken(BaseModel):
             refresh_token=refresh_token,
             token_type=payload.get("token_type", "Bearer"),
             scope=payload.get("scope"),
+            auth_mode=auth_mode,
             expires_at=int(time.time()) + expires_in,
         )
 

@@ -15,9 +15,11 @@ from pyprocore.auth.diagnostics import (
     format_auth_exchange,
     format_auth_refresh,
     format_auth_status,
+    format_client_credentials_result,
     format_login_url,
     get_auth_status,
     refresh_auth_token,
+    request_client_credentials_token_and_save,
 )
 from pyprocore.auth.token_store import StoredToken, TokenStore
 from pyprocore.core.config import ProcoreSettings, get_settings
@@ -102,6 +104,30 @@ class AuthDiagnosticsTestCase(unittest.TestCase):
         self.assertEqual(report.exit_code, 0)
         self.assertFalse(report.refresh_token_present)
         self.assertIn("Refresh token is missing.", report.warnings)
+
+    def test_status_client_credentials_does_not_require_redirect_or_refresh(self) -> None:
+        """Client credentials status accepts no redirect URI or refresh token."""
+        environment = required_environment()
+        environment.pop("PROCORE_REDIRECT_URI")
+        environment["PROCORE_AUTH_MODE"] = "client_credentials"
+        with TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            token_path = root / "token.json"
+            write_token(token_path, refresh_token=None, auth_mode="client_credentials")
+
+            report = get_auth_status(
+                token_store=TokenStore(token_path),
+                env_path=root / ".env",
+                environ=environment,
+            )
+
+        self.assertEqual(report.exit_code, 0)
+        self.assertEqual(report.auth_mode, "client_credentials")
+        self.assertEqual(report.missing_configuration, [])
+        self.assertEqual(report.warnings, [])
+        formatted = format_auth_status(report)
+        self.assertIn("Auth mode: client_credentials", formatted)
+        self.assertIn("Refresh token: Not required", formatted)
 
     def test_status_detects_expired_token(self) -> None:
         """Expired access tokens are identified without calling Procore."""
@@ -251,6 +277,23 @@ class AuthDiagnosticsTestCase(unittest.TestCase):
                 with self.assertRaises(ConfigurationError):
                     build_authorization_url()
 
+    def test_login_url_generation_fails_for_client_credentials_mode(self) -> None:
+        """Login URLs are only for authorization-code OAuth."""
+        settings = ProcoreSettings(
+            client_id="client-id",
+            client_secret="client-secret",
+            redirect_uri=None,
+            login_url="https://login.procore.com",
+            api_base="https://api.procore.com",
+            company_id=123,
+            auth_mode="client_credentials",
+        )
+
+        with self.assertRaises(AuthenticationError) as context:
+            build_authorization_url(settings)
+
+        self.assertIn("client-credentials-token", str(context.exception))
+
     def test_status_and_login_url_read_same_dotenv_config(self) -> None:
         """Auth status and login-url helpers agree on required .env config."""
         with TemporaryDirectory() as temporary_directory:
@@ -338,6 +381,43 @@ class AuthDiagnosticsTestCase(unittest.TestCase):
         )
 
         self.assertIn("Next step", formatted)
+
+    def test_client_credentials_token_success_formats_safely(self) -> None:
+        """Client credentials helper saves tokens without printing token values."""
+        stored_token = StoredToken(
+            access_token="client-access-token",
+            refresh_token=None,
+            expires_at=int(time.time()) + 7200,
+            auth_mode="client_credentials",
+        )
+        manager = Mock()
+        manager.request_client_credentials_token.return_value = stored_token
+
+        result = request_client_credentials_token_and_save(manager)
+        formatted = format_client_credentials_result(result)
+
+        self.assertTrue(result.success)
+        self.assertEqual(result.exit_code, 0)
+        self.assertTrue(result.access_token_present)
+        self.assertFalse(result.refresh_token_present)
+        self.assertIn("Token store: Updated", formatted)
+        self.assertIn("Refresh token: Not required", formatted)
+        self.assertNotIn("client-access-token", formatted)
+
+    def test_client_credentials_token_failure_formats_guidance(self) -> None:
+        """Client credentials failures are beginner-friendly and safe."""
+        manager = Mock()
+        manager.request_client_credentials_token.side_effect = AuthenticationError(
+            "OAuth token request failed with status 401."
+        )
+
+        result = request_client_credentials_token_and_save(manager)
+        formatted = format_client_credentials_result(result)
+
+        self.assertFalse(result.success)
+        self.assertEqual(result.exit_code, 1)
+        self.assertIn("PROCORE_AUTH_MODE=client_credentials", formatted)
+        self.assertIn("status 401", formatted)
 
     def test_exchange_code_success_saves_token_without_printing_secrets(self) -> None:
         """Authorization code exchange saves tokens and formats safe output."""

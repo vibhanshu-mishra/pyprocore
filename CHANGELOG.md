@@ -13,11 +13,16 @@ and this project follows semantic versioning.
 - Typed flexible models for `Observation`, `PunchItem`, `GenericTool`, and `Correspondence`.
 - Service, search, object-client, CLI, CSV/JSONL export, and agent registry metadata support for Phase 8A resources.
 - Beginner-friendly Phase 8A examples and documentation.
+- Phase 8B client credentials authentication support for Procore Data Connection Apps.
+- `PROCORE_AUTH_MODE=authorization_code|client_credentials` configuration, defaulting to the existing authorization-code flow.
+- `procore-sdk auth client-credentials-token` for requesting and saving a client credentials access token.
+- Auth diagnostics, doctor checks, examples, and docs for client credentials setups without requiring a redirect URI or refresh token.
 
 ### Security
 
 - Phase 8A remains read-only and does not add create/update/delete Procore actions.
 - Agent tool execution remains disabled; new Phase 8A agent entries are metadata only.
+- Phase 8B does not enable Procore tool execution or add write APIs.
 
 ## [2.2.0] - 2026-07-12
 

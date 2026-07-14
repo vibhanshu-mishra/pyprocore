@@ -3,6 +3,14 @@
 PyProcore uses Procore OAuth and reads configuration from environment variables
 or a local `.env` file in your current working directory.
 
+Two auth modes are supported:
+
+- `authorization_code`: the default user OAuth flow with login URL, code
+  exchange, access token, and refresh token.
+- `client_credentials`: server-to-server auth for Procore Data Connection Apps.
+  This mode uses client ID and client secret, does not require a redirect URI,
+  and may not return a refresh token.
+
 ## `.env` Setup
 
 Copy the sample file and fill in your own values:
@@ -16,6 +24,7 @@ Required values:
 ```bash
 PROCORE_CLIENT_ID=your_client_id
 PROCORE_CLIENT_SECRET=your_client_secret_keep_private
+PROCORE_AUTH_MODE=authorization_code
 PROCORE_REDIRECT_URI=http://localhost:8080/callback
 PROCORE_LOGIN_URL=https://login.procore.com
 PROCORE_API_BASE=https://api.procore.com
@@ -24,6 +33,19 @@ PROCORE_COMPANY_ID=123456
 
 Environment variables already set in your shell take precedence over `.env`
 values.
+
+For a Data Connection App, use:
+
+```bash
+PROCORE_AUTH_MODE=client_credentials
+PROCORE_CLIENT_ID=your_client_id
+PROCORE_CLIENT_SECRET=your_client_secret_keep_private
+PROCORE_LOGIN_URL=https://login.procore.com
+PROCORE_API_BASE=https://api.procore.com
+PROCORE_COMPANY_ID=123456
+```
+
+`PROCORE_REDIRECT_URI` is not required in `client_credentials` mode.
 
 ## OAuth Login URL
 
@@ -62,6 +84,18 @@ procore-sdk auth refresh
 
 Normal SDK calls refresh expired access tokens automatically when a refresh token
 is available. The manual command is useful while troubleshooting.
+
+## Client Credentials Token
+
+For Data Connection Apps, set `PROCORE_AUTH_MODE=client_credentials`, then run:
+
+```bash
+procore-sdk auth client-credentials-token
+```
+
+This requests and saves a client credentials access token. Procore may omit a
+refresh token for this grant type; PyProcore treats that as normal and requests
+a fresh client credentials token when needed.
 
 ## Doctor
 
@@ -112,3 +146,9 @@ has access.
 
 Run the login URL and exchange-code flow once. If the token store was deleted,
 repeat the OAuth setup.
+
+For `client_credentials` mode, run:
+
+```bash
+procore-sdk auth client-credentials-token
+```

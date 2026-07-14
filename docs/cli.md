@@ -11,9 +11,14 @@ procore-sdk doctor --json
 procore-sdk doctor --live
 procore-sdk auth login-url
 procore-sdk auth exchange-code YOUR_AUTHORIZATION_CODE
+procore-sdk auth client-credentials-token
 procore-sdk auth status
 procore-sdk auth refresh
 ```
+
+`auth client-credentials-token` is for `PROCORE_AUTH_MODE=client_credentials`
+setups such as Procore Data Connection Apps. It requests and stores a
+server-to-server access token without using a redirect URI.
 
 ## Companies And Projects
 

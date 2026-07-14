@@ -50,9 +50,24 @@ Implemented in the current branch and not yet published:
 Focus: read-oriented coverage only. No create/update/delete/write actions are
 included.
 
+### Phase 8B — Client Credentials Auth
+
+Implemented in the current branch and not yet published:
+
+- `PROCORE_AUTH_MODE=authorization_code|client_credentials`
+- Authorization-code OAuth remains the default.
+- Data Connection App / client credentials token requests
+- Client credentials token storage without requiring refresh tokens
+- Doctor/auth-status diagnostics that understand auth mode
+- CLI helper: `procore-sdk auth client-credentials-token`
+- Beginner-friendly examples and docs
+
+Focus: authentication support only. This does not enable Procore tool execution
+or add write APIs.
+
 ## Future
 
-### Phase 8B+ — Expanded Procore API Coverage
+### Phase 8C+ — Expanded Procore API Coverage
 
 Planned modules:
 

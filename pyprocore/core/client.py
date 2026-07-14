@@ -56,7 +56,7 @@ class ProcoreClient:
             timeout_seconds: Default timeout for HTTP requests.
         """
         self._settings = settings or get_settings()
-        self._token_manager = token_manager or TokenManager()
+        self._token_manager = token_manager or TokenManager(settings=self._settings)
         self._session = session or requests.Session()
         self._timeout_seconds = timeout_seconds
         self._logger = get_logger("client")
