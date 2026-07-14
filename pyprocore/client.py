@@ -19,12 +19,15 @@ from pyprocore.core.exceptions import ValidationError
 from pyprocore.models import (
     RFI,
     Company,
+    CompanyUser,
     Correspondence,
     DailyLogCount,
     DailyLogEntry,
     DailyLogHeader,
     DailyLogsByType,
     DelayLogType,
+    Department,
+    DistributionGroup,
     Document,
     DocumentFolder,
     Drawing,
@@ -34,17 +37,20 @@ from pyprocore.models import (
     Incident,
     IncidentConfiguration,
     Inspection,
+    Location,
     Meeting,
     Observation,
     PhotoAlbum,
     PhotoAlbumDownloadResult,
     PhotoImage,
     Project,
+    ProjectUser,
     PunchItem,
     SpecificationSection,
     SpecificationSectionRevision,
     SpecificationSet,
     Submittal,
+    Vendor,
 )
 from pyprocore.services import (
     download_document,
@@ -55,27 +61,35 @@ from pyprocore.services import (
     download_specification_section_revision,
     download_submittal_attachments,
     find_company,
+    find_company_user,
     find_correspondence,
+    find_department,
     find_document,
     find_document_folder,
     find_drawing,
     find_drawings_contains,
     find_incident,
     find_inspection,
+    find_location,
     find_meeting,
     find_observation,
     find_photo,
     find_photo_album,
     find_project,
     find_project_contains,
+    find_project_distribution_group,
+    find_project_user,
     find_punch_item,
     find_rfi,
     find_specification_section,
     find_submittal,
+    find_vendor,
+    get_company_user,
     get_correspondence,
     get_daily_log,
     get_daily_log_counts,
     get_daily_log_header,
+    get_department,
     get_document,
     get_document_folder,
     get_drawing,
@@ -83,20 +97,26 @@ from pyprocore.services import (
     get_generic_tool,
     get_incident,
     get_inspection,
+    get_location,
     get_meeting,
     get_observation,
     get_photo,
     get_photo_album,
     get_project,
+    get_project_distribution_group,
     get_project_incident_configuration,
+    get_project_user,
     get_punch_item,
     get_rfi,
     get_specification_section,
     get_specification_section_revision,
     get_submittal,
+    get_vendor,
     list_accident_logs,
     list_call_logs,
     list_companies,
+    list_company_inactive_users,
+    list_company_users,
     list_correspondences,
     list_daily_construction_report_logs,
     list_daily_log_headers,
@@ -105,6 +125,7 @@ from pyprocore.services import (
     list_delay_log_types,
     list_delay_logs,
     list_delivery_logs,
+    list_departments,
     list_document_folders,
     list_documents,
     list_drawing_areas,
@@ -114,6 +135,7 @@ from pyprocore.services import (
     list_generic_tools,
     list_incidents,
     list_inspections,
+    list_locations,
     list_manpower_logs,
     list_meetings,
     list_notes_logs,
@@ -122,6 +144,9 @@ from pyprocore.services import (
     list_photos,
     list_plan_revision_logs,
     list_productivity_logs,
+    list_project_distribution_groups,
+    list_project_users,
+    list_project_vendors,
     list_projects,
     list_punch_items,
     list_rfis,
@@ -129,6 +154,7 @@ from pyprocore.services import (
     list_specification_sections,
     list_specification_sets,
     list_submittals,
+    list_vendors,
     list_visitor_logs,
 )
 from pyprocore.workflows import (
@@ -145,22 +171,34 @@ from pyprocore.workflows import (
     build_enhanced_rfi_package,
     build_enhanced_submittal_package,
     build_project_context_package,
+    export_company_users_to_csv,
+    export_company_users_to_jsonl,
     export_correspondences_to_csv,
     export_correspondences_to_jsonl,
+    export_departments_to_csv,
+    export_departments_to_jsonl,
+    export_distribution_groups_to_csv,
+    export_distribution_groups_to_jsonl,
     export_incidents_to_csv,
     export_incidents_to_jsonl,
     export_inspections_to_csv,
     export_inspections_to_jsonl,
+    export_locations_to_csv,
+    export_locations_to_jsonl,
     export_meetings_to_csv,
     export_meetings_to_jsonl,
     export_observations_to_csv,
     export_observations_to_jsonl,
+    export_project_users_to_csv,
+    export_project_users_to_jsonl,
     export_punch_items_to_csv,
     export_punch_items_to_jsonl,
     export_rfis_to_csv,
     export_rfis_to_jsonl,
     export_submittals_to_csv,
     export_submittals_to_jsonl,
+    export_vendors_to_csv,
+    export_vendors_to_jsonl,
     list_available_workflows,
     load_workflow_plan,
     run_workflow_plan,
@@ -1438,6 +1476,187 @@ class DailyLogsClient:
         return list_plan_revision_logs(project_id, company_id=company_id, **filters)
 
 
+class CompanyUsersClient:
+    """Convenience methods for read-only company directory users."""
+
+    def list(
+        self,
+        company_id: int | None = None,
+        *,
+        active: bool | None = None,
+        **filters: Any,
+    ) -> list[CompanyUser]:
+        """List company directory users."""
+        return list_company_users(company_id, active=active, **filters)
+
+    def inactive(self, company_id: int | None = None, **filters: Any) -> builtins.list[CompanyUser]:
+        """List inactive company directory users."""
+        return list_company_inactive_users(company_id, **filters)
+
+    def get(self, user_id: int, company_id: int | None = None) -> CompanyUser:
+        """Get one company directory user."""
+        return get_company_user(company_id, user_id)
+
+    def find(
+        self,
+        company_id: int | None = None,
+        *,
+        name: str | None = None,
+        email: str | None = None,
+        query: str | None = None,
+    ) -> CompanyUser:
+        """Find one company directory user by name, email, or text."""
+        return find_company_user(company_id, name=name, email=email, query=query)
+
+
+class ProjectUsersClient:
+    """Convenience methods for read-only project directory users."""
+
+    def list(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        *,
+        active: bool | None = None,
+        **filters: Any,
+    ) -> list[ProjectUser]:
+        """List project directory users."""
+        return list_project_users(company_id, project_id, active=active, **filters)
+
+    def get(self, project_id: int, user_id: int, company_id: int | None = None) -> ProjectUser:
+        """Get one project directory user."""
+        return get_project_user(company_id, project_id, user_id)
+
+    def find(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        *,
+        name: str | None = None,
+        email: str | None = None,
+        query: str | None = None,
+    ) -> ProjectUser:
+        """Find one project directory user by name, email, or text."""
+        return find_project_user(company_id, project_id, name=name, email=email, query=query)
+
+
+class VendorsClient:
+    """Convenience methods for read-only vendor directory resources."""
+
+    def list(self, company_id: int | None = None, **filters: Any) -> list[Vendor]:
+        """List company vendors."""
+        return list_vendors(company_id, **filters)
+
+    def list_project(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> builtins.list[Vendor]:
+        """List vendors filtered by project when Procore supports that filter."""
+        return list_project_vendors(company_id, project_id, **filters)
+
+    def get(self, vendor_id: int, company_id: int | None = None) -> Vendor:
+        """Get one vendor."""
+        return get_vendor(company_id, vendor_id)
+
+    def find(
+        self,
+        company_id: int | None = None,
+        *,
+        name: str | None = None,
+        number: str | int | None = None,
+        query: str | None = None,
+    ) -> Vendor:
+        """Find one vendor by name, number, or text."""
+        return find_vendor(company_id, name=name, number=number, query=query)
+
+
+class DepartmentsClient:
+    """Convenience methods for read-only company departments."""
+
+    def list(self, company_id: int | None = None, **filters: Any) -> list[Department]:
+        """List company departments."""
+        return list_departments(company_id, **filters)
+
+    def get(self, department_id: int, company_id: int | None = None) -> Department:
+        """Get one company department."""
+        return get_department(company_id, department_id)
+
+    def find(
+        self,
+        company_id: int | None = None,
+        *,
+        name: str | None = None,
+        code: str | None = None,
+        query: str | None = None,
+    ) -> Department:
+        """Find one department by name, code, or text."""
+        return find_department(company_id, name=name, code=code, query=query)
+
+
+class DistributionGroupsClient:
+    """Convenience methods for read-only project distribution groups."""
+
+    def list(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> list[DistributionGroup]:
+        """List project distribution groups."""
+        return list_project_distribution_groups(company_id, project_id, **filters)
+
+    def get(
+        self,
+        project_id: int,
+        distribution_group_id: int,
+        company_id: int | None = None,
+    ) -> DistributionGroup:
+        """Get one project distribution group."""
+        return get_project_distribution_group(company_id, project_id, distribution_group_id)
+
+    def find(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        *,
+        name: str | None = None,
+        query: str | None = None,
+    ) -> DistributionGroup:
+        """Find one project distribution group by name or text."""
+        return find_project_distribution_group(company_id, project_id, name=name, query=query)
+
+
+class LocationsClient:
+    """Convenience methods for read-only project locations."""
+
+    def list(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> list[Location]:
+        """List project locations."""
+        return list_locations(company_id, project_id, **filters)
+
+    def get(self, project_id: int, location_id: int, company_id: int | None = None) -> Location:
+        """Get one project location."""
+        return get_location(company_id, project_id, location_id)
+
+    def find(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        *,
+        name: str | None = None,
+        code: str | None = None,
+        query: str | None = None,
+    ) -> Location:
+        """Find one project location by name, code, or text."""
+        return find_location(company_id, project_id, name=name, code=code, query=query)
+
+
 class AutomationClient:
     """Convenience methods for AI-ready automation workflow packages."""
 
@@ -1890,6 +2109,125 @@ class WorkflowsClient:
         """Export incidents to newline-delimited JSON."""
         return export_incidents_to_jsonl(company_id, project_id, output_path, **filters)
 
+    def export_company_users_to_csv(
+        self,
+        company_id: int | None,
+        output_path: Path | str,
+        **filters: Any,
+    ) -> Path:
+        """Export company users to CSV."""
+        return export_company_users_to_csv(company_id, output_path, **filters)
+
+    def export_company_users_to_jsonl(
+        self,
+        company_id: int | None,
+        output_path: Path | str,
+        **filters: Any,
+    ) -> Path:
+        """Export company users to newline-delimited JSON."""
+        return export_company_users_to_jsonl(company_id, output_path, **filters)
+
+    def export_project_users_to_csv(
+        self,
+        company_id: int | None,
+        project_id: int,
+        output_path: Path | str,
+        **filters: Any,
+    ) -> Path:
+        """Export project users to CSV."""
+        return export_project_users_to_csv(company_id, project_id, output_path, **filters)
+
+    def export_project_users_to_jsonl(
+        self,
+        company_id: int | None,
+        project_id: int,
+        output_path: Path | str,
+        **filters: Any,
+    ) -> Path:
+        """Export project users to newline-delimited JSON."""
+        return export_project_users_to_jsonl(company_id, project_id, output_path, **filters)
+
+    def export_vendors_to_csv(
+        self,
+        company_id: int | None,
+        output_path: Path | str,
+        **filters: Any,
+    ) -> Path:
+        """Export vendors to CSV."""
+        return export_vendors_to_csv(company_id, output_path, **filters)
+
+    def export_vendors_to_jsonl(
+        self,
+        company_id: int | None,
+        output_path: Path | str,
+        **filters: Any,
+    ) -> Path:
+        """Export vendors to newline-delimited JSON."""
+        return export_vendors_to_jsonl(company_id, output_path, **filters)
+
+    def export_departments_to_csv(
+        self,
+        company_id: int | None,
+        output_path: Path | str,
+        **filters: Any,
+    ) -> Path:
+        """Export departments to CSV."""
+        return export_departments_to_csv(company_id, output_path, **filters)
+
+    def export_departments_to_jsonl(
+        self,
+        company_id: int | None,
+        output_path: Path | str,
+        **filters: Any,
+    ) -> Path:
+        """Export departments to newline-delimited JSON."""
+        return export_departments_to_jsonl(company_id, output_path, **filters)
+
+    def export_distribution_groups_to_csv(
+        self,
+        company_id: int | None,
+        project_id: int,
+        output_path: Path | str,
+        **filters: Any,
+    ) -> Path:
+        """Export distribution groups to CSV."""
+        return export_distribution_groups_to_csv(company_id, project_id, output_path, **filters)
+
+    def export_distribution_groups_to_jsonl(
+        self,
+        company_id: int | None,
+        project_id: int,
+        output_path: Path | str,
+        **filters: Any,
+    ) -> Path:
+        """Export distribution groups to newline-delimited JSON."""
+        return export_distribution_groups_to_jsonl(
+            company_id,
+            project_id,
+            output_path,
+            **filters,
+        )
+
+    def export_locations_to_csv(
+        self,
+        company_id: int | None,
+        project_id: int,
+        output_path: Path | str,
+        **filters: Any,
+    ) -> Path:
+        """Export locations to CSV."""
+        return export_locations_to_csv(company_id, project_id, output_path, **filters)
+
+    def export_locations_to_jsonl(
+        self,
+        company_id: int | None,
+        project_id: int,
+        output_path: Path | str,
+        **filters: Any,
+    ) -> Path:
+        """Export locations to newline-delimited JSON."""
+        return export_locations_to_jsonl(company_id, project_id, output_path, **filters)
+
     def sync_rfis_to_folder(
         self,
         project_id: int,
@@ -2144,6 +2482,12 @@ class Procore:
         self.specifications = SpecificationsClient()
         self.photos = PhotosClient()
         self.daily_logs = DailyLogsClient()
+        self.company_users = CompanyUsersClient()
+        self.project_users = ProjectUsersClient()
+        self.vendors = VendorsClient()
+        self.departments = DepartmentsClient()
+        self.distribution_groups = DistributionGroupsClient()
+        self.locations = LocationsClient()
         self.automation = AutomationClient()
         self.workflows = WorkflowsClient()
 
@@ -2151,20 +2495,26 @@ class Procore:
 __all__ = [
     "AutomationClient",
     "CompaniesClient",
+    "CompanyUsersClient",
     "CorrespondenceClient",
     "DailyLogsClient",
+    "DepartmentsClient",
+    "DistributionGroupsClient",
     "DocumentsClient",
     "DrawingsClient",
     "IncidentsClient",
     "InspectionsClient",
+    "LocationsClient",
     "MeetingsClient",
     "ObservationsClient",
     "Procore",
     "ProjectsClient",
+    "ProjectUsersClient",
     "PhotosClient",
     "PunchItemsClient",
     "RFIsClient",
     "SpecificationsClient",
     "SubmittalsClient",
+    "VendorsClient",
     "WorkflowsClient",
 ]

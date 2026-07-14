@@ -83,6 +83,20 @@ CHECKLIST = f"{API_V1}/checklists/{{checklist_id}}"
 INCIDENTS = f"{API_V1}/incidents"
 INCIDENT = f"{API_V1}/incidents/{{incident_id}}"
 PROJECT_INCIDENT_CONFIGURATION = f"{API_V1}/projects/{{project_id}}/incident_configuration"
+COMPANY_USERS = f"{API_V1}/companies/{{company_id}}/users"
+COMPANY_USER = f"{API_V1}/companies/{{company_id}}/users/{{user_id}}"
+PROJECT_USERS = f"{API_V1}/projects/{{project_id}}/users"
+PROJECT_USER = f"{API_V1}/projects/{{project_id}}/users/{{user_id}}"
+VENDORS = f"{API_V1}/vendors"
+VENDOR = f"{API_V1}/vendors/{{vendor_id}}"
+DEPARTMENTS = f"{API_V1}/companies/{{company_id}}/departments"
+DEPARTMENT = f"{API_V1}/companies/{{company_id}}/departments/{{department_id}}"
+PROJECT_DISTRIBUTION_GROUPS = f"{API_V1}/projects/{{project_id}}/distribution_groups"
+PROJECT_DISTRIBUTION_GROUP = (
+    f"{API_V1}/projects/{{project_id}}/distribution_groups/{{distribution_group_id}}"
+)
+LOCATIONS = f"{API_V1}/projects/{{project_id}}/locations"
+LOCATION = f"{API_V1}/projects/{{project_id}}/locations/{{location_id}}"
 
 
 def companies() -> str:
@@ -364,6 +378,74 @@ def project_incident_configuration(project_id: int) -> str:
     return PROJECT_INCIDENT_CONFIGURATION.format(project_id=project_id)
 
 
+def company_users(company_id: int) -> str:
+    """Return the company users collection endpoint."""
+    return COMPANY_USERS.format(company_id=company_id)
+
+
+def company_user(company_id: int, user_id: int) -> str:
+    """Return the endpoint for one company user."""
+    return COMPANY_USER.format(company_id=company_id, user_id=user_id)
+
+
+def project_users(project_id: int) -> str:
+    """Return the project users collection endpoint."""
+    return PROJECT_USERS.format(project_id=project_id)
+
+
+def project_user(project_id: int, user_id: int) -> str:
+    """Return the endpoint for one project user."""
+    return PROJECT_USER.format(project_id=project_id, user_id=user_id)
+
+
+def vendors(company_id: int) -> str:
+    """Return the vendors collection endpoint.
+
+    Args:
+        company_id: Procore company ID. Accepted for API consistency; the
+            conservative Phase 8D service sends it as a query parameter.
+    """
+    return VENDORS
+
+
+def vendor(company_id: int, vendor_id: int) -> str:
+    """Return the endpoint for one vendor."""
+    return VENDOR.format(vendor_id=vendor_id)
+
+
+def departments(company_id: int) -> str:
+    """Return the company departments collection endpoint."""
+    return DEPARTMENTS.format(company_id=company_id)
+
+
+def department(company_id: int, department_id: int) -> str:
+    """Return the endpoint for one department."""
+    return DEPARTMENT.format(company_id=company_id, department_id=department_id)
+
+
+def project_distribution_groups(project_id: int) -> str:
+    """Return the project distribution groups collection endpoint."""
+    return PROJECT_DISTRIBUTION_GROUPS.format(project_id=project_id)
+
+
+def project_distribution_group(project_id: int, distribution_group_id: int) -> str:
+    """Return the endpoint for one project distribution group."""
+    return PROJECT_DISTRIBUTION_GROUP.format(
+        project_id=project_id,
+        distribution_group_id=distribution_group_id,
+    )
+
+
+def locations(project_id: int) -> str:
+    """Return the project locations collection endpoint."""
+    return LOCATIONS.format(project_id=project_id)
+
+
+def location(project_id: int, location_id: int) -> str:
+    """Return the endpoint for one project location."""
+    return LOCATION.format(project_id=project_id, location_id=location_id)
+
+
 class Endpoints:
     """Backward-compatible namespace for endpoint path templates."""
 
@@ -412,3 +494,15 @@ class Endpoints:
     INCIDENTS = INCIDENTS
     INCIDENT = INCIDENT
     PROJECT_INCIDENT_CONFIGURATION = PROJECT_INCIDENT_CONFIGURATION
+    COMPANY_USERS = COMPANY_USERS
+    COMPANY_USER = COMPANY_USER
+    PROJECT_USERS = PROJECT_USERS
+    PROJECT_USER = PROJECT_USER
+    VENDORS = VENDORS
+    VENDOR = VENDOR
+    DEPARTMENTS = DEPARTMENTS
+    DEPARTMENT = DEPARTMENT
+    PROJECT_DISTRIBUTION_GROUPS = PROJECT_DISTRIBUTION_GROUPS
+    PROJECT_DISTRIBUTION_GROUP = PROJECT_DISTRIBUTION_GROUP
+    LOCATIONS = LOCATIONS
+    LOCATION = LOCATION

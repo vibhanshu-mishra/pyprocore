@@ -256,6 +256,97 @@ class IncidentConfiguration(ProcoreModel):
     updated_at: str | None = None
 
 
+class CompanyUser(ProcoreModel):
+    """Flexible Procore company directory user resource."""
+
+    id: int | None = None
+    name: str | None = None
+    first_name: str | None = None
+    last_name: str | None = None
+    login: str | None = None
+    email_address: str | None = None
+    email: str | None = None
+    job_title: str | None = None
+    phone: str | None = None
+    business_phone: str | None = None
+    mobile_phone: str | None = None
+    active: bool | None = None
+    vendor: dict[str, Any] | None = None
+    company: Company | dict[str, Any] | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class ProjectUser(CompanyUser):
+    """Flexible Procore project directory user resource."""
+
+    project_id: int | None = None
+    permission_template: str | dict[str, Any] | None = None
+    role: str | dict[str, Any] | None = None
+
+
+class Vendor(ProcoreModel):
+    """Flexible Procore vendor/company directory resource."""
+
+    id: int | None = None
+    name: str | None = None
+    legal_name: str | None = None
+    trade_name: str | None = None
+    vendor_number: str | int | None = None
+    number: str | int | None = None
+    active: bool | None = None
+    address: str | dict[str, Any] | None = None
+    phone: str | None = None
+    email: str | None = None
+    website: str | None = None
+    company_id: int | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class Department(ProcoreModel):
+    """Flexible Procore department resource."""
+
+    id: int | None = None
+    name: str | None = None
+    code: str | int | None = None
+    description: str | None = None
+    active: bool | None = None
+    company_id: int | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class DistributionGroup(ProcoreModel):
+    """Flexible Procore project distribution group resource."""
+
+    id: int | None = None
+    name: str | None = None
+    description: str | None = None
+    project_id: int | None = None
+    users: list[CompanyUser | dict[str, Any]] = Field(default_factory=list)
+    members: list[CompanyUser | dict[str, Any]] = Field(default_factory=list)
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class Location(ProcoreModel):
+    """Flexible Procore project location resource."""
+
+    id: int | None = None
+    name: str | None = None
+    full_name: str | None = None
+    path: str | None = None
+    code: str | int | None = None
+    description: str | None = None
+    parent_id: int | None = None
+    parent: dict[str, Any] | None = None
+    children: list["Location"] = Field(default_factory=list)
+    project_id: int | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
 class DocumentFolder(ProcoreModel):
     """Procore document folder resource."""
 

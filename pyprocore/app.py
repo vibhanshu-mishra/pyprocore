@@ -79,26 +79,34 @@ from pyprocore.services import (
     download_specification_section_revision,
     download_submittal_attachments,
     find_company,
+    find_company_user,
     find_correspondence,
+    find_department,
     find_document,
     find_document_folder,
     find_drawing,
     find_drawings_contains,
     find_incident,
     find_inspection,
+    find_location,
     find_meeting,
     find_observation,
     find_photo,
     find_photo_album,
     find_project,
+    find_project_distribution_group,
+    find_project_user,
     find_punch_item,
     find_rfi,
     find_specification_section,
     find_submittal,
+    find_vendor,
+    get_company_user,
     get_correspondence,
     get_daily_log,
     get_daily_log_counts,
     get_daily_log_header,
+    get_department,
     get_document,
     get_document_folder,
     get_drawing,
@@ -106,19 +114,25 @@ from pyprocore.services import (
     get_generic_tool,
     get_incident,
     get_inspection,
+    get_location,
     get_meeting,
     get_observation,
     get_photo,
     get_photo_album,
+    get_project_distribution_group,
     get_project_incident_configuration,
+    get_project_user,
     get_punch_item,
     get_rfi,
     get_specification_section,
     get_specification_section_revision,
     get_submittal,
+    get_vendor,
     list_accident_logs,
     list_call_logs,
     list_companies,
+    list_company_inactive_users,
+    list_company_users,
     list_correspondences,
     list_daily_construction_report_logs,
     list_daily_log_headers,
@@ -127,6 +141,7 @@ from pyprocore.services import (
     list_delay_log_types,
     list_delay_logs,
     list_delivery_logs,
+    list_departments,
     list_document_folders,
     list_documents,
     list_drawing_areas,
@@ -136,6 +151,7 @@ from pyprocore.services import (
     list_generic_tools,
     list_incidents,
     list_inspections,
+    list_locations,
     list_manpower_logs,
     list_meetings,
     list_notes_logs,
@@ -144,6 +160,9 @@ from pyprocore.services import (
     list_photos,
     list_plan_revision_logs,
     list_productivity_logs,
+    list_project_distribution_groups,
+    list_project_users,
+    list_project_vendors,
     list_projects,
     list_punch_items,
     list_rfis,
@@ -151,6 +170,7 @@ from pyprocore.services import (
     list_specification_sections,
     list_specification_sets,
     list_submittals,
+    list_vendors,
     list_visitor_logs,
 )
 from pyprocore.webhooks import (
@@ -176,14 +196,20 @@ from pyprocore.workflows import (
     build_enhanced_rfi_package,
     build_enhanced_submittal_package,
     build_project_context_package,
+    export_company_users_to_csv,
     export_correspondences_to_csv,
+    export_departments_to_csv,
+    export_distribution_groups_to_csv,
     export_incidents_to_csv,
     export_inspections_to_csv,
+    export_locations_to_csv,
     export_meetings_to_csv,
     export_observations_to_csv,
+    export_project_users_to_csv,
     export_punch_items_to_csv,
     export_rfis_to_csv,
     export_submittals_to_csv,
+    export_vendors_to_csv,
     list_available_workflows,
     load_workflow_plan,
     run_workflow_plan,
@@ -758,6 +784,123 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_project_company_options(find_incident_parser)
     _add_number_title_query_options(find_incident_parser)
+
+    company_users_parser = subcommands.add_parser(
+        "company-users",
+        help="List company directory users",
+    )
+    _add_company_options(company_users_parser)
+    company_users_parser.add_argument("--inactive", action="store_true")
+
+    company_user_parser = subcommands.add_parser("company-user", help="Get one company user")
+    _add_company_options(company_user_parser)
+    company_user_parser.add_argument("--id", "--user-id", dest="user_id", type=int, required=True)
+
+    find_company_user_parser = subcommands.add_parser(
+        "find-company-user",
+        help="Find one company user by name, email, or text",
+    )
+    _add_company_options(find_company_user_parser)
+    _add_name_email_query_options(find_company_user_parser)
+
+    project_users_parser = subcommands.add_parser(
+        "project-users",
+        help="List project directory users",
+    )
+    _add_project_company_options(project_users_parser)
+    project_users_parser.add_argument("--inactive", action="store_true")
+
+    project_user_parser = subcommands.add_parser("project-user", help="Get one project user")
+    _add_project_company_options(project_user_parser)
+    project_user_parser.add_argument("--id", "--user-id", dest="user_id", type=int, required=True)
+
+    find_project_user_parser = subcommands.add_parser(
+        "find-project-user",
+        help="Find one project user by name, email, or text",
+    )
+    _add_project_company_options(find_project_user_parser)
+    _add_name_email_query_options(find_project_user_parser)
+
+    vendors_parser = subcommands.add_parser("vendors", help="List company or project vendors")
+    _add_company_options(vendors_parser)
+    vendors_parser.add_argument("--project", "--project-id", dest="project_id", type=int)
+
+    vendor_parser = subcommands.add_parser("vendor", help="Get one vendor")
+    _add_company_options(vendor_parser)
+    vendor_parser.add_argument("--id", "--vendor-id", dest="vendor_id", type=int, required=True)
+
+    find_vendor_parser = subcommands.add_parser(
+        "find-vendor",
+        help="Find one vendor by name, number, or text",
+    )
+    _add_company_options(find_vendor_parser)
+    _add_name_number_query_options(find_vendor_parser)
+
+    departments_parser = subcommands.add_parser("departments", help="List company departments")
+    _add_company_options(departments_parser)
+
+    department_parser = subcommands.add_parser("department", help="Get one department")
+    _add_company_options(department_parser)
+    department_parser.add_argument(
+        "--id",
+        "--department-id",
+        dest="department_id",
+        type=int,
+        required=True,
+    )
+
+    find_department_parser = subcommands.add_parser(
+        "find-department",
+        help="Find one department by name, code, or text",
+    )
+    _add_company_options(find_department_parser)
+    _add_name_code_query_options(find_department_parser)
+
+    distribution_groups_parser = subcommands.add_parser(
+        "distribution-groups",
+        help="List project distribution groups",
+    )
+    _add_project_company_options(distribution_groups_parser)
+
+    distribution_group_parser = subcommands.add_parser(
+        "distribution-group",
+        help="Get one project distribution group",
+    )
+    _add_project_company_options(distribution_group_parser)
+    distribution_group_parser.add_argument(
+        "--id",
+        "--distribution-group-id",
+        dest="distribution_group_id",
+        type=int,
+        required=True,
+    )
+
+    find_distribution_group_parser = subcommands.add_parser(
+        "find-distribution-group",
+        help="Find one project distribution group by name or text",
+    )
+    _add_project_company_options(find_distribution_group_parser)
+    _add_name_query_options(find_distribution_group_parser)
+
+    locations_parser = subcommands.add_parser("locations", help="List project locations")
+    _add_project_company_options(locations_parser)
+
+    location_parser = subcommands.add_parser("location", help="Get one project location")
+    _add_project_company_options(location_parser)
+    location_parser.add_argument(
+        "--id",
+        "--location-id",
+        dest="location_id",
+        type=int,
+        required=True,
+    )
+
+    find_location_parser = subcommands.add_parser(
+        "find-location",
+        help="Find one project location by name, code, or text",
+    )
+    _add_project_company_options(find_location_parser)
+    _add_name_code_query_options(find_location_parser)
 
     document_folders_parser = subcommands.add_parser(
         "document-folders",
@@ -1397,6 +1540,84 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_filter_options(export_incidents_parser)
 
+    export_company_users_parser = subcommands.add_parser(
+        "export-company-users",
+        help="Export company directory users to CSV",
+    )
+    _add_company_options(export_company_users_parser)
+    export_company_users_parser.add_argument(
+        "--output",
+        dest="output_path",
+        type=Path,
+        required=True,
+        help="CSV output path",
+    )
+
+    export_project_users_parser = subcommands.add_parser(
+        "export-project-users",
+        help="Export project directory users to CSV",
+    )
+    _add_project_company_options(export_project_users_parser)
+    export_project_users_parser.add_argument(
+        "--output",
+        dest="output_path",
+        type=Path,
+        required=True,
+        help="CSV output path",
+    )
+
+    export_vendors_parser = subcommands.add_parser(
+        "export-vendors",
+        help="Export vendors to CSV",
+    )
+    _add_company_options(export_vendors_parser)
+    export_vendors_parser.add_argument(
+        "--output",
+        dest="output_path",
+        type=Path,
+        required=True,
+        help="CSV output path",
+    )
+
+    export_departments_parser = subcommands.add_parser(
+        "export-departments",
+        help="Export company departments to CSV",
+    )
+    _add_company_options(export_departments_parser)
+    export_departments_parser.add_argument(
+        "--output",
+        dest="output_path",
+        type=Path,
+        required=True,
+        help="CSV output path",
+    )
+
+    export_distribution_groups_parser = subcommands.add_parser(
+        "export-distribution-groups",
+        help="Export project distribution groups to CSV",
+    )
+    _add_project_company_options(export_distribution_groups_parser)
+    export_distribution_groups_parser.add_argument(
+        "--output",
+        dest="output_path",
+        type=Path,
+        required=True,
+        help="CSV output path",
+    )
+
+    export_locations_parser = subcommands.add_parser(
+        "export-locations",
+        help="Export project locations to CSV",
+    )
+    _add_project_company_options(export_locations_parser)
+    export_locations_parser.add_argument(
+        "--output",
+        dest="output_path",
+        type=Path,
+        required=True,
+        help="CSV output path",
+    )
+
     ai_review_export_parser = subcommands.add_parser(
         "ai-review-export",
         help="Build a local AI review export from a package folder",
@@ -1732,10 +1953,42 @@ def _add_project_company_options(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--company-id", "--company", dest="company_id", type=int, default=None)
 
 
+def _add_company_options(parser: argparse.ArgumentParser) -> None:
+    """Add shared company-scoped command options."""
+    parser.add_argument("--company-id", "--company", dest="company_id", type=int, default=None)
+
+
 def _add_number_title_query_options(parser: argparse.ArgumentParser) -> None:
     """Add shared resolver options for number/title/text lookup."""
     parser.add_argument("--number", default=None)
     parser.add_argument("--title", default=None)
+    parser.add_argument("--query", default=None)
+
+
+def _add_name_email_query_options(parser: argparse.ArgumentParser) -> None:
+    """Add shared resolver options for name/email/text lookup."""
+    parser.add_argument("--name", default=None)
+    parser.add_argument("--email", default=None)
+    parser.add_argument("--query", default=None)
+
+
+def _add_name_number_query_options(parser: argparse.ArgumentParser) -> None:
+    """Add shared resolver options for name/number/text lookup."""
+    parser.add_argument("--name", default=None)
+    parser.add_argument("--number", default=None)
+    parser.add_argument("--query", default=None)
+
+
+def _add_name_code_query_options(parser: argparse.ArgumentParser) -> None:
+    """Add shared resolver options for name/code/text lookup."""
+    parser.add_argument("--name", default=None)
+    parser.add_argument("--code", default=None)
+    parser.add_argument("--query", default=None)
+
+
+def _add_name_query_options(parser: argparse.ArgumentParser) -> None:
+    """Add shared resolver options for name/text lookup."""
+    parser.add_argument("--name", default=None)
     parser.add_argument("--query", default=None)
 
 
@@ -2199,6 +2452,104 @@ def run_command(args: argparse.Namespace) -> Any:
             query=args.query,
         )
 
+    if args.command == "company-users":
+        if args.inactive:
+            return list_company_inactive_users(args.company_id)
+        return list_company_users(args.company_id)
+
+    if args.command == "company-user":
+        return get_company_user(args.company_id, args.user_id)
+
+    if args.command == "find-company-user":
+        return find_company_user(
+            args.company_id,
+            name=args.name,
+            email=args.email,
+            query=args.query,
+        )
+
+    if args.command == "project-users":
+        return list_project_users(
+            args.company_id,
+            args.project_id,
+            active=False if args.inactive else None,
+        )
+
+    if args.command == "project-user":
+        return get_project_user(args.company_id, args.project_id, args.user_id)
+
+    if args.command == "find-project-user":
+        return find_project_user(
+            args.company_id,
+            args.project_id,
+            name=args.name,
+            email=args.email,
+            query=args.query,
+        )
+
+    if args.command == "vendors":
+        if args.project_id is not None:
+            return list_project_vendors(args.company_id, args.project_id)
+        return list_vendors(args.company_id)
+
+    if args.command == "vendor":
+        return get_vendor(args.company_id, args.vendor_id)
+
+    if args.command == "find-vendor":
+        return find_vendor(
+            args.company_id,
+            name=args.name,
+            number=args.number,
+            query=args.query,
+        )
+
+    if args.command == "departments":
+        return list_departments(args.company_id)
+
+    if args.command == "department":
+        return get_department(args.company_id, args.department_id)
+
+    if args.command == "find-department":
+        return find_department(
+            args.company_id,
+            name=args.name,
+            code=args.code,
+            query=args.query,
+        )
+
+    if args.command == "distribution-groups":
+        return list_project_distribution_groups(args.company_id, args.project_id)
+
+    if args.command == "distribution-group":
+        return get_project_distribution_group(
+            args.company_id,
+            args.project_id,
+            args.distribution_group_id,
+        )
+
+    if args.command == "find-distribution-group":
+        return find_project_distribution_group(
+            args.company_id,
+            args.project_id,
+            name=args.name,
+            query=args.query,
+        )
+
+    if args.command == "locations":
+        return list_locations(args.company_id, args.project_id)
+
+    if args.command == "location":
+        return get_location(args.company_id, args.project_id, args.location_id)
+
+    if args.command == "find-location":
+        return find_location(
+            args.company_id,
+            args.project_id,
+            name=args.name,
+            code=args.code,
+            query=args.query,
+        )
+
     if args.command == "document-folders":
         return list_document_folders(
             args.project_id,
@@ -2645,6 +2996,28 @@ def run_command(args: argparse.Namespace) -> Any:
             created_after=args.created_after,
             created_before=args.created_before,
         )
+
+    if args.command == "export-company-users":
+        return export_company_users_to_csv(args.company_id, args.output_path)
+
+    if args.command == "export-project-users":
+        return export_project_users_to_csv(args.company_id, args.project_id, args.output_path)
+
+    if args.command == "export-vendors":
+        return export_vendors_to_csv(args.company_id, args.output_path)
+
+    if args.command == "export-departments":
+        return export_departments_to_csv(args.company_id, args.output_path)
+
+    if args.command == "export-distribution-groups":
+        return export_distribution_groups_to_csv(
+            args.company_id,
+            args.project_id,
+            args.output_path,
+        )
+
+    if args.command == "export-locations":
+        return export_locations_to_csv(args.company_id, args.project_id, args.output_path)
 
     if args.command == "ai-review-export":
         return build_ai_review_export(
@@ -3414,14 +3787,20 @@ def main() -> None:
         return
 
     if isinstance(result, Path) and args.command in {
+        "export-company-users",
         "export-correspondences",
+        "export-departments",
+        "export-distribution-groups",
         "export-incidents",
         "export-inspections",
+        "export-locations",
         "export-meetings",
         "export-observations",
+        "export-project-users",
         "export-punch-items",
         "export-rfis",
         "export-submittals",
+        "export-vendors",
     }:
         print(format_export_summary(result))
         return

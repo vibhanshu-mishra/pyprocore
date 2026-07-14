@@ -15,7 +15,7 @@ It is model-agnostic, local-first, and safety-first. The current stable release,
 Current repository status:
 
 - Published stable release: `2.2.0`
-- Unreleased branch work: Phase 8A and Phase 8C read-only API coverage, plus Phase 8B client-credentials auth support
+- Unreleased branch work: Phase 8A, Phase 8C, and Phase 8D read-only API coverage, plus Phase 8B client-credentials auth support
 - Procore tool execution remains disabled
 
 ```bash
@@ -107,7 +107,7 @@ PyProcore is mostly read-oriented and built for safe automation. Current support
 - Specifications
 - Photos
 - Daily Logs
-- Observations, Punch Items, Generic Tool correspondence items, Meetings, Inspections, and Incidents in the current unreleased branch
+- Observations, Punch Items, Generic Tool correspondence items, Meetings, Inspections, Incidents, Directory users, Vendors, Departments, Distribution Groups, and Locations in the current unreleased branch
 - Attachments and files when Procore returns usable URLs
 
 See [API Coverage](docs/api-coverage.md) for endpoint notes, live-verification limitations, and Procore permission context.
@@ -380,10 +380,11 @@ make quality-check
 - Phase 8A read-only coverage for Observations, Punch Items, and Generic Tool correspondence
 - Phase 8B client-credentials auth support
 - Phase 8C read-only coverage for Meetings, Inspections, and Incidents
+- Phase 8D read-only coverage for Directory users, Vendors, Departments, Distribution Groups, and Locations
 
 ### Future
 
-- Additional read-only coverage for Directory, Locations, Commitments, Change Events, Change Orders, and budget/financial resources where appropriate
+- Additional read-only coverage for Commitments, Change Events, Change Orders, and budget/financial resources where appropriate
 - Guarded tool execution and human approval gates
 - Write-action safety model
 - Real MCP execution after explicit safety design

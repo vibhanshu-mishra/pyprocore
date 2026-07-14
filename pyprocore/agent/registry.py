@@ -131,6 +131,91 @@ def _project_company_schema() -> dict[str, Any]:
     )
 
 
+def _company_schema() -> dict[str, Any]:
+    """Return the common optional company input schema."""
+    return _object_schema({"company_id": {"type": "integer"}}, [])
+
+
+def _company_user_search_schema() -> dict[str, Any]:
+    """Return common company-user search input schema."""
+    return _object_schema(
+        {
+            "company_id": {"type": "integer"},
+            "name": {"type": "string"},
+            "email": {"type": "string"},
+            "query": {"type": "string"},
+        },
+        [],
+    )
+
+
+def _project_user_search_schema() -> dict[str, Any]:
+    """Return common project-user search input schema."""
+    return _object_schema(
+        {
+            "project_id": {"type": "integer"},
+            "company_id": {"type": "integer"},
+            "name": {"type": "string"},
+            "email": {"type": "string"},
+            "query": {"type": "string"},
+        },
+        ["project_id"],
+    )
+
+
+def _company_name_number_search_schema() -> dict[str, Any]:
+    """Return common company/name/number search input schema."""
+    return _object_schema(
+        {
+            "company_id": {"type": "integer"},
+            "name": {"type": "string"},
+            "number": {"type": "string"},
+            "query": {"type": "string"},
+        },
+        [],
+    )
+
+
+def _company_name_code_search_schema() -> dict[str, Any]:
+    """Return common company/name/code search input schema."""
+    return _object_schema(
+        {
+            "company_id": {"type": "integer"},
+            "name": {"type": "string"},
+            "code": {"type": "string"},
+            "query": {"type": "string"},
+        },
+        [],
+    )
+
+
+def _project_name_search_schema() -> dict[str, Any]:
+    """Return common project/company/name search input schema."""
+    return _object_schema(
+        {
+            "project_id": {"type": "integer"},
+            "company_id": {"type": "integer"},
+            "name": {"type": "string"},
+            "query": {"type": "string"},
+        },
+        ["project_id"],
+    )
+
+
+def _project_name_code_search_schema() -> dict[str, Any]:
+    """Return common project/company/name/code search input schema."""
+    return _object_schema(
+        {
+            "project_id": {"type": "integer"},
+            "company_id": {"type": "integer"},
+            "name": {"type": "string"},
+            "code": {"type": "string"},
+            "query": {"type": "string"},
+        },
+        ["project_id"],
+    )
+
+
 def _project_company_search_schema() -> dict[str, Any]:
     """Return common project/company search input schema."""
     return _object_schema(
@@ -579,6 +664,249 @@ def _build_tools() -> list[AgentTool]:
             operation_path="pyprocore.services.search.find_incident",
             cli_command="procore-sdk find-incident --project PROJECT_ID --number NUMBER",
             examples=['incident = find_incident(company_id, project_id, number="1")'],
+            category=AgentToolCategory.SEARCH,
+        ),
+        _resource_tool(
+            name="procore.list_company_users",
+            title="List Company Users",
+            description="List read-only company directory users.",
+            input_schema=_company_schema(),
+            output_schema=_array_output("CompanyUser"),
+            service_path="pyprocore.services.directory",
+            operation_path="pyprocore.services.directory.list_company_users",
+            cli_command="procore-sdk company-users --company-id COMPANY_ID",
+            examples=["users = list_company_users(company_id)"],
+        ),
+        _resource_tool(
+            name="procore.get_company_user",
+            title="Get Company User",
+            description="Get one read-only company directory user.",
+            input_schema=_object_schema(
+                {"company_id": {"type": "integer"}, "user_id": {"type": "integer"}},
+                ["user_id"],
+            ),
+            output_schema=_model_output("CompanyUser"),
+            service_path="pyprocore.services.directory",
+            operation_path="pyprocore.services.directory.get_company_user",
+            cli_command="procore-sdk company-user --company-id COMPANY_ID --id USER_ID",
+            examples=["user = get_company_user(company_id, user_id)"],
+        ),
+        _resource_tool(
+            name="procore.find_company_user",
+            title="Find Company User",
+            description="Find one company user by name, email, or text.",
+            input_schema=_company_user_search_schema(),
+            output_schema=_model_output("CompanyUser"),
+            service_path="pyprocore.services.search",
+            operation_path="pyprocore.services.search.find_company_user",
+            cli_command="procore-sdk find-company-user --company-id COMPANY_ID --email EMAIL",
+            examples=["user = find_company_user(company_id, email='person@example.com')"],
+            category=AgentToolCategory.SEARCH,
+        ),
+        _resource_tool(
+            name="procore.list_project_users",
+            title="List Project Users",
+            description="List read-only project directory users.",
+            input_schema=_project_company_schema(),
+            output_schema=_array_output("ProjectUser"),
+            service_path="pyprocore.services.directory",
+            operation_path="pyprocore.services.directory.list_project_users",
+            cli_command="procore-sdk project-users --project PROJECT_ID --company-id COMPANY_ID",
+            examples=["users = list_project_users(company_id, project_id)"],
+        ),
+        _resource_tool(
+            name="procore.get_project_user",
+            title="Get Project User",
+            description="Get one read-only project directory user.",
+            input_schema=_object_schema(
+                {
+                    "project_id": {"type": "integer"},
+                    "company_id": {"type": "integer"},
+                    "user_id": {"type": "integer"},
+                },
+                ["project_id", "user_id"],
+            ),
+            output_schema=_model_output("ProjectUser"),
+            service_path="pyprocore.services.directory",
+            operation_path="pyprocore.services.directory.get_project_user",
+            cli_command="procore-sdk project-user --project PROJECT_ID --id USER_ID",
+            examples=["user = get_project_user(company_id, project_id, user_id)"],
+        ),
+        _resource_tool(
+            name="procore.find_project_user",
+            title="Find Project User",
+            description="Find one project user by name, email, or text.",
+            input_schema=_project_user_search_schema(),
+            output_schema=_model_output("ProjectUser"),
+            service_path="pyprocore.services.search",
+            operation_path="pyprocore.services.search.find_project_user",
+            cli_command="procore-sdk find-project-user --project PROJECT_ID --name NAME",
+            examples=["user = find_project_user(company_id, project_id, name='Alex')"],
+            category=AgentToolCategory.SEARCH,
+        ),
+        _resource_tool(
+            name="procore.list_vendors",
+            title="List Vendors",
+            description="List read-only company vendors.",
+            input_schema=_company_schema(),
+            output_schema=_array_output("Vendor"),
+            service_path="pyprocore.services.directory",
+            operation_path="pyprocore.services.directory.list_vendors",
+            cli_command="procore-sdk vendors --company-id COMPANY_ID",
+            examples=["vendors = list_vendors(company_id)"],
+        ),
+        _resource_tool(
+            name="procore.get_vendor",
+            title="Get Vendor",
+            description="Get one read-only vendor.",
+            input_schema=_object_schema(
+                {"company_id": {"type": "integer"}, "vendor_id": {"type": "integer"}},
+                ["vendor_id"],
+            ),
+            output_schema=_model_output("Vendor"),
+            service_path="pyprocore.services.directory",
+            operation_path="pyprocore.services.directory.get_vendor",
+            cli_command="procore-sdk vendor --company-id COMPANY_ID --id VENDOR_ID",
+            examples=["vendor = get_vendor(company_id, vendor_id)"],
+        ),
+        _resource_tool(
+            name="procore.find_vendor",
+            title="Find Vendor",
+            description="Find one vendor by name, number, or text.",
+            input_schema=_company_name_number_search_schema(),
+            output_schema=_model_output("Vendor"),
+            service_path="pyprocore.services.search",
+            operation_path="pyprocore.services.search.find_vendor",
+            cli_command="procore-sdk find-vendor --company-id COMPANY_ID --name NAME",
+            examples=["vendor = find_vendor(company_id, name='Concrete')"],
+            category=AgentToolCategory.SEARCH,
+        ),
+        _resource_tool(
+            name="procore.list_departments",
+            title="List Departments",
+            description="List read-only company departments.",
+            input_schema=_company_schema(),
+            output_schema=_array_output("Department"),
+            service_path="pyprocore.services.directory",
+            operation_path="pyprocore.services.directory.list_departments",
+            cli_command="procore-sdk departments --company-id COMPANY_ID",
+            examples=["departments = list_departments(company_id)"],
+        ),
+        _resource_tool(
+            name="procore.get_department",
+            title="Get Department",
+            description="Get one read-only company department.",
+            input_schema=_object_schema(
+                {"company_id": {"type": "integer"}, "department_id": {"type": "integer"}},
+                ["department_id"],
+            ),
+            output_schema=_model_output("Department"),
+            service_path="pyprocore.services.directory",
+            operation_path="pyprocore.services.directory.get_department",
+            cli_command="procore-sdk department --company-id COMPANY_ID --id DEPARTMENT_ID",
+            examples=["department = get_department(company_id, department_id)"],
+        ),
+        _resource_tool(
+            name="procore.find_department",
+            title="Find Department",
+            description="Find one department by name, code, or text.",
+            input_schema=_company_name_code_search_schema(),
+            output_schema=_model_output("Department"),
+            service_path="pyprocore.services.search",
+            operation_path="pyprocore.services.search.find_department",
+            cli_command="procore-sdk find-department --company-id COMPANY_ID --name NAME",
+            examples=["department = find_department(company_id, name='Operations')"],
+            category=AgentToolCategory.SEARCH,
+        ),
+        _resource_tool(
+            name="procore.list_project_distribution_groups",
+            title="List Project Distribution Groups",
+            description="List read-only project distribution groups.",
+            input_schema=_project_company_schema(),
+            output_schema=_array_output("DistributionGroup"),
+            service_path="pyprocore.services.directory",
+            operation_path="pyprocore.services.directory.list_project_distribution_groups",
+            cli_command=(
+                "procore-sdk distribution-groups --project PROJECT_ID " "--company-id COMPANY_ID"
+            ),
+            examples=["groups = list_project_distribution_groups(company_id, project_id)"],
+        ),
+        _resource_tool(
+            name="procore.get_project_distribution_group",
+            title="Get Project Distribution Group",
+            description="Get one read-only project distribution group.",
+            input_schema=_object_schema(
+                {
+                    "project_id": {"type": "integer"},
+                    "company_id": {"type": "integer"},
+                    "distribution_group_id": {"type": "integer"},
+                },
+                ["project_id", "distribution_group_id"],
+            ),
+            output_schema=_model_output("DistributionGroup"),
+            service_path="pyprocore.services.directory",
+            operation_path="pyprocore.services.directory.get_project_distribution_group",
+            cli_command="procore-sdk distribution-group --project PROJECT_ID --id GROUP_ID",
+            examples=[
+                (
+                    "group = get_project_distribution_group("
+                    "company_id, project_id, distribution_group_id)"
+                )
+            ],
+        ),
+        _resource_tool(
+            name="procore.find_project_distribution_group",
+            title="Find Project Distribution Group",
+            description="Find one project distribution group by name or text.",
+            input_schema=_project_name_search_schema(),
+            output_schema=_model_output("DistributionGroup"),
+            service_path="pyprocore.services.search",
+            operation_path="pyprocore.services.search.find_project_distribution_group",
+            cli_command="procore-sdk find-distribution-group --project PROJECT_ID --name NAME",
+            examples=[
+                "group = find_project_distribution_group(company_id, project_id, name='Team')"
+            ],
+            category=AgentToolCategory.SEARCH,
+        ),
+        _resource_tool(
+            name="procore.list_locations",
+            title="List Locations",
+            description="List read-only project locations.",
+            input_schema=_project_company_schema(),
+            output_schema=_array_output("Location"),
+            service_path="pyprocore.services.directory",
+            operation_path="pyprocore.services.directory.list_locations",
+            cli_command="procore-sdk locations --project PROJECT_ID --company-id COMPANY_ID",
+            examples=["locations = list_locations(company_id, project_id)"],
+        ),
+        _resource_tool(
+            name="procore.get_location",
+            title="Get Location",
+            description="Get one read-only project location.",
+            input_schema=_object_schema(
+                {
+                    "project_id": {"type": "integer"},
+                    "company_id": {"type": "integer"},
+                    "location_id": {"type": "integer"},
+                },
+                ["project_id", "location_id"],
+            ),
+            output_schema=_model_output("Location"),
+            service_path="pyprocore.services.directory",
+            operation_path="pyprocore.services.directory.get_location",
+            cli_command="procore-sdk location --project PROJECT_ID --id LOCATION_ID",
+            examples=["location = get_location(company_id, project_id, location_id)"],
+        ),
+        _resource_tool(
+            name="procore.find_location",
+            title="Find Location",
+            description="Find one project location by name, code, or text.",
+            input_schema=_project_name_code_search_schema(),
+            output_schema=_model_output("Location"),
+            service_path="pyprocore.services.search",
+            operation_path="pyprocore.services.search.find_location",
+            cli_command="procore-sdk find-location --project PROJECT_ID --name NAME",
+            examples=["location = find_location(company_id, project_id, name='Level 1')"],
             category=AgentToolCategory.SEARCH,
         ),
         _resource_tool(

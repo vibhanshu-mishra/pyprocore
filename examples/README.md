@@ -33,6 +33,9 @@ Examples `70` through `73` cover unreleased Phase 8B client credentials auth
 patterns for Procore Data Connection Apps.
 Examples `74` through `79` cover unreleased Phase 8C read-only Meetings,
 Inspections, Incidents, and agent registry metadata examples.
+Examples `80` through `87` cover unreleased Phase 8D read-only Directory users,
+Vendors, Departments, Distribution Groups, Locations, and agent registry
+metadata examples.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -179,7 +182,7 @@ make examples-check
 ## Example Index
 
 The current example set runs from `01_list_companies.py` through
-`79_agent_registry_phase8c.py`.
+`87_agent_registry_phase8d.py`.
 
 | File | Demonstrates |
 | ---- | ------------ |
@@ -262,6 +265,14 @@ The current example set runs from `01_list_companies.py` through
 | `77_export_inspections.py` | Export inspections to a local CSV file |
 | `78_list_incidents.py` | List read-only incidents for a project |
 | `79_agent_registry_phase8c.py` | Inspect Phase 8C agent metadata without executing tools |
+| `80_list_company_users.py` | List read-only company directory users |
+| `81_export_company_users.py` | Export company directory users to a local CSV file |
+| `82_list_project_users.py` | List read-only project directory users |
+| `83_list_vendors.py` | List read-only vendors |
+| `84_list_departments.py` | List read-only company departments |
+| `85_list_distribution_groups.py` | List read-only project distribution groups |
+| `86_list_locations.py` | List read-only project locations |
+| `87_agent_registry_phase8d.py` | Inspect Phase 8D agent metadata without executing tools |
 
 Sample workflow plans live in `examples/workflow_plans/`:
 

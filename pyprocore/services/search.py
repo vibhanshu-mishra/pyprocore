@@ -10,20 +10,34 @@ from pyprocore.core.exceptions import DuplicateMatchError, MultipleResultsError,
 from pyprocore.models import (
     RFI,
     Company,
+    CompanyUser,
     Correspondence,
+    Department,
+    DistributionGroup,
     Document,
     DocumentFolder,
     Drawing,
     Incident,
     Inspection,
+    Location,
     Meeting,
     Observation,
     Project,
+    ProjectUser,
     PunchItem,
     Submittal,
+    Vendor,
 )
 from pyprocore.services.companies import list_companies
 from pyprocore.services.correspondence import list_correspondences
+from pyprocore.services.directory import (
+    list_company_users,
+    list_departments,
+    list_locations,
+    list_project_distribution_groups,
+    list_project_users,
+    list_vendors,
+)
 from pyprocore.services.documents import list_document_folders, list_documents
 from pyprocore.services.drawings import list_drawings
 from pyprocore.services.observations import list_observations
@@ -475,6 +489,145 @@ def find_incident(
     )
 
 
+def find_company_user(
+    company_id: int | None,
+    *,
+    name: str | None = None,
+    email: str | None = None,
+    query: str | None = None,
+) -> CompanyUser:
+    """Find one company user by name, email, or text."""
+    search_text = _name_email_query(
+        resource_name="company user", name=name, email=email, query=query
+    )
+    return _resolve_one(
+        resources=list_company_users(company_id),
+        query=search_text,
+        values=lambda user: [
+            user.name,
+            user.first_name,
+            user.last_name,
+            user.login,
+            user.email_address,
+            user.email,
+        ],
+        resource_name="company user",
+    )
+
+
+def find_project_user(
+    company_id: int | None,
+    project_id: int,
+    *,
+    name: str | None = None,
+    email: str | None = None,
+    query: str | None = None,
+) -> ProjectUser:
+    """Find one project user by name, email, or text."""
+    search_text = _name_email_query(
+        resource_name="project user", name=name, email=email, query=query
+    )
+    return _resolve_one(
+        resources=list_project_users(company_id, project_id),
+        query=search_text,
+        values=lambda user: [
+            user.name,
+            user.first_name,
+            user.last_name,
+            user.login,
+            user.email_address,
+            user.email,
+        ],
+        resource_name="project user",
+    )
+
+
+def find_vendor(
+    company_id: int | None,
+    *,
+    name: str | None = None,
+    number: str | int | None = None,
+    query: str | None = None,
+) -> Vendor:
+    """Find one vendor by name, number, or text."""
+    search_text = _name_number_query(resource_name="vendor", name=name, number=number, query=query)
+    return _resolve_one(
+        resources=list_vendors(company_id),
+        query=search_text,
+        values=lambda vendor: [
+            vendor.name,
+            vendor.legal_name,
+            vendor.trade_name,
+            vendor.vendor_number,
+            vendor.number,
+            vendor.email,
+        ],
+        resource_name="vendor",
+    )
+
+
+def find_department(
+    company_id: int | None,
+    *,
+    name: str | None = None,
+    code: str | int | None = None,
+    query: str | None = None,
+) -> Department:
+    """Find one department by name, code, or text."""
+    search_text = _name_code_query(resource_name="department", name=name, code=code, query=query)
+    return _resolve_one(
+        resources=list_departments(company_id),
+        query=search_text,
+        values=lambda department: [
+            department.name,
+            department.code,
+            department.description,
+        ],
+        resource_name="department",
+    )
+
+
+def find_project_distribution_group(
+    company_id: int | None,
+    project_id: int,
+    *,
+    name: str | None = None,
+    query: str | None = None,
+) -> DistributionGroup:
+    """Find one project distribution group by name or text."""
+    search_text = _name_query(resource_name="distribution group", name=name, query=query)
+    return _resolve_one(
+        resources=list_project_distribution_groups(company_id, project_id),
+        query=search_text,
+        values=lambda group: [group.name, group.description],
+        resource_name="distribution group",
+    )
+
+
+def find_location(
+    company_id: int | None,
+    project_id: int,
+    *,
+    name: str | None = None,
+    code: str | int | None = None,
+    query: str | None = None,
+) -> Location:
+    """Find one project location by name, code, path, or text."""
+    search_text = _name_code_query(resource_name="location", name=name, code=code, query=query)
+    return _resolve_one(
+        resources=list_locations(company_id, project_id),
+        query=search_text,
+        values=lambda location: [
+            location.name,
+            location.full_name,
+            location.path,
+            location.code,
+            location.description,
+        ],
+        resource_name="location",
+    )
+
+
 def _resolve_one(
     *,
     resources: Sequence[ResourceT],
@@ -566,6 +719,64 @@ def _number_title_query(
         raise ValueError(f"Pass only one {resource_name} search value.")
     if not provided:
         raise ValueError(f"{resource_name.title()} number, title, or query is required.")
+    return _normalize_query(provided[0], resource_name)
+
+
+def _name_query(*, resource_name: str, name: str | None, query: str | None) -> str:
+    """Return a normalized name or text query."""
+    provided = [value for value in (name, query) if value is not None]
+    if len(provided) > 1:
+        raise ValueError(f"Pass only one {resource_name} search value.")
+    if not provided:
+        raise ValueError(f"{resource_name.title()} name or query is required.")
+    return _normalize_query(provided[0], resource_name)
+
+
+def _name_email_query(
+    *,
+    resource_name: str,
+    name: str | None,
+    email: str | None,
+    query: str | None,
+) -> str:
+    """Return a normalized name, email, or text query."""
+    provided = [value for value in (name, email, query) if value is not None]
+    if len(provided) > 1:
+        raise ValueError(f"Pass only one {resource_name} search value.")
+    if not provided:
+        raise ValueError(f"{resource_name.title()} name, email, or query is required.")
+    return _normalize_query(provided[0], resource_name)
+
+
+def _name_number_query(
+    *,
+    resource_name: str,
+    name: str | None,
+    number: str | int | None,
+    query: str | None,
+) -> str:
+    """Return a normalized name, number, or text query."""
+    provided = [value for value in (name, number, query) if value is not None]
+    if len(provided) > 1:
+        raise ValueError(f"Pass only one {resource_name} search value.")
+    if not provided:
+        raise ValueError(f"{resource_name.title()} name, number, or query is required.")
+    return _normalize_query(provided[0], resource_name)
+
+
+def _name_code_query(
+    *,
+    resource_name: str,
+    name: str | None,
+    code: str | int | None,
+    query: str | None,
+) -> str:
+    """Return a normalized name, code, or text query."""
+    provided = [value for value in (name, code, query) if value is not None]
+    if len(provided) > 1:
+        raise ValueError(f"Pass only one {resource_name} search value.")
+    if not provided:
+        raise ValueError(f"{resource_name.title()} name, code, or query is required.")
     return _normalize_query(provided[0], resource_name)
 
 

@@ -76,14 +76,31 @@ Implemented in the current branch and not yet published:
 Focus: read-oriented coverage only. No create/update/delete/write actions are
 included.
 
+### Phase 8D — Expanded Procore API Coverage
+
+Implemented in the current branch and not yet published:
+
+- Company directory users
+- Project directory users
+- Vendors
+- Departments
+- Project distribution groups
+- Project locations
+- Search/resolver helpers
+- CSV/JSONL local exports
+- CLI commands
+- Agent registry metadata for discovery only
+- Examples and docs
+
+Focus: read-oriented coverage only. No create/update/delete/write actions are
+included.
+
 ## Future
 
-### Phase 8D+ — Expanded Procore API Coverage
+### Phase 8E+ — Expanded Procore API Coverage
 
 Planned modules:
 
-- Directory
-- Locations
 - Commitments
 - Change Events
 - Change Orders

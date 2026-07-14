@@ -21,6 +21,11 @@ Procore environment.
 | Meetings | Unreleased Phase 8C | List, get, find, CSV/JSONL export | Read-only helpers use project context and typed flexible models. |
 | Inspections | Unreleased Phase 8C | List, get, find, CSV/JSONL export | Modeled through checklist-style read endpoints where Procore exposes inspection data. |
 | Incidents | Unreleased Phase 8C | List, get, find, incident configuration, CSV/JSONL export | Read-only helpers include project incident configuration metadata. |
+| Directory Users | Unreleased Phase 8D | List company/project users, get, find, CSV/JSONL export | Read-only company and project directory helpers. |
+| Vendors | Unreleased Phase 8D | List, get, find, CSV/JSONL export | Uses conservative company context and optional project filtering. |
+| Departments | Unreleased Phase 8D | List, get, find, CSV/JSONL export | Company-scoped read-only department helpers. |
+| Distribution Groups | Unreleased Phase 8D | List, get, find, CSV/JSONL export | Project-scoped distribution group helpers. |
+| Locations | Unreleased Phase 8D | List, get, find, CSV/JSONL export | Project-scoped location helpers. |
 | Attachments/downloads | Supported | Streaming downloads, skip existing files, overwrite option | Downloads are local file operations only. |
 | Workflows | Supported | CSV, JSONL, folder sync, project context, AI-ready packages | Workflows create local files and do not mutate Procore data. |
 | Webhooks | Local helpers | Validate, redact, save, list, dry-run dispatch | No hosted webhook server is included. |
@@ -65,6 +70,23 @@ These helpers do not create, update, delete, or mutate Procore data. Inspection
 terminology can vary between Procore API surfaces; PyProcore uses flexible typed
 models so users can serialize the original response data while working with
 common fields.
+
+## Phase 8D Endpoint Notes
+
+Phase 8D adds read-only SDK coverage for Directory users, Vendors, Departments,
+Distribution Groups, and Locations. The implementation follows conservative
+endpoint helpers and mocked unit tests only:
+
+- Company users: `/rest/v1.0/companies/{company_id}/users`.
+- Project users: `/rest/v1.0/projects/{project_id}/users`.
+- Vendors: `/rest/v1.0/vendors` with company context.
+- Departments: `/rest/v1.0/companies/{company_id}/departments`.
+- Distribution Groups: `/rest/v1.0/projects/{project_id}/distribution_groups`.
+- Locations: `/rest/v1.0/projects/{project_id}/locations`.
+
+These helpers do not create, update, delete, or mutate Procore data. They include
+flexible typed models, search helpers, CSV/JSONL exports, CLI commands, examples,
+and agent registry metadata for discovery only.
 
 ## Live Verification Notes
 

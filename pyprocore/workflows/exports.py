@@ -10,16 +10,30 @@ from typing import Any
 
 from pyprocore.models import (
     RFI,
+    CompanyUser,
     Correspondence,
+    Department,
+    DistributionGroup,
     Document,
     Incident,
     Inspection,
+    Location,
     Meeting,
     Observation,
+    ProjectUser,
     PunchItem,
     Submittal,
+    Vendor,
 )
 from pyprocore.services.correspondence import list_correspondences
+from pyprocore.services.directory import (
+    list_company_users,
+    list_departments,
+    list_locations,
+    list_project_distribution_groups,
+    list_project_users,
+    list_vendors,
+)
 from pyprocore.services.observations import list_observations
 from pyprocore.services.operations import list_incidents, list_inspections, list_meetings
 from pyprocore.services.punch_items import list_punch_items
@@ -160,6 +174,82 @@ INCIDENT_CSV_HEADERS = [
     "reported_by",
     "created_by",
     "attachment_count",
+]
+
+COMPANY_USER_CSV_HEADERS = [
+    "id",
+    "name",
+    "email",
+    "login",
+    "active",
+    "job_title",
+    "phone",
+    "vendor",
+    "created_at",
+    "updated_at",
+]
+
+PROJECT_USER_CSV_HEADERS = [
+    "id",
+    "name",
+    "email",
+    "login",
+    "active",
+    "job_title",
+    "phone",
+    "project_id",
+    "permission_template",
+    "role",
+    "created_at",
+    "updated_at",
+]
+
+VENDOR_CSV_HEADERS = [
+    "id",
+    "name",
+    "legal_name",
+    "trade_name",
+    "vendor_number",
+    "active",
+    "phone",
+    "email",
+    "website",
+    "company_id",
+    "created_at",
+    "updated_at",
+]
+
+DEPARTMENT_CSV_HEADERS = [
+    "id",
+    "name",
+    "code",
+    "description",
+    "active",
+    "company_id",
+    "created_at",
+    "updated_at",
+]
+
+DISTRIBUTION_GROUP_CSV_HEADERS = [
+    "id",
+    "name",
+    "description",
+    "project_id",
+    "member_count",
+    "created_at",
+    "updated_at",
+]
+
+LOCATION_CSV_HEADERS = [
+    "id",
+    "name",
+    "full_name",
+    "path",
+    "code",
+    "parent_id",
+    "project_id",
+    "created_at",
+    "updated_at",
 ]
 
 
@@ -461,6 +551,132 @@ def export_incidents_to_jsonl(
     return _write_jsonl(incidents, output_path)
 
 
+def export_company_users_to_csv(
+    company_id: int | None,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export company directory users to a CSV file."""
+    users = list_company_users(company_id, **filters)
+    return write_company_users_csv(users, output_path)
+
+
+def export_company_users_to_jsonl(
+    company_id: int | None,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export company directory users to newline-delimited JSON."""
+    users = list_company_users(company_id, **filters)
+    return _write_jsonl(users, output_path)
+
+
+def export_project_users_to_csv(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project directory users to a CSV file."""
+    users = list_project_users(company_id, project_id, **filters)
+    return write_project_users_csv(users, output_path)
+
+
+def export_project_users_to_jsonl(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project directory users to newline-delimited JSON."""
+    users = list_project_users(company_id, project_id, **filters)
+    return _write_jsonl(users, output_path)
+
+
+def export_vendors_to_csv(
+    company_id: int | None,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export vendors to a CSV file."""
+    vendors = list_vendors(company_id, **filters)
+    return write_vendors_csv(vendors, output_path)
+
+
+def export_vendors_to_jsonl(
+    company_id: int | None,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export vendors to newline-delimited JSON."""
+    vendors = list_vendors(company_id, **filters)
+    return _write_jsonl(vendors, output_path)
+
+
+def export_departments_to_csv(
+    company_id: int | None,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export company departments to a CSV file."""
+    departments = list_departments(company_id, **filters)
+    return write_departments_csv(departments, output_path)
+
+
+def export_departments_to_jsonl(
+    company_id: int | None,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export company departments to newline-delimited JSON."""
+    departments = list_departments(company_id, **filters)
+    return _write_jsonl(departments, output_path)
+
+
+def export_distribution_groups_to_csv(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project distribution groups to a CSV file."""
+    groups = list_project_distribution_groups(company_id, project_id, **filters)
+    return write_distribution_groups_csv(groups, output_path)
+
+
+def export_distribution_groups_to_jsonl(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project distribution groups to newline-delimited JSON."""
+    groups = list_project_distribution_groups(company_id, project_id, **filters)
+    return _write_jsonl(groups, output_path)
+
+
+def export_locations_to_csv(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project locations to a CSV file."""
+    locations = list_locations(company_id, project_id, **filters)
+    return write_locations_csv(locations, output_path)
+
+
+def export_locations_to_jsonl(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project locations to newline-delimited JSON."""
+    locations = list_locations(company_id, project_id, **filters)
+    return _write_jsonl(locations, output_path)
+
+
 def write_rfis_csv(rfis: Sequence[RFI], output_path: Path | str) -> Path:
     """Write already-loaded RFIs to a CSV file."""
     return _write_csv(rfis, output_path, RFI_CSV_HEADERS, _rfi_row)
@@ -515,6 +731,47 @@ def write_inspections_csv(
 def write_incidents_csv(incidents: Sequence[Incident], output_path: Path | str) -> Path:
     """Write already-loaded incidents to a CSV file."""
     return _write_csv(incidents, output_path, INCIDENT_CSV_HEADERS, _incident_row)
+
+
+def write_company_users_csv(users: Sequence[CompanyUser], output_path: Path | str) -> Path:
+    """Write already-loaded company users to a CSV file."""
+    return _write_csv(users, output_path, COMPANY_USER_CSV_HEADERS, _company_user_row)
+
+
+def write_project_users_csv(users: Sequence[ProjectUser], output_path: Path | str) -> Path:
+    """Write already-loaded project users to a CSV file."""
+    return _write_csv(users, output_path, PROJECT_USER_CSV_HEADERS, _project_user_row)
+
+
+def write_vendors_csv(vendors: Sequence[Vendor], output_path: Path | str) -> Path:
+    """Write already-loaded vendors to a CSV file."""
+    return _write_csv(vendors, output_path, VENDOR_CSV_HEADERS, _vendor_row)
+
+
+def write_departments_csv(
+    departments: Sequence[Department],
+    output_path: Path | str,
+) -> Path:
+    """Write already-loaded departments to a CSV file."""
+    return _write_csv(departments, output_path, DEPARTMENT_CSV_HEADERS, _department_row)
+
+
+def write_distribution_groups_csv(
+    groups: Sequence[DistributionGroup],
+    output_path: Path | str,
+) -> Path:
+    """Write already-loaded distribution groups to a CSV file."""
+    return _write_csv(
+        groups,
+        output_path,
+        DISTRIBUTION_GROUP_CSV_HEADERS,
+        _distribution_group_row,
+    )
+
+
+def write_locations_csv(locations: Sequence[Location], output_path: Path | str) -> Path:
+    """Write already-loaded locations to a CSV file."""
+    return _write_csv(locations, output_path, LOCATION_CSV_HEADERS, _location_row)
 
 
 def _load_rfis(
@@ -754,4 +1011,109 @@ def _incident_row(incident: object) -> dict[str, object]:
         "reported_by": scalar_text(get_value(incident, "reported_by")),
         "created_by": scalar_text(get_value(incident, "created_by")),
         "attachment_count": attachment_count(incident, item_type="incident"),
+    }
+
+
+def _company_user_row(user: object) -> dict[str, object]:
+    """Convert one company user model into a CSV row."""
+    return {
+        "id": scalar_text(get_value(user, "id")),
+        "name": scalar_text(get_value(user, "name")),
+        "email": scalar_text(get_value(user, "email", "email_address")),
+        "login": scalar_text(get_value(user, "login")),
+        "active": scalar_text(get_value(user, "active")),
+        "job_title": scalar_text(get_value(user, "job_title")),
+        "phone": scalar_text(get_value(user, "phone", "business_phone", "mobile_phone")),
+        "vendor": scalar_text(get_value(user, "vendor")),
+        "created_at": scalar_text(get_value(user, "created_at")),
+        "updated_at": scalar_text(get_value(user, "updated_at")),
+    }
+
+
+def _project_user_row(user: object) -> dict[str, object]:
+    """Convert one project user model into a CSV row."""
+    return {
+        "id": scalar_text(get_value(user, "id")),
+        "name": scalar_text(get_value(user, "name")),
+        "email": scalar_text(get_value(user, "email", "email_address")),
+        "login": scalar_text(get_value(user, "login")),
+        "active": scalar_text(get_value(user, "active")),
+        "job_title": scalar_text(get_value(user, "job_title")),
+        "phone": scalar_text(get_value(user, "phone", "business_phone", "mobile_phone")),
+        "project_id": scalar_text(get_value(user, "project_id")),
+        "permission_template": scalar_text(get_value(user, "permission_template")),
+        "role": scalar_text(get_value(user, "role")),
+        "created_at": scalar_text(get_value(user, "created_at")),
+        "updated_at": scalar_text(get_value(user, "updated_at")),
+    }
+
+
+def _vendor_row(vendor: object) -> dict[str, object]:
+    """Convert one vendor model into a CSV row."""
+    return {
+        "id": scalar_text(get_value(vendor, "id")),
+        "name": scalar_text(get_value(vendor, "name")),
+        "legal_name": scalar_text(get_value(vendor, "legal_name")),
+        "trade_name": scalar_text(get_value(vendor, "trade_name")),
+        "vendor_number": scalar_text(get_value(vendor, "vendor_number", "number")),
+        "active": scalar_text(get_value(vendor, "active")),
+        "phone": scalar_text(get_value(vendor, "phone")),
+        "email": scalar_text(get_value(vendor, "email")),
+        "website": scalar_text(get_value(vendor, "website")),
+        "company_id": scalar_text(get_value(vendor, "company_id")),
+        "created_at": scalar_text(get_value(vendor, "created_at")),
+        "updated_at": scalar_text(get_value(vendor, "updated_at")),
+    }
+
+
+def _department_row(department: object) -> dict[str, object]:
+    """Convert one department model into a CSV row."""
+    return {
+        "id": scalar_text(get_value(department, "id")),
+        "name": scalar_text(get_value(department, "name")),
+        "code": scalar_text(get_value(department, "code")),
+        "description": scalar_text(get_value(department, "description")),
+        "active": scalar_text(get_value(department, "active")),
+        "company_id": scalar_text(get_value(department, "company_id")),
+        "created_at": scalar_text(get_value(department, "created_at")),
+        "updated_at": scalar_text(get_value(department, "updated_at")),
+    }
+
+
+def _distribution_group_row(group: object) -> dict[str, object]:
+    """Convert one distribution group model into a CSV row."""
+    users = get_value(group, "users") or []
+    members = get_value(group, "members") or []
+    member_count = 0
+    if isinstance(users, Sequence):
+        member_count = len(users)
+    if member_count == 0 and isinstance(members, Sequence):
+        member_count = len(members)
+    return {
+        "id": scalar_text(get_value(group, "id")),
+        "name": scalar_text(get_value(group, "name")),
+        "description": scalar_text(get_value(group, "description")),
+        "project_id": scalar_text(get_value(group, "project_id")),
+        "member_count": member_count,
+        "created_at": scalar_text(get_value(group, "created_at")),
+        "updated_at": scalar_text(get_value(group, "updated_at")),
+    }
+
+
+def _location_row(location: object) -> dict[str, object]:
+    """Convert one location model into a CSV row."""
+    parent = get_value(location, "parent")
+    parent_id = get_value(location, "parent_id")
+    if parent_id is None and isinstance(parent, Mapping):
+        parent_id = parent.get("id")
+    return {
+        "id": scalar_text(get_value(location, "id")),
+        "name": scalar_text(get_value(location, "name")),
+        "full_name": scalar_text(get_value(location, "full_name")),
+        "path": scalar_text(get_value(location, "path")),
+        "code": scalar_text(get_value(location, "code")),
+        "parent_id": scalar_text(parent_id),
+        "project_id": scalar_text(get_value(location, "project_id")),
+        "created_at": scalar_text(get_value(location, "created_at")),
+        "updated_at": scalar_text(get_value(location, "updated_at")),
     }

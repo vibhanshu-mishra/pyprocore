@@ -105,6 +105,44 @@ procore-sdk export-inspections --project 352338 --company-id 123456 --output exp
 procore-sdk export-incidents --project 352338 --company-id 123456 --output exports/incidents.csv
 ```
 
+## Directory, Vendors, Departments, Distribution Groups, And Locations
+
+Phase 8D adds read-only commands for company/project users, vendors,
+departments, project distribution groups, and project locations in the current
+unreleased branch:
+
+```bash
+procore-sdk company-users --company-id 123456
+procore-sdk company-user --company-id 123456 --id 42
+procore-sdk find-company-user --company-id 123456 --email person@example.com
+procore-sdk project-users --project 352338 --company-id 123456
+procore-sdk project-user --project 352338 --company-id 123456 --id 42
+procore-sdk find-project-user --project 352338 --company-id 123456 --name "Alex"
+procore-sdk vendors --company-id 123456
+procore-sdk vendor --company-id 123456 --id 77
+procore-sdk find-vendor --company-id 123456 --name "Concrete"
+procore-sdk departments --company-id 123456
+procore-sdk department --company-id 123456 --id 12
+procore-sdk find-department --company-id 123456 --name "Operations"
+procore-sdk distribution-groups --project 352338 --company-id 123456
+procore-sdk distribution-group --project 352338 --company-id 123456 --id 33
+procore-sdk find-distribution-group --project 352338 --company-id 123456 --name "Team"
+procore-sdk locations --project 352338 --company-id 123456
+procore-sdk location --project 352338 --company-id 123456 --id 44
+procore-sdk find-location --project 352338 --company-id 123456 --name "Level 1"
+```
+
+Local CSV exports are also available:
+
+```bash
+procore-sdk export-company-users --company-id 123456 --output exports/company-users.csv
+procore-sdk export-project-users --project 352338 --company-id 123456 --output exports/project-users.csv
+procore-sdk export-vendors --company-id 123456 --output exports/vendors.csv
+procore-sdk export-departments --company-id 123456 --output exports/departments.csv
+procore-sdk export-distribution-groups --project 352338 --company-id 123456 --output exports/distribution-groups.csv
+procore-sdk export-locations --project 352338 --company-id 123456 --output exports/locations.csv
+```
+
 ## Workflow And Package Builders
 
 ```bash

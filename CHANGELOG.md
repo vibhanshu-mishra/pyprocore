@@ -21,6 +21,10 @@ and this project follows semantic versioning.
 - Typed flexible models for `Meeting`, `Inspection`, `InspectionItem`, `Incident`, and `IncidentConfiguration`.
 - Service, search, object-client, CLI, CSV/JSONL export, and agent registry metadata support for Phase 8C resources.
 - Beginner-friendly Phase 8C examples and documentation.
+- Phase 8D read-only API coverage for company/project users, Vendors, Departments, Distribution Groups, and Locations.
+- Typed flexible models for `CompanyUser`, `ProjectUser`, `Vendor`, `Department`, `DistributionGroup`, and `Location`.
+- Service, search, object-client, CLI, CSV/JSONL export, and agent registry metadata support for Phase 8D resources.
+- Beginner-friendly Phase 8D examples and documentation.
 
 ### Security
 
@@ -29,6 +33,8 @@ and this project follows semantic versioning.
 - Phase 8B does not enable Procore tool execution or add write APIs.
 - Phase 8C remains read-only and does not add create/update/delete Procore actions.
 - New Phase 8C agent entries are metadata only.
+- Phase 8D remains read-only and does not add create/update/delete Procore actions.
+- New Phase 8D agent entries are metadata only.
 
 ## [2.2.0] - 2026-07-12
 

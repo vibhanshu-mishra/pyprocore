@@ -5,8 +5,9 @@
 - Current stable release: `2.2.0`
 - Previous stable release: `2.1.0`
 - `v2.2.0` is published on PyPI and released on GitHub.
-- Current unreleased branch work: Phase 8A and Phase 8C read-only API coverage,
-  plus Phase 8B client-credentials auth support for Data Connection Apps.
+- Current unreleased branch work: Phase 8A, Phase 8C, and Phase 8D read-only
+  API coverage, plus Phase 8B client-credentials auth support for Data
+  Connection Apps.
 
 ## Current Stable Release: 2.2.0
 
@@ -47,6 +48,12 @@ service helpers, typed flexible models, search helpers, local CSV/JSONL exports,
 CLI commands, agent registry metadata, docs, examples, and mocked tests. It does
 not add create/update/delete actions and does not enable agent tool execution.
 
+Phase 8D adds read-only SDK coverage for company/project users, Vendors,
+Departments, project Distribution Groups, and project Locations. It includes
+service helpers, typed flexible models, search helpers, local CSV/JSONL exports,
+CLI commands, agent registry metadata, docs, examples, and mocked tests. It does
+not add create/update/delete actions and does not enable agent tool execution.
+
 ## Safety Status
 
 - Tool execution remains disabled.
@@ -57,7 +64,7 @@ not add create/update/delete actions and does not enable agent tool execution.
 - PyProcore does not call external AI/model APIs.
 - Live SDK workflows still require valid Procore credentials and permissions.
 - Client credentials support does not enable Procore tool execution.
-- Phase 8C service helpers are read-only.
+- Phase 8C and Phase 8D service helpers are read-only.
 
 ## Known Limitations
 
@@ -76,7 +83,7 @@ not add create/update/delete actions and does not enable agent tool execution.
 - Guarded tool execution and human approval gates
 - Write-action safety model
 - Real MCP execution after explicit safety design
-- Additional read-only Procore coverage beyond Phase 8C
+- Additional read-only Procore coverage beyond Phase 8D
 - Async client and plugin architecture
 - Vector DB examples and engineering assistant examples
 - Golden datasets and model evals
