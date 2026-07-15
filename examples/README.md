@@ -36,6 +36,13 @@ Inspections, Incidents, and agent registry metadata examples.
 Examples `80` through `87` cover unreleased Phase 8D read-only Directory users,
 Vendors, Departments, Distribution Groups, Locations, and agent registry
 metadata examples.
+Examples `88` through `95` cover unreleased Phase 8E financial and
+change-management read coverage.
+Examples `96` through `102` cover unreleased Phase 8F contracts, invoices,
+payments, and billing read coverage.
+Examples `103` through `110` cover unreleased Phase 8G schedules, tasks,
+calendar items, coordination issues, forms, action plans, and agent registry
+metadata examples.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -182,7 +189,7 @@ make examples-check
 ## Example Index
 
 The current example set runs from `01_list_companies.py` through
-`102_agent_registry_phase8f.py`.
+`110_agent_registry_phase8g.py`.
 
 | File | Demonstrates |
 | ---- | ------------ |
@@ -288,6 +295,14 @@ The current example set runs from `01_list_companies.py` through
 | `100_list_contract_payments.py` | List read-only contract payments |
 | `101_list_billing_periods.py` | List read-only billing periods |
 | `102_agent_registry_phase8f.py` | Inspect Phase 8F agent metadata without executing tools |
+| `103_get_project_schedule.py` | Get read-only project schedule metadata |
+| `104_list_tasks.py` | List read-only project tasks |
+| `105_export_tasks.py` | Export project tasks to a local CSV file |
+| `106_list_calendar_items.py` | List read-only project calendar items |
+| `107_list_coordination_issues.py` | List read-only project coordination issues |
+| `108_list_forms.py` | List read-only project forms |
+| `109_list_action_plans.py` | List read-only project action plans |
+| `110_agent_registry_phase8g.py` | Inspect Phase 8G agent metadata without executing tools |
 
 Sample workflow plans live in `examples/workflow_plans/`:
 

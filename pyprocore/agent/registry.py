@@ -1663,6 +1663,338 @@ def _build_tools() -> list[AgentTool]:
             ),
         ]
     )
+    tools.extend(
+        [
+            _resource_tool(
+                name="procore.get_project_schedule",
+                title="Get Project Schedule",
+                description="Get read-only project schedule metadata.",
+                input_schema=_project_company_schema(),
+                output_schema=_model_output("ProjectSchedule"),
+                service_path="pyprocore.services.project_management",
+                operation_path="pyprocore.services.project_management.get_project_schedule",
+                cli_command="procore-sdk project-schedule --project PROJECT_ID",
+                examples=["schedule = get_project_schedule(company_id, project_id)"],
+            ),
+            _resource_tool(
+                name="procore.get_schedule_settings",
+                title="Get Schedule Settings",
+                description="Get read-only project schedule settings.",
+                input_schema=_project_company_schema(),
+                output_schema=_model_output("ScheduleSettings"),
+                service_path="pyprocore.services.project_management",
+                operation_path="pyprocore.services.project_management.get_schedule_settings",
+                cli_command="procore-sdk schedule-settings --project PROJECT_ID",
+                examples=["settings = get_schedule_settings(company_id, project_id)"],
+            ),
+            _resource_tool(
+                name="procore.get_schedule_type",
+                title="Get Schedule Type",
+                description="Get read-only project schedule type metadata.",
+                input_schema=_project_company_schema(),
+                output_schema=_model_output("ScheduleType"),
+                service_path="pyprocore.services.project_management",
+                operation_path="pyprocore.services.project_management.get_schedule_type",
+                cli_command="procore-sdk schedule-type --project PROJECT_ID",
+                examples=["schedule_type = get_schedule_type(company_id, project_id)"],
+            ),
+            _resource_tool(
+                name="procore.get_schedule_integration",
+                title="Get Schedule Integration",
+                description="Get read-only project schedule integration metadata.",
+                input_schema=_project_company_schema(),
+                output_schema=_model_output("ScheduleIntegration"),
+                service_path="pyprocore.services.project_management",
+                operation_path="pyprocore.services.project_management.get_schedule_integration",
+                cli_command="procore-sdk schedule-integration --project PROJECT_ID",
+                examples=["integration = get_schedule_integration(company_id, project_id)"],
+            ),
+            _resource_tool(
+                name="procore.get_schedule_import_status",
+                title="Get Schedule Import Status",
+                description="Get read-only project schedule import status.",
+                input_schema=_project_company_schema(),
+                output_schema=_model_output("ScheduleImportStatus"),
+                service_path="pyprocore.services.project_management",
+                operation_path="pyprocore.services.project_management.get_schedule_import_status",
+                cli_command="procore-sdk schedule-import-status --project PROJECT_ID",
+                examples=["status = get_schedule_import_status(company_id, project_id)"],
+            ),
+            _resource_tool(
+                name="procore.list_schedule_resource_assignments",
+                title="List Schedule Resource Assignments",
+                description="List read-only project schedule resource assignments.",
+                input_schema=_project_company_schema(),
+                output_schema=_array_output("ScheduleResourceAssignment"),
+                service_path="pyprocore.services.project_management",
+                operation_path=(
+                    "pyprocore.services.project_management." "list_schedule_resource_assignments"
+                ),
+                cli_command="procore-sdk schedule-resource-assignments --project PROJECT_ID",
+                examples=[
+                    "assignments = list_schedule_resource_assignments(company_id, project_id)"
+                ],
+            ),
+            _resource_tool(
+                name="procore.list_tasks",
+                title="List Tasks",
+                description="List read-only project tasks.",
+                input_schema=_project_company_schema(),
+                output_schema=_array_output("Task"),
+                service_path="pyprocore.services.project_management",
+                operation_path="pyprocore.services.project_management.list_tasks",
+                cli_command="procore-sdk tasks --project PROJECT_ID",
+                examples=["tasks = list_tasks(company_id, project_id)"],
+            ),
+            _resource_tool(
+                name="procore.get_task",
+                title="Get Task",
+                description="Get one read-only project task.",
+                input_schema=_project_item_schema("task_id"),
+                output_schema=_model_output("Task"),
+                service_path="pyprocore.services.project_management",
+                operation_path="pyprocore.services.project_management.get_task",
+                cli_command="procore-sdk task --project PROJECT_ID --id TASK_ID",
+                examples=["task = get_task(company_id, project_id, task_id)"],
+            ),
+            _resource_tool(
+                name="procore.find_task",
+                title="Find Task",
+                description="Find one task by number, title, name, or text.",
+                input_schema=_project_name_number_search_schema(),
+                output_schema=_model_output("Task"),
+                service_path="pyprocore.services.search",
+                operation_path="pyprocore.services.search.find_task",
+                cli_command="procore-sdk find-task --project PROJECT_ID --number NUMBER",
+                examples=["task = find_task(project_id, company_id=company_id, number='15')"],
+            ),
+            _resource_tool(
+                name="procore.list_task_requested_changes",
+                title="List Task Requested Changes",
+                description="List read-only requested changes for one project task.",
+                input_schema=_project_item_schema("task_id"),
+                output_schema=_array_output("TaskRequestedChange"),
+                service_path="pyprocore.services.project_management",
+                operation_path="pyprocore.services.project_management.list_task_requested_changes",
+                cli_command="procore-sdk task-requested-changes --project PROJECT --task TASK",
+                examples=["changes = list_task_requested_changes(company_id, project_id, task_id)"],
+            ),
+            _resource_tool(
+                name="procore.list_calendar_items",
+                title="List Calendar Items",
+                description="List read-only project calendar items.",
+                input_schema=_project_company_schema(),
+                output_schema=_array_output("CalendarItem"),
+                service_path="pyprocore.services.project_management",
+                operation_path="pyprocore.services.project_management.list_calendar_items",
+                cli_command="procore-sdk calendar-items --project PROJECT_ID",
+                examples=["items = list_calendar_items(company_id, project_id)"],
+            ),
+            _resource_tool(
+                name="procore.get_calendar_item",
+                title="Get Calendar Item",
+                description="Get one read-only project calendar item.",
+                input_schema=_project_item_schema("calendar_item_id"),
+                output_schema=_model_output("CalendarItem"),
+                service_path="pyprocore.services.project_management",
+                operation_path="pyprocore.services.project_management.get_calendar_item",
+                cli_command="procore-sdk calendar-item --project PROJECT_ID --id ITEM_ID",
+                examples=["item = get_calendar_item(company_id, project_id, calendar_item_id)"],
+            ),
+            _resource_tool(
+                name="procore.find_calendar_item",
+                title="Find Calendar Item",
+                description="Find one calendar item by number, title, name, or text.",
+                input_schema=_project_name_number_search_schema(),
+                output_schema=_model_output("CalendarItem"),
+                service_path="pyprocore.services.search",
+                operation_path="pyprocore.services.search.find_calendar_item",
+                cli_command="procore-sdk find-calendar-item --project PROJECT_ID --query TEXT",
+                examples=["item = find_calendar_item(project_id, query='pour')"],
+            ),
+            _resource_tool(
+                name="procore.list_coordination_issues",
+                title="List Coordination Issues",
+                description="List read-only project coordination issues.",
+                input_schema=_project_company_schema(),
+                output_schema=_array_output("CoordinationIssue"),
+                service_path="pyprocore.services.project_management",
+                operation_path="pyprocore.services.project_management.list_coordination_issues",
+                cli_command="procore-sdk coordination-issues --project PROJECT_ID",
+                examples=["issues = list_coordination_issues(company_id, project_id)"],
+            ),
+            _resource_tool(
+                name="procore.get_coordination_issue",
+                title="Get Coordination Issue",
+                description="Get one read-only project coordination issue.",
+                input_schema=_project_item_schema("coordination_issue_id"),
+                output_schema=_model_output("CoordinationIssue"),
+                service_path="pyprocore.services.project_management",
+                operation_path="pyprocore.services.project_management.get_coordination_issue",
+                cli_command="procore-sdk coordination-issue --project PROJECT_ID --id ISSUE_ID",
+                examples=["issue = get_coordination_issue(company_id, project_id, issue_id)"],
+            ),
+            _resource_tool(
+                name="procore.find_coordination_issue",
+                title="Find Coordination Issue",
+                description="Find one coordination issue by number, title, name, or text.",
+                input_schema=_project_name_number_search_schema(),
+                output_schema=_model_output("CoordinationIssue"),
+                service_path="pyprocore.services.search",
+                operation_path="pyprocore.services.search.find_coordination_issue",
+                cli_command="procore-sdk find-coordination-issue --project PROJECT --number NUM",
+                examples=["issue = find_coordination_issue(project_id, number='CI-1')"],
+            ),
+            _resource_tool(
+                name="procore.list_coordination_issue_change_history",
+                title="List Coordination Issue Change History",
+                description="List read-only change history for one coordination issue.",
+                input_schema=_project_item_schema("coordination_issue_id"),
+                output_schema=_array_output("CoordinationIssueChangeHistoryEvent"),
+                service_path="pyprocore.services.project_management",
+                operation_path=(
+                    "pyprocore.services.project_management."
+                    "list_coordination_issue_change_history"
+                ),
+                cli_command=(
+                    "procore-sdk coordination-issue-change-history "
+                    "--project PROJECT --coordination-issue ISSUE"
+                ),
+                examples=[
+                    "history = list_coordination_issue_change_history(company_id, project_id, id)"
+                ],
+            ),
+            _resource_tool(
+                name="procore.list_coordination_issue_activity_feed",
+                title="List Coordination Issue Activity Feed",
+                description="List read-only activity feed entries for one coordination issue.",
+                input_schema=_project_item_schema("coordination_issue_id"),
+                output_schema=_array_output("CoordinationIssueActivity"),
+                service_path="pyprocore.services.project_management",
+                operation_path=(
+                    "pyprocore.services.project_management." "list_coordination_issue_activity_feed"
+                ),
+                cli_command=(
+                    "procore-sdk coordination-issue-activity-feed "
+                    "--project PROJECT --coordination-issue ISSUE"
+                ),
+                examples=[
+                    "activity = list_coordination_issue_activity_feed(company_id, project_id, id)"
+                ],
+            ),
+            _resource_tool(
+                name="procore.list_coordination_issue_filter_options",
+                title="List Coordination Issue Filter Options",
+                description="List read-only filter options for coordination issues.",
+                input_schema=_project_company_schema(),
+                output_schema=_array_output("CoordinationIssueFilterOption"),
+                service_path="pyprocore.services.project_management",
+                operation_path=(
+                    "pyprocore.services.project_management."
+                    "list_coordination_issue_filter_options"
+                ),
+                cli_command="procore-sdk coordination-issue-filter-options --project PROJECT_ID",
+                examples=[
+                    "options = list_coordination_issue_filter_options(company_id, project_id)"
+                ],
+            ),
+            _resource_tool(
+                name="procore.list_forms",
+                title="List Forms",
+                description="List read-only project forms.",
+                input_schema=_project_company_schema(),
+                output_schema=_array_output("Form"),
+                service_path="pyprocore.services.project_management",
+                operation_path="pyprocore.services.project_management.list_forms",
+                cli_command="procore-sdk forms --project PROJECT_ID",
+                examples=["forms = list_forms(company_id, project_id)"],
+            ),
+            _resource_tool(
+                name="procore.get_form",
+                title="Get Form",
+                description="Get one read-only project form.",
+                input_schema=_project_item_schema("form_id"),
+                output_schema=_model_output("Form"),
+                service_path="pyprocore.services.project_management",
+                operation_path="pyprocore.services.project_management.get_form",
+                cli_command="procore-sdk form --project PROJECT_ID --id FORM_ID",
+                examples=["form = get_form(company_id, project_id, form_id)"],
+            ),
+            _resource_tool(
+                name="procore.find_form",
+                title="Find Form",
+                description="Find one form by number, title, name, or text.",
+                input_schema=_project_name_number_search_schema(),
+                output_schema=_model_output("Form"),
+                service_path="pyprocore.services.search",
+                operation_path="pyprocore.services.search.find_form",
+                cli_command="procore-sdk find-form --project PROJECT_ID --query TEXT",
+                examples=["form = find_form(project_id, query='inspection')"],
+            ),
+            _resource_tool(
+                name="procore.list_form_templates",
+                title="List Form Templates",
+                description="List read-only project form templates.",
+                input_schema=_project_company_schema(),
+                output_schema=_array_output("FormTemplate"),
+                service_path="pyprocore.services.project_management",
+                operation_path="pyprocore.services.project_management.list_form_templates",
+                cli_command="procore-sdk form-templates --project PROJECT_ID",
+                examples=["templates = list_form_templates(company_id, project_id)"],
+            ),
+            _resource_tool(
+                name="procore.list_action_plans",
+                title="List Action Plans",
+                description="List read-only project action plans.",
+                input_schema=_project_company_schema(),
+                output_schema=_array_output("ActionPlan"),
+                service_path="pyprocore.services.project_management",
+                operation_path="pyprocore.services.project_management.list_action_plans",
+                cli_command="procore-sdk action-plans --project PROJECT_ID",
+                examples=["plans = list_action_plans(company_id, project_id)"],
+            ),
+            _resource_tool(
+                name="procore.get_action_plan",
+                title="Get Action Plan",
+                description="Get one read-only project action plan.",
+                input_schema=_project_item_schema("action_plan_id"),
+                output_schema=_model_output("ActionPlan"),
+                service_path="pyprocore.services.project_management",
+                operation_path="pyprocore.services.project_management.get_action_plan",
+                cli_command="procore-sdk action-plan --project PROJECT_ID --id PLAN_ID",
+                examples=["plan = get_action_plan(company_id, project_id, action_plan_id)"],
+            ),
+            _resource_tool(
+                name="procore.find_action_plan",
+                title="Find Action Plan",
+                description="Find one action plan by number, title, name, or text.",
+                input_schema=_project_name_number_search_schema(),
+                output_schema=_model_output("ActionPlan"),
+                service_path="pyprocore.services.search",
+                operation_path="pyprocore.services.search.find_action_plan",
+                cli_command="procore-sdk find-action-plan --project PROJECT_ID --query TEXT",
+                examples=["plan = find_action_plan(project_id, query='pre-pour')"],
+            ),
+            _resource_tool(
+                name="procore.list_action_plan_change_history_events",
+                title="List Action Plan Change History Events",
+                description="List read-only change history events for one action plan.",
+                input_schema=_project_item_schema("action_plan_id"),
+                output_schema=_array_output("ActionPlanChangeHistoryEvent"),
+                service_path="pyprocore.services.project_management",
+                operation_path=(
+                    "pyprocore.services.project_management."
+                    "list_action_plan_change_history_events"
+                ),
+                cli_command=(
+                    "procore-sdk action-plan-change-history " "--project PROJECT --action-plan PLAN"
+                ),
+                examples=[
+                    "events = list_action_plan_change_history_events(company_id, project_id, id)"
+                ],
+            ),
+        ]
+    )
     return sorted(tools, key=lambda tool: tool.name)
 
 

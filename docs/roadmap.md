@@ -137,14 +137,33 @@ is included.
 
 ## Future
 
-### Phase 8G+ — Expanded Procore API Coverage
+### Phase 8G — Project Management Extras Read Coverage
 
-Planned modules:
+Implemented in the current branch and not yet published:
 
-- Additional read-only Procore resources where endpoint shapes are safe and
-  clear
+- Schedule metadata, settings, type, integration, import status, and resource assignments
+- Tasks and task requested changes
+- Calendar items
+- Coordination issues, change history, activity feed, and filter options
+- Forms and form templates
+- Action plans and change history events
+- CSV/JSONL local exports
+- CLI commands
+- Agent registry metadata for discovery only
+- Examples and docs
 
-Focus: read-oriented coverage first.
+Focus: read-oriented coverage only. No schedule uploads/import creation, task
+writes, requested-change mutations, coordination issue mutations, form
+submissions, action plan completions, approvals, status changes, or
+project-management mutations are included.
+
+### Future Read Coverage
+
+Planned modules when endpoint shapes are safe and clear:
+
+- Transmittals
+- Project Emails
+- Additional read-only Procore resources
 
 ### Phase 9 — Async Client
 

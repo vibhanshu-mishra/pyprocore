@@ -202,6 +202,41 @@ procore-sdk export-owner-invoices --project 352338 --company-id 123456 --prime-c
 procore-sdk export-contract-payments --project 352338 --company-id 123456 --output exports/contract-payments.csv
 ```
 
+## Project Management Extras Read Commands
+
+Phase 8G adds read-oriented commands for schedules, tasks, calendar items,
+coordination issues, forms, and action plans in the current unreleased branch.
+These commands do not upload schedules, create schedule imports, mutate tasks,
+submit forms, complete action plans, approve, change statuses, or perform other
+project-management writes.
+
+```bash
+procore-sdk project-schedule --project 352338 --company-id 123456
+procore-sdk schedule-settings --project 352338 --company-id 123456
+procore-sdk schedule-resource-assignments --project 352338 --company-id 123456
+procore-sdk tasks --project 352338 --company-id 123456
+procore-sdk task --project 352338 --company-id 123456 --id 10
+procore-sdk find-task --project 352338 --company-id 123456 --number 15
+procore-sdk task-requested-changes --project 352338 --company-id 123456 --task 10
+procore-sdk calendar-items --project 352338 --company-id 123456
+procore-sdk coordination-issues --project 352338 --company-id 123456
+procore-sdk coordination-issue-change-history --project 352338 --company-id 123456 --coordination-issue 20
+procore-sdk forms --project 352338 --company-id 123456
+procore-sdk form-templates --project 352338 --company-id 123456
+procore-sdk action-plans --project 352338 --company-id 123456
+procore-sdk action-plan-change-history --project 352338 --company-id 123456 --action-plan 30
+```
+
+Local CSV exports are also available:
+
+```bash
+procore-sdk export-tasks --project 352338 --company-id 123456 --output exports/tasks.csv
+procore-sdk export-calendar-items --project 352338 --company-id 123456 --output exports/calendar-items.csv
+procore-sdk export-coordination-issues --project 352338 --company-id 123456 --output exports/coordination-issues.csv
+procore-sdk export-forms --project 352338 --company-id 123456 --output exports/forms.csv
+procore-sdk export-action-plans --project 352338 --company-id 123456 --output exports/action-plans.csv
+```
+
 ## Workflow And Package Builders
 
 ```bash

@@ -181,6 +181,44 @@ BILLING_PERIODS = f"{API_V1}/projects/{{project_id}}/billing_periods"
 BILLING_PERIOD = f"{API_V1}/projects/{{project_id}}/billing_periods/{{billing_period_id}}"
 COST_TYPES = f"{API_V1}/companies/{{company_id}}/cost_types"
 TAX_CODES = f"{API_V1}/companies/{{company_id}}/tax_codes"
+PROJECT_SCHEDULE = f"{API_V1}/projects/{{project_id}}/schedule"
+SCHEDULE_SETTINGS = f"{API_V1}/projects/{{project_id}}/schedule_settings"
+SCHEDULE_TYPE = f"{API_V1}/projects/{{project_id}}/schedule_type"
+SCHEDULE_INTEGRATION = f"{API_V1}/projects/{{project_id}}/schedule_integration"
+SCHEDULE_IMPORT_STATUS = f"{API_V1}/projects/{{project_id}}/schedule_imports/status"
+SCHEDULE_RESOURCE_ASSIGNMENTS = f"{API_V1}/projects/{{project_id}}/schedule_resource_assignments"
+SCHEDULE_RESOURCE_ASSIGNMENT = (
+    f"{API_V1}/projects/{{project_id}}"
+    "/schedule_resource_assignments/{schedule_resource_assignment_id}"
+)
+TASKS = f"{API_V1}/projects/{{project_id}}/tasks"
+TASK = f"{API_V1}/projects/{{project_id}}/tasks/{{task_id}}"
+TASK_REQUESTED_CHANGES = f"{API_V1}/projects/{{project_id}}/tasks/{{task_id}}/requested_changes"
+CALENDAR_ITEMS = f"{API_V1}/projects/{{project_id}}/calendar_items"
+CALENDAR_ITEM = f"{API_V1}/projects/{{project_id}}/calendar_items/{{calendar_item_id}}"
+COORDINATION_ISSUES = f"{API_V1}/projects/{{project_id}}/coordination_issues"
+COORDINATION_ISSUE = (
+    f"{API_V1}/projects/{{project_id}}/coordination_issues/{{coordination_issue_id}}"
+)
+COORDINATION_ISSUE_CHANGE_HISTORY = (
+    f"{API_V1}/projects/{{project_id}}/coordination_issues/{{coordination_issue_id}}"
+    "/change_history"
+)
+COORDINATION_ISSUE_ACTIVITY_FEED = (
+    f"{API_V1}/projects/{{project_id}}/coordination_issues/{{coordination_issue_id}}"
+    "/activity_feed"
+)
+COORDINATION_ISSUE_FILTER_OPTIONS = (
+    f"{API_V1}/projects/{{project_id}}/coordination_issues/filter_options"
+)
+FORMS = f"{API_V1}/projects/{{project_id}}/forms"
+FORM = f"{API_V1}/projects/{{project_id}}/forms/{{form_id}}"
+FORM_TEMPLATES = f"{API_V1}/projects/{{project_id}}/form_templates"
+ACTION_PLANS = f"{API_V1}/projects/{{project_id}}/action_plans"
+ACTION_PLAN = f"{API_V1}/projects/{{project_id}}/action_plans/{{action_plan_id}}"
+ACTION_PLAN_CHANGE_HISTORY_EVENTS = (
+    f"{API_V1}/projects/{{project_id}}/action_plans/{{action_plan_id}}" "/change_history_events"
+)
 
 
 def companies() -> str:
@@ -825,6 +863,139 @@ def tax_codes(company_id: int) -> str:
     return TAX_CODES.format(company_id=company_id)
 
 
+def project_schedule(project_id: int) -> str:
+    """Return the project schedule read endpoint."""
+    return PROJECT_SCHEDULE.format(project_id=project_id)
+
+
+def schedule_settings(project_id: int) -> str:
+    """Return the project schedule settings read endpoint."""
+    return SCHEDULE_SETTINGS.format(project_id=project_id)
+
+
+def schedule_type(project_id: int) -> str:
+    """Return the project schedule type read endpoint."""
+    return SCHEDULE_TYPE.format(project_id=project_id)
+
+
+def schedule_integration(project_id: int) -> str:
+    """Return the project schedule integration read endpoint."""
+    return SCHEDULE_INTEGRATION.format(project_id=project_id)
+
+
+def schedule_import_status(project_id: int) -> str:
+    """Return the project schedule import status read endpoint."""
+    return SCHEDULE_IMPORT_STATUS.format(project_id=project_id)
+
+
+def schedule_resource_assignments(project_id: int) -> str:
+    """Return project schedule resource assignments."""
+    return SCHEDULE_RESOURCE_ASSIGNMENTS.format(project_id=project_id)
+
+
+def schedule_resource_assignment(
+    project_id: int,
+    schedule_resource_assignment_id: int,
+) -> str:
+    """Return one project schedule resource assignment."""
+    return SCHEDULE_RESOURCE_ASSIGNMENT.format(
+        project_id=project_id,
+        schedule_resource_assignment_id=schedule_resource_assignment_id,
+    )
+
+
+def tasks(project_id: int) -> str:
+    """Return the project tasks collection endpoint."""
+    return TASKS.format(project_id=project_id)
+
+
+def task(project_id: int, task_id: int) -> str:
+    """Return one project task endpoint."""
+    return TASK.format(project_id=project_id, task_id=task_id)
+
+
+def task_requested_changes(project_id: int, task_id: int) -> str:
+    """Return requested changes for one task."""
+    return TASK_REQUESTED_CHANGES.format(project_id=project_id, task_id=task_id)
+
+
+def calendar_items(project_id: int) -> str:
+    """Return the project calendar items collection endpoint."""
+    return CALENDAR_ITEMS.format(project_id=project_id)
+
+
+def calendar_item(project_id: int, calendar_item_id: int) -> str:
+    """Return one project calendar item endpoint."""
+    return CALENDAR_ITEM.format(project_id=project_id, calendar_item_id=calendar_item_id)
+
+
+def coordination_issues(project_id: int) -> str:
+    """Return the project coordination issues collection endpoint."""
+    return COORDINATION_ISSUES.format(project_id=project_id)
+
+
+def coordination_issue(project_id: int, coordination_issue_id: int) -> str:
+    """Return one project coordination issue endpoint."""
+    return COORDINATION_ISSUE.format(
+        project_id=project_id,
+        coordination_issue_id=coordination_issue_id,
+    )
+
+
+def coordination_issue_change_history(project_id: int, coordination_issue_id: int) -> str:
+    """Return change history for one coordination issue."""
+    return COORDINATION_ISSUE_CHANGE_HISTORY.format(
+        project_id=project_id,
+        coordination_issue_id=coordination_issue_id,
+    )
+
+
+def coordination_issue_activity_feed(project_id: int, coordination_issue_id: int) -> str:
+    """Return activity feed items for one coordination issue."""
+    return COORDINATION_ISSUE_ACTIVITY_FEED.format(
+        project_id=project_id,
+        coordination_issue_id=coordination_issue_id,
+    )
+
+
+def coordination_issue_filter_options(project_id: int) -> str:
+    """Return read-only coordination issue filter options."""
+    return COORDINATION_ISSUE_FILTER_OPTIONS.format(project_id=project_id)
+
+
+def forms(project_id: int) -> str:
+    """Return the project forms collection endpoint."""
+    return FORMS.format(project_id=project_id)
+
+
+def form(project_id: int, form_id: int) -> str:
+    """Return one project form endpoint."""
+    return FORM.format(project_id=project_id, form_id=form_id)
+
+
+def form_templates(project_id: int) -> str:
+    """Return project form templates."""
+    return FORM_TEMPLATES.format(project_id=project_id)
+
+
+def action_plans(project_id: int) -> str:
+    """Return the project action plans collection endpoint."""
+    return ACTION_PLANS.format(project_id=project_id)
+
+
+def action_plan(project_id: int, action_plan_id: int) -> str:
+    """Return one project action plan endpoint."""
+    return ACTION_PLAN.format(project_id=project_id, action_plan_id=action_plan_id)
+
+
+def action_plan_change_history_events(project_id: int, action_plan_id: int) -> str:
+    """Return change history events for one action plan."""
+    return ACTION_PLAN_CHANGE_HISTORY_EVENTS.format(
+        project_id=project_id,
+        action_plan_id=action_plan_id,
+    )
+
+
 class Endpoints:
     """Backward-compatible namespace for endpoint path templates."""
 
@@ -932,3 +1103,26 @@ class Endpoints:
     BILLING_PERIOD = BILLING_PERIOD
     COST_TYPES = COST_TYPES
     TAX_CODES = TAX_CODES
+    PROJECT_SCHEDULE = PROJECT_SCHEDULE
+    SCHEDULE_SETTINGS = SCHEDULE_SETTINGS
+    SCHEDULE_TYPE = SCHEDULE_TYPE
+    SCHEDULE_INTEGRATION = SCHEDULE_INTEGRATION
+    SCHEDULE_IMPORT_STATUS = SCHEDULE_IMPORT_STATUS
+    SCHEDULE_RESOURCE_ASSIGNMENTS = SCHEDULE_RESOURCE_ASSIGNMENTS
+    SCHEDULE_RESOURCE_ASSIGNMENT = SCHEDULE_RESOURCE_ASSIGNMENT
+    TASKS = TASKS
+    TASK = TASK
+    TASK_REQUESTED_CHANGES = TASK_REQUESTED_CHANGES
+    CALENDAR_ITEMS = CALENDAR_ITEMS
+    CALENDAR_ITEM = CALENDAR_ITEM
+    COORDINATION_ISSUES = COORDINATION_ISSUES
+    COORDINATION_ISSUE = COORDINATION_ISSUE
+    COORDINATION_ISSUE_CHANGE_HISTORY = COORDINATION_ISSUE_CHANGE_HISTORY
+    COORDINATION_ISSUE_ACTIVITY_FEED = COORDINATION_ISSUE_ACTIVITY_FEED
+    COORDINATION_ISSUE_FILTER_OPTIONS = COORDINATION_ISSUE_FILTER_OPTIONS
+    FORMS = FORMS
+    FORM = FORM
+    FORM_TEMPLATES = FORM_TEMPLATES
+    ACTION_PLANS = ACTION_PLANS
+    ACTION_PLAN = ACTION_PLAN
+    ACTION_PLAN_CHANGE_HISTORY_EVENTS = ACTION_PLAN_CHANGE_HISTORY_EVENTS

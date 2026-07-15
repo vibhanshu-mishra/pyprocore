@@ -15,7 +15,7 @@ It is model-agnostic, local-first, and safety-first. The current stable release,
 Current repository status:
 
 - Published stable release: `2.2.0`
-- Unreleased branch work: Phase 8A, Phase 8C, Phase 8D, Phase 8E, and Phase 8F read-only API coverage, plus Phase 8B client-credentials auth support
+- Unreleased branch work: Phase 8A, Phase 8C, Phase 8D, Phase 8E, Phase 8F, and Phase 8G read-only API coverage, plus Phase 8B client-credentials auth support
 - Procore tool execution remains disabled
 
 ```bash
@@ -107,7 +107,7 @@ PyProcore is mostly read-oriented and built for safe automation. Current support
 - Specifications
 - Photos
 - Daily Logs
-- Observations, Punch Items, Generic Tool correspondence items, Meetings, Inspections, Incidents, Directory users, Vendors, Departments, Distribution Groups, and Locations in the current unreleased branch
+- Observations, Punch Items, Generic Tool correspondence items, Meetings, Inspections, Incidents, Directory users, Vendors, Departments, Distribution Groups, Locations, contracts, invoices, payments, schedules, tasks, calendar items, coordination issues, forms, and action plans in the current unreleased branch
 - Attachments and files when Procore returns usable URLs
 
 See [API Coverage](docs/api-coverage.md) for endpoint notes, live-verification limitations, and Procore permission context.
@@ -150,6 +150,21 @@ Included in `v2.2.0`:
 - Agent Evaluation Harness
 
 The Phase 7 layer is local-first discovery/spec/eval/replay infrastructure. Tool execution remains disabled, MCP remains discovery-only, evals are local and deterministic, and metadata/schema/replay/MCP/eval commands do not call live Procore APIs.
+
+### Unreleased Phase 8G Read Coverage
+
+The current branch adds read-only helpers for project-management extras:
+
+- Schedule metadata, settings, type, integration, import status, and resource assignments
+- Tasks and task requested changes
+- Calendar items
+- Coordination issues, change history, activity feed, and filter options
+- Forms and form templates
+- Action plans and change history events
+
+No schedule uploads/import creation, task writes, coordination issue mutations,
+form submissions, action plan completions, approvals, status changes, or other
+project-management mutations are implemented.
 
 ---
 
@@ -390,6 +405,9 @@ make quality-check
   Invoices, Subcontractor Invoices, Contract Payments, Billing Periods, Cost
   Types, and Tax Codes. No contract, invoice, payment, approval, submission,
   status-change, PDF-generation, SOV, or line-item mutation behavior is included.
+- Phase 8G read-only coverage for schedules, tasks, calendar items,
+  coordination issues, forms, and action plans. No project-management write,
+  upload, submission, approval, status-change, or completion behavior is included.
 
 ### Future
 

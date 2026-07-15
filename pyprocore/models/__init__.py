@@ -1,14 +1,17 @@
 """Typed response models for Procore resources."""
 
 from pyprocore.models.base import ProcoreModel
-from pyprocore.models.resources import (
+from pyprocore.models.resources import (  # noqa: F401
     RFI,
+    ActionPlan,
+    ActionPlanChangeHistoryEvent,
     Attachment,
     BillingPeriod,
     BudgetDetailColumn,
     BudgetDetailRow,
     BudgetSummaryRow,
     BudgetView,
+    CalendarItem,
     ChangeEvent,
     ChangeEventSettings,
     ChangeEventStatus,
@@ -20,6 +23,10 @@ from pyprocore.models.resources import (
     Company,
     CompanyUser,
     ContractPayment,
+    CoordinationIssue,
+    CoordinationIssueActivity,
+    CoordinationIssueChangeHistoryEvent,
+    CoordinationIssueFilterOption,
     Correspondence,
     CostCode,
     CostType,
@@ -36,6 +43,8 @@ from pyprocore.models.resources import (
     Drawing,
     DrawingArea,
     DrawingDiscipline,
+    Form,
+    FormTemplate,
     GenericTool,
     Incident,
     IncidentConfiguration,
@@ -54,6 +63,7 @@ from pyprocore.models.resources import (
     PrimeContractLineItem,
     PrimeContractSummary,
     Project,
+    ProjectSchedule,
     ProjectUser,
     PunchItem,
     PurchaseOrderContract,
@@ -61,6 +71,11 @@ from pyprocore.models.resources import (
     RequisitionContractDetailItem,
     RequisitionContractItem,
     RFIQuestion,
+    ScheduleImportStatus,
+    ScheduleIntegration,
+    ScheduleResourceAssignment,
+    ScheduleSettings,
+    ScheduleType,
     SpecificationRevisionDownload,
     SpecificationSection,
     SpecificationSectionRevision,
@@ -68,6 +83,8 @@ from pyprocore.models.resources import (
     Status,
     SubcontractorInvoice,
     Submittal,
+    Task,
+    TaskRequestedChange,
     TaxCode,
     User,
     Vendor,
@@ -149,3 +166,25 @@ __all__ = [
     "WbsCode",
     "WorkOrderContract",
 ]
+
+__all__.extend(
+    [
+        "ActionPlan",
+        "ActionPlanChangeHistoryEvent",
+        "CalendarItem",
+        "CoordinationIssue",
+        "CoordinationIssueActivity",
+        "CoordinationIssueChangeHistoryEvent",
+        "CoordinationIssueFilterOption",
+        "Form",
+        "FormTemplate",
+        "ProjectSchedule",
+        "ScheduleImportStatus",
+        "ScheduleIntegration",
+        "ScheduleResourceAssignment",
+        "ScheduleSettings",
+        "ScheduleType",
+        "Task",
+        "TaskRequestedChange",
+    ]
+)

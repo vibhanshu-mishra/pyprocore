@@ -40,6 +40,12 @@ Procore environment.
 | Subcontractor Invoices / Requisitions | Unreleased Phase 8F | List, get, find, requisition item lists, CSV/JSONL export | Read-only invoice helpers. No invoice submission, approval, rejection, package creation, or PDF compiler behavior. |
 | Contract Payments | Unreleased Phase 8F | List, get, find, CSV/JSONL export | Read-only payment helpers. No payment submission, approval, status change, or mutation behavior. |
 | Billing Periods / Cost Types / Tax Codes | Unreleased Phase 8F | List/get billing periods, list cost types, list tax codes, CSV/JSONL export | Read-only reference helpers only. |
+| Schedule | Unreleased Phase 8G | Get schedule metadata, settings, type, integration, import status; list/get resource assignments; CSV/JSONL export for assignments | Read-only helpers only. No schedule uploads or import creation. |
+| Tasks | Unreleased Phase 8G | List, get, find, requested changes, CSV/JSONL export | Read-only helpers only. No task or requested-change mutations. |
+| Calendar Items | Unreleased Phase 8G | List, get, find, CSV/JSONL export | Read-only project calendar item helpers. |
+| Coordination Issues | Unreleased Phase 8G | List, get, find, change history, activity feed, filter options, CSV/JSONL export | Read-only helpers only. No coordination issue mutations, associations, or status transitions. |
+| Forms | Unreleased Phase 8G | List, get, find, templates, CSV/JSONL export | Read-only helpers only. No form creation, edits, submissions, or response mutations. |
+| Action Plans | Unreleased Phase 8G | List, get, find, change history events, CSV/JSONL export | Read-only helpers only. No completion, signature, request/response, closeout, approval, or status mutation behavior. |
 | Attachments/downloads | Supported | Streaming downloads, skip existing files, overwrite option | Downloads are local file operations only. |
 | Workflows | Supported | CSV, JSONL, folder sync, project context, AI-ready packages | Workflows create local files and do not mutate Procore data. |
 | Webhooks | Local helpers | Validate, redact, save, list, dry-run dispatch | No hosted webhook server is included. |
@@ -126,6 +132,23 @@ statuses, generate PDFs, update SOV values, mutate line items, or submit
 payments. Agent registry entries are metadata only, Procore tool execution
 remains disabled, MCP remains discovery-only, and no external AI/model APIs are
 called.
+
+## Phase 8G Endpoint Notes
+
+Phase 8G adds read-oriented SDK coverage for remaining project-management extras:
+Schedule, Tasks, Calendar Items, Coordination Issues, Forms, and Action Plans.
+The implementation intentionally exposes safe GET/list/find and local CSV/JSONL
+export helpers only.
+
+These helpers do not create, update, delete, upload schedules, create schedule
+imports, mutate tasks, mutate requested changes, mutate coordination issues,
+submit forms, complete action plans, add signatures, approve, close out, change
+statuses, or perform other project-management writes. Agent registry entries are
+metadata only, Procore tool execution remains disabled, MCP remains
+discovery-only, and no external AI/model APIs are called.
+
+Transmittals and Project Emails are left as future coverage until clear
+read/list endpoint shapes are confirmed for this SDK.
 
 ## Live Verification Notes
 

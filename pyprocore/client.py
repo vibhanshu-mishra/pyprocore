@@ -18,11 +18,14 @@ from pyprocore.core.config import get_settings
 from pyprocore.core.exceptions import ValidationError
 from pyprocore.models import (
     RFI,
+    ActionPlan,
+    ActionPlanChangeHistoryEvent,
     BillingPeriod,
     BudgetDetailColumn,
     BudgetDetailRow,
     BudgetSummaryRow,
     BudgetView,
+    CalendarItem,
     ChangeEvent,
     ChangeEventSettings,
     ChangeEventStatus,
@@ -34,6 +37,10 @@ from pyprocore.models import (
     Company,
     CompanyUser,
     ContractPayment,
+    CoordinationIssue,
+    CoordinationIssueActivity,
+    CoordinationIssueChangeHistoryEvent,
+    CoordinationIssueFilterOption,
     Correspondence,
     CostCode,
     CostType,
@@ -50,6 +57,8 @@ from pyprocore.models import (
     Drawing,
     DrawingArea,
     DrawingDiscipline,
+    Form,
+    FormTemplate,
     GenericTool,
     Incident,
     IncidentConfiguration,
@@ -67,17 +76,25 @@ from pyprocore.models import (
     PrimeContractLineItem,
     PrimeContractSummary,
     Project,
+    ProjectSchedule,
     ProjectUser,
     PunchItem,
     PurchaseOrderContract,
     RequisitionChangeOrderItem,
     RequisitionContractDetailItem,
     RequisitionContractItem,
+    ScheduleImportStatus,
+    ScheduleIntegration,
+    ScheduleResourceAssignment,
+    ScheduleSettings,
+    ScheduleType,
     SpecificationSection,
     SpecificationSectionRevision,
     SpecificationSet,
     SubcontractorInvoice,
     Submittal,
+    Task,
+    TaskRequestedChange,
     TaxCode,
     Vendor,
     WbsCode,
@@ -91,12 +108,15 @@ from pyprocore.services import (
     download_rfi_attachments,
     download_specification_section_revision,
     download_submittal_attachments,
+    find_action_plan,
+    find_calendar_item,
     find_change_event,
     find_commitment,
     find_commitment_contract,
     find_company,
     find_company_user,
     find_contract_payment,
+    find_coordination_issue,
     find_correspondence,
     find_department,
     find_direct_cost,
@@ -104,6 +124,7 @@ from pyprocore.services import (
     find_document_folder,
     find_drawing,
     find_drawings_contains,
+    find_form,
     find_incident,
     find_inspection,
     find_location,
@@ -124,10 +145,13 @@ from pyprocore.services import (
     find_specification_section,
     find_subcontractor_invoice,
     find_submittal,
+    find_task,
     find_vendor,
     find_work_order_contract,
+    get_action_plan,
     get_billing_period,
     get_budget_view,
+    get_calendar_item,
     get_change_event,
     get_change_event_settings,
     get_change_order_package,
@@ -136,6 +160,7 @@ from pyprocore.services import (
     get_commitment_contract,
     get_company_user,
     get_contract_payment,
+    get_coordination_issue,
     get_correspondence,
     get_daily_log,
     get_daily_log_counts,
@@ -146,6 +171,7 @@ from pyprocore.services import (
     get_document_folder,
     get_drawing,
     get_drawing_area,
+    get_form,
     get_generic_tool,
     get_incident,
     get_inspection,
@@ -161,22 +187,32 @@ from pyprocore.services import (
     get_project,
     get_project_distribution_group,
     get_project_incident_configuration,
+    get_project_schedule,
     get_project_user,
     get_punch_item,
     get_purchase_order_contract,
     get_rfi,
+    get_schedule_import_status,
+    get_schedule_integration,
+    get_schedule_resource_assignment,
+    get_schedule_settings,
+    get_schedule_type,
     get_specification_section,
     get_specification_section_revision,
     get_subcontractor_invoice,
     get_submittal,
+    get_task,
     get_vendor,
     get_work_order_contract,
     list_accident_logs,
+    list_action_plan_change_history_events,
+    list_action_plans,
     list_billing_periods,
     list_budget_detail_columns,
     list_budget_details,
     list_budget_view_summary_rows,
     list_budget_views,
+    list_calendar_items,
     list_call_logs,
     list_change_event_statuses,
     list_change_event_types,
@@ -189,6 +225,10 @@ from pyprocore.services import (
     list_company_inactive_users,
     list_company_users,
     list_contract_payments,
+    list_coordination_issue_activity_feed,
+    list_coordination_issue_change_history,
+    list_coordination_issue_filter_options,
+    list_coordination_issues,
     list_correspondences,
     list_cost_codes,
     list_cost_types,
@@ -207,6 +247,8 @@ from pyprocore.services import (
     list_drawing_disciplines,
     list_drawings,
     list_dumpster_logs,
+    list_form_templates,
+    list_forms,
     list_generic_tools,
     list_incidents,
     list_inspections,
@@ -234,12 +276,15 @@ from pyprocore.services import (
     list_requisition_contract_detail_items,
     list_requisition_contract_items,
     list_rfis,
+    list_schedule_resource_assignments,
     list_specification_section_revisions,
     list_specification_sections,
     list_specification_sets,
     list_standard_cost_codes,
     list_subcontractor_invoices,
     list_submittals,
+    list_task_requested_changes,
+    list_tasks,
     list_tax_codes,
     list_vendors,
     list_visitor_logs,
@@ -2302,6 +2347,327 @@ class TaxCodesClient:
         return list_tax_codes(company_id, **filters)
 
 
+class ScheduleClient:
+    """Convenience methods for read-only project schedule resources."""
+
+    def get(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> ProjectSchedule:
+        """Get project schedule metadata."""
+        return get_project_schedule(company_id, project_id, **filters)
+
+    def settings(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> ScheduleSettings:
+        """Get project schedule settings."""
+        return get_schedule_settings(company_id, project_id, **filters)
+
+    def type(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> ScheduleType:
+        """Get project schedule type metadata."""
+        return get_schedule_type(company_id, project_id, **filters)
+
+    def integration(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> ScheduleIntegration:
+        """Get project schedule integration metadata."""
+        return get_schedule_integration(company_id, project_id, **filters)
+
+    def import_status(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> ScheduleImportStatus:
+        """Get read-only project schedule import status."""
+        return get_schedule_import_status(company_id, project_id, **filters)
+
+    def resource_assignments(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> builtins.list[ScheduleResourceAssignment]:
+        """List project schedule resource assignments."""
+        return list_schedule_resource_assignments(company_id, project_id, **filters)
+
+    def get_resource_assignment(
+        self,
+        project_id: int,
+        schedule_resource_assignment_id: int,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> ScheduleResourceAssignment:
+        """Get one schedule resource assignment."""
+        return get_schedule_resource_assignment(
+            company_id,
+            project_id,
+            schedule_resource_assignment_id,
+            **filters,
+        )
+
+
+class TasksClient:
+    """Convenience methods for read-only project tasks."""
+
+    def list(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[Task]:
+        """List project tasks."""
+        return list_tasks(company_id, project_id, **filters)
+
+    def get(self, project_id: int, task_id: int, company_id: int | None = None) -> Task:
+        """Get one project task."""
+        return get_task(company_id, project_id, task_id)
+
+    def find(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        *,
+        number: str | int | None = None,
+        name: str | None = None,
+        query: str | None = None,
+    ) -> Task:
+        """Find one task by number, title, name, or query text."""
+        return find_task(
+            project_id,
+            company_id=company_id,
+            number=number,
+            name=name,
+            query=query,
+        )
+
+    def requested_changes(
+        self,
+        project_id: int,
+        task_id: int,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> builtins.list[TaskRequestedChange]:
+        """List read-only requested changes for one task."""
+        return list_task_requested_changes(company_id, project_id, task_id, **filters)
+
+
+class CalendarItemsClient:
+    """Convenience methods for read-only calendar items."""
+
+    def list(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[CalendarItem]:
+        """List project calendar items."""
+        return list_calendar_items(company_id, project_id, **filters)
+
+    def get(
+        self,
+        project_id: int,
+        calendar_item_id: int,
+        company_id: int | None = None,
+    ) -> CalendarItem:
+        """Get one project calendar item."""
+        return get_calendar_item(company_id, project_id, calendar_item_id)
+
+    def find(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        *,
+        number: str | int | None = None,
+        name: str | None = None,
+        query: str | None = None,
+    ) -> CalendarItem:
+        """Find one calendar item by number, title, name, or query text."""
+        return find_calendar_item(
+            project_id,
+            company_id=company_id,
+            number=number,
+            name=name,
+            query=query,
+        )
+
+
+class CoordinationIssuesClient:
+    """Convenience methods for read-only coordination issues."""
+
+    def list(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[CoordinationIssue]:
+        """List project coordination issues."""
+        return list_coordination_issues(company_id, project_id, **filters)
+
+    def get(
+        self,
+        project_id: int,
+        coordination_issue_id: int,
+        company_id: int | None = None,
+    ) -> CoordinationIssue:
+        """Get one project coordination issue."""
+        return get_coordination_issue(company_id, project_id, coordination_issue_id)
+
+    def find(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        *,
+        number: str | int | None = None,
+        name: str | None = None,
+        query: str | None = None,
+    ) -> CoordinationIssue:
+        """Find one coordination issue by number, title, name, or query text."""
+        return find_coordination_issue(
+            project_id,
+            company_id=company_id,
+            number=number,
+            name=name,
+            query=query,
+        )
+
+    def change_history(
+        self,
+        project_id: int,
+        coordination_issue_id: int,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> builtins.list[CoordinationIssueChangeHistoryEvent]:
+        """List read-only change history for one coordination issue."""
+        return list_coordination_issue_change_history(
+            company_id,
+            project_id,
+            coordination_issue_id,
+            **filters,
+        )
+
+    def activity_feed(
+        self,
+        project_id: int,
+        coordination_issue_id: int,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> builtins.list[CoordinationIssueActivity]:
+        """List read-only activity feed entries for one coordination issue."""
+        return list_coordination_issue_activity_feed(
+            company_id,
+            project_id,
+            coordination_issue_id,
+            **filters,
+        )
+
+    def filter_options(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> builtins.list[CoordinationIssueFilterOption]:
+        """List read-only coordination issue filter options."""
+        return list_coordination_issue_filter_options(company_id, project_id, **filters)
+
+
+class FormsClient:
+    """Convenience methods for read-only forms."""
+
+    def list(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[Form]:
+        """List project forms."""
+        return list_forms(company_id, project_id, **filters)
+
+    def get(self, project_id: int, form_id: int, company_id: int | None = None) -> Form:
+        """Get one project form."""
+        return get_form(company_id, project_id, form_id)
+
+    def find(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        *,
+        number: str | int | None = None,
+        name: str | None = None,
+        query: str | None = None,
+    ) -> Form:
+        """Find one form by number, title, name, or query text."""
+        return find_form(
+            project_id,
+            company_id=company_id,
+            number=number,
+            name=name,
+            query=query,
+        )
+
+    def templates(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> builtins.list[FormTemplate]:
+        """List read-only project form templates."""
+        return list_form_templates(company_id, project_id, **filters)
+
+
+class ActionPlansClient:
+    """Convenience methods for read-only action plans."""
+
+    def list(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[ActionPlan]:
+        """List project action plans."""
+        return list_action_plans(company_id, project_id, **filters)
+
+    def get(
+        self,
+        project_id: int,
+        action_plan_id: int,
+        company_id: int | None = None,
+    ) -> ActionPlan:
+        """Get one project action plan."""
+        return get_action_plan(company_id, project_id, action_plan_id)
+
+    def find(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        *,
+        number: str | int | None = None,
+        name: str | None = None,
+        query: str | None = None,
+    ) -> ActionPlan:
+        """Find one action plan by number, title, name, or query text."""
+        return find_action_plan(
+            project_id,
+            company_id=company_id,
+            number=number,
+            name=name,
+            query=query,
+        )
+
+    def change_history(
+        self,
+        project_id: int,
+        action_plan_id: int,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> builtins.list[ActionPlanChangeHistoryEvent]:
+        """List read-only change history events for one action plan."""
+        return list_action_plan_change_history_events(
+            company_id,
+            project_id,
+            action_plan_id,
+            **filters,
+        )
+
+
 class AutomationClient:
     """Convenience methods for AI-ready automation workflow packages."""
 
@@ -3255,14 +3621,22 @@ class Procore:
         self.billing_periods = BillingPeriodsClient()
         self.cost_types = CostTypesClient()
         self.tax_codes = TaxCodesClient()
+        self.schedule = ScheduleClient()
+        self.tasks = TasksClient()
+        self.calendar_items = CalendarItemsClient()
+        self.coordination_issues = CoordinationIssuesClient()
+        self.forms = FormsClient()
+        self.action_plans = ActionPlansClient()
         self.automation = AutomationClient()
         self.workflows = WorkflowsClient()
 
 
 __all__ = [
+    "ActionPlansClient",
     "AutomationClient",
     "BillingPeriodsClient",
     "BudgetClient",
+    "CalendarItemsClient",
     "ChangeEventsClient",
     "ChangeOrderPackagesClient",
     "CompaniesClient",
@@ -3272,6 +3646,7 @@ __all__ = [
     "CommitmentsClient",
     "CorrespondenceClient",
     "ContractPaymentsClient",
+    "CoordinationIssuesClient",
     "CostCodesClient",
     "CostTypesClient",
     "DailyLogsClient",
@@ -3280,6 +3655,7 @@ __all__ = [
     "DistributionGroupsClient",
     "DocumentsClient",
     "DrawingsClient",
+    "FormsClient",
     "IncidentsClient",
     "InspectionsClient",
     "LocationsClient",
@@ -3294,10 +3670,12 @@ __all__ = [
     "PunchItemsClient",
     "PurchaseOrderContractsClient",
     "RFIsClient",
+    "ScheduleClient",
     "SpecificationsClient",
     "SubcontractorInvoicesClient",
     "SubmittalsClient",
     "TaxCodesClient",
+    "TasksClient",
     "VendorsClient",
     "WorkOrderContractsClient",
     "WorkflowsClient",

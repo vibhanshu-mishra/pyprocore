@@ -9,12 +9,15 @@ from pyprocore.core.config import ProcoreSettings, get_settings
 from pyprocore.core.exceptions import DuplicateMatchError, MultipleResultsError, NotFoundError
 from pyprocore.models import (
     RFI,
+    ActionPlan,
+    CalendarItem,
     ChangeEvent,
     Commitment,
     CommitmentContract,
     Company,
     CompanyUser,
     ContractPayment,
+    CoordinationIssue,
     Correspondence,
     Department,
     DirectCost,
@@ -22,6 +25,7 @@ from pyprocore.models import (
     Document,
     DocumentFolder,
     Drawing,
+    Form,
     Incident,
     Inspection,
     Location,
@@ -36,6 +40,7 @@ from pyprocore.models import (
     PurchaseOrderContract,
     SubcontractorInvoice,
     Submittal,
+    Task,
     Vendor,
     WorkOrderContract,
 )
@@ -68,6 +73,13 @@ from pyprocore.services.financials import (
 )
 from pyprocore.services.observations import list_observations
 from pyprocore.services.operations import list_incidents, list_inspections, list_meetings
+from pyprocore.services.project_management import (
+    list_action_plans,
+    list_calendar_items,
+    list_coordination_issues,
+    list_forms,
+    list_tasks,
+)
 from pyprocore.services.projects import list_projects
 from pyprocore.services.punch_items import list_punch_items
 from pyprocore.services.rfis import list_rfis
@@ -391,6 +403,121 @@ def find_work_order_contract(
         query=search_query,
         values=lambda item: [item.number, item.title, item.name],
         resource_name="work order contract",
+    )
+
+
+def find_task(
+    project_id: int,
+    *,
+    number: str | int | None = None,
+    name: str | None = None,
+    query: str | None = None,
+    company_id: int | None = None,
+) -> Task:
+    """Find one task by number, title, subject, or name within a project."""
+    search_query = _name_number_query(
+        resource_name="task",
+        name=name,
+        number=number,
+        query=query,
+    )
+    return _resolve_one(
+        resources=list_tasks(company_id, project_id),
+        query=search_query,
+        values=lambda item: [item.number, item.title, item.name, item.subject],
+        resource_name="task",
+    )
+
+
+def find_calendar_item(
+    project_id: int,
+    *,
+    number: str | int | None = None,
+    name: str | None = None,
+    query: str | None = None,
+    company_id: int | None = None,
+) -> CalendarItem:
+    """Find one calendar item by number, title, or name within a project."""
+    search_query = _name_number_query(
+        resource_name="calendar item",
+        name=name,
+        number=number,
+        query=query,
+    )
+    return _resolve_one(
+        resources=list_calendar_items(company_id, project_id),
+        query=search_query,
+        values=lambda item: [item.number, item.title, item.name],
+        resource_name="calendar item",
+    )
+
+
+def find_coordination_issue(
+    project_id: int,
+    *,
+    number: str | int | None = None,
+    name: str | None = None,
+    query: str | None = None,
+    company_id: int | None = None,
+) -> CoordinationIssue:
+    """Find one coordination issue by number, title, or name within a project."""
+    search_query = _name_number_query(
+        resource_name="coordination issue",
+        name=name,
+        number=number,
+        query=query,
+    )
+    return _resolve_one(
+        resources=list_coordination_issues(company_id, project_id),
+        query=search_query,
+        values=lambda item: [item.number, item.title, item.name],
+        resource_name="coordination issue",
+    )
+
+
+def find_form(
+    project_id: int,
+    *,
+    number: str | int | None = None,
+    name: str | None = None,
+    query: str | None = None,
+    company_id: int | None = None,
+) -> Form:
+    """Find one form by number, title, or name within a project."""
+    search_query = _name_number_query(
+        resource_name="form",
+        name=name,
+        number=number,
+        query=query,
+    )
+    return _resolve_one(
+        resources=list_forms(company_id, project_id),
+        query=search_query,
+        values=lambda item: [item.number, item.title, item.name],
+        resource_name="form",
+    )
+
+
+def find_action_plan(
+    project_id: int,
+    *,
+    number: str | int | None = None,
+    name: str | None = None,
+    query: str | None = None,
+    company_id: int | None = None,
+) -> ActionPlan:
+    """Find one action plan by number, title, or name within a project."""
+    search_query = _name_number_query(
+        resource_name="action plan",
+        name=name,
+        number=number,
+        query=query,
+    )
+    return _resolve_one(
+        resources=list_action_plans(company_id, project_id),
+        query=search_query,
+        values=lambda item: [item.number, item.title, item.name],
+        resource_name="action plan",
     )
 
 

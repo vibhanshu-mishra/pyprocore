@@ -78,12 +78,15 @@ from pyprocore.services import (
     download_rfi_attachments,
     download_specification_section_revision,
     download_submittal_attachments,
+    find_action_plan,
+    find_calendar_item,
     find_change_event,
     find_commitment,
     find_commitment_contract,
     find_company,
     find_company_user,
     find_contract_payment,
+    find_coordination_issue,
     find_correspondence,
     find_department,
     find_direct_cost,
@@ -91,6 +94,7 @@ from pyprocore.services import (
     find_document_folder,
     find_drawing,
     find_drawings_contains,
+    find_form,
     find_incident,
     find_inspection,
     find_location,
@@ -110,15 +114,19 @@ from pyprocore.services import (
     find_specification_section,
     find_subcontractor_invoice,
     find_submittal,
+    find_task,
     find_vendor,
     find_work_order_contract,
+    get_action_plan,
     get_billing_period,
+    get_calendar_item,
     get_change_event,
     get_change_event_settings,
     get_commitment,
     get_commitment_contract,
     get_company_user,
     get_contract_payment,
+    get_coordination_issue,
     get_correspondence,
     get_daily_log,
     get_daily_log_counts,
@@ -129,6 +137,7 @@ from pyprocore.services import (
     get_document_folder,
     get_drawing,
     get_drawing_area,
+    get_form,
     get_generic_tool,
     get_incident,
     get_inspection,
@@ -143,22 +152,32 @@ from pyprocore.services import (
     get_prime_contract_summary,
     get_project_distribution_group,
     get_project_incident_configuration,
+    get_project_schedule,
     get_project_user,
     get_punch_item,
     get_purchase_order_contract,
     get_rfi,
+    get_schedule_import_status,
+    get_schedule_integration,
+    get_schedule_resource_assignment,
+    get_schedule_settings,
+    get_schedule_type,
     get_specification_section,
     get_specification_section_revision,
     get_subcontractor_invoice,
     get_submittal,
+    get_task,
     get_vendor,
     get_work_order_contract,
     list_accident_logs,
+    list_action_plan_change_history_events,
+    list_action_plans,
     list_billing_periods,
     list_budget_detail_columns,
     list_budget_details,
     list_budget_view_summary_rows,
     list_budget_views,
+    list_calendar_items,
     list_call_logs,
     list_change_event_statuses,
     list_change_event_types,
@@ -171,6 +190,10 @@ from pyprocore.services import (
     list_company_inactive_users,
     list_company_users,
     list_contract_payments,
+    list_coordination_issue_activity_feed,
+    list_coordination_issue_change_history,
+    list_coordination_issue_filter_options,
+    list_coordination_issues,
     list_correspondences,
     list_cost_codes,
     list_cost_types,
@@ -189,6 +212,8 @@ from pyprocore.services import (
     list_drawing_disciplines,
     list_drawings,
     list_dumpster_logs,
+    list_form_templates,
+    list_forms,
     list_generic_tools,
     list_incidents,
     list_inspections,
@@ -216,11 +241,14 @@ from pyprocore.services import (
     list_requisition_contract_detail_items,
     list_requisition_contract_items,
     list_rfis,
+    list_schedule_resource_assignments,
     list_specification_section_revisions,
     list_specification_sections,
     list_specification_sets,
     list_subcontractor_invoices,
     list_submittals,
+    list_task_requested_changes,
+    list_tasks,
     list_tax_codes,
     list_vendors,
     list_visitor_logs,
@@ -250,10 +278,13 @@ from pyprocore.workflows import (
     build_enhanced_rfi_package,
     build_enhanced_submittal_package,
     build_project_context_package,
+    export_action_plan_change_history_to_csv,
+    export_action_plans_to_csv,
     export_billing_periods_to_csv,
     export_budget_details_to_csv,
     export_budget_summary_rows_to_csv,
     export_budget_views_to_csv,
+    export_calendar_items_to_csv,
     export_change_events_to_csv,
     export_change_order_packages_to_csv,
     export_commitment_change_orders_to_csv,
@@ -261,12 +292,18 @@ from pyprocore.workflows import (
     export_commitments_to_csv,
     export_company_users_to_csv,
     export_contract_payments_to_csv,
+    export_coordination_issue_activity_feed_to_csv,
+    export_coordination_issue_change_history_to_csv,
+    export_coordination_issue_filter_options_to_csv,
+    export_coordination_issues_to_csv,
     export_correspondences_to_csv,
     export_cost_codes_to_csv,
     export_cost_types_to_csv,
     export_departments_to_csv,
     export_direct_costs_to_csv,
     export_distribution_groups_to_csv,
+    export_form_templates_to_csv,
+    export_forms_to_csv,
     export_incidents_to_csv,
     export_inspections_to_csv,
     export_locations_to_csv,
@@ -284,8 +321,11 @@ from pyprocore.workflows import (
     export_requisition_contract_detail_items_to_csv,
     export_requisition_contract_items_to_csv,
     export_rfis_to_csv,
+    export_schedule_resource_assignments_to_csv,
     export_subcontractor_invoices_to_csv,
     export_submittals_to_csv,
+    export_task_requested_changes_to_csv,
+    export_tasks_to_csv,
     export_tax_codes_to_csv,
     export_vendors_to_csv,
     export_work_order_contracts_to_csv,
@@ -1222,6 +1262,111 @@ def build_parser() -> argparse.ArgumentParser:
     tax_codes_parser = subcommands.add_parser("tax-codes", help="List company tax codes")
     _add_company_options(tax_codes_parser)
 
+    for command_name, help_text in (
+        ("project-schedule", "Get read-only project schedule metadata"),
+        ("schedule-settings", "Get read-only project schedule settings"),
+        ("schedule-type", "Get read-only project schedule type metadata"),
+        ("schedule-integration", "Get read-only project schedule integration metadata"),
+        ("schedule-import-status", "Get read-only project schedule import status"),
+        ("schedule-resource-assignments", "List schedule resource assignments"),
+        ("tasks", "List project tasks"),
+        ("calendar-items", "List project calendar items"),
+        ("coordination-issues", "List project coordination issues"),
+        ("forms", "List project forms"),
+        ("form-templates", "List project form templates"),
+        ("action-plans", "List project action plans"),
+    ):
+        project_management_parser = subcommands.add_parser(command_name, help=help_text)
+        _add_project_company_options(project_management_parser)
+        _add_filter_options(project_management_parser)
+
+    for command_name, help_text, id_dest in (
+        ("schedule-resource-assignment", "Get one schedule resource assignment", "assignment_id"),
+        ("task", "Get one project task", "task_id"),
+        ("calendar-item", "Get one project calendar item", "calendar_item_id"),
+        ("coordination-issue", "Get one project coordination issue", "coordination_issue_id"),
+        ("form", "Get one project form", "form_id"),
+        ("action-plan", "Get one project action plan", "action_plan_id"),
+    ):
+        project_management_item_parser = subcommands.add_parser(command_name, help=help_text)
+        _add_project_company_options(project_management_item_parser)
+        project_management_item_parser.add_argument("--id", dest=id_dest, type=int, required=True)
+
+    for command_name, help_text in (
+        ("find-task", "Find one task by number, title, or text"),
+        ("find-calendar-item", "Find one calendar item by number, title, or text"),
+        ("find-coordination-issue", "Find one coordination issue by number, title, or text"),
+        ("find-form", "Find one form by number, title, or text"),
+        ("find-action-plan", "Find one action plan by number, title, or text"),
+    ):
+        project_management_find_parser = subcommands.add_parser(command_name, help=help_text)
+        _add_project_company_options(project_management_find_parser)
+        _add_number_title_query_options(project_management_find_parser)
+
+    task_requested_changes_parser = subcommands.add_parser(
+        "task-requested-changes",
+        help="List read-only requested changes for one task",
+    )
+    _add_project_company_options(task_requested_changes_parser)
+    task_requested_changes_parser.add_argument(
+        "--task",
+        "--task-id",
+        dest="task_id",
+        type=int,
+        required=True,
+    )
+    _add_filter_options(task_requested_changes_parser)
+
+    coordination_issue_change_history_parser = subcommands.add_parser(
+        "coordination-issue-change-history",
+        help="List read-only change history for one coordination issue",
+    )
+    _add_project_company_options(coordination_issue_change_history_parser)
+    coordination_issue_change_history_parser.add_argument(
+        "--coordination-issue",
+        "--coordination-issue-id",
+        dest="coordination_issue_id",
+        type=int,
+        required=True,
+    )
+    _add_filter_options(coordination_issue_change_history_parser)
+
+    coordination_issue_activity_feed_parser = subcommands.add_parser(
+        "coordination-issue-activity-feed",
+        help="List read-only activity feed entries for one coordination issue",
+    )
+    _add_project_company_options(coordination_issue_activity_feed_parser)
+    coordination_issue_activity_feed_parser.add_argument(
+        "--coordination-issue",
+        "--coordination-issue-id",
+        dest="coordination_issue_id",
+        type=int,
+        required=True,
+    )
+    _add_filter_options(coordination_issue_activity_feed_parser)
+
+    coordination_issue_filter_options_parser = subcommands.add_parser(
+        "coordination-issue-filter-options",
+        help="List read-only coordination issue filter options",
+    )
+    _add_project_company_options(coordination_issue_filter_options_parser)
+    coordination_issue_filter_options_parser.add_argument("--option-type", default=None)
+    _add_filter_options(coordination_issue_filter_options_parser)
+
+    action_plan_change_history_parser = subcommands.add_parser(
+        "action-plan-change-history",
+        help="List read-only change history events for one action plan",
+    )
+    _add_project_company_options(action_plan_change_history_parser)
+    action_plan_change_history_parser.add_argument(
+        "--action-plan",
+        "--action-plan-id",
+        dest="action_plan_id",
+        type=int,
+        required=True,
+    )
+    _add_filter_options(action_plan_change_history_parser)
+
     document_folders_parser = subcommands.add_parser(
         "document-folders",
         help="List document folders for a project",
@@ -1963,6 +2108,22 @@ def build_parser() -> argparse.ArgumentParser:
         ("export-subcontractor-invoices", "Export project subcontractor invoices to CSV", False),
         ("export-contract-payments", "Export project contract payments to CSV", False),
         ("export-billing-periods", "Export project billing periods to CSV", False),
+        (
+            "export-schedule-resource-assignments",
+            "Export schedule resource assignments to CSV",
+            False,
+        ),
+        ("export-tasks", "Export project tasks to CSV", False),
+        ("export-calendar-items", "Export project calendar items to CSV", False),
+        ("export-coordination-issues", "Export project coordination issues to CSV", False),
+        (
+            "export-coordination-issue-filter-options",
+            "Export coordination issue filter options to CSV",
+            False,
+        ),
+        ("export-forms", "Export project forms to CSV", False),
+        ("export-form-templates", "Export project form templates to CSV", False),
+        ("export-action-plans", "Export project action plans to CSV", False),
     ):
         export_parser = subcommands.add_parser(command_name, help=help_text)
         _add_project_company_options(export_parser)
@@ -1981,6 +2142,73 @@ def build_parser() -> argparse.ArgumentParser:
             required=True,
             help="CSV output path",
         )
+
+    export_task_requested_changes_parser = subcommands.add_parser(
+        "export-task-requested-changes",
+        help="Export task requested changes to CSV",
+    )
+    _add_project_company_options(export_task_requested_changes_parser)
+    export_task_requested_changes_parser.add_argument(
+        "--task",
+        "--task-id",
+        dest="task_id",
+        type=int,
+        required=True,
+    )
+    export_task_requested_changes_parser.add_argument(
+        "--output",
+        dest="output_path",
+        type=Path,
+        required=True,
+        help="CSV output path",
+    )
+
+    for command_name, help_text in (
+        (
+            "export-coordination-issue-change-history",
+            "Export coordination issue change history to CSV",
+        ),
+        (
+            "export-coordination-issue-activity-feed",
+            "Export coordination issue activity feed to CSV",
+        ),
+    ):
+        export_coordination_issue_parser = subcommands.add_parser(command_name, help=help_text)
+        _add_project_company_options(export_coordination_issue_parser)
+        export_coordination_issue_parser.add_argument(
+            "--coordination-issue",
+            "--coordination-issue-id",
+            dest="coordination_issue_id",
+            type=int,
+            required=True,
+        )
+        export_coordination_issue_parser.add_argument(
+            "--output",
+            dest="output_path",
+            type=Path,
+            required=True,
+            help="CSV output path",
+        )
+
+    export_action_plan_change_history_parser = subcommands.add_parser(
+        "export-action-plan-change-history",
+        help="Export action plan change history events to CSV",
+    )
+    _add_project_company_options(export_action_plan_change_history_parser)
+    export_action_plan_change_history_parser.add_argument(
+        "--action-plan",
+        "--action-plan-id",
+        dest="action_plan_id",
+        type=int,
+        required=True,
+    )
+    export_action_plan_change_history_parser.add_argument(
+        "--output",
+        dest="output_path",
+        type=Path,
+        required=True,
+        help="CSV output path",
+    )
 
     for command_name, help_text in (
         ("export-prime-contract-line-items", "Export prime contract line items to CSV"),
@@ -3277,6 +3505,223 @@ def run_command(args: argparse.Namespace) -> Any:
     if args.command == "tax-codes":
         return list_tax_codes(args.company_id)
 
+    if args.command == "project-schedule":
+        return get_project_schedule(args.company_id, args.project_id)
+
+    if args.command == "schedule-settings":
+        return get_schedule_settings(args.company_id, args.project_id)
+
+    if args.command == "schedule-type":
+        return get_schedule_type(args.company_id, args.project_id)
+
+    if args.command == "schedule-integration":
+        return get_schedule_integration(args.company_id, args.project_id)
+
+    if args.command == "schedule-import-status":
+        return get_schedule_import_status(args.company_id, args.project_id)
+
+    if args.command == "schedule-resource-assignments":
+        return list_schedule_resource_assignments(
+            args.company_id,
+            args.project_id,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "schedule-resource-assignment":
+        return get_schedule_resource_assignment(
+            args.company_id, args.project_id, args.assignment_id
+        )
+
+    if args.command == "tasks":
+        return list_tasks(
+            args.company_id,
+            args.project_id,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "task":
+        return get_task(args.company_id, args.project_id, args.task_id)
+
+    if args.command == "find-task":
+        return find_task(
+            args.project_id,
+            company_id=args.company_id,
+            number=args.number,
+            name=args.title,
+            query=args.query,
+        )
+
+    if args.command == "task-requested-changes":
+        return list_task_requested_changes(
+            args.company_id,
+            args.project_id,
+            args.task_id,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "calendar-items":
+        return list_calendar_items(
+            args.company_id,
+            args.project_id,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "calendar-item":
+        return get_calendar_item(args.company_id, args.project_id, args.calendar_item_id)
+
+    if args.command == "find-calendar-item":
+        return find_calendar_item(
+            args.project_id,
+            company_id=args.company_id,
+            number=args.number,
+            name=args.title,
+            query=args.query,
+        )
+
+    if args.command == "coordination-issues":
+        return list_coordination_issues(
+            args.company_id,
+            args.project_id,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "coordination-issue":
+        return get_coordination_issue(args.company_id, args.project_id, args.coordination_issue_id)
+
+    if args.command == "find-coordination-issue":
+        return find_coordination_issue(
+            args.project_id,
+            company_id=args.company_id,
+            number=args.number,
+            name=args.title,
+            query=args.query,
+        )
+
+    if args.command == "coordination-issue-change-history":
+        return list_coordination_issue_change_history(
+            args.company_id,
+            args.project_id,
+            args.coordination_issue_id,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "coordination-issue-activity-feed":
+        return list_coordination_issue_activity_feed(
+            args.company_id,
+            args.project_id,
+            args.coordination_issue_id,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "coordination-issue-filter-options":
+        return list_coordination_issue_filter_options(
+            args.company_id,
+            args.project_id,
+            option_type=args.option_type,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "forms":
+        return list_forms(
+            args.company_id,
+            args.project_id,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "form":
+        return get_form(args.company_id, args.project_id, args.form_id)
+
+    if args.command == "find-form":
+        return find_form(
+            args.project_id,
+            company_id=args.company_id,
+            number=args.number,
+            name=args.title,
+            query=args.query,
+        )
+
+    if args.command == "form-templates":
+        return list_form_templates(
+            args.company_id,
+            args.project_id,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "action-plans":
+        return list_action_plans(
+            args.company_id,
+            args.project_id,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
+    if args.command == "action-plan":
+        return get_action_plan(args.company_id, args.project_id, args.action_plan_id)
+
+    if args.command == "find-action-plan":
+        return find_action_plan(
+            args.project_id,
+            company_id=args.company_id,
+            number=args.number,
+            name=args.title,
+            query=args.query,
+        )
+
+    if args.command == "action-plan-change-history":
+        return list_action_plan_change_history_events(
+            args.company_id,
+            args.project_id,
+            args.action_plan_id,
+            status=args.status,
+            updated_after=args.updated_after,
+            updated_before=args.updated_before,
+            created_after=args.created_after,
+            created_before=args.created_before,
+        )
+
     if args.command == "document-folders":
         return list_document_folders(
             args.project_id,
@@ -3883,6 +4328,70 @@ def run_command(args: argparse.Namespace) -> Any:
 
     if args.command == "export-tax-codes":
         return export_tax_codes_to_csv(args.company_id, args.output_path)
+
+    if args.command == "export-schedule-resource-assignments":
+        return export_schedule_resource_assignments_to_csv(
+            args.company_id,
+            args.project_id,
+            args.output_path,
+        )
+
+    if args.command == "export-tasks":
+        return export_tasks_to_csv(args.company_id, args.project_id, args.output_path)
+
+    if args.command == "export-task-requested-changes":
+        return export_task_requested_changes_to_csv(
+            args.company_id,
+            args.project_id,
+            args.task_id,
+            args.output_path,
+        )
+
+    if args.command == "export-calendar-items":
+        return export_calendar_items_to_csv(args.company_id, args.project_id, args.output_path)
+
+    if args.command == "export-coordination-issues":
+        return export_coordination_issues_to_csv(args.company_id, args.project_id, args.output_path)
+
+    if args.command == "export-coordination-issue-change-history":
+        return export_coordination_issue_change_history_to_csv(
+            args.company_id,
+            args.project_id,
+            args.coordination_issue_id,
+            args.output_path,
+        )
+
+    if args.command == "export-coordination-issue-activity-feed":
+        return export_coordination_issue_activity_feed_to_csv(
+            args.company_id,
+            args.project_id,
+            args.coordination_issue_id,
+            args.output_path,
+        )
+
+    if args.command == "export-coordination-issue-filter-options":
+        return export_coordination_issue_filter_options_to_csv(
+            args.company_id,
+            args.project_id,
+            args.output_path,
+        )
+
+    if args.command == "export-forms":
+        return export_forms_to_csv(args.company_id, args.project_id, args.output_path)
+
+    if args.command == "export-form-templates":
+        return export_form_templates_to_csv(args.company_id, args.project_id, args.output_path)
+
+    if args.command == "export-action-plans":
+        return export_action_plans_to_csv(args.company_id, args.project_id, args.output_path)
+
+    if args.command == "export-action-plan-change-history":
+        return export_action_plan_change_history_to_csv(
+            args.company_id,
+            args.project_id,
+            args.action_plan_id,
+            args.output_path,
+        )
 
     if args.command == "ai-review-export":
         return build_ai_review_export(
@@ -4655,6 +5164,7 @@ def main() -> None:
         "export-budget-details",
         "export-budget-summary-rows",
         "export-budget-views",
+        "export-calendar-items",
         "export-billing-periods",
         "export-change-events",
         "export-change-order-packages",
@@ -4664,11 +5174,17 @@ def main() -> None:
         "export-commitments",
         "export-correspondences",
         "export-contract-payments",
+        "export-coordination-issue-activity-feed",
+        "export-coordination-issue-change-history",
+        "export-coordination-issue-filter-options",
+        "export-coordination-issues",
         "export-cost-codes",
         "export-cost-types",
         "export-departments",
         "export-direct-costs",
         "export-distribution-groups",
+        "export-form-templates",
+        "export-forms",
         "export-incidents",
         "export-inspections",
         "export-locations",
@@ -4686,9 +5202,14 @@ def main() -> None:
         "export-requisition-contract-detail-items",
         "export-requisition-contract-items",
         "export-rfis",
+        "export-schedule-resource-assignments",
         "export-subcontractor-invoices",
         "export-submittals",
         "export-tax-codes",
+        "export-task-requested-changes",
+        "export-tasks",
+        "export-action-plan-change-history",
+        "export-action-plans",
         "export-vendors",
         "export-work-order-contracts",
     }:

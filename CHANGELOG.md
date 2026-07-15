@@ -33,6 +33,10 @@ and this project follows semantic versioning.
 - Typed flexible models for Phase 8F contract, invoice, payment, and billing resources.
 - Service, search, object-client, CLI, CSV/JSONL export, and agent registry metadata support for Phase 8F resources.
 - Beginner-friendly Phase 8F examples and documentation.
+- Phase 8G read-only API coverage for project-management extras, including Schedule metadata/settings/type/integration/import status, Schedule Resource Assignments, Tasks, Task Requested Changes, Calendar Items, Coordination Issues, Forms, Form Templates, Action Plans, and Action Plan Change History Events.
+- Typed flexible models for Phase 8G schedule, task, calendar, coordination issue, form, and action plan resources.
+- Service, search, object-client, CLI, CSV/JSONL export, and agent registry metadata support for Phase 8G resources.
+- Beginner-friendly Phase 8G examples and documentation.
 
 ### Security
 
@@ -47,6 +51,8 @@ and this project follows semantic versioning.
 - New Phase 8E agent entries are metadata only; Procore tool execution remains disabled and MCP remains discovery-only.
 - Phase 8F remains read-oriented and does not add contract, invoice, payment, approval, submission, status-change, PDF-generation, SOV, or line-item mutations.
 - New Phase 8F agent entries are metadata only; Procore tool execution remains disabled and MCP remains discovery-only.
+- Phase 8G remains read-oriented and does not add schedule uploads/import creation, task writes, requested-change mutations, coordination issue mutations, form submissions, action plan completions, approvals, status changes, or project-management mutations.
+- New Phase 8G agent entries are metadata only; Procore tool execution remains disabled and MCP remains discovery-only.
 
 ## [2.2.0] - 2026-07-12
 

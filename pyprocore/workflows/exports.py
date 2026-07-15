@@ -10,10 +10,13 @@ from typing import Any
 
 from pyprocore.models import (
     RFI,
+    ActionPlan,
+    ActionPlanChangeHistoryEvent,
     BillingPeriod,
     BudgetDetailRow,
     BudgetSummaryRow,
     BudgetView,
+    CalendarItem,
     ChangeEvent,
     ChangeOrderPackage,
     Commitment,
@@ -21,12 +24,18 @@ from pyprocore.models import (
     CommitmentContract,
     CompanyUser,
     ContractPayment,
+    CoordinationIssue,
+    CoordinationIssueActivity,
+    CoordinationIssueChangeHistoryEvent,
+    CoordinationIssueFilterOption,
     Correspondence,
     CostType,
     Department,
     DirectCost,
     DistributionGroup,
     Document,
+    Form,
+    FormTemplate,
     Incident,
     Inspection,
     Location,
@@ -43,8 +52,11 @@ from pyprocore.models import (
     RequisitionChangeOrderItem,
     RequisitionContractDetailItem,
     RequisitionContractItem,
+    ScheduleResourceAssignment,
     SubcontractorInvoice,
     Submittal,
+    Task,
+    TaskRequestedChange,
     TaxCode,
     Vendor,
     WorkOrderContract,
@@ -89,6 +101,20 @@ from pyprocore.services.financials import (
 )
 from pyprocore.services.observations import list_observations
 from pyprocore.services.operations import list_incidents, list_inspections, list_meetings
+from pyprocore.services.project_management import (
+    list_action_plan_change_history_events,
+    list_action_plans,
+    list_calendar_items,
+    list_coordination_issue_activity_feed,
+    list_coordination_issue_change_history,
+    list_coordination_issue_filter_options,
+    list_coordination_issues,
+    list_form_templates,
+    list_forms,
+    list_schedule_resource_assignments,
+    list_task_requested_changes,
+    list_tasks,
+)
 from pyprocore.services.punch_items import list_punch_items
 from pyprocore.services.rfis import list_rfis
 from pyprocore.services.submittals import list_submittals
@@ -1417,6 +1443,322 @@ def export_tax_codes_to_jsonl(
     return _write_jsonl(list_tax_codes(company_id, **filters), output_path)
 
 
+def export_schedule_resource_assignments_to_csv(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export schedule resource assignments to a CSV file."""
+    return write_schedule_resource_assignments_csv(
+        list_schedule_resource_assignments(company_id, project_id, **filters),
+        output_path,
+    )
+
+
+def export_schedule_resource_assignments_to_jsonl(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export schedule resource assignments to newline-delimited JSON."""
+    return _write_jsonl(
+        list_schedule_resource_assignments(company_id, project_id, **filters),
+        output_path,
+    )
+
+
+def export_tasks_to_csv(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project tasks to a CSV file."""
+    return write_tasks_csv(list_tasks(company_id, project_id, **filters), output_path)
+
+
+def export_tasks_to_jsonl(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project tasks to newline-delimited JSON."""
+    return _write_jsonl(list_tasks(company_id, project_id, **filters), output_path)
+
+
+def export_task_requested_changes_to_csv(
+    company_id: int | None,
+    project_id: int,
+    task_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export read-only task requested changes to a CSV file."""
+    return write_task_requested_changes_csv(
+        list_task_requested_changes(company_id, project_id, task_id, **filters),
+        output_path,
+    )
+
+
+def export_task_requested_changes_to_jsonl(
+    company_id: int | None,
+    project_id: int,
+    task_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export read-only task requested changes to newline-delimited JSON."""
+    return _write_jsonl(
+        list_task_requested_changes(company_id, project_id, task_id, **filters),
+        output_path,
+    )
+
+
+def export_calendar_items_to_csv(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project calendar items to a CSV file."""
+    return write_calendar_items_csv(
+        list_calendar_items(company_id, project_id, **filters),
+        output_path,
+    )
+
+
+def export_calendar_items_to_jsonl(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project calendar items to newline-delimited JSON."""
+    return _write_jsonl(list_calendar_items(company_id, project_id, **filters), output_path)
+
+
+def export_coordination_issues_to_csv(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project coordination issues to a CSV file."""
+    return write_coordination_issues_csv(
+        list_coordination_issues(company_id, project_id, **filters),
+        output_path,
+    )
+
+
+def export_coordination_issues_to_jsonl(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project coordination issues to newline-delimited JSON."""
+    return _write_jsonl(list_coordination_issues(company_id, project_id, **filters), output_path)
+
+
+def export_coordination_issue_change_history_to_csv(
+    company_id: int | None,
+    project_id: int,
+    coordination_issue_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export read-only coordination issue change history to a CSV file."""
+    return write_coordination_issue_change_history_csv(
+        list_coordination_issue_change_history(
+            company_id,
+            project_id,
+            coordination_issue_id,
+            **filters,
+        ),
+        output_path,
+    )
+
+
+def export_coordination_issue_change_history_to_jsonl(
+    company_id: int | None,
+    project_id: int,
+    coordination_issue_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export read-only coordination issue change history to newline-delimited JSON."""
+    return _write_jsonl(
+        list_coordination_issue_change_history(
+            company_id,
+            project_id,
+            coordination_issue_id,
+            **filters,
+        ),
+        output_path,
+    )
+
+
+def export_coordination_issue_activity_feed_to_csv(
+    company_id: int | None,
+    project_id: int,
+    coordination_issue_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export read-only coordination issue activity feed entries to a CSV file."""
+    return write_coordination_issue_activity_feed_csv(
+        list_coordination_issue_activity_feed(
+            company_id,
+            project_id,
+            coordination_issue_id,
+            **filters,
+        ),
+        output_path,
+    )
+
+
+def export_coordination_issue_activity_feed_to_jsonl(
+    company_id: int | None,
+    project_id: int,
+    coordination_issue_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export read-only coordination issue activity feed entries to JSONL."""
+    return _write_jsonl(
+        list_coordination_issue_activity_feed(
+            company_id,
+            project_id,
+            coordination_issue_id,
+            **filters,
+        ),
+        output_path,
+    )
+
+
+def export_coordination_issue_filter_options_to_csv(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export read-only coordination issue filter options to a CSV file."""
+    return write_coordination_issue_filter_options_csv(
+        list_coordination_issue_filter_options(company_id, project_id, **filters),
+        output_path,
+    )
+
+
+def export_coordination_issue_filter_options_to_jsonl(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export read-only coordination issue filter options to newline-delimited JSON."""
+    return _write_jsonl(
+        list_coordination_issue_filter_options(company_id, project_id, **filters),
+        output_path,
+    )
+
+
+def export_forms_to_csv(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project forms to a CSV file."""
+    return write_forms_csv(list_forms(company_id, project_id, **filters), output_path)
+
+
+def export_forms_to_jsonl(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project forms to newline-delimited JSON."""
+    return _write_jsonl(list_forms(company_id, project_id, **filters), output_path)
+
+
+def export_form_templates_to_csv(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project form templates to a CSV file."""
+    return write_form_templates_csv(
+        list_form_templates(company_id, project_id, **filters),
+        output_path,
+    )
+
+
+def export_form_templates_to_jsonl(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project form templates to newline-delimited JSON."""
+    return _write_jsonl(list_form_templates(company_id, project_id, **filters), output_path)
+
+
+def export_action_plans_to_csv(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project action plans to a CSV file."""
+    return write_action_plans_csv(
+        list_action_plans(company_id, project_id, **filters),
+        output_path,
+    )
+
+
+def export_action_plans_to_jsonl(
+    company_id: int | None,
+    project_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export project action plans to newline-delimited JSON."""
+    return _write_jsonl(list_action_plans(company_id, project_id, **filters), output_path)
+
+
+def export_action_plan_change_history_to_csv(
+    company_id: int | None,
+    project_id: int,
+    action_plan_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export read-only action plan change history events to a CSV file."""
+    return write_action_plan_change_history_csv(
+        list_action_plan_change_history_events(company_id, project_id, action_plan_id, **filters),
+        output_path,
+    )
+
+
+def export_action_plan_change_history_to_jsonl(
+    company_id: int | None,
+    project_id: int,
+    action_plan_id: int,
+    output_path: Path | str,
+    **filters: Any,
+) -> Path:
+    """Export read-only action plan change history events to newline-delimited JSON."""
+    return _write_jsonl(
+        list_action_plan_change_history_events(company_id, project_id, action_plan_id, **filters),
+        output_path,
+    )
+
+
 def write_rfis_csv(rfis: Sequence[RFI], output_path: Path | str) -> Path:
     """Write already-loaded RFIs to a CSV file."""
     return _write_csv(rfis, output_path, RFI_CSV_HEADERS, _rfi_row)
@@ -1694,6 +2036,87 @@ def write_cost_types_csv(items: Sequence[CostType], output_path: Path | str) -> 
 def write_tax_codes_csv(items: Sequence[TaxCode], output_path: Path | str) -> Path:
     """Write already-loaded tax codes to a CSV file."""
     return _write_csv(items, output_path, COST_CODE_CSV_HEADERS, _cost_code_row)
+
+
+def write_schedule_resource_assignments_csv(
+    items: Sequence[ScheduleResourceAssignment],
+    output_path: Path | str,
+) -> Path:
+    """Write already-loaded schedule resource assignments to a CSV file."""
+    return _write_csv(items, output_path, FINANCIAL_CSV_HEADERS, _financial_row)
+
+
+def write_tasks_csv(items: Sequence[Task], output_path: Path | str) -> Path:
+    """Write already-loaded tasks to a CSV file."""
+    return _write_csv(items, output_path, FINANCIAL_CSV_HEADERS, _financial_row)
+
+
+def write_task_requested_changes_csv(
+    items: Sequence[TaskRequestedChange],
+    output_path: Path | str,
+) -> Path:
+    """Write already-loaded task requested changes to a CSV file."""
+    return _write_csv(items, output_path, FINANCIAL_CSV_HEADERS, _financial_row)
+
+
+def write_calendar_items_csv(items: Sequence[CalendarItem], output_path: Path | str) -> Path:
+    """Write already-loaded calendar items to a CSV file."""
+    return _write_csv(items, output_path, FINANCIAL_CSV_HEADERS, _financial_row)
+
+
+def write_coordination_issues_csv(
+    items: Sequence[CoordinationIssue],
+    output_path: Path | str,
+) -> Path:
+    """Write already-loaded coordination issues to a CSV file."""
+    return _write_csv(items, output_path, FINANCIAL_CSV_HEADERS, _financial_row)
+
+
+def write_coordination_issue_change_history_csv(
+    items: Sequence[CoordinationIssueChangeHistoryEvent],
+    output_path: Path | str,
+) -> Path:
+    """Write already-loaded coordination issue change history to a CSV file."""
+    return _write_csv(items, output_path, FINANCIAL_CSV_HEADERS, _financial_row)
+
+
+def write_coordination_issue_activity_feed_csv(
+    items: Sequence[CoordinationIssueActivity],
+    output_path: Path | str,
+) -> Path:
+    """Write already-loaded coordination issue activity feed entries to a CSV file."""
+    return _write_csv(items, output_path, FINANCIAL_CSV_HEADERS, _financial_row)
+
+
+def write_coordination_issue_filter_options_csv(
+    items: Sequence[CoordinationIssueFilterOption],
+    output_path: Path | str,
+) -> Path:
+    """Write already-loaded coordination issue filter options to a CSV file."""
+    return _write_csv(items, output_path, FINANCIAL_CSV_HEADERS, _financial_row)
+
+
+def write_forms_csv(items: Sequence[Form], output_path: Path | str) -> Path:
+    """Write already-loaded forms to a CSV file."""
+    return _write_csv(items, output_path, FINANCIAL_CSV_HEADERS, _financial_row)
+
+
+def write_form_templates_csv(items: Sequence[FormTemplate], output_path: Path | str) -> Path:
+    """Write already-loaded form templates to a CSV file."""
+    return _write_csv(items, output_path, FINANCIAL_CSV_HEADERS, _financial_row)
+
+
+def write_action_plans_csv(items: Sequence[ActionPlan], output_path: Path | str) -> Path:
+    """Write already-loaded action plans to a CSV file."""
+    return _write_csv(items, output_path, FINANCIAL_CSV_HEADERS, _financial_row)
+
+
+def write_action_plan_change_history_csv(
+    items: Sequence[ActionPlanChangeHistoryEvent],
+    output_path: Path | str,
+) -> Path:
+    """Write already-loaded action plan change history events to a CSV file."""
+    return _write_csv(items, output_path, FINANCIAL_CSV_HEADERS, _financial_row)
 
 
 def _load_rfis(

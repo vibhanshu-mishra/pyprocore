@@ -5,7 +5,7 @@
 - Current stable release: `2.2.0`
 - Previous stable release: `2.1.0`
 - `v2.2.0` is published on PyPI and released on GitHub.
-- Current unreleased branch work: Phase 8A, Phase 8C, Phase 8D, Phase 8E, and Phase 8F read-only
+- Current unreleased branch work: Phase 8A, Phase 8C, Phase 8D, Phase 8E, Phase 8F, and Phase 8G read-only
   API coverage, plus Phase 8B client-credentials auth support for Data
   Connection Apps.
 
@@ -65,6 +65,14 @@ Phase 8F adds read-only SDK coverage for contracts, invoices, payments, and
 billing resources. It does not add contract, invoice, payment, approval,
 submission, status-change, PDF-generation, SOV, or line-item mutation behavior.
 
+Phase 8G adds read-only SDK coverage for project-management extras: Schedule
+metadata/settings/type/integration/import status, Schedule Resource
+Assignments, Tasks, Task Requested Changes, Calendar Items, Coordination
+Issues, Forms, Form Templates, Action Plans, and Action Plan Change History
+Events. It does not add schedule uploads/import creation, task writes,
+coordination issue mutations, form submissions, action plan completions,
+approvals, status changes, or project-management mutations.
+
 ## Safety Status
 
 - Tool execution remains disabled.
@@ -75,7 +83,7 @@ submission, status-change, PDF-generation, SOV, or line-item mutation behavior.
 - PyProcore does not call external AI/model APIs.
 - Live SDK workflows still require valid Procore credentials and permissions.
 - Client credentials support does not enable Procore tool execution.
-- Phase 8C, Phase 8D, Phase 8E, and Phase 8F service helpers are read-only.
+- Phase 8C, Phase 8D, Phase 8E, Phase 8F, and Phase 8G service helpers are read-only.
 
 ## Known Limitations
 
@@ -94,7 +102,7 @@ submission, status-change, PDF-generation, SOV, or line-item mutation behavior.
 - Guarded tool execution and human approval gates
 - Write-action safety model
 - Real MCP execution after explicit safety design
-- Additional read-only Procore coverage beyond Phase 8E
+- Additional read-only Procore coverage beyond Phase 8G
 - Async client and plugin architecture
 - Vector DB examples and engineering assistant examples
 - Golden datasets and model evals

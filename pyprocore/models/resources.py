@@ -763,6 +763,261 @@ class TaxCode(ProcoreModel):
     company_id: int | None = None
 
 
+class ProjectSchedule(ProcoreModel):
+    """Read-only Procore project schedule metadata."""
+
+    id: int | None = None
+    name: str | None = None
+    title: str | None = None
+    project_id: int | None = None
+    status: str | Status | None = None
+    schedule_type: str | None = None
+    integration_type: str | None = None
+    data_date: str | None = None
+    start_date: str | None = None
+    finish_date: str | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class ScheduleSettings(ProcoreModel):
+    """Read-only Procore project schedule settings."""
+
+    id: int | None = None
+    project_id: int | None = None
+    calendar_id: int | None = None
+    schedule_type: str | None = None
+    integration_type: str | None = None
+    settings: dict[str, Any] | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class ScheduleType(ProcoreModel):
+    """Read-only Procore schedule type metadata."""
+
+    id: int | None = None
+    name: str | None = None
+    type: str | None = None
+    display_name: str | None = None
+    description: str | None = None
+
+
+class ScheduleIntegration(ProcoreModel):
+    """Read-only Procore schedule integration metadata."""
+
+    id: int | None = None
+    name: str | None = None
+    type: str | None = None
+    provider: str | None = None
+    status: str | Status | None = None
+    last_synced_at: str | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class ScheduleImportStatus(ProcoreModel):
+    """Read-only status for the latest project schedule import."""
+
+    id: int | None = None
+    project_id: int | None = None
+    status: str | Status | None = None
+    state: str | None = None
+    message: str | None = None
+    started_at: str | None = None
+    completed_at: str | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class ScheduleResourceAssignment(ProcoreModel):
+    """Read-only Procore schedule resource assignment."""
+
+    id: int | None = None
+    project_id: int | None = None
+    task_id: int | None = None
+    resource_id: int | None = None
+    resource_name: str | None = None
+    resource_type: str | None = None
+    name: str | None = None
+    quantity: float | int | None = None
+    unit: str | None = None
+    start_date: str | None = None
+    finish_date: str | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class Task(ProcoreModel):
+    """Read-only Procore task or schedule task resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    name: str | None = None
+    title: str | None = None
+    subject: str | None = None
+    description: str | None = None
+    status: str | Status | None = None
+    priority: str | None = None
+    start_date: str | None = None
+    due_date: str | None = None
+    finish_date: str | None = None
+    completed_at: str | None = None
+    assignee: str | User | None = None
+    assignee_id: int | None = None
+    created_by: str | User | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class TaskRequestedChange(ProcoreModel):
+    """Read-only requested change for a Procore task."""
+
+    id: int | None = None
+    task_id: int | None = None
+    number: str | int | None = None
+    title: str | None = None
+    description: str | None = None
+    status: str | Status | None = None
+    requested_by: str | User | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class CalendarItem(ProcoreModel):
+    """Read-only Procore calendar item."""
+
+    id: int | None = None
+    number: str | int | None = None
+    name: str | None = None
+    title: str | None = None
+    description: str | None = None
+    item_type: str | None = None
+    type: str | None = None
+    status: str | Status | None = None
+    start_date: str | None = None
+    end_date: str | None = None
+    due_date: str | None = None
+    all_day: bool | None = None
+    location: str | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class CoordinationIssue(ProcoreModel):
+    """Read-only Procore coordination issue."""
+
+    id: int | None = None
+    number: str | int | None = None
+    title: str | None = None
+    name: str | None = None
+    description: str | None = None
+    status: str | Status | None = None
+    priority: str | None = None
+    type: str | None = None
+    assignee: str | User | None = None
+    assignee_id: int | None = None
+    due_date: str | None = None
+    created_by: str | User | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class CoordinationIssueChangeHistoryEvent(ProcoreModel):
+    """Read-only change history event for a coordination issue."""
+
+    id: int | None = None
+    coordination_issue_id: int | None = None
+    event_type: str | None = None
+    field_name: str | None = None
+    old_value: str | int | float | bool | None = None
+    new_value: str | int | float | bool | None = None
+    user: str | User | None = None
+    created_at: str | None = None
+
+
+class CoordinationIssueActivity(ProcoreModel):
+    """Read-only activity feed item for a coordination issue."""
+
+    id: int | None = None
+    coordination_issue_id: int | None = None
+    type: str | None = None
+    action: str | None = None
+    body: str | None = None
+    user: str | User | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class CoordinationIssueFilterOption(ProcoreModel):
+    """Read-only filter option for coordination issue lists."""
+
+    id: int | None = None
+    name: str | None = None
+    label: str | None = None
+    value: str | int | None = None
+    option_type: str | None = None
+    type: str | None = None
+
+
+class Form(ProcoreModel):
+    """Read-only Procore form resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    name: str | None = None
+    title: str | None = None
+    description: str | None = None
+    status: str | Status | None = None
+    template_id: int | None = None
+    form_template_id: int | None = None
+    created_by: str | User | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class FormTemplate(ProcoreModel):
+    """Read-only Procore form template."""
+
+    id: int | None = None
+    name: str | None = None
+    title: str | None = None
+    description: str | None = None
+    active: bool | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class ActionPlan(ProcoreModel):
+    """Read-only Procore action plan resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    name: str | None = None
+    title: str | None = None
+    description: str | None = None
+    status: str | Status | None = None
+    plan_type: str | None = None
+    assignee: str | User | None = None
+    created_by: str | User | None = None
+    due_date: str | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class ActionPlanChangeHistoryEvent(ProcoreModel):
+    """Read-only change history event for an action plan."""
+
+    id: int | None = None
+    action_plan_id: int | None = None
+    event_type: str | None = None
+    field_name: str | None = None
+    old_value: str | int | float | bool | None = None
+    new_value: str | int | float | bool | None = None
+    user: str | User | None = None
+    created_at: str | None = None
+
+
 class DocumentFolder(ProcoreModel):
     """Procore document folder resource."""
 
