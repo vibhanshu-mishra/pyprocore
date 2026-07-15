@@ -543,6 +543,226 @@ class Commitment(ProcoreModel):
     updated_at: str | None = None
 
 
+class PrimeContract(ProcoreModel):
+    """Flexible read-only Procore prime contract resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    title: str | None = None
+    name: str | None = None
+    description: str | None = None
+    status: str | Status | None = None
+    amount: float | int | str | None = None
+    contract_amount: float | int | str | None = None
+    project_id: int | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class PrimeContractLineItem(ProcoreModel):
+    """Flexible read-only Procore prime contract line item resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    name: str | None = None
+    description: str | None = None
+    amount: float | int | str | None = None
+    cost_code: str | dict[str, Any] | None = None
+    cost_type: str | dict[str, Any] | None = None
+    prime_contract_id: int | None = None
+    project_id: int | None = None
+
+
+class PrimeContractSummary(ProcoreModel):
+    """Flexible read-only Procore prime contract summary resource."""
+
+    id: int | None = None
+    prime_contract_id: int | None = None
+    project_id: int | None = None
+    summary: dict[str, Any] | None = None
+    values: dict[str, Any] | None = None
+    total: float | int | str | None = None
+
+
+class CommitmentContract(ProcoreModel):
+    """Flexible read-only Procore commitment contract resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    title: str | None = None
+    name: str | None = None
+    description: str | None = None
+    status: str | Status | None = None
+    amount: float | int | str | None = None
+    vendor: str | dict[str, Any] | None = None
+    project_id: int | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class PurchaseOrderContract(ProcoreModel):
+    """Flexible read-only Procore purchase order contract resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    title: str | None = None
+    name: str | None = None
+    description: str | None = None
+    status: str | Status | None = None
+    amount: float | int | str | None = None
+    vendor: str | dict[str, Any] | None = None
+    project_id: int | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class WorkOrderContract(ProcoreModel):
+    """Flexible read-only Procore work order contract resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    title: str | None = None
+    name: str | None = None
+    description: str | None = None
+    status: str | Status | None = None
+    amount: float | int | str | None = None
+    vendor: str | dict[str, Any] | None = None
+    project_id: int | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class OwnerInvoice(ProcoreModel):
+    """Flexible read-only Procore owner invoice/payment application resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    title: str | None = None
+    name: str | None = None
+    status: str | Status | None = None
+    amount: float | int | str | None = None
+    billing_period_id: int | None = None
+    prime_contract_id: int | None = None
+    project_id: int | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class OwnerInvoiceLineItem(ProcoreModel):
+    """Flexible read-only Procore owner invoice line item resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    name: str | None = None
+    description: str | None = None
+    amount: float | int | str | None = None
+    owner_invoice_id: int | None = None
+    prime_contract_id: int | None = None
+    project_id: int | None = None
+
+
+class SubcontractorInvoice(ProcoreModel):
+    """Flexible read-only Procore subcontractor invoice/requisition resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    title: str | None = None
+    name: str | None = None
+    status: str | Status | None = None
+    amount: float | int | str | None = None
+    billing_period_id: int | None = None
+    contract_id: int | None = None
+    project_id: int | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class RequisitionContractItem(ProcoreModel):
+    """Flexible read-only Procore requisition contract item resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    name: str | None = None
+    description: str | None = None
+    amount: float | int | str | None = None
+    requisition_id: int | None = None
+    project_id: int | None = None
+
+
+class RequisitionContractDetailItem(ProcoreModel):
+    """Flexible read-only Procore requisition contract detail item resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    name: str | None = None
+    description: str | None = None
+    amount: float | int | str | None = None
+    requisition_id: int | None = None
+    project_id: int | None = None
+
+
+class RequisitionChangeOrderItem(ProcoreModel):
+    """Flexible read-only Procore requisition change order item resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    name: str | None = None
+    description: str | None = None
+    amount: float | int | str | None = None
+    requisition_id: int | None = None
+    project_id: int | None = None
+
+
+class ContractPayment(ProcoreModel):
+    """Flexible read-only Procore contract payment resource."""
+
+    id: int | None = None
+    number: str | int | None = None
+    title: str | None = None
+    name: str | None = None
+    status: str | Status | None = None
+    amount: float | int | str | None = None
+    contract_id: int | None = None
+    project_id: int | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class BillingPeriod(ProcoreModel):
+    """Flexible read-only Procore billing period resource."""
+
+    id: int | None = None
+    name: str | None = None
+    status: str | Status | None = None
+    start_date: str | None = None
+    end_date: str | None = None
+    billing_date: str | None = None
+    project_id: int | None = None
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class CostType(ProcoreModel):
+    """Flexible read-only Procore cost type reference resource."""
+
+    id: int | None = None
+    name: str | None = None
+    code: str | int | None = None
+    description: str | None = None
+    company_id: int | None = None
+
+
+class TaxCode(ProcoreModel):
+    """Flexible read-only Procore tax code reference resource."""
+
+    id: int | None = None
+    name: str | None = None
+    code: str | int | None = None
+    description: str | None = None
+    rate: float | int | str | None = None
+    company_id: int | None = None
+
+
 class DocumentFolder(ProcoreModel):
     """Procore document folder resource."""
 

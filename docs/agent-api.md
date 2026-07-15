@@ -31,11 +31,12 @@ registry safety, schema quality, OpenAPI completeness, MCP discovery, run-log
 replay, redaction, and disabled-execution guarantees without calling Procore or
 any AI/model APIs.
 
-The current unreleased branch adds Phase 8A, Phase 8C, Phase 8D, and Phase 8E registry metadata for
+The current unreleased branch adds Phase 8A, Phase 8C, Phase 8D, Phase 8E, and Phase 8F registry metadata for
 read-only Observations, Punch Items, Generic Tools, correspondence items,
 Meetings, checklist-backed Inspections, Incidents, Directory users, Vendors,
-Departments, Distribution Groups, and Locations. This expands discovery metadata
-only; tool execution remains disabled.
+Departments, Distribution Groups, Locations, financial/change-management
+resources, contracts, invoices, payments, and billing resources. This expands
+discovery metadata only; tool execution remains disabled.
 
 ## What It Provides
 
@@ -53,9 +54,11 @@ only; tool execution remains disabled.
 - MCP-style tool, resource, prompt, and manifest exports.
 - An experimental local stdio adapter for MCP discovery.
 - Local deterministic eval suites for agent metadata and safety checks.
-- Unreleased Phase 8A, Phase 8C, Phase 8D, and Phase 8E metadata for Observations, Punch
+- Unreleased Phase 8A, Phase 8C, Phase 8D, Phase 8E, and Phase 8F metadata for Observations, Punch
   Items, Generic Tool correspondence, Meetings, Inspections, Incidents,
-  Directory users, Vendors, Departments, Distribution Groups, and Locations.
+  Directory users, Vendors, Departments, Distribution Groups, Locations,
+  financial/change-management resources, contracts, invoices, payments, and
+  billing resources.
 
 ## What It Is Not
 

@@ -34,6 +34,12 @@ Procore environment.
 | Budget Views and Details | Unreleased Phase 8E | List views, columns, detail rows, summary rows, CSV/JSONL export | Read-only budget reporting helpers. No budget modification or forecast writes. |
 | Cost Codes / WBS Codes | Unreleased Phase 8E | List company cost codes, standard cost codes, project WBS codes, CSV/JSONL export | Read-only coding helpers. No WBS or cost code writes. |
 | Commitments | Unreleased Phase 8E | List, get, find, CSV/JSONL export | Read-only commitment helpers. No commitment, invoice, line-item, or compliance-document writes. |
+| Prime Contracts | Unreleased Phase 8F | List, get, find, line items, summary, CSV/JSONL export | Read-only contract helpers. No contract writes, SOV updates, PDF generation, approvals, or status changes. |
+| Commitment / Purchase Order / Work Order Contracts | Unreleased Phase 8F | List, get, find, CSV/JSONL export | Read-only contract helpers only. |
+| Owner Invoices / Payment Applications | Unreleased Phase 8F | List, get, find, line items, CSV/JSONL export | Read-only invoice helpers. No submission, approval, rejection, status change, or line-item mutation behavior. |
+| Subcontractor Invoices / Requisitions | Unreleased Phase 8F | List, get, find, requisition item lists, CSV/JSONL export | Read-only invoice helpers. No invoice submission, approval, rejection, package creation, or PDF compiler behavior. |
+| Contract Payments | Unreleased Phase 8F | List, get, find, CSV/JSONL export | Read-only payment helpers. No payment submission, approval, status change, or mutation behavior. |
+| Billing Periods / Cost Types / Tax Codes | Unreleased Phase 8F | List/get billing periods, list cost types, list tax codes, CSV/JSONL export | Read-only reference helpers only. |
 | Attachments/downloads | Supported | Streaming downloads, skip existing files, overwrite option | Downloads are local file operations only. |
 | Workflows | Supported | CSV, JSONL, folder sync, project context, AI-ready packages | Workflows create local files and do not mutate Procore data. |
 | Webhooks | Local helpers | Validate, redact, save, list, dry-run dispatch | No hosted webhook server is included. |
@@ -107,6 +113,19 @@ budgets or forecasts, create commitments, create invoices, mutate payments, or
 write compliance documents. Agent registry entries are metadata only, Procore
 tool execution remains disabled, MCP remains discovery-only, and no external
 AI/model APIs are called.
+
+## Phase 8F Endpoint Notes
+
+Phase 8F adds read-oriented SDK coverage for contracts, owner invoices/payment
+applications, subcontractor invoices/requisitions, contract payments, billing
+periods, cost types, and tax codes. The implementation intentionally exposes
+list/get/find and local CSV/JSONL export helpers only.
+
+These helpers do not create, update, delete, submit, approve, reject, change
+statuses, generate PDFs, update SOV values, mutate line items, or submit
+payments. Agent registry entries are metadata only, Procore tool execution
+remains disabled, MCP remains discovery-only, and no external AI/model APIs are
+called.
 
 ## Live Verification Notes
 

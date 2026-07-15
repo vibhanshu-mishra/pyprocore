@@ -15,7 +15,7 @@ It is model-agnostic, local-first, and safety-first. The current stable release,
 Current repository status:
 
 - Published stable release: `2.2.0`
-- Unreleased branch work: Phase 8A, Phase 8C, Phase 8D, and Phase 8E read-only API coverage, plus Phase 8B client-credentials auth support
+- Unreleased branch work: Phase 8A, Phase 8C, Phase 8D, Phase 8E, and Phase 8F read-only API coverage, plus Phase 8B client-credentials auth support
 - Procore tool execution remains disabled
 
 ```bash
@@ -385,6 +385,11 @@ make quality-check
   Change Events, Prime Change Orders, Commitment Change Orders, Change Order
   Packages, Direct Costs, Budget Views/Details, Cost Codes, WBS Codes, and
   Commitments
+- Phase 8F read-only coverage for contracts, invoices, payments, and billing:
+  Prime Contracts, Commitment/Purchase Order/Work Order Contracts, Owner
+  Invoices, Subcontractor Invoices, Contract Payments, Billing Periods, Cost
+  Types, and Tax Codes. No contract, invoice, payment, approval, submission,
+  status-change, PDF-generation, SOV, or line-item mutation behavior is included.
 
 ### Future
 

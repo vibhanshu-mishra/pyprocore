@@ -116,9 +116,28 @@ Focus: read-oriented coverage only. No financial writes, approvals, status
 changes, budget modifications, invoices, payment mutations, or commitment
 creation are included.
 
+### Phase 8F — Contracts, Invoices, Payments Read Coverage
+
+Implemented in the current branch and not yet published:
+
+- Prime Contracts, line items, and summaries
+- Commitment Contracts, Purchase Order Contracts, and Work Order Contracts
+- Owner Invoices / Payment Applications and line items
+- Subcontractor Invoices / Requisitions and read-only requisition item lists
+- Contract Payments
+- Billing Periods, Cost Types, and Tax Codes
+- CSV/JSONL local exports
+- CLI commands
+- Agent registry metadata for discovery only
+- Examples and docs
+
+Focus: read-oriented coverage only. No contract, invoice, payment, approval,
+submission, status-change, PDF-generation, SOV, or line-item mutation behavior
+is included.
+
 ## Future
 
-### Phase 8F+ — Expanded Procore API Coverage
+### Phase 8G+ — Expanded Procore API Coverage
 
 Planned modules:
 

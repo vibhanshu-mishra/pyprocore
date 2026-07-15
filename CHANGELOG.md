@@ -29,6 +29,10 @@ and this project follows semantic versioning.
 - Typed flexible models for Phase 8E financial and change-management resources.
 - Service, search, object-client, CLI, CSV/JSONL export, and agent registry metadata support for Phase 8E resources.
 - Beginner-friendly Phase 8E examples and documentation.
+- Phase 8F read-only API coverage for contracts, invoices, payments, and billing resources, including Prime Contracts, Commitment Contracts, Purchase Order Contracts, Work Order Contracts, Owner Invoices, Subcontractor Invoices, Contract Payments, Billing Periods, Cost Types, and Tax Codes.
+- Typed flexible models for Phase 8F contract, invoice, payment, and billing resources.
+- Service, search, object-client, CLI, CSV/JSONL export, and agent registry metadata support for Phase 8F resources.
+- Beginner-friendly Phase 8F examples and documentation.
 
 ### Security
 
@@ -41,6 +45,8 @@ and this project follows semantic versioning.
 - New Phase 8D agent entries are metadata only.
 - Phase 8E remains read-oriented and does not add financial writes, approvals, status changes, budget modifications, commitments writes, invoices, or payment mutations.
 - New Phase 8E agent entries are metadata only; Procore tool execution remains disabled and MCP remains discovery-only.
+- Phase 8F remains read-oriented and does not add contract, invoice, payment, approval, submission, status-change, PDF-generation, SOV, or line-item mutations.
+- New Phase 8F agent entries are metadata only; Procore tool execution remains disabled and MCP remains discovery-only.
 
 ## [2.2.0] - 2026-07-12
 

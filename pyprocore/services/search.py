@@ -11,8 +11,10 @@ from pyprocore.models import (
     RFI,
     ChangeEvent,
     Commitment,
+    CommitmentContract,
     Company,
     CompanyUser,
+    ContractPayment,
     Correspondence,
     Department,
     DirectCost,
@@ -25,14 +27,28 @@ from pyprocore.models import (
     Location,
     Meeting,
     Observation,
+    OwnerInvoice,
     PrimeChangeOrder,
+    PrimeContract,
     Project,
     ProjectUser,
     PunchItem,
+    PurchaseOrderContract,
+    SubcontractorInvoice,
     Submittal,
     Vendor,
+    WorkOrderContract,
 )
 from pyprocore.services.companies import list_companies
+from pyprocore.services.contracts import (
+    list_commitment_contracts,
+    list_contract_payments,
+    list_owner_invoices,
+    list_prime_contracts,
+    list_purchase_order_contracts,
+    list_subcontractor_invoices,
+    list_work_order_contracts,
+)
 from pyprocore.services.correspondence import list_correspondences
 from pyprocore.services.directory import (
     list_company_users,
@@ -283,6 +299,168 @@ def find_commitment(
         query=search_query,
         values=lambda item: [item.number, item.title, item.name],
         resource_name="commitment",
+    )
+
+
+def find_prime_contract(
+    project_id: int,
+    *,
+    number: str | int | None = None,
+    name: str | None = None,
+    query: str | None = None,
+    company_id: int | None = None,
+) -> PrimeContract:
+    """Find one prime contract by number, title, or name within a project."""
+    search_query = _name_number_query(
+        resource_name="prime contract",
+        name=name,
+        number=number,
+        query=query,
+    )
+    return _resolve_one(
+        resources=list_prime_contracts(company_id, project_id),
+        query=search_query,
+        values=lambda item: [item.number, item.title, item.name],
+        resource_name="prime contract",
+    )
+
+
+def find_commitment_contract(
+    project_id: int,
+    *,
+    number: str | int | None = None,
+    name: str | None = None,
+    query: str | None = None,
+    company_id: int | None = None,
+) -> CommitmentContract:
+    """Find one commitment contract by number, title, or name within a project."""
+    search_query = _name_number_query(
+        resource_name="commitment contract",
+        name=name,
+        number=number,
+        query=query,
+    )
+    return _resolve_one(
+        resources=list_commitment_contracts(company_id, project_id),
+        query=search_query,
+        values=lambda item: [item.number, item.title, item.name],
+        resource_name="commitment contract",
+    )
+
+
+def find_purchase_order_contract(
+    project_id: int,
+    *,
+    number: str | int | None = None,
+    name: str | None = None,
+    query: str | None = None,
+    company_id: int | None = None,
+) -> PurchaseOrderContract:
+    """Find one purchase order contract by number, title, or name within a project."""
+    search_query = _name_number_query(
+        resource_name="purchase order contract",
+        name=name,
+        number=number,
+        query=query,
+    )
+    return _resolve_one(
+        resources=list_purchase_order_contracts(company_id, project_id),
+        query=search_query,
+        values=lambda item: [item.number, item.title, item.name],
+        resource_name="purchase order contract",
+    )
+
+
+def find_work_order_contract(
+    project_id: int,
+    *,
+    number: str | int | None = None,
+    name: str | None = None,
+    query: str | None = None,
+    company_id: int | None = None,
+) -> WorkOrderContract:
+    """Find one work order contract by number, title, or name within a project."""
+    search_query = _name_number_query(
+        resource_name="work order contract",
+        name=name,
+        number=number,
+        query=query,
+    )
+    return _resolve_one(
+        resources=list_work_order_contracts(company_id, project_id),
+        query=search_query,
+        values=lambda item: [item.number, item.title, item.name],
+        resource_name="work order contract",
+    )
+
+
+def find_owner_invoice(
+    project_id: int,
+    prime_contract_id: int,
+    *,
+    number: str | int | None = None,
+    name: str | None = None,
+    query: str | None = None,
+    company_id: int | None = None,
+) -> OwnerInvoice:
+    """Find one owner invoice/payment application by number, title, or name."""
+    search_query = _name_number_query(
+        resource_name="owner invoice",
+        name=name,
+        number=number,
+        query=query,
+    )
+    return _resolve_one(
+        resources=list_owner_invoices(company_id, project_id, prime_contract_id),
+        query=search_query,
+        values=lambda item: [item.number, item.title, item.name],
+        resource_name="owner invoice",
+    )
+
+
+def find_subcontractor_invoice(
+    project_id: int,
+    *,
+    number: str | int | None = None,
+    name: str | None = None,
+    query: str | None = None,
+    company_id: int | None = None,
+) -> SubcontractorInvoice:
+    """Find one subcontractor invoice/requisition by number, title, or name."""
+    search_query = _name_number_query(
+        resource_name="subcontractor invoice",
+        name=name,
+        number=number,
+        query=query,
+    )
+    return _resolve_one(
+        resources=list_subcontractor_invoices(company_id, project_id),
+        query=search_query,
+        values=lambda item: [item.number, item.title, item.name],
+        resource_name="subcontractor invoice",
+    )
+
+
+def find_contract_payment(
+    project_id: int,
+    *,
+    number: str | int | None = None,
+    name: str | None = None,
+    query: str | None = None,
+    company_id: int | None = None,
+) -> ContractPayment:
+    """Find one contract payment by number, title, or name within a project."""
+    search_query = _name_number_query(
+        resource_name="contract payment",
+        name=name,
+        number=number,
+        query=query,
+    )
+    return _resolve_one(
+        resources=list_contract_payments(company_id, project_id),
+        query=search_query,
+        values=lambda item: [item.number, item.title, item.name],
+        resource_name="contract payment",
     )
 
 

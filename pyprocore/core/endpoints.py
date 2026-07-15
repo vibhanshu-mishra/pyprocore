@@ -133,6 +133,54 @@ STANDARD_COST_CODES = (
 WBS_CODES = f"{API_V1}/projects/{{project_id}}/wbs_codes"
 COMMITMENTS = f"{API_V1}/projects/{{project_id}}/commitments"
 COMMITMENT = f"{API_V1}/projects/{{project_id}}/commitments/{{commitment_id}}"
+PRIME_CONTRACTS = f"{API_V1}/projects/{{project_id}}/prime_contracts"
+PRIME_CONTRACT = f"{API_V1}/projects/{{project_id}}/prime_contracts/{{prime_contract_id}}"
+PRIME_CONTRACT_LINE_ITEMS = (
+    f"{API_V1}/projects/{{project_id}}/prime_contracts/{{prime_contract_id}}/line_items"
+)
+PRIME_CONTRACT_SUMMARY = (
+    f"{API_V1}/projects/{{project_id}}/prime_contracts/{{prime_contract_id}}/summary"
+)
+COMMITMENT_CONTRACTS = f"{API_V1}/projects/{{project_id}}/commitment_contracts"
+COMMITMENT_CONTRACT = (
+    f"{API_V1}/projects/{{project_id}}/commitment_contracts/{{commitment_contract_id}}"
+)
+PURCHASE_ORDER_CONTRACTS = f"{API_V1}/projects/{{project_id}}/purchase_order_contracts"
+PURCHASE_ORDER_CONTRACT = (
+    f"{API_V1}/projects/{{project_id}}" "/purchase_order_contracts/{purchase_order_contract_id}"
+)
+WORK_ORDER_CONTRACTS = f"{API_V1}/projects/{{project_id}}/work_order_contracts"
+WORK_ORDER_CONTRACT = (
+    f"{API_V1}/projects/{{project_id}}/work_order_contracts/{{work_order_contract_id}}"
+)
+OWNER_INVOICES = (
+    f"{API_V1}/projects/{{project_id}}/prime_contracts/{{prime_contract_id}}/owner_invoices"
+)
+OWNER_INVOICE = (
+    f"{API_V1}/projects/{{project_id}}/prime_contracts/{{prime_contract_id}}"
+    "/owner_invoices/{owner_invoice_id}"
+)
+OWNER_INVOICE_LINE_ITEMS = (
+    f"{API_V1}/projects/{{project_id}}/prime_contracts/{{prime_contract_id}}"
+    "/owner_invoices/{owner_invoice_id}/line_items"
+)
+SUBCONTRACTOR_INVOICES = f"{API_V1}/projects/{{project_id}}/requisitions"
+SUBCONTRACTOR_INVOICE = f"{API_V1}/projects/{{project_id}}/requisitions/{{requisition_id}}"
+REQUISITION_CONTRACT_ITEMS = (
+    f"{API_V1}/projects/{{project_id}}/requisitions/{{requisition_id}}/contract_items"
+)
+REQUISITION_CONTRACT_DETAIL_ITEMS = (
+    f"{API_V1}/projects/{{project_id}}" "/requisitions/{requisition_id}/contract_detail_items"
+)
+REQUISITION_CHANGE_ORDER_ITEMS = (
+    f"{API_V1}/projects/{{project_id}}/requisitions/{{requisition_id}}/change_order_items"
+)
+CONTRACT_PAYMENTS = f"{API_V1}/projects/{{project_id}}/contract_payments"
+CONTRACT_PAYMENT = f"{API_V1}/projects/{{project_id}}/contract_payments/{{contract_payment_id}}"
+BILLING_PERIODS = f"{API_V1}/projects/{{project_id}}/billing_periods"
+BILLING_PERIOD = f"{API_V1}/projects/{{project_id}}/billing_periods/{{billing_period_id}}"
+COST_TYPES = f"{API_V1}/companies/{{company_id}}/cost_types"
+TAX_CODES = f"{API_V1}/companies/{{company_id}}/tax_codes"
 
 
 def companies() -> str:
@@ -615,6 +663,168 @@ def commitment(project_id: int, commitment_id: int) -> str:
     return COMMITMENT.format(project_id=project_id, commitment_id=commitment_id)
 
 
+def prime_contracts(project_id: int) -> str:
+    """Return the project prime contracts collection endpoint."""
+    return PRIME_CONTRACTS.format(project_id=project_id)
+
+
+def prime_contract(project_id: int, prime_contract_id: int) -> str:
+    """Return the endpoint for one prime contract."""
+    return PRIME_CONTRACT.format(project_id=project_id, prime_contract_id=prime_contract_id)
+
+
+def prime_contract_line_items(project_id: int, prime_contract_id: int) -> str:
+    """Return line items for one prime contract."""
+    return PRIME_CONTRACT_LINE_ITEMS.format(
+        project_id=project_id,
+        prime_contract_id=prime_contract_id,
+    )
+
+
+def prime_contract_summary(project_id: int, prime_contract_id: int) -> str:
+    """Return read-only summary data for one prime contract."""
+    return PRIME_CONTRACT_SUMMARY.format(
+        project_id=project_id,
+        prime_contract_id=prime_contract_id,
+    )
+
+
+def commitment_contracts(project_id: int) -> str:
+    """Return the project commitment contracts collection endpoint."""
+    return COMMITMENT_CONTRACTS.format(project_id=project_id)
+
+
+def commitment_contract(project_id: int, commitment_contract_id: int) -> str:
+    """Return the endpoint for one commitment contract."""
+    return COMMITMENT_CONTRACT.format(
+        project_id=project_id,
+        commitment_contract_id=commitment_contract_id,
+    )
+
+
+def purchase_order_contracts(project_id: int) -> str:
+    """Return the project purchase order contracts collection endpoint."""
+    return PURCHASE_ORDER_CONTRACTS.format(project_id=project_id)
+
+
+def purchase_order_contract(project_id: int, purchase_order_contract_id: int) -> str:
+    """Return the endpoint for one purchase order contract."""
+    return PURCHASE_ORDER_CONTRACT.format(
+        project_id=project_id,
+        purchase_order_contract_id=purchase_order_contract_id,
+    )
+
+
+def work_order_contracts(project_id: int) -> str:
+    """Return the project work order contracts collection endpoint."""
+    return WORK_ORDER_CONTRACTS.format(project_id=project_id)
+
+
+def work_order_contract(project_id: int, work_order_contract_id: int) -> str:
+    """Return the endpoint for one work order contract."""
+    return WORK_ORDER_CONTRACT.format(
+        project_id=project_id,
+        work_order_contract_id=work_order_contract_id,
+    )
+
+
+def owner_invoices(project_id: int, prime_contract_id: int) -> str:
+    """Return owner invoices for one prime contract."""
+    return OWNER_INVOICES.format(project_id=project_id, prime_contract_id=prime_contract_id)
+
+
+def owner_invoice(project_id: int, prime_contract_id: int, owner_invoice_id: int) -> str:
+    """Return one owner invoice for one prime contract."""
+    return OWNER_INVOICE.format(
+        project_id=project_id,
+        prime_contract_id=prime_contract_id,
+        owner_invoice_id=owner_invoice_id,
+    )
+
+
+def owner_invoice_line_items(
+    project_id: int,
+    prime_contract_id: int,
+    owner_invoice_id: int,
+) -> str:
+    """Return line items for one owner invoice."""
+    return OWNER_INVOICE_LINE_ITEMS.format(
+        project_id=project_id,
+        prime_contract_id=prime_contract_id,
+        owner_invoice_id=owner_invoice_id,
+    )
+
+
+def subcontractor_invoices(project_id: int) -> str:
+    """Return project subcontractor invoices/requisitions."""
+    return SUBCONTRACTOR_INVOICES.format(project_id=project_id)
+
+
+def subcontractor_invoice(project_id: int, subcontractor_invoice_id: int) -> str:
+    """Return one subcontractor invoice/requisition."""
+    return SUBCONTRACTOR_INVOICE.format(
+        project_id=project_id,
+        requisition_id=subcontractor_invoice_id,
+    )
+
+
+def requisition_contract_items(project_id: int, requisition_id: int) -> str:
+    """Return contract items for one requisition."""
+    return REQUISITION_CONTRACT_ITEMS.format(
+        project_id=project_id,
+        requisition_id=requisition_id,
+    )
+
+
+def requisition_contract_detail_items(project_id: int, requisition_id: int) -> str:
+    """Return contract detail items for one requisition."""
+    return REQUISITION_CONTRACT_DETAIL_ITEMS.format(
+        project_id=project_id,
+        requisition_id=requisition_id,
+    )
+
+
+def requisition_change_order_items(project_id: int, requisition_id: int) -> str:
+    """Return change order items for one requisition."""
+    return REQUISITION_CHANGE_ORDER_ITEMS.format(
+        project_id=project_id,
+        requisition_id=requisition_id,
+    )
+
+
+def contract_payments(project_id: int) -> str:
+    """Return the project contract payments collection endpoint."""
+    return CONTRACT_PAYMENTS.format(project_id=project_id)
+
+
+def contract_payment(project_id: int, contract_payment_id: int) -> str:
+    """Return the endpoint for one contract payment."""
+    return CONTRACT_PAYMENT.format(
+        project_id=project_id,
+        contract_payment_id=contract_payment_id,
+    )
+
+
+def billing_periods(project_id: int) -> str:
+    """Return the project billing periods collection endpoint."""
+    return BILLING_PERIODS.format(project_id=project_id)
+
+
+def billing_period(project_id: int, billing_period_id: int) -> str:
+    """Return the endpoint for one billing period."""
+    return BILLING_PERIOD.format(project_id=project_id, billing_period_id=billing_period_id)
+
+
+def cost_types(company_id: int) -> str:
+    """Return the company cost types collection endpoint."""
+    return COST_TYPES.format(company_id=company_id)
+
+
+def tax_codes(company_id: int) -> str:
+    """Return the company tax codes collection endpoint."""
+    return TAX_CODES.format(company_id=company_id)
+
+
 class Endpoints:
     """Backward-compatible namespace for endpoint path templates."""
 
@@ -698,3 +908,27 @@ class Endpoints:
     WBS_CODES = WBS_CODES
     COMMITMENTS = COMMITMENTS
     COMMITMENT = COMMITMENT
+    PRIME_CONTRACTS = PRIME_CONTRACTS
+    PRIME_CONTRACT = PRIME_CONTRACT
+    PRIME_CONTRACT_LINE_ITEMS = PRIME_CONTRACT_LINE_ITEMS
+    PRIME_CONTRACT_SUMMARY = PRIME_CONTRACT_SUMMARY
+    COMMITMENT_CONTRACTS = COMMITMENT_CONTRACTS
+    COMMITMENT_CONTRACT = COMMITMENT_CONTRACT
+    PURCHASE_ORDER_CONTRACTS = PURCHASE_ORDER_CONTRACTS
+    PURCHASE_ORDER_CONTRACT = PURCHASE_ORDER_CONTRACT
+    WORK_ORDER_CONTRACTS = WORK_ORDER_CONTRACTS
+    WORK_ORDER_CONTRACT = WORK_ORDER_CONTRACT
+    OWNER_INVOICES = OWNER_INVOICES
+    OWNER_INVOICE = OWNER_INVOICE
+    OWNER_INVOICE_LINE_ITEMS = OWNER_INVOICE_LINE_ITEMS
+    SUBCONTRACTOR_INVOICES = SUBCONTRACTOR_INVOICES
+    SUBCONTRACTOR_INVOICE = SUBCONTRACTOR_INVOICE
+    REQUISITION_CONTRACT_ITEMS = REQUISITION_CONTRACT_ITEMS
+    REQUISITION_CONTRACT_DETAIL_ITEMS = REQUISITION_CONTRACT_DETAIL_ITEMS
+    REQUISITION_CHANGE_ORDER_ITEMS = REQUISITION_CHANGE_ORDER_ITEMS
+    CONTRACT_PAYMENTS = CONTRACT_PAYMENTS
+    CONTRACT_PAYMENT = CONTRACT_PAYMENT
+    BILLING_PERIODS = BILLING_PERIODS
+    BILLING_PERIOD = BILLING_PERIOD
+    COST_TYPES = COST_TYPES
+    TAX_CODES = TAX_CODES

@@ -18,6 +18,7 @@ from pyprocore.core.config import get_settings
 from pyprocore.core.exceptions import ValidationError
 from pyprocore.models import (
     RFI,
+    BillingPeriod,
     BudgetDetailColumn,
     BudgetDetailRow,
     BudgetSummaryRow,
@@ -29,10 +30,13 @@ from pyprocore.models import (
     ChangeOrderPackage,
     Commitment,
     CommitmentChangeOrder,
+    CommitmentContract,
     Company,
     CompanyUser,
+    ContractPayment,
     Correspondence,
     CostCode,
+    CostType,
     DailyLogCount,
     DailyLogEntry,
     DailyLogHeader,
@@ -53,19 +57,31 @@ from pyprocore.models import (
     Location,
     Meeting,
     Observation,
+    OwnerInvoice,
+    OwnerInvoiceLineItem,
     PhotoAlbum,
     PhotoAlbumDownloadResult,
     PhotoImage,
     PrimeChangeOrder,
+    PrimeContract,
+    PrimeContractLineItem,
+    PrimeContractSummary,
     Project,
     ProjectUser,
     PunchItem,
+    PurchaseOrderContract,
+    RequisitionChangeOrderItem,
+    RequisitionContractDetailItem,
+    RequisitionContractItem,
     SpecificationSection,
     SpecificationSectionRevision,
     SpecificationSet,
+    SubcontractorInvoice,
     Submittal,
+    TaxCode,
     Vendor,
     WbsCode,
+    WorkOrderContract,
 )
 from pyprocore.services import (
     download_document,
@@ -77,8 +93,10 @@ from pyprocore.services import (
     download_submittal_attachments,
     find_change_event,
     find_commitment,
+    find_commitment_contract,
     find_company,
     find_company_user,
+    find_contract_payment,
     find_correspondence,
     find_department,
     find_direct_cost,
@@ -91,25 +109,33 @@ from pyprocore.services import (
     find_location,
     find_meeting,
     find_observation,
+    find_owner_invoice,
     find_photo,
     find_photo_album,
     find_prime_change_order,
+    find_prime_contract,
     find_project,
     find_project_contains,
     find_project_distribution_group,
     find_project_user,
     find_punch_item,
+    find_purchase_order_contract,
     find_rfi,
     find_specification_section,
+    find_subcontractor_invoice,
     find_submittal,
     find_vendor,
+    find_work_order_contract,
+    get_billing_period,
     get_budget_view,
     get_change_event,
     get_change_event_settings,
     get_change_order_package,
     get_commitment,
     get_commitment_change_order,
+    get_commitment_contract,
     get_company_user,
+    get_contract_payment,
     get_correspondence,
     get_daily_log,
     get_daily_log_counts,
@@ -126,20 +152,27 @@ from pyprocore.services import (
     get_location,
     get_meeting,
     get_observation,
+    get_owner_invoice,
     get_photo,
     get_photo_album,
     get_prime_change_order,
+    get_prime_contract,
+    get_prime_contract_summary,
     get_project,
     get_project_distribution_group,
     get_project_incident_configuration,
     get_project_user,
     get_punch_item,
+    get_purchase_order_contract,
     get_rfi,
     get_specification_section,
     get_specification_section_revision,
+    get_subcontractor_invoice,
     get_submittal,
     get_vendor,
+    get_work_order_contract,
     list_accident_logs,
+    list_billing_periods,
     list_budget_detail_columns,
     list_budget_details,
     list_budget_view_summary_rows,
@@ -150,12 +183,15 @@ from pyprocore.services import (
     list_change_events,
     list_change_order_packages,
     list_commitment_change_orders,
+    list_commitment_contracts,
     list_commitments,
     list_companies,
     list_company_inactive_users,
     list_company_users,
+    list_contract_payments,
     list_correspondences,
     list_cost_codes,
+    list_cost_types,
     list_daily_construction_report_logs,
     list_daily_log_headers,
     list_daily_logs,
@@ -179,27 +215,38 @@ from pyprocore.services import (
     list_meetings,
     list_notes_logs,
     list_observations,
+    list_owner_invoice_line_items,
+    list_owner_invoices,
     list_photo_albums,
     list_photos,
     list_plan_revision_logs,
     list_prime_change_orders,
+    list_prime_contract_line_items,
+    list_prime_contracts,
     list_productivity_logs,
     list_project_distribution_groups,
     list_project_users,
     list_project_vendors,
     list_projects,
     list_punch_items,
+    list_purchase_order_contracts,
+    list_requisition_change_order_items,
+    list_requisition_contract_detail_items,
+    list_requisition_contract_items,
     list_rfis,
     list_specification_section_revisions,
     list_specification_sections,
     list_specification_sets,
     list_standard_cost_codes,
+    list_subcontractor_invoices,
     list_submittals,
+    list_tax_codes,
     list_vendors,
     list_visitor_logs,
     list_wbs_codes,
+    list_work_order_contracts,
 )
-from pyprocore.workflows import (
+from pyprocore.workflows import (  # noqa: F401
     AIExportResult,
     EnhancedRFIPackageResult,
     EnhancedSubmittalPackageResult,
@@ -213,6 +260,7 @@ from pyprocore.workflows import (
     build_enhanced_rfi_package,
     build_enhanced_submittal_package,
     build_project_context_package,
+    export_billing_periods_to_csv,
     export_budget_details_to_csv,
     export_budget_summary_rows_to_csv,
     export_budget_views_to_csv,
@@ -220,12 +268,15 @@ from pyprocore.workflows import (
     export_change_events_to_jsonl,
     export_change_order_packages_to_csv,
     export_commitment_change_orders_to_csv,
+    export_commitment_contracts_to_csv,
     export_commitments_to_csv,
     export_company_users_to_csv,
     export_company_users_to_jsonl,
+    export_contract_payments_to_csv,
     export_correspondences_to_csv,
     export_correspondences_to_jsonl,
     export_cost_codes_to_csv,
+    export_cost_types_to_csv,
     export_departments_to_csv,
     export_departments_to_jsonl,
     export_direct_costs_to_csv,
@@ -242,18 +293,24 @@ from pyprocore.workflows import (
     export_meetings_to_jsonl,
     export_observations_to_csv,
     export_observations_to_jsonl,
+    export_owner_invoices_to_csv,
     export_prime_change_orders_to_csv,
     export_prime_change_orders_to_jsonl,
+    export_prime_contracts_to_csv,
     export_project_users_to_csv,
     export_project_users_to_jsonl,
     export_punch_items_to_csv,
     export_punch_items_to_jsonl,
+    export_purchase_order_contracts_to_csv,
     export_rfis_to_csv,
     export_rfis_to_jsonl,
+    export_subcontractor_invoices_to_csv,
     export_submittals_to_csv,
     export_submittals_to_jsonl,
+    export_tax_codes_to_csv,
     export_vendors_to_csv,
     export_vendors_to_jsonl,
+    export_work_order_contracts_to_csv,
     list_available_workflows,
     load_workflow_plan,
     run_workflow_plan,
@@ -1950,6 +2007,301 @@ class CommitmentsClient:
         return find_commitment(project_id, company_id=company_id, number=number, name=name)
 
 
+class PrimeContractsClient:
+    """Convenience methods for read-only prime contracts."""
+
+    def list(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[PrimeContract]:
+        """List project prime contracts."""
+        return list_prime_contracts(company_id, project_id, **filters)
+
+    def get(
+        self, project_id: int, prime_contract_id: int, company_id: int | None = None
+    ) -> PrimeContract:
+        """Get one prime contract."""
+        return get_prime_contract(company_id, project_id, prime_contract_id)
+
+    def find(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        *,
+        number: str | int | None = None,
+        name: str | None = None,
+    ) -> PrimeContract:
+        """Find one prime contract by number, title, or name."""
+        return find_prime_contract(project_id, company_id=company_id, number=number, name=name)
+
+    def line_items(
+        self,
+        project_id: int,
+        prime_contract_id: int,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> builtins.list[PrimeContractLineItem]:
+        """List line items for one prime contract."""
+        return list_prime_contract_line_items(company_id, project_id, prime_contract_id, **filters)
+
+    def summary(
+        self, project_id: int, prime_contract_id: int, company_id: int | None = None
+    ) -> PrimeContractSummary:
+        """Get read-only summary data for one prime contract."""
+        return get_prime_contract_summary(company_id, project_id, prime_contract_id)
+
+
+class CommitmentContractsClient:
+    """Convenience methods for read-only commitment contracts."""
+
+    def list(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[CommitmentContract]:
+        """List project commitment contracts."""
+        return list_commitment_contracts(company_id, project_id, **filters)
+
+    def get(
+        self, project_id: int, commitment_contract_id: int, company_id: int | None = None
+    ) -> CommitmentContract:
+        """Get one commitment contract."""
+        return get_commitment_contract(company_id, project_id, commitment_contract_id)
+
+    def find(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        *,
+        number: str | int | None = None,
+        name: str | None = None,
+    ) -> CommitmentContract:
+        """Find one commitment contract by number, title, or name."""
+        return find_commitment_contract(project_id, company_id=company_id, number=number, name=name)
+
+
+class PurchaseOrderContractsClient:
+    """Convenience methods for read-only purchase order contracts."""
+
+    def list(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[PurchaseOrderContract]:
+        """List project purchase order contracts."""
+        return list_purchase_order_contracts(company_id, project_id, **filters)
+
+    def get(
+        self, project_id: int, purchase_order_contract_id: int, company_id: int | None = None
+    ) -> PurchaseOrderContract:
+        """Get one purchase order contract."""
+        return get_purchase_order_contract(company_id, project_id, purchase_order_contract_id)
+
+    def find(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        *,
+        number: str | int | None = None,
+        name: str | None = None,
+    ) -> PurchaseOrderContract:
+        """Find one purchase order contract by number, title, or name."""
+        return find_purchase_order_contract(
+            project_id, company_id=company_id, number=number, name=name
+        )
+
+
+class WorkOrderContractsClient:
+    """Convenience methods for read-only work order contracts."""
+
+    def list(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[WorkOrderContract]:
+        """List project work order contracts."""
+        return list_work_order_contracts(company_id, project_id, **filters)
+
+    def get(
+        self, project_id: int, work_order_contract_id: int, company_id: int | None = None
+    ) -> WorkOrderContract:
+        """Get one work order contract."""
+        return get_work_order_contract(company_id, project_id, work_order_contract_id)
+
+    def find(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        *,
+        number: str | int | None = None,
+        name: str | None = None,
+    ) -> WorkOrderContract:
+        """Find one work order contract by number, title, or name."""
+        return find_work_order_contract(project_id, company_id=company_id, number=number, name=name)
+
+
+class OwnerInvoicesClient:
+    """Convenience methods for read-only owner invoices/payment applications."""
+
+    def list(
+        self,
+        project_id: int,
+        prime_contract_id: int,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> builtins.list[OwnerInvoice]:
+        """List owner invoices for one prime contract."""
+        return list_owner_invoices(company_id, project_id, prime_contract_id, **filters)
+
+    def get(
+        self,
+        project_id: int,
+        prime_contract_id: int,
+        owner_invoice_id: int,
+        company_id: int | None = None,
+    ) -> OwnerInvoice:
+        """Get one owner invoice."""
+        return get_owner_invoice(company_id, project_id, prime_contract_id, owner_invoice_id)
+
+    def find(
+        self,
+        project_id: int,
+        prime_contract_id: int,
+        company_id: int | None = None,
+        *,
+        number: str | int | None = None,
+        name: str | None = None,
+    ) -> OwnerInvoice:
+        """Find one owner invoice by number, title, or name."""
+        return find_owner_invoice(
+            project_id,
+            prime_contract_id,
+            company_id=company_id,
+            number=number,
+            name=name,
+        )
+
+    def line_items(
+        self,
+        project_id: int,
+        prime_contract_id: int,
+        owner_invoice_id: int,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> builtins.list[OwnerInvoiceLineItem]:
+        """List line items for one owner invoice."""
+        return list_owner_invoice_line_items(
+            company_id,
+            project_id,
+            prime_contract_id,
+            owner_invoice_id,
+            **filters,
+        )
+
+
+class SubcontractorInvoicesClient:
+    """Convenience methods for read-only subcontractor invoices/requisitions."""
+
+    def list(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[SubcontractorInvoice]:
+        """List subcontractor invoices for a project."""
+        return list_subcontractor_invoices(company_id, project_id, **filters)
+
+    def get(
+        self, project_id: int, subcontractor_invoice_id: int, company_id: int | None = None
+    ) -> SubcontractorInvoice:
+        """Get one subcontractor invoice."""
+        return get_subcontractor_invoice(company_id, project_id, subcontractor_invoice_id)
+
+    def find(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        *,
+        number: str | int | None = None,
+        name: str | None = None,
+    ) -> SubcontractorInvoice:
+        """Find one subcontractor invoice by number, title, or name."""
+        return find_subcontractor_invoice(
+            project_id, company_id=company_id, number=number, name=name
+        )
+
+    def contract_items(
+        self, project_id: int, requisition_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[RequisitionContractItem]:
+        """List contract items for one requisition."""
+        return list_requisition_contract_items(company_id, project_id, requisition_id, **filters)
+
+    def contract_detail_items(
+        self, project_id: int, requisition_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[RequisitionContractDetailItem]:
+        """List contract detail items for one requisition."""
+        return list_requisition_contract_detail_items(
+            company_id, project_id, requisition_id, **filters
+        )
+
+    def change_order_items(
+        self, project_id: int, requisition_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[RequisitionChangeOrderItem]:
+        """List change order items for one requisition."""
+        return list_requisition_change_order_items(
+            company_id, project_id, requisition_id, **filters
+        )
+
+
+class ContractPaymentsClient:
+    """Convenience methods for read-only contract payments."""
+
+    def list(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[ContractPayment]:
+        """List project contract payments."""
+        return list_contract_payments(company_id, project_id, **filters)
+
+    def get(
+        self, project_id: int, contract_payment_id: int, company_id: int | None = None
+    ) -> ContractPayment:
+        """Get one contract payment."""
+        return get_contract_payment(company_id, project_id, contract_payment_id)
+
+    def find(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        *,
+        number: str | int | None = None,
+        name: str | None = None,
+    ) -> ContractPayment:
+        """Find one contract payment by number, title, or name."""
+        return find_contract_payment(project_id, company_id=company_id, number=number, name=name)
+
+
+class BillingPeriodsClient:
+    """Convenience methods for read-only billing periods."""
+
+    def list(
+        self, project_id: int, company_id: int | None = None, **filters: Any
+    ) -> builtins.list[BillingPeriod]:
+        """List project billing periods."""
+        return list_billing_periods(company_id, project_id, **filters)
+
+    def get(
+        self, project_id: int, billing_period_id: int, company_id: int | None = None
+    ) -> BillingPeriod:
+        """Get one billing period."""
+        return get_billing_period(company_id, project_id, billing_period_id)
+
+
+class CostTypesClient:
+    """Convenience methods for read-only company cost types."""
+
+    def list(self, company_id: int | None = None, **filters: Any) -> builtins.list[CostType]:
+        """List company cost types."""
+        return list_cost_types(company_id, **filters)
+
+
+class TaxCodesClient:
+    """Convenience methods for read-only company tax codes."""
+
+    def list(self, company_id: int | None = None, **filters: Any) -> builtins.list[TaxCode]:
+        """List company tax codes."""
+        return list_tax_codes(company_id, **filters)
+
+
 class AutomationClient:
     """Convenience methods for AI-ready automation workflow packages."""
 
@@ -2891,21 +3243,37 @@ class Procore:
         self.budget = BudgetClient()
         self.cost_codes = CostCodesClient()
         self.commitments = CommitmentsClient()
+        self.prime_contracts = PrimeContractsClient()
+        self.commitment_contracts = CommitmentContractsClient()
+        self.purchase_order_contracts = PurchaseOrderContractsClient()
+        self.work_order_contracts = WorkOrderContractsClient()
+        self.owner_invoices = OwnerInvoicesClient()
+        self.payment_applications = self.owner_invoices
+        self.subcontractor_invoices = SubcontractorInvoicesClient()
+        self.requisitions = self.subcontractor_invoices
+        self.contract_payments = ContractPaymentsClient()
+        self.billing_periods = BillingPeriodsClient()
+        self.cost_types = CostTypesClient()
+        self.tax_codes = TaxCodesClient()
         self.automation = AutomationClient()
         self.workflows = WorkflowsClient()
 
 
 __all__ = [
     "AutomationClient",
+    "BillingPeriodsClient",
     "BudgetClient",
     "ChangeEventsClient",
     "ChangeOrderPackagesClient",
     "CompaniesClient",
     "CompanyUsersClient",
     "CommitmentChangeOrdersClient",
+    "CommitmentContractsClient",
     "CommitmentsClient",
     "CorrespondenceClient",
+    "ContractPaymentsClient",
     "CostCodesClient",
+    "CostTypesClient",
     "DailyLogsClient",
     "DepartmentsClient",
     "DirectCostsClient",
@@ -2922,10 +3290,15 @@ __all__ = [
     "ProjectUsersClient",
     "PhotosClient",
     "PrimeChangeOrdersClient",
+    "PrimeContractsClient",
     "PunchItemsClient",
+    "PurchaseOrderContractsClient",
     "RFIsClient",
     "SpecificationsClient",
+    "SubcontractorInvoicesClient",
     "SubmittalsClient",
+    "TaxCodesClient",
     "VendorsClient",
+    "WorkOrderContractsClient",
     "WorkflowsClient",
 ]

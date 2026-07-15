@@ -178,6 +178,30 @@ procore-sdk export-cost-codes --company-id 123456 --output exports/cost-codes.cs
 procore-sdk export-commitments --project 352338 --company-id 123456 --output exports/commitments.csv
 ```
 
+## Contracts, Invoices, Payments, And Billing Read Commands
+
+Phase 8F adds read-oriented commands for contracts, invoices, payments, and
+billing resources in the current unreleased branch. These commands do not
+create, update, delete, submit, approve, reject, change statuses, generate PDFs,
+update SOV values, mutate line items, or submit payments.
+
+```bash
+procore-sdk prime-contracts --project 352338 --company-id 123456
+procore-sdk prime-contract-line-items --project 352338 --company-id 123456 --prime-contract 10
+procore-sdk owner-invoices --project 352338 --company-id 123456 --prime-contract 10
+procore-sdk subcontractor-invoices --project 352338 --company-id 123456
+procore-sdk contract-payments --project 352338 --company-id 123456
+procore-sdk billing-periods --project 352338 --company-id 123456
+procore-sdk cost-types --company-id 123456
+procore-sdk tax-codes --company-id 123456
+```
+
+```bash
+procore-sdk export-prime-contracts --project 352338 --company-id 123456 --output exports/prime-contracts.csv
+procore-sdk export-owner-invoices --project 352338 --company-id 123456 --prime-contract 10 --output exports/owner-invoices.csv
+procore-sdk export-contract-payments --project 352338 --company-id 123456 --output exports/contract-payments.csv
+```
+
 ## Workflow And Package Builders
 
 ```bash
