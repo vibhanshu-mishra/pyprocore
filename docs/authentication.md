@@ -11,6 +11,12 @@ Two auth modes are supported:
   This mode uses client ID and client secret, does not require a redirect URI,
   and may not return a refresh token.
 
+Authorization Code is for user-based OAuth and access is limited by the
+authenticated user's permissions. Client Credentials is for unattended
+server-to-server jobs and does not use browser login or a redirect URI. Its
+access is limited by the Data Connection App connection and service-account
+permissions configured in Procore. Unknown auth modes are rejected.
+
 ## `.env` Setup
 
 Copy the sample file and fill in your own values:
@@ -117,8 +123,24 @@ not usually work against another.
 
 The token store contains sensitive OAuth material. Do not commit it, paste it
 into issues, or upload it to shared systems. Treat it like a password file.
+The default path is `pyprocore/auth/token_store.json`; managed environments can
+pass an explicit `TokenStore` path. Legacy stores without `auth_mode` metadata
+remain authorization-code stores. Never commit `.env`, token stores, logs,
+downloads, or generated exports.
 
 ## Common Errors
+
+### 401 Unauthorized
+
+Check for a missing, expired, malformed, or wrong-environment token. Authorization
+Code can renew with a stored refresh token. Client Credentials normally has no
+refresh token; PyProcore renews it by requesting a new access token.
+
+### 403 Forbidden
+
+Check app-company connection, company/project/tool access, and either the user's
+or Data Connection App/service-account permissions. Sandbox credentials and URLs
+must not be mixed with production credentials and URLs.
 
 ### Unknown client
 

@@ -7,7 +7,8 @@
 - `v2.2.0` is published on PyPI and released on GitHub.
 - Current unreleased branch work: Phase 8A, Phase 8C, Phase 8D, Phase 8E, Phase 8F, and Phase 8G read-only
   API coverage, plus Phase 8B client-credentials auth support for Data
-  Connection Apps.
+  Connection Apps, and Phase 9A enterprise auth hardening and permission
+  diagnostics. The package remains `2.2.0`; this branch work is unpublished.
 
 ## Current Stable Release: 2.2.0
 
@@ -30,6 +31,11 @@ workflow automation foundations, documentation, security hardening, release
 tooling, and package metadata.
 
 ## Current Unreleased Branch Work
+
+Phase 9A hardens the two existing auth strategies, token-store resilience,
+config/doctor output, and local-only permission explanations. It does not call
+Procore or external model APIs, enable agent execution, or change discovery-only
+MCP behavior.
 
 Phase 8A adds read-only SDK coverage for Observations, Punch Items, Generic
 Tools, and Generic Tool correspondence items. It includes service helpers,

@@ -9,6 +9,9 @@ and this project follows semantic versioning.
 
 ### Added
 
+- Phase 9A enterprise auth hardening: explicit auth strategy normalization, safe local 401/403, app-connection, and environment-mismatch explanations, plus examples 111–114.
+- Mode-aware diagnostics for token-store state, token renewal, Data Connection App/service-account permissions, and user permissions.
+
 - Phase 8A read-only API coverage for Observations, Punch Items, and Generic Tool correspondence items.
 - Typed flexible models for `Observation`, `PunchItem`, `GenericTool`, and `Correspondence`.
 - Service, search, object-client, CLI, CSV/JSONL export, and agent registry metadata support for Phase 8A resources.
@@ -39,6 +42,9 @@ and this project follows semantic versioning.
 - Beginner-friendly Phase 8G examples and documentation.
 
 ### Security
+
+- Phase 9A redacts credential-like OAuth error fields and prevents malformed token-store validation details from echoing stored token values.
+- Phase 9A makes no live Procore or external model calls, does not enable agent execution, and leaves MCP discovery-only.
 
 - Phase 8A remains read-only and does not add create/update/delete Procore actions.
 - Agent tool execution remains disabled; new Phase 8A agent entries are metadata only.

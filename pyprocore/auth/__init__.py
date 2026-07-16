@@ -11,6 +11,10 @@ __all__ = [
     "TokenManager",
     "TokenStore",
     "get_access_token",
+    "explain_auth_error",
+    "explain_permission_error",
+    "explain_app_connection_issue",
+    "explain_environment_mismatch",
     "load_token",
     "save_token",
 ]
@@ -36,6 +40,26 @@ def __getattr__(name: str) -> Any:
             "TokenStore": TokenStore,
             "load_token": load_token,
             "save_token": save_token,
+        }[name]
+
+    if name in {
+        "explain_auth_error",
+        "explain_permission_error",
+        "explain_app_connection_issue",
+        "explain_environment_mismatch",
+    }:
+        from pyprocore.auth.permissions import (
+            explain_app_connection_issue,
+            explain_auth_error,
+            explain_environment_mismatch,
+            explain_permission_error,
+        )
+
+        return {
+            "explain_auth_error": explain_auth_error,
+            "explain_permission_error": explain_permission_error,
+            "explain_app_connection_issue": explain_app_connection_issue,
+            "explain_environment_mismatch": explain_environment_mismatch,
         }[name]
 
     raise AttributeError(f"module 'auth' has no attribute {name!r}")

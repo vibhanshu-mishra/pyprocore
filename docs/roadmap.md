@@ -33,6 +33,12 @@ Safety status for `v2.2.0`:
 
 ## Unreleased Branch Work
 
+### Phase 9A — Enterprise Authentication Hardening
+
+- Backward-compatible Authorization Code and Client Credentials strategy handling
+- Safe config, token-store, renewal, 401/403, permission, app-connection, and environment diagnostics
+- Local-only scheduled-export examples; no Procore/model calls or agent/MCP execution
+
 ### Phase 8A — Expanded Procore API Coverage
 
 Implemented in the current branch and not yet published:

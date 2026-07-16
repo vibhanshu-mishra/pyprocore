@@ -5,6 +5,13 @@ Commands use your `.env` configuration and local token store.
 
 ## Auth And Diagnostics
 
+These commands show auth mode, configured URLs, token-store path/readability,
+expiry, and refresh-token availability without printing secrets or token values.
+In `client_credentials` mode, renewal requests a new token and a refresh token
+is not required. A 401 usually means token, credential, expiry, or environment
+trouble; a 403 usually means user/service-account permissions, project/tool
+access, or an app-company connection issue.
+
 ```bash
 procore-sdk doctor
 procore-sdk doctor --json

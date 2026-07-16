@@ -10,7 +10,8 @@ from __future__ import annotations
 import os
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Literal
+from enum import StrEnum
+from typing import Any
 
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field, SecretStr, ValidationError, field_validator, model_validator
@@ -18,7 +19,27 @@ from pydantic import BaseModel, Field, SecretStr, ValidationError, field_validat
 from pyprocore.core.exceptions import ConfigurationError
 
 ENV_FILE_NAME = ".env"
-AuthMode = Literal["authorization_code", "client_credentials"]
+
+
+class AuthMode(StrEnum):
+    """Supported Procore OAuth strategies."""
+
+    AUTHORIZATION_CODE = "authorization_code"
+    CLIENT_CREDENTIALS = "client_credentials"
+
+
+def normalize_auth_mode(value: Any) -> AuthMode:
+    """Normalize an auth mode or raise a safe, actionable error."""
+    if value is None or not str(value).strip():
+        return AuthMode.AUTHORIZATION_CODE
+    normalized = str(value).strip().casefold().replace("-", "_")
+    try:
+        return AuthMode(normalized)
+    except ValueError as exc:
+        supported = ", ".join(mode.value for mode in AuthMode)
+        raise ValueError(
+            f"Unsupported PROCORE_AUTH_MODE {normalized!r}. Supported modes: {supported}."
+        ) from exc
 
 
 class ProcoreSettings(BaseModel):
@@ -30,7 +51,7 @@ class ProcoreSettings(BaseModel):
     login_url: str = Field(..., min_length=1)
     api_base: str = Field(..., min_length=1)
     company_id: int = Field(..., gt=0)
-    auth_mode: AuthMode = "authorization_code"
+    auth_mode: AuthMode = AuthMode.AUTHORIZATION_CODE
 
     @field_validator(
         "client_id",
@@ -62,11 +83,9 @@ class ProcoreSettings(BaseModel):
 
     @field_validator("auth_mode", mode="before")
     @classmethod
-    def _normalize_auth_mode(cls, value: Any) -> str:
+    def _normalize_auth_mode(cls, value: Any) -> AuthMode:
         """Normalize the configured authentication mode."""
-        if value is None or str(value).strip() == "":
-            return "authorization_code"
-        return str(value).strip().casefold().replace("-", "_")
+        return normalize_auth_mode(value)
 
     @field_validator("login_url", "api_base")
     @classmethod

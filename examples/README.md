@@ -43,6 +43,9 @@ payments, and billing read coverage.
 Examples `103` through `110` cover unreleased Phase 8G schedules, tasks,
 calendar items, coordination issues, forms, action plans, and agent registry
 metadata examples.
+Examples `111` through `114` cover unreleased Phase 9A scheduled Client
+Credentials patterns, enterprise diagnostics, token-store safety, and local
+permission explanations. They make no live calls.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -303,6 +306,10 @@ The current example set runs from `01_list_companies.py` through
 | `108_list_forms.py` | List read-only project forms |
 | `109_list_action_plans.py` | List read-only project action plans |
 | `110_agent_registry_phase8g.py` | Inspect Phase 8G agent metadata without executing tools |
+| `111_client_credentials_scheduled_export_pattern.py` | Print a safe unattended Data Connection App export plan |
+| `112_enterprise_auth_diagnostics.py` | Explain app connection and environment setup locally |
+| `113_token_store_safety.py` | Inspect token-store metadata without printing tokens |
+| `114_permission_diagnostics.py` | Interpret example 401/403 data without a network call |
 
 Sample workflow plans live in `examples/workflow_plans/`:
 

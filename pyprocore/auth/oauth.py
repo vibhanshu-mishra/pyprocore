@@ -176,9 +176,30 @@ class OAuthClient:
         try:
             body = response.json()
         except ValueError:
-            body = response.text
+            body = "Non-JSON response omitted."
+
+        body = OAuthClient._redact_error_body(body)
 
         return f"OAuth token request failed with status {response.status_code}: {body}"
+
+    @staticmethod
+    def _redact_error_body(value: Any) -> Any:
+        """Redact credential-like keys from an OAuth error payload."""
+        if isinstance(value, dict):
+            return {
+                key: (
+                    "[REDACTED]"
+                    if any(
+                        marker in str(key).casefold()
+                        for marker in ("token", "secret", "authorization")
+                    )
+                    else OAuthClient._redact_error_body(item)
+                )
+                for key, item in value.items()
+            }
+        if isinstance(value, list):
+            return [OAuthClient._redact_error_body(item) for item in value]
+        return value
 
 
 def exchange_authorization_code(authorization_code: str) -> OAuthTokenResponse:

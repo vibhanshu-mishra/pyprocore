@@ -15,7 +15,7 @@ It is model-agnostic, local-first, and safety-first. The current stable release,
 Current repository status:
 
 - Published stable release: `2.2.0`
-- Unreleased branch work: Phase 8A, Phase 8C, Phase 8D, Phase 8E, Phase 8F, and Phase 8G read-only API coverage, plus Phase 8B client-credentials auth support
+- Unreleased branch work: Phase 8A–8G API/auth additions and Phase 9A enterprise authentication hardening and permission diagnostics
 - Procore tool execution remains disabled
 
 ```bash
@@ -391,6 +391,11 @@ make quality-check
 - Agent Evaluation Harness
 
 ### Unreleased Branch Work
+
+- Phase 9A hardens Authorization Code OAuth and Client Credentials/Data
+  Connection App workflows with strict mode validation, safer token-store errors,
+  local permission diagnostics, and scheduled-export patterns. Version `2.2.0`
+  remains the published stable release; this work is unreleased.
 
 - Phase 8A read-only coverage for Observations, Punch Items, and Generic Tool correspondence
 - Phase 8B client-credentials auth support

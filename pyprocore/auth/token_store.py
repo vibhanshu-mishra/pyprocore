@@ -29,7 +29,7 @@ class StoredToken(BaseModel):
     refresh_token: SecretStr | None = None
     token_type: str = Field(default="Bearer", min_length=1)
     scope: str | None = None
-    auth_mode: AuthMode = "authorization_code"
+    auth_mode: AuthMode = AuthMode.AUTHORIZATION_CODE
 
     model_config = ConfigDict(extra="allow")
 
@@ -44,7 +44,7 @@ class StoredToken(BaseModel):
         cls,
         token_response: Any,
         existing_refresh_token: str | None = None,
-        auth_mode: AuthMode = "authorization_code",
+        auth_mode: AuthMode = AuthMode.AUTHORIZATION_CODE,
     ) -> "StoredToken":
         """Create a stored token from an OAuth response model or mapping.
 
@@ -123,7 +123,9 @@ class TokenStore:
         try:
             raw = json.loads(self._path.read_text(encoding="utf-8"))
         except OSError as exc:
-            raise AuthenticationError(f"Unable to read token store: {exc}") from exc
+            raise AuthenticationError(
+                f"Unable to read token store at {self._path}. Check that the file is readable."
+            ) from exc
         except json.JSONDecodeError as exc:
             raise AuthenticationError("Token store contains invalid JSON.") from exc
 
@@ -133,7 +135,9 @@ class TokenStore:
         try:
             return StoredToken.model_validate(raw)
         except ValueError as exc:
-            raise AuthenticationError(f"Token store contains invalid token data: {exc}") from exc
+            raise AuthenticationError(
+                "Token store contains invalid token data. Recreate it using the configured auth flow."
+            ) from exc
 
     def save(self, token: StoredToken) -> None:
         """Persist a token to disk atomically."""
@@ -145,14 +149,19 @@ class TokenStore:
             temporary_path.write_text(f"{payload}\n", encoding="utf-8")
             temporary_path.replace(self._path)
         except OSError as exc:
-            raise AuthenticationError(f"Unable to save token store: {exc}") from exc
+            temporary_path.unlink(missing_ok=True)
+            raise AuthenticationError(
+                f"Unable to save token store at {self._path}. Check its parent directory permissions."
+            ) from exc
 
     def clear(self) -> None:
         """Delete the saved token file when it exists."""
         try:
             self._path.unlink(missing_ok=True)
         except OSError as exc:
-            raise AuthenticationError(f"Unable to clear token store: {exc}") from exc
+            raise AuthenticationError(
+                f"Unable to clear token store at {self._path}. Check file permissions."
+            ) from exc
 
 
 def load_token() -> StoredToken | None:

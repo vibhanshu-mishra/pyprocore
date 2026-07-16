@@ -15,6 +15,7 @@ from urllib.parse import urlparse
 from dotenv import dotenv_values
 
 from pyprocore.auth.token_store import DEFAULT_TOKEN_FILE
+from pyprocore.core.config import normalize_auth_mode
 from pyprocore.core.exceptions import ProcoreError
 from pyprocore.models import ProcoreModel
 
@@ -195,7 +196,19 @@ def _configuration_checks(
         )
     ]
 
-    auth_mode = _auth_mode(config_values.get("PROCORE_AUTH_MODE"))
+    try:
+        auth_mode = normalize_auth_mode(config_values.get("PROCORE_AUTH_MODE")).value
+    except ValueError as exc:
+        checks.append(
+            _check(
+                "Auth mode",
+                "fail",
+                "Configured authentication mode is unsupported.",
+                details=str(exc),
+                suggested_fix="Set PROCORE_AUTH_MODE to authorization_code or client_credentials.",
+            )
+        )
+        return checks
     checks.append(
         _check(
             "Auth mode",
@@ -530,12 +543,7 @@ def _dependency_check(module_name: str) -> DoctorCheck:
 
 def _auth_mode(value: str | None) -> str:
     """Return the normalized auth mode used by doctor checks."""
-    if value is None or not value.strip():
-        return "authorization_code"
-    normalized = value.strip().casefold().replace("-", "_")
-    if normalized == "client_credentials":
-        return normalized
-    return "authorization_code"
+    return normalize_auth_mode(value).value
 
 
 def _required_env_vars(auth_mode: str) -> tuple[str, ...]:

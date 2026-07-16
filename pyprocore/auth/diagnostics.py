@@ -13,7 +13,7 @@ from dotenv import dotenv_values
 from pyprocore.auth.oauth import OAuthTokenResponse, exchange_authorization_code
 from pyprocore.auth.token_manager import TokenManager
 from pyprocore.auth.token_store import StoredToken, TokenStore
-from pyprocore.core.config import ProcoreSettings, get_settings
+from pyprocore.core.config import AuthMode, ProcoreSettings, get_settings, normalize_auth_mode
 from pyprocore.core.exceptions import AuthenticationError
 from pyprocore.models import ProcoreModel
 
@@ -152,11 +152,19 @@ def get_auth_status(
     config = _read_auth_config(
         Path(env_path) if env_path is not None else Path.cwd() / ".env", environment
     )
-    auth_mode = _auth_mode(config.get("PROCORE_AUTH_MODE"))
+    mode_error: str | None = None
+    try:
+        auth_mode = normalize_auth_mode(config.get("PROCORE_AUTH_MODE")).value
+    except ValueError as exc:
+        auth_mode = str(config.get("PROCORE_AUTH_MODE") or "").strip()
+        mode_error = str(exc)
     required_config = _required_config_keys(auth_mode)
     missing_configuration = [key for key in required_config if not config.get(key)]
     errors: list[str] = []
     warnings: list[str] = []
+
+    if mode_error:
+        errors.append(mode_error)
 
     if missing_configuration:
         errors.append("Required auth configuration is missing.")
@@ -185,6 +193,10 @@ def get_auth_status(
     )
     if token is not None and not refresh_token_present and auth_mode != "client_credentials":
         warnings.append("Refresh token is missing.")
+    if token is not None and token.auth_mode.value != auth_mode and not mode_error:
+        warnings.append(
+            f"Stored token auth mode is {token.auth_mode.value}; configured auth mode is {auth_mode}."
+        )
 
     expires_at = token.expires_at if token is not None else None
     expires_at_utc = _format_expiry(expires_at)
@@ -374,12 +386,28 @@ def format_auth_status(report: AuthStatusReport) -> str:
         f"API base: {report.api_base or 'Missing'}",
         f"Redirect URI: {report.redirect_uri or 'Missing'}",
         f"Company ID: {report.company_id if report.company_id is not None else 'Missing'}",
+        f"Token store path: {report.token_store_path}",
     ]
     if report.missing_configuration:
         lines.append(f"Missing configuration: {', '.join(report.missing_configuration)}")
 
     lines.append("Next step:")
     lines.append(_auth_status_next_step(report))
+    lines.append("Permission guidance:")
+    lines.append(
+        "401 usually indicates a token, credential, expiry, or environment problem. "
+        "403 usually indicates company/project/tool permissions or an app-company connection problem."
+    )
+    if report.auth_mode == "client_credentials":
+        lines.append(
+            "Client Credentials renews by requesting a new token (not by using refresh_token); "
+            "access is controlled by Data Connection App/service-account permissions."
+        )
+    else:
+        lines.append(
+            "Authorization Code access is controlled by the authenticated user's permissions."
+        )
+    lines.append("Sandbox and production credentials, login URLs, and API URLs must match.")
     return "\n".join(lines)
 
 
@@ -496,12 +524,7 @@ def _read_auth_config(env_path: Path, environ: Mapping[str, str]) -> dict[str, s
 
 def _auth_mode(value: str | None) -> str:
     """Return the normalized auth mode used by diagnostics."""
-    if value is None or not value.strip():
-        return "authorization_code"
-    normalized = value.strip().casefold().replace("-", "_")
-    if normalized == "client_credentials":
-        return normalized
-    return "authorization_code"
+    return normalize_auth_mode(value).value
 
 
 def _required_config_keys(auth_mode: str) -> tuple[str, ...]:
