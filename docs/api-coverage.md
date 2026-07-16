@@ -165,6 +165,13 @@ rotation guidance. These helpers do not construct a Procore client, do not print
 token values, do not call live Procore APIs, and do not enable agent/MCP
 execution.
 
+## Phase 9D Private Deployment Notes
+
+Phase 9D does not add new Procore endpoint coverage. It adds local private
+deployment guidance, production runbooks, readiness checks, templates, examples,
+and scripts. No live Procore calls, hosted infrastructure, automatic scheduling,
+external AI/model calls, tool execution, or MCP execution are added.
+
 ## Live Verification Notes
 
 Procore access varies by environment, company, project, app connection, and user

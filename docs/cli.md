@@ -45,6 +45,20 @@ Use `PROCORE_TOKEN_STORE_PATH` to keep token stores outside the repository.
 Use `PROCORE_TOKEN_STORE_BACKEND=file` for persistent storage and
 `PROCORE_TOKEN_STORE_BACKEND=memory` only for tests/examples.
 
+## Enterprise Readiness
+
+Phase 9D adds local-only enterprise deployment guidance commands:
+
+```bash
+procore-sdk enterprise readiness-check
+procore-sdk enterprise sample-layout
+procore-sdk enterprise runbook-summary
+procore-sdk enterprise deployment-pattern --pattern cron
+```
+
+These commands do not call Procore, do not install schedules, do not print
+secrets, do not call external AI/model APIs, and do not enable tool execution.
+
 ## Scheduled Export Planning
 
 Phase 9B adds local-only scheduled export planning commands for enterprise

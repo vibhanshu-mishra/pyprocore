@@ -275,6 +275,7 @@ from pyprocore.workflows import (
     AIExportResult,
     EnhancedRFIPackageResult,
     EnhancedSubmittalPackageResult,
+    EnterpriseReadinessReport,
     ProjectContextResult,
     ProjectSyncResult,
     ScheduledExportManifest,
@@ -286,7 +287,10 @@ from pyprocore.workflows import (
     build_ai_review_export,
     build_enhanced_rfi_package,
     build_enhanced_submittal_package,
+    build_production_runbook_summary,
     build_project_context_package,
+    evaluate_private_deployment_config,
+    explain_private_deployment_pattern,
     explain_scheduled_export_plan,
     export_action_plan_change_history_to_csv,
     export_action_plans_to_csv,
@@ -344,6 +348,7 @@ from pyprocore.workflows import (
     load_scheduled_export_plan,
     load_workflow_plan,
     run_workflow_plan,
+    sample_private_folder_layout,
     sample_scheduled_export_plan_json,
     sync_documents_to_folder,
     sync_project_to_folder,
@@ -484,6 +489,75 @@ def build_parser() -> argparse.ArgumentParser:
     token_store_subcommands.add_parser(
         "sample-paths",
         help="Show safe token-store path examples",
+    )
+
+    enterprise_parser = subcommands.add_parser(
+        "enterprise",
+        help="Local private deployment readiness helpers",
+    )
+    enterprise_subcommands = enterprise_parser.add_subparsers(
+        dest="enterprise_command",
+        required=True,
+    )
+    enterprise_readiness_parser = enterprise_subcommands.add_parser(
+        "readiness-check",
+        help="Evaluate private deployment readiness without live API calls",
+    )
+    enterprise_readiness_parser.add_argument(
+        "--auth-mode",
+        choices=["authorization_code", "client_credentials"],
+        default="client_credentials",
+    )
+    enterprise_readiness_parser.add_argument("--environment-name", default=None)
+    enterprise_readiness_parser.add_argument("--token-store-path", type=Path)
+    enterprise_readiness_parser.add_argument("--output-dir", type=Path)
+    enterprise_readiness_parser.add_argument("--log-dir", type=Path)
+    enterprise_readiness_parser.add_argument("--plan", type=Path)
+    enterprise_readiness_parser.add_argument(
+        "--allow-no-dry-run",
+        action="store_true",
+        help="Warn that scheduled exports are planned without a required dry-run",
+    )
+    enterprise_readiness_parser.add_argument(
+        "--user-workflow",
+        action="store_true",
+        help="Treat the deployment as a user-driven local workflow",
+    )
+    enterprise_readiness_parser.add_argument(
+        "--json",
+        dest="json_output",
+        action="store_true",
+        help="Print structured JSON output",
+    )
+
+    enterprise_pattern_parser = enterprise_subcommands.add_parser(
+        "deployment-pattern",
+        help="Explain a private deployment pattern",
+    )
+    enterprise_pattern_parser.add_argument(
+        "--pattern",
+        choices=["local", "private-server", "cron", "docker"],
+        default="local",
+    )
+
+    enterprise_layout_parser = enterprise_subcommands.add_parser(
+        "sample-layout",
+        help="Show a private folder layout example",
+    )
+    enterprise_layout_parser.add_argument(
+        "--root",
+        default="/opt/pyprocore",
+        help="Example private deployment root",
+    )
+
+    enterprise_runbook_parser = enterprise_subcommands.add_parser(
+        "runbook-summary",
+        help="Print a local production runbook summary",
+    )
+    enterprise_runbook_parser.add_argument(
+        "--auth-mode",
+        choices=["authorization_code", "client_credentials"],
+        default="client_credentials",
     )
 
     agent_parser = subcommands.add_parser("agent", help="Inspect the local agent tool registry")
@@ -2938,6 +3012,26 @@ def run_command(args: argparse.Namespace) -> Any:
             return token_store_sample_paths()
         raise ValueError(f"Unsupported token-store command: {args.token_store_command}")
 
+    if args.command == "enterprise":
+        if args.enterprise_command == "readiness-check":
+            return evaluate_private_deployment_config(
+                auth_mode=args.auth_mode,
+                token_store_path=args.token_store_path,
+                export_output_dir=args.output_dir,
+                log_dir=args.log_dir,
+                environment_name=args.environment_name,
+                scheduled_export_plan_path=args.plan,
+                dry_run_required=not args.allow_no_dry_run,
+                server_to_server=not args.user_workflow,
+            )
+        if args.enterprise_command == "sample-layout":
+            return sample_private_folder_layout(args.root)
+        if args.enterprise_command == "runbook-summary":
+            return build_production_runbook_summary(args.auth_mode)
+        if args.enterprise_command == "deployment-pattern":
+            return explain_private_deployment_pattern(args.pattern)
+        raise ValueError(f"Unsupported enterprise command: {args.enterprise_command}")
+
     if args.command == "agent":
         if args.agent_command == "manifest":
             return build_agent_manifest()
@@ -4864,6 +4958,36 @@ def format_auth_rotation_checklist(result: AuthRotationChecklistResult) -> str:
     return "\n".join(lines)
 
 
+def format_enterprise_readiness_report(result: EnterpriseReadinessReport) -> str:
+    """Format private deployment readiness findings for humans."""
+    lines = [
+        "PyProcore Enterprise Readiness Check",
+        f"Environment: {result.environment_name or 'not provided'}",
+        f"Auth mode: {result.auth_mode}",
+        f"Token store: {result.token_store_path or 'not provided'}",
+        f"Output dir: {result.export_output_dir or 'not provided'}",
+        f"Log dir: {result.log_dir or 'not provided'}",
+        f"Plan: {result.scheduled_export_plan_path or 'not provided'}",
+        f"Dry-run required: {result.dry_run_required}",
+        "",
+        "Findings:",
+    ]
+    lines.extend(
+        f"- {finding.severity.upper()} {finding.code}: {finding.message}"
+        for finding in result.findings
+    )
+    if result.warnings:
+        lines.append("")
+        lines.append("Suggested fixes:")
+        for finding in result.warnings:
+            if finding.suggested_action:
+                lines.append(f"- {finding.suggested_action}")
+    lines.append("")
+    lines.append("No Procore API calls were made.")
+    lines.append("Tool execution remains disabled; MCP remains discovery-only.")
+    return "\n".join(lines)
+
+
 def format_export_summary(path: Path) -> str:
     """Return a human-readable export summary."""
     return f"Export complete.\nOutput: {path}"
@@ -5358,6 +5482,23 @@ def main() -> None:
 
     if isinstance(result, str) and args.command == "token-store":
         print(result)
+        return
+
+    if isinstance(result, EnterpriseReadinessReport):
+        if args.json_output:
+            print(json.dumps(to_serializable(result), indent=2, default=str))
+        else:
+            print(format_enterprise_readiness_report(result))
+        raise SystemExit(0 if result.passed else 1)
+
+    if args.command == "enterprise":
+        if isinstance(result, list):
+            print("PyProcore Production Runbook Summary")
+            for item in result:
+                print(f"- {item}")
+            print("No Procore API calls were made.")
+        else:
+            print(result)
         return
 
     if args.command == "agent" and args.agent_command in {"openapi", "schemas"}:

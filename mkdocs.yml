@@ -13,6 +13,8 @@ nav:
   - Workflows: workflows.md
   - Enterprise Scheduled Exports: enterprise-scheduled-exports.md
   - Token Store and Rotation: token-store-and-rotation.md
+  - Private Deployment: private-deployment.md
+  - Production Runbook: production-runbook.md
   - AI Review: ai-review.md
   - Agent API: agent-api.md
   - Project Status: project-status.md

@@ -1,8 +1,10 @@
 # Enterprise Scheduled Exports
 
 Phase 9B adds local planning patterns for enterprise scheduled exports and Data
-Connection App deployments. This is unreleased branch work unless a later PyPI
-release includes it. The current published stable release remains `2.2.0`.
+Connection App deployments. Phase 9D adds private deployment and production
+runbook guidance around those patterns. This is unreleased branch work unless a
+later PyPI release includes it. The current published stable release remains
+`2.2.0`.
 
 These helpers validate and explain local plan files only. They do not call Procore,
 do not run external AI/model APIs, do not enable Procore tool execution, and
@@ -92,6 +94,16 @@ Phase 9C adds file and memory token-store backend architecture plus local
 diagnostics. File token stores remain the persistent default, memory token
 stores are for tests/examples only, and cloud secret-manager backends remain
 future work unless explicitly implemented later.
+
+For production readiness, run:
+
+```bash
+procore-sdk enterprise readiness-check
+procore-sdk enterprise runbook-summary
+```
+
+See [Private Deployment](private-deployment.md) and
+[Production Runbook](production-runbook.md).
 
 ## Safe Scheduling Pattern
 

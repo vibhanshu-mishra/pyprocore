@@ -1,0 +1,8 @@
+# Example only. PyProcore does not install schedules automatically.
+# Dry-run this command manually before adding it to cron.
+
+SHELL=/bin/bash
+PYTHONPATH=/opt/pyprocore/app
+
+# Nightly local scheduled-export dry-run.
+15 2 * * * cd /opt/pyprocore/app && /usr/bin/env bash -lc 'source /opt/pyprocore/config/production.env && procore-sdk scheduled-export dry-run /opt/pyprocore/plans/nightly_project_context.json >> /opt/pyprocore/logs/production/nightly.log 2>&1'

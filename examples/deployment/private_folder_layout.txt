@@ -1,0 +1,17 @@
+/opt/pyprocore/
+  config/
+    sandbox.env
+    production.env
+  token-stores/
+    sandbox/token_store.json
+    production/token_store.json
+  plans/
+    nightly_project_context.json
+  exports/
+    sandbox/
+    production/
+  logs/
+    sandbox/
+    production/
+
+Keep this folder outside your source checkout and restrict access to operators.

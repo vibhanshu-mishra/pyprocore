@@ -1,0 +1,14 @@
+# Illustrative private runner only. It does not include secrets and does not
+# start hosted infrastructure.
+services:
+  pyprocore-runner:
+    image: python:3.12-slim
+    working_dir: /workspace
+    command: ["procore-sdk", "scheduled-export", "validate", "/runtime/plans/nightly_project_context.json"]
+    env_file:
+      - /opt/pyprocore/config/production.env
+    volumes:
+      - /opt/pyprocore/plans:/runtime/plans:ro
+      - /opt/pyprocore/token-stores:/runtime/token-stores
+      - /opt/pyprocore/exports:/runtime/exports
+      - /opt/pyprocore/logs:/runtime/logs

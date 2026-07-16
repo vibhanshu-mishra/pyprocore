@@ -7,6 +7,15 @@ from pyprocore.workflows.automation_runner import (
     run_workflow_plan,
     validate_workflow_plan,
 )
+from pyprocore.workflows.deployment import (
+    EnterpriseReadinessFinding,
+    EnterpriseReadinessReport,
+    build_enterprise_readiness_checklist,
+    build_production_runbook_summary,
+    evaluate_private_deployment_config,
+    explain_private_deployment_pattern,
+    sample_private_folder_layout,
+)
 from pyprocore.workflows.enhanced_rfi import build_enhanced_rfi_package
 from pyprocore.workflows.enhanced_submittal import build_enhanced_submittal_package
 from pyprocore.workflows.exports import (
@@ -189,6 +198,8 @@ __all__ = [
     "EnhancedSubmittalPackageOptions",
     "EnhancedSubmittalPackageResult",
     "EnhancedSubmittalRelatedSectionResult",
+    "EnterpriseReadinessFinding",
+    "EnterpriseReadinessReport",
     "ProjectContextManifest",
     "ProjectContextOptions",
     "ProjectContextResult",
@@ -208,11 +219,16 @@ __all__ = [
     "WorkflowStepResult",
     "build_ai_prompt_pack",
     "build_ai_review_export",
+    "build_enterprise_readiness_checklist",
     "build_sync_state_path",
     "build_enhanced_rfi_package",
     "build_enhanced_submittal_package",
+    "build_production_runbook_summary",
+    "evaluate_private_deployment_config",
+    "explain_private_deployment_pattern",
     "build_project_context_package",
     "explain_scheduled_export_plan",
+    "sample_private_folder_layout",
     "export_plan_to_manifest",
     "export_action_plan_change_history_to_csv",
     "export_action_plan_change_history_to_jsonl",

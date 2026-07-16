@@ -161,6 +161,12 @@ Use `PROCORE_TOKEN_STORE_PATH` to keep token stores outside the repository.
 Use separate token stores for sandbox and production. See
 [Token Store and Rotation](token-store-and-rotation.md).
 
+For private deployment and production operations, see
+[Private Deployment](private-deployment.md) and
+[Production Runbook](production-runbook.md). Client Credentials is recommended
+for server-to-server scheduled exports; Authorization Code remains supported for
+user-driven local workflows.
+
 ## Common Errors
 
 ### 401 Unauthorized

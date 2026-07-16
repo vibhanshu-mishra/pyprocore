@@ -8,9 +8,10 @@
 - Current unreleased branch work: Phase 8A, Phase 8C, Phase 8D, Phase 8E, Phase 8F, and Phase 8G read-only
   API coverage, plus Phase 8B client-credentials auth support for Data
   Connection Apps, Phase 9A enterprise auth hardening and permission
-  diagnostics, and Phase 9B scheduled export planning and deployment
-  patterns, plus Phase 9C token-store backend and credential rotation
-  hardening. The package remains `2.2.0`; this branch work is unpublished.
+  diagnostics, Phase 9B scheduled export planning and deployment patterns,
+  Phase 9C token-store backend and credential rotation hardening, and Phase 9D
+  private deployment/runbook guidance. The package remains `2.2.0`; this branch
+  work is unpublished.
 
 ## Current Stable Release: 2.2.0
 
@@ -50,6 +51,10 @@ diagnostics, credential rotation checklists, and sandbox/production separation
 guidance. It does not call Procore, add cloud secret-manager integrations, call
 external model APIs, enable agent execution, or change discovery-only MCP
 behavior.
+
+Phase 9D adds private deployment patterns, production runbooks, enterprise
+readiness checks, safe templates, examples, and local scripts. It completes the
+Phase 9 enterprise hardening work on main as unreleased branch work.
 
 Phase 8A adds read-only SDK coverage for Observations, Punch Items, Generic
 Tools, and Generic Tool correspondence items. It includes service helpers,

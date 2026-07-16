@@ -1,7 +1,7 @@
 # Token Store and Credential Rotation
 
 PyProcore `v2.2.0` remains the current published stable release. Phase 8A
-through 8G and Phase 9A through 9C are unreleased branch work unless they are
+through 8G and Phase 9A through 9D are unreleased branch work unless they are
 published in a later release.
 
 Phase 9C adds local token-store safety helpers, backend architecture, and
@@ -90,3 +90,7 @@ For scheduled exports and Data Connection App deployments:
 Token-store safety applies when users deliberately run SDK or CLI workflows.
 Tool execution remains disabled, and the agent registry/MCP adapters remain
 metadata and discovery surfaces only.
+
+For broader private deployment guidance, see
+[Private Deployment](private-deployment.md) and
+[Production Runbook](production-runbook.md).

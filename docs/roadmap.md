@@ -68,6 +68,20 @@ Focus: local token-store safety and enterprise readiness only. No cloud
 secret-manager integrations are implemented, no live Procore calls are made, no
 external AI/model APIs are called, and agent/MCP execution remains disabled.
 
+### Phase 9D — Private Deployment Patterns and Production Runbooks
+
+Implemented in the current branch and not yet published:
+
+- Private deployment guide for local-only, private-server, cron, and Docker runner patterns
+- Production runbook for setup, dry-runs, first production runs, monitoring, 401/403 troubleshooting, rotation, incident response, rollback, upgrades, and decommissioning
+- Enterprise readiness checklist models and local CLI helpers
+- Placeholder-only deployment templates and examples 126–130
+- Safe local scripts for readiness checks, folder layout planning, and runbook summaries
+
+Focus: private deployment guidance only. PyProcore does not host
+infrastructure, does not install schedules, does not call live Procore APIs or
+external AI/model APIs, and agent/MCP execution remains disabled.
+
 ### Phase 8A — Expanded Procore API Coverage
 
 Implemented in the current branch and not yet published:

@@ -17,7 +17,8 @@ Current repository status:
 - Published stable release: `2.2.0`
 - Unreleased branch work: Phase 8A–8G API/auth additions, Phase 9A
   enterprise authentication hardening, Phase 9B scheduled export planning,
-  and Phase 9C token-store/credential-rotation hardening
+  Phase 9C token-store/credential-rotation hardening, and Phase 9D private
+  deployment/runbook guidance
 - Procore tool execution remains disabled
 
 ```bash
@@ -36,6 +37,7 @@ PyProcore turns Procore REST API responses into typed Python objects and gives y
 - Build local review packages for RFIs, submittals, documents, and project context.
 - Validate and dry-run enterprise scheduled export plans without calling Procore.
 - Inspect token-store safety and print credential rotation checklists locally.
+- Check private deployment readiness and review production runbook guidance locally.
 - Use CLI diagnostics and automation commands without hardcoding credentials.
 - Expose local agent metadata, OpenAPI/JSON Schema, run logs, replay, MCP discovery, and deterministic evals for future assistant integrations.
 
@@ -349,6 +351,30 @@ See [Token Store and Rotation](docs/token-store-and-rotation.md).
 
 ---
 
+## Private Deployment And Production Runbooks
+
+Unreleased Phase 9D adds local-only private deployment readiness checks,
+production runbooks, and placeholder deployment templates for internal teams.
+PyProcore does not host infrastructure, does not automatically schedule jobs,
+does not call external AI/model APIs by default, and does not enable tool
+execution.
+
+```bash
+procore-sdk enterprise readiness-check
+procore-sdk enterprise sample-layout
+procore-sdk enterprise runbook-summary
+procore-sdk enterprise deployment-pattern --pattern cron
+```
+
+Client Credentials / Data Connection App auth is recommended for unattended
+server-to-server scheduled exports. Authorization Code remains supported for
+user-driven local workflows.
+
+See [Private Deployment](docs/private-deployment.md) and
+[Production Runbook](docs/production-runbook.md).
+
+---
+
 ## Security And Safety
 
 - Never commit `.env` files, OAuth token stores, Authorization headers, access tokens, refresh tokens, client secrets, logs containing credentials, downloads, or private project data.
@@ -449,6 +475,9 @@ make quality-check
 - Phase 9C adds token-store backend architecture, safe token-store inspection,
   memory backends for tests/examples, credential rotation checklists, and
   enterprise deployment readiness guidance. It is unreleased branch work.
+- Phase 9D completes Phase 9 on main with private deployment patterns,
+  production runbooks, enterprise readiness checks, safe templates, examples,
+  and scripts. It is unreleased branch work.
 
 - Phase 8A read-only coverage for Observations, Punch Items, and Generic Tool correspondence
 - Phase 8B client-credentials auth support

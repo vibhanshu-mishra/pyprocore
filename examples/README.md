@@ -53,6 +53,9 @@ calls.
 Examples `121` through `125` cover unreleased Phase 9C token-store backends,
 safe diagnostics, credential rotation checklists, safe clearance, and
 sandbox/production separation. They make no live calls.
+Examples `126` through `130` cover unreleased Phase 9D private deployment
+readiness checks, folder layouts, production runbook summaries, deployment
+pattern comparisons, and enterprise safety boundaries. They make no live calls.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -107,6 +110,7 @@ export WORKFLOW_DRY_RUN=1
 export PROCORE_AUTH_MODE=authorization_code
 export PROCORE_TOKEN_STORE_BACKEND=file
 export PROCORE_TOKEN_STORE_PATH=~/.config/pyprocore/token_store.json
+export PYPROCORE_PRIVATE_ROOT=/opt/pyprocore
 export PYPROCORE_RUN_LIVE_EXAMPLE=0
 ```
 
