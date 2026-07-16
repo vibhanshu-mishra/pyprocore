@@ -11,8 +11,9 @@
   diagnostics, Phase 9B scheduled export planning and deployment patterns,
   Phase 9C token-store backend and credential rotation hardening, and Phase 9D
   private deployment/runbook guidance, Phase 12 model-agnostic AI workflow
-  examples, and Phase 10A async client foundation. The package remains `2.2.0`;
-  this branch work is unpublished.
+  examples, Phase 10A async client foundation, and Phase 10B async
+  export/download patterns. The package remains `2.2.0`; this branch work is
+  unpublished.
 
 ## Current Stable Release: 2.2.0
 
@@ -67,6 +68,12 @@ Phase 10A adds an async client foundation for read-oriented workflows. It adds
 optional `pyprocore[async]` HTTP support, async pagination/retry/error handling,
 and initial async coverage for companies, projects, RFIs, submittals, documents,
 drawings, and specification sections. It does not add Procore write actions.
+
+Phase 10B adds async CSV/JSONL export helpers, local download patterns,
+manifest/result models, and conservative concurrency controls for read-only
+workflows. It does not replace sync exports, upload files, mutate Procore data,
+call external AI/model APIs, enable agent execution, or change discovery-only
+MCP behavior.
 
 Phase 8A adds read-only SDK coverage for Observations, Punch Items, Generic
 Tools, and Generic Tool correspondence items. It includes service helpers,
@@ -124,6 +131,7 @@ approvals, status changes, or project-management mutations.
 - Phase 9B scheduled export validation and dry-runs are local planning tools only.
 - Phase 12 AI workflow examples are local-only and model-agnostic.
 - Phase 10A async client support is read-oriented and additive.
+- Phase 10B async export/download helpers are read-only, local-file-only, and additive.
 
 ## Known Limitations
 
@@ -145,6 +153,6 @@ approvals, status changes, or project-management mutations.
 - Write-action safety model
 - Real MCP execution after explicit safety design
 - Additional read-only Procore coverage beyond Phase 8G
-- Async client and plugin architecture
+- Richer async orchestration and plugin architecture
 - Golden datasets and model evals
 - Richer MCP integration

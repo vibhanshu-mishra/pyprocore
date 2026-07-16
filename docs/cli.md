@@ -75,10 +75,11 @@ external AI/model APIs, MCP execution, or Procore tool execution.
 
 ## Async Client
 
-Phase 10A does not add CLI commands. It adds the unreleased `AsyncProcore`
-Python client foundation, local mock async examples, and optional async HTTP
-transport support for Python code. Existing CLI commands remain sync and
-backward compatible.
+Phase 10A and Phase 10B do not add CLI commands. They add the unreleased
+`AsyncProcore` Python client foundation, async export/download helper patterns,
+local mock async examples, manifests, conservative concurrency controls, and
+optional async HTTP transport support for Python code. Existing CLI commands
+remain sync and backward compatible.
 
 ## Scheduled Export Planning
 

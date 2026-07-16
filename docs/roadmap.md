@@ -118,6 +118,23 @@ Procore write actions are added, no live Procore calls are made by tests or
 examples, no external AI/model APIs are called, and agent/MCP execution remains
 disabled.
 
+### Phase 10B — Async Exports And File Download Patterns
+
+Implemented in the current branch and not yet published:
+
+- Async CSV and JSONL export helpers for the initial async resource set
+- Local async download helpers for records with direct download URLs
+- `AsyncExportResult`, `AsyncExportManifest`, `AsyncDownloadResult`, and
+  `AsyncDownloadManifest`
+- Conservative semaphore-based `max_concurrency` controls
+- Partial-failure capture with continue-on-error behavior
+- Placeholder-only examples 147–152
+
+Focus: read-only local export and download patterns. The sync client and sync
+exports remain supported, no uploads or Procore mutations are added, no live
+Procore calls are made by tests or examples, no external AI/model APIs are
+called, and agent/MCP execution remains disabled.
+
 ### Phase 8A — Expanded Procore API Coverage
 
 Implemented in the current branch and not yet published:
@@ -254,10 +271,9 @@ Planned modules when endpoint shapes are safe and clear:
 
 Planned features:
 
-- Async exports
-- Async downloads
 - Batch fetch helpers
-- Concurrency limits
+- Richer async batch orchestration
+- Async attachment extraction helpers across more Procore payload shapes
 - Large-project performance improvements
 
 ### Phase 10 — Plugin Architecture

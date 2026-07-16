@@ -63,6 +63,9 @@ checklists. They make no live Procore calls and no external AI/model calls.
 Examples `141` through `146` cover unreleased Phase 10A async client patterns,
 mock async transport, async pagination, and async safety notes. They use local
 mock responses and make no live Procore calls.
+Examples `147` through `152` cover unreleased Phase 10B async export and
+download patterns, local manifests, and concurrency limits. They use local mock
+responses, temporary folders, and make no live Procore calls.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -372,6 +375,12 @@ The current example set runs from `01_list_companies.py` through
 | `144_async_documents_drawings_specs.py` | Demonstrate async document, drawing, and specification reads |
 | `145_async_pagination_pattern.py` | Demonstrate async pagination with mock responses |
 | `146_async_client_safety_notes.py` | Print Phase 10A async client safety boundaries |
+| `147_async_export_projects.py` | Export projects asynchronously to JSONL with mock data |
+| `148_async_export_rfis.py` | Export RFIs asynchronously to CSV with mock data |
+| `149_async_export_documents.py` | Export document metadata asynchronously with mock data |
+| `150_async_download_manifest_pattern.py` | Demonstrate async download manifests with mock file responses |
+| `151_async_concurrency_limits.py` | Show async download concurrency limits with a mock transport |
+| `152_async_export_safety_notes.py` | Print Phase 10B async export and download safety notes |
 
 Sample scheduled export configs live in `examples/configs/`:
 
@@ -453,4 +462,7 @@ Sample webhook payloads live in `examples/webhooks/`:
 - Examples `141` through `146` are local async client examples. They use
   `MockAsyncTransport`, do not call Procore, do not require credentials, and do
   not add write actions.
+- Examples `147` through `152` are local async export/download examples. They
+  write only to temporary folders, use mock transports, do not call Procore, do
+  not upload files, and do not add mutation actions.
 - Keep secrets out of code, screenshots, logs, and issue reports.

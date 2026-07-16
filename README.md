@@ -19,7 +19,8 @@ Current repository status:
   enterprise authentication hardening, Phase 9B scheduled export planning,
   Phase 9C token-store/credential-rotation hardening, and Phase 9D private
   deployment/runbook guidance, plus Phase 12 model-agnostic AI workflow
-  examples, plus Phase 10A async client foundation
+  examples, plus Phase 10A async client foundation and Phase 10B async
+  export/download patterns
 - Procore tool execution remains disabled
 
 ```bash
@@ -41,6 +42,7 @@ PyProcore turns Procore REST API responses into typed Python objects and gives y
 - Check private deployment readiness and review production runbook guidance locally.
 - Build model-agnostic local AI workflow prompts, checklists, and vector export manifests.
 - Use the unreleased async client foundation for read-oriented workflows with optional async HTTP support.
+- Use unreleased async export and local download patterns with manifests and conservative concurrency controls.
 - Use CLI diagnostics and automation commands without hardcoding credentials.
 - Expose local agent metadata, OpenAPI/JSON Schema, run logs, replay, MCP discovery, and deterministic evals for future assistant integrations.
 
@@ -180,6 +182,21 @@ Prepared in the current unreleased branch:
 The existing sync `Procore` client remains supported and unchanged. Phase 10A
 does not add write actions, does not call external AI/model APIs, does not
 enable agent execution, and keeps MCP discovery-only. See
+[Async Client](docs/async-client.md).
+
+### Phase 10B Async Exports And Download Patterns
+
+Prepared in the current unreleased branch:
+
+- async CSV and JSONL export helpers for common read resources
+- async local download helpers for records that include direct download URLs
+- `AsyncExportResult`, `AsyncDownloadResult`, and manifest models
+- conservative `max_concurrency` controls for download batches
+- examples 147–152 using mock transports and temporary folders
+
+Phase 10B is additive and read-only. It does not replace sync exports, does not
+upload files, does not mutate Procore data, does not call external AI/model
+APIs, does not enable agent execution, and keeps MCP discovery-only. See
 [Async Client](docs/async-client.md).
 
 ### Phase 7 Agent Layer

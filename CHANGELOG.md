@@ -25,6 +25,9 @@ and this project follows semantic versioning.
 - Examples 131–140, placeholder-only AI workflow templates, and local scripts for building sample AI workflow packages, vector export manifests, and safety checks.
 - Phase 10A async client foundation with `AsyncProcore`, async transport abstractions, local `MockAsyncTransport`, optional `pyprocore[async]` HTTP support, async pagination/retry/error handling, and initial read-only async coverage.
 - Examples 141–146 for local-only async client quickstarts, projects, RFIs/submittals, documents/drawings/specs, pagination, and safety notes.
+- Phase 10B async export and download patterns with CSV/JSONL helpers, local download manifests, safe filename handling, and conservative concurrency controls.
+- `AsyncExportResult`, `AsyncExportManifest`, `AsyncDownloadResult`, and `AsyncDownloadManifest` models for JSON-serializable async workflow summaries.
+- Examples 147–152 for local-only async exports, download manifests, concurrency limits, and safety notes.
 
 - Phase 8A read-only API coverage for Observations, Punch Items, and Generic Tool correspondence items.
 - Typed flexible models for `Observation`, `PunchItem`, `GenericTool`, and `Correspondence`.
@@ -64,6 +67,7 @@ and this project follows semantic versioning.
 - Phase 9D enterprise readiness checks are local-only, do not call Procore or external AI/model APIs, do not install schedules, do not add hosted infrastructure, and keep tool execution disabled and MCP discovery-only.
 - Phase 12 AI workflow helpers and examples are local-only, model-agnostic, do not call Procore or external AI/model APIs, do not add required AI framework/vector database dependencies, and keep tool execution disabled and MCP discovery-only.
 - Phase 10A async support is read-oriented, mocked in tests/examples, does not add Procore write actions, keeps agent tool execution disabled, and keeps MCP discovery-only.
+- Phase 10B async exports and download helpers are read-only, local-file-only, mocked in tests/examples, do not add upload or Procore mutation actions, keep agent tool execution disabled, and keep MCP discovery-only.
 
 - Phase 8A remains read-only and does not add create/update/delete Procore actions.
 - Agent tool execution remains disabled; new Phase 8A agent entries are metadata only.

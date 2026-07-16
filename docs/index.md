@@ -40,7 +40,8 @@ assistant integrations. Tool execution remains disabled.
 - [Workflows](workflows.md)
 - [AI Review](ai-review.md)
 - [AI Workflows](ai-workflows.md)
-- [Async Client](async-client.md)
+- [Async Client](async-client.md), including unreleased Phase 10A async reads
+  and Phase 10B async export/download patterns
 - [Agent API](agent-api.md)
 - [Project Status](project-status.md)
 - [Security](security.md)
