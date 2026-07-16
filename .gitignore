@@ -32,6 +32,7 @@ agent-runs/
 agent-eval-output/
 agent-spec-output/
 agent-mcp-output/
+examples/generated/
 
 # Internal-only notes
 docs/internal/

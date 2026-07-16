@@ -172,6 +172,15 @@ deployment guidance, production runbooks, readiness checks, templates, examples,
 and scripts. No live Procore calls, hosted infrastructure, automatic scheduling,
 external AI/model calls, tool execution, or MCP execution are added.
 
+## Phase 12 AI Workflow Notes
+
+Phase 12 does not add new Procore endpoint coverage. It adds model-agnostic
+local AI workflow examples, prompt/checklist helpers, vector export manifest
+helpers, templates, and safety checks. These helpers operate on local text,
+local dictionaries, or placeholder data only. They do not call Procore, call
+external AI/model APIs, require AI framework dependencies, perform Procore
+writes, enable agent tool execution, or enable MCP execution.
+
 ## Live Verification Notes
 
 Procore access varies by environment, company, project, app connection, and user

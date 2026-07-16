@@ -16,6 +16,7 @@ nav:
   - Private Deployment: private-deployment.md
   - Production Runbook: production-runbook.md
   - AI Review: ai-review.md
+  - AI Workflows: ai-workflows.md
   - Agent API: agent-api.md
   - Project Status: project-status.md
   - Security: security.md

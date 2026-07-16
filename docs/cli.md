@@ -59,6 +59,20 @@ procore-sdk enterprise deployment-pattern --pattern cron
 These commands do not call Procore, do not install schedules, do not print
 secrets, do not call external AI/model APIs, and do not enable tool execution.
 
+## AI Workflow Examples
+
+Phase 12 does not add CLI commands. It adds local helper functions, examples,
+templates, and scripts for model-agnostic AI workflow preparation:
+
+```bash
+python3 scripts/build_ai_workflow_sample.py
+python3 scripts/build_vector_export_sample.py
+python3 scripts/check_ai_workflow_safety.py
+```
+
+These scripts use placeholder/local data only. They do not call Procore,
+external AI/model APIs, MCP execution, or Procore tool execution.
+
 ## Scheduled Export Planning
 
 Phase 9B adds local-only scheduled export planning commands for enterprise

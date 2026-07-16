@@ -18,7 +18,8 @@ Current repository status:
 - Unreleased branch work: Phase 8A–8G API/auth additions, Phase 9A
   enterprise authentication hardening, Phase 9B scheduled export planning,
   Phase 9C token-store/credential-rotation hardening, and Phase 9D private
-  deployment/runbook guidance
+  deployment/runbook guidance, plus Phase 12 model-agnostic AI workflow
+  examples
 - Procore tool execution remains disabled
 
 ```bash
@@ -38,6 +39,7 @@ PyProcore turns Procore REST API responses into typed Python objects and gives y
 - Validate and dry-run enterprise scheduled export plans without calling Procore.
 - Inspect token-store safety and print credential rotation checklists locally.
 - Check private deployment readiness and review production runbook guidance locally.
+- Build model-agnostic local AI workflow prompts, checklists, and vector export manifests.
 - Use CLI diagnostics and automation commands without hardcoding credentials.
 - Expose local agent metadata, OpenAPI/JSON Schema, run logs, replay, MCP discovery, and deterministic evals for future assistant integrations.
 
@@ -144,6 +146,24 @@ Workflow helpers create local files and do not mutate Procore data.
 - JSON, JSONL, Markdown, manifest, source-index, prompt, and checklist files
 
 AI-ready package builders write local files only. They do not call external AI/model services by default.
+
+### Phase 12 AI Workflow Examples
+
+Prepared in the current unreleased branch:
+
+- RFI review assistant prompt packages
+- Submittal review assistant prompt packages
+- Project context Q&A packages
+- Drawing/spec comparison prompt packages
+- Vector DB/chunk export manifests without a vector database dependency
+- Engineering assistant context bundles
+- Field issue summarizer packages
+- Change-risk review packages
+
+Phase 12 is model-agnostic and local-only. PyProcore does not call external
+AI/model APIs, does not require AI framework dependencies, does not execute MCP
+tools, and does not enable Procore tool execution. See
+[AI Workflows](docs/ai-workflows.md).
 
 ### Phase 7 Agent Layer
 
@@ -404,6 +424,7 @@ See [Security](docs/security.md) and [SECURITY.md](SECURITY.md).
 - [API Coverage](docs/api-coverage.md)
 - [Workflows](docs/workflows.md)
 - [AI Review](docs/ai-review.md)
+- [AI Workflows](docs/ai-workflows.md)
 - [Agent API](docs/agent-api.md)
 - [Automation](docs/automation.md)
 - [Recipes](docs/recipes/)
@@ -478,6 +499,9 @@ make quality-check
 - Phase 9D completes Phase 9 on main with private deployment patterns,
   production runbooks, enterprise readiness checks, safe templates, examples,
   and scripts. It is unreleased branch work.
+- Phase 12 adds model-agnostic AI workflow examples, local prompt/checklist
+  helpers, vector export manifest samples, templates, and safety checks. It is
+  unreleased branch work and does not call external AI/model APIs.
 
 - Phase 8A read-only coverage for Observations, Punch Items, and Generic Tool correspondence
 - Phase 8B client-credentials auth support
@@ -503,9 +527,8 @@ make quality-check
 - Write-action safety model
 - Real MCP execution after explicit safety design
 - Developer platform: async client and plugin architecture
-- AI workflow examples: vector DB examples and engineering assistant examples
 - Evaluation: golden datasets and model evals
-- Deployment: private deployment patterns and richer MCP integration
+- Deployment: richer MCP integration after explicit safety design
 
 See [Roadmap](docs/roadmap.md).
 

@@ -40,6 +40,11 @@ resources, contracts, invoices, payments, billing resources, schedules, tasks,
 calendar items, coordination issues, forms, and action plans. This expands
 discovery metadata only; tool execution remains disabled.
 
+Phase 12 AI workflow examples are separate from agent execution. They prepare
+local prompt/checklist/vector-manifest files for user-selected model stacks, but
+they do not enable agent tool execution, do not call external AI/model APIs, and
+do not change discovery-only MCP behavior.
+
 ## What It Provides
 
 - Stable tool names such as `procore.find_rfi`.

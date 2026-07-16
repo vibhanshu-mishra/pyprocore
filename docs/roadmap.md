@@ -82,6 +82,25 @@ Focus: private deployment guidance only. PyProcore does not host
 infrastructure, does not install schedules, does not call live Procore APIs or
 external AI/model APIs, and agent/MCP execution remains disabled.
 
+### Phase 12 — AI Workflow Examples
+
+Implemented in the current branch and not yet published:
+
+- Model-agnostic local AI workflow guide
+- Prompt/checklist helpers for RFI review, submittal review, project Q&A,
+  drawing/spec comparison, engineering context, field issue summaries, and
+  change-risk review
+- Local vector export manifest and text chunking helpers without vector
+  database dependencies
+- Placeholder-only examples 131–140
+- Placeholder-only AI workflow templates
+- Local safety check scripts
+
+Focus: examples and local package preparation only. PyProcore does not call
+external AI/model APIs, does not add required AI framework dependencies, does
+not call live Procore APIs, does not perform Procore writes, and agent/MCP
+execution remains disabled.
+
 ### Phase 8A — Expanded Procore API Coverage
 
 Implemented in the current branch and not yet published:
@@ -238,22 +257,7 @@ Planned features:
 - Third-party integration hooks
 - Organization-specific extensions
 
-### Phase 11 — AI Workflow Examples
-
-Planned examples:
-
-- RFI review assistant
-- Submittal review assistant
-- Drawing/specification comparison assistant
-- Project context search assistant
-- Vector DB examples
-- Engineering assistant examples
-- Document Q&A package
-- Field issue summarizer
-
-PyProcore will remain model-agnostic.
-
-### Phase 12 — Golden Datasets and Agent Evals
+### Phase 13 — Golden Datasets and Agent Evals
 
 Planned features:
 
@@ -264,18 +268,6 @@ Planned features:
 - Tool-selection accuracy checks
 - Safety evals
 - Regression tests
-
-### Phase 13 — Private Deployment Patterns
-
-Planned features:
-
-- Local-only deployment guide
-- Private server deployment guide
-- Docker Compose examples
-- Internal network deployment
-- Token-store strategy
-- Secrets management guide
-- Audit-log storage guide
 
 ### Phase 14 — Guarded Execution Foundation
 

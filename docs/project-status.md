@@ -10,8 +10,8 @@
   Connection Apps, Phase 9A enterprise auth hardening and permission
   diagnostics, Phase 9B scheduled export planning and deployment patterns,
   Phase 9C token-store backend and credential rotation hardening, and Phase 9D
-  private deployment/runbook guidance. The package remains `2.2.0`; this branch
-  work is unpublished.
+  private deployment/runbook guidance, plus Phase 12 model-agnostic AI workflow
+  examples. The package remains `2.2.0`; this branch work is unpublished.
 
 ## Current Stable Release: 2.2.0
 
@@ -55,6 +55,11 @@ behavior.
 Phase 9D adds private deployment patterns, production runbooks, enterprise
 readiness checks, safe templates, examples, and local scripts. It completes the
 Phase 9 enterprise hardening work on main as unreleased branch work.
+
+Phase 12 adds model-agnostic AI workflow examples, local prompt/checklist
+helpers, vector export manifests, templates, examples, and safety checks. It
+does not call Procore, call external AI/model APIs, add AI framework
+dependencies, enable agent execution, or change discovery-only MCP behavior.
 
 Phase 8A adds read-only SDK coverage for Observations, Punch Items, Generic
 Tools, and Generic Tool correspondence items. It includes service helpers,
@@ -110,6 +115,7 @@ approvals, status changes, or project-management mutations.
 - Client credentials support does not enable Procore tool execution.
 - Phase 8C, Phase 8D, Phase 8E, Phase 8F, and Phase 8G service helpers are read-only.
 - Phase 9B scheduled export validation and dry-runs are local planning tools only.
+- Phase 12 AI workflow examples are local-only and model-agnostic.
 
 ## Known Limitations
 
@@ -132,6 +138,5 @@ approvals, status changes, or project-management mutations.
 - Real MCP execution after explicit safety design
 - Additional read-only Procore coverage beyond Phase 8G
 - Async client and plugin architecture
-- Vector DB examples and engineering assistant examples
 - Golden datasets and model evals
 - Richer MCP integration

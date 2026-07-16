@@ -56,6 +56,10 @@ sandbox/production separation. They make no live calls.
 Examples `126` through `130` cover unreleased Phase 9D private deployment
 readiness checks, folder layouts, production runbook summaries, deployment
 pattern comparisons, and enterprise safety boundaries. They make no live calls.
+Examples `131` through `140` cover unreleased Phase 12 model-agnostic AI
+workflow patterns, prompt packages, vector export manifests, engineering
+context bundles, field issue summaries, change-risk reviews, and safety
+checklists. They make no live Procore calls and no external AI/model calls.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -111,6 +115,7 @@ export PROCORE_AUTH_MODE=authorization_code
 export PROCORE_TOKEN_STORE_BACKEND=file
 export PROCORE_TOKEN_STORE_PATH=~/.config/pyprocore/token_store.json
 export PYPROCORE_PRIVATE_ROOT=/opt/pyprocore
+export PYPROCORE_AI_WORKFLOW_OUTPUT=examples/generated/ai-workflow-sample
 export PYPROCORE_RUN_LIVE_EXAMPLE=0
 ```
 
@@ -154,6 +159,9 @@ python3 examples/117_scheduled_export_dry_run.py
 python3 examples/121_token_store_backends.py
 python3 examples/122_token_store_diagnostics.py
 python3 examples/123_credential_rotation_checklist.py
+python3 examples/131_rfi_review_assistant_package.py
+python3 examples/135_vector_db_export_pattern.py
+python3 examples/139_ai_workflow_safety_checklist.py
 ```
 
 Documents use Procore's Project Folders and Files endpoints internally. Before a
@@ -211,7 +219,7 @@ make examples-check
 ## Example Index
 
 The current example set runs from `01_list_companies.py` through
-`120_private_deployment_pattern.py`.
+`140_phase12_ai_workflows_summary.py`.
 
 | File | Demonstrates |
 | ---- | ------------ |
@@ -340,6 +348,21 @@ The current example set runs from `01_list_companies.py` through
 | `123_credential_rotation_checklist.py` | Print local-only credential rotation guidance |
 | `124_safe_token_clearance.py` | Demonstrate token-store clear behavior with a temporary file |
 | `125_sandbox_production_separation.py` | Explain separate sandbox and production token stores |
+| `126_enterprise_readiness_check.py` | Run a local enterprise readiness check without Procore access |
+| `127_private_deployment_layout.py` | Print a private deployment folder layout |
+| `128_production_runbook_summary.py` | Print a production runbook summary |
+| `129_deployment_pattern_comparison.py` | Compare private deployment patterns locally |
+| `130_phase9_enterprise_summary.py` | Summarize Phase 9 enterprise hardening boundaries |
+| `131_rfi_review_assistant_package.py` | Build a local RFI review assistant prompt package |
+| `132_submittal_review_assistant_package.py` | Build a local submittal review assistant prompt package |
+| `133_project_context_qa_package.py` | Prepare a project context Q&A prompt package |
+| `134_drawing_spec_comparison_package.py` | Prepare a drawing/spec comparison prompt package |
+| `135_vector_db_export_pattern.py` | Build a local vector export manifest without vector dependencies |
+| `136_engineering_assistant_context_bundle.py` | Prepare an engineering assistant context bundle |
+| `137_field_issue_summarizer_package.py` | Prepare a field issue summary prompt package |
+| `138_change_risk_review_package.py` | Prepare a change-risk review prompt package |
+| `139_ai_workflow_safety_checklist.py` | Print the Phase 12 AI workflow safety checklist |
+| `140_phase12_ai_workflows_summary.py` | Summarize Phase 12 AI workflow patterns |
 
 Sample scheduled export configs live in `examples/configs/`:
 
@@ -382,6 +405,19 @@ Docker examples live in `examples/docker/`:
 | `run-workflow-in-docker.sh` | macOS/Linux Docker workflow-plan dry-run helper |
 | `run-workflow-in-docker.ps1` | Windows PowerShell Docker workflow-plan dry-run helper |
 
+AI workflow templates live in `examples/ai_workflows/`:
+
+| File | Demonstrates |
+| ---- | ------------ |
+| `rfi_review_prompt_template.md` | Placeholder RFI review assistant prompt |
+| `submittal_review_prompt_template.md` | Placeholder submittal review assistant prompt |
+| `project_context_qa_prompt_template.md` | Placeholder project context Q&A prompt |
+| `drawing_spec_comparison_prompt_template.md` | Placeholder drawing/spec comparison prompt |
+| `engineering_assistant_prompt_template.md` | Placeholder engineering assistant context prompt |
+| `field_issue_summary_prompt_template.md` | Placeholder field issue summary prompt |
+| `change_risk_review_prompt_template.md` | Placeholder change-risk review prompt |
+| `vector_export_manifest_sample.json` | Placeholder vector export manifest |
+
 Sample webhook payloads live in `examples/webhooks/`:
 
 | File | Demonstrates |
@@ -402,4 +438,7 @@ Sample webhook payloads live in `examples/webhooks/`:
 - Example `71` does not request a token unless `PYPROCORE_RUN_LIVE_EXAMPLE=1`.
 - Examples `115` through `120` are local planning/deployment examples and do
   not call Procore.
+- Examples `131` through `140` are local AI workflow examples. They do not call
+  Procore, external AI/model APIs, vector databases, MCP execution, or Procore
+  tool execution.
 - Keep secrets out of code, screenshots, logs, and issue reports.
