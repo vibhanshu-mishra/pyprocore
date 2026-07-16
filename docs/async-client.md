@@ -2,9 +2,10 @@
 
 Phase 10A adds an async client foundation in the current unreleased branch.
 Phase 10B builds on that foundation with async export helpers, local download
-patterns, manifests, and simple concurrency controls. The published stable
-release remains `2.2.0`; Phase 10A and Phase 10B remain branch-only until a
-future release is cut.
+patterns, manifests, and simple concurrency controls. Phase 10C adds async
+multi-project batch planning, collection, and export helpers. The published
+stable release remains `2.2.0`; Phase 10A through Phase 10C remain branch-only
+until a future release is cut.
 
 ## What this does
 
@@ -23,7 +24,7 @@ Initial async coverage includes:
 - Specification sections
 
 No create, update, delete, upload, approval, status-change, or mutation helpers
-are added in Phase 10A or Phase 10B.
+are added in Phase 10A, Phase 10B, or Phase 10C.
 
 ## Optional async transport
 
@@ -198,6 +199,131 @@ manifest = await async_download_with_manifest(
 This is a local helper, not a scheduler, queue, webhook processor, or background
 job runner.
 
+## Async Multi-Project Batch Operations
+
+Phase 10C adds read-only async batch helpers for large-company workflows that
+need to collect or export the same resource family across many projects:
+
+- `AsyncBatchPlan`
+- `AsyncBatchManifest`
+- `AsyncBatchResourceResult`
+- `AsyncProjectResult`
+- `build_async_batch_plan`
+- `validate_async_batch_plan`
+- `build_async_batch_dry_run_manifest`
+- `async_run_project_batch`
+- `async_export_multi_project_resources`
+- `async_collect_multi_project_resources`
+
+Supported Phase 10C batch resources are:
+
+- `rfis`
+- `submittals`
+- `documents`
+- `drawings`
+- `specification_sections`
+
+Batch helpers use the existing `AsyncProcore` read methods and Phase 10B
+CSV/JSONL writers. They do not add Procore write, upload, approval, or mutation
+operations.
+
+## Dry-Run Planning
+
+Dry-run planning is local-only. It validates the company ID, project IDs,
+resources, output format, output path, and concurrency settings, then returns a
+manifest describing the project/resource output paths:
+
+```python
+from pyprocore import build_async_batch_dry_run_manifest, build_async_batch_plan
+
+plan = build_async_batch_plan(
+    company_id=123456,
+    project_ids=[111, 222],
+    resources=["rfis", "submittals"],
+    output_dir="./exports/async-batch",
+    dry_run=True,
+)
+
+manifest = build_async_batch_dry_run_manifest(plan)
+print(len(manifest.results))
+```
+
+No Procore API calls are made during validation or dry-run planning.
+
+## Multi-Project Exports
+
+For real read-only exports, pass a configured `AsyncProcore` client and a
+non-dry-run plan:
+
+```python
+import asyncio
+
+from pyprocore import AsyncProcore, build_async_batch_plan, async_export_multi_project_resources
+
+
+async def main() -> None:
+    plan = build_async_batch_plan(
+        company_id=123456,
+        project_ids=[111, 222],
+        resources=["rfis", "documents"],
+        output_dir="./exports/async-batch",
+        output_format="jsonl",
+        dry_run=False,
+        max_concurrency=4,
+    )
+    async with AsyncProcore() as client:
+        manifest = await async_export_multi_project_resources(client, plan)
+        print(manifest.completed_count)
+
+
+asyncio.run(main())
+```
+
+The convenience helpers `async_export_multi_project_rfis`,
+`async_export_multi_project_submittals`, `async_export_multi_project_documents`,
+`async_export_multi_project_drawings`, and
+`async_export_multi_project_specification_sections` build one-resource plans for
+you.
+
+## In-Memory Collection
+
+Use collection helpers when you want structured records in memory instead of
+local files:
+
+- `async_collect_multi_project_rfis`
+- `async_collect_multi_project_submittals`
+- `async_collect_multi_project_documents`
+- `async_collect_multi_project_drawings`
+- `async_collect_multi_project_specifications`
+
+Collected records are available on the result objects at runtime, but manifest
+JSON serialization excludes those in-memory records so signed URLs and large
+payloads are not accidentally written into summary files.
+
+## Batch Manifests And Resume Pattern
+
+Batch manifests capture project/resource status, output paths, record counts,
+warnings, and redacted errors. A previous manifest can be passed back into a
+batch run so completed project/resource pairs are skipped and failed pairs can
+be retried.
+
+This is intentionally a simple resume/skip pattern, not a scheduler, queue,
+database, background worker, or cloud sync engine.
+
+## Async Batch CLI
+
+Phase 10C adds local-only planning commands:
+
+```bash
+procore-sdk async-batch sample-config
+procore-sdk async-batch validate examples/configs/async_batch_dry_run.json
+procore-sdk async-batch dry-run examples/configs/async_batch_dry_run.json
+```
+
+These commands do not construct a Procore client, do not require credentials,
+and do not call Procore. Live batch export commands are intentionally left out
+of the CLI for this phase.
+
 ## Safety boundaries
 
 - Existing sync APIs remain backward compatible.
@@ -206,6 +332,7 @@ job runner.
 - No external AI/model APIs are called.
 - No required vector DB or AI dependencies are added.
 - Async exports and downloads are read-only and local-file-only.
+- Async batch helpers are read-only and additive.
 - No upload or Procore mutation actions are added.
 - Agent tool execution remains disabled.
 - MCP remains discovery-only.

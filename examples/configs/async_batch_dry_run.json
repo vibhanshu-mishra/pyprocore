@@ -1,0 +1,16 @@
+{
+  "plan_name": "sample-async-dry-run",
+  "company_id": 12345,
+  "project_ids": [67890],
+  "resources": ["rfis", "specification_sections"],
+  "output_dir": "./exports/async-batch/dry-run",
+  "output_format": "csv",
+  "max_concurrency": 2,
+  "continue_on_error": true,
+  "dry_run": true,
+  "include_timestamp": true,
+  "per_project_subfolders": true,
+  "resource_options": {},
+  "skip_completed": true,
+  "notes": "Use this file to test local validation and dry-run behavior without credentials."
+}

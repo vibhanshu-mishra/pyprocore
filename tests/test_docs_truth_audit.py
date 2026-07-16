@@ -99,8 +99,12 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         self.assertIn("Phase 10B", unreleased_section)
         self.assertIn("Async Exports And File Download Patterns", unreleased_section)
         self.assertIn("Async CSV and JSONL export helpers", unreleased_section)
+        self.assertIn("Phase 10C", unreleased_section)
+        self.assertIn("Async Multi-Project Operations", unreleased_section)
+        self.assertIn("AsyncBatchPlan", unreleased_section)
         self.assertNotIn("Async exports", future_section)
         self.assertNotIn("Async downloads", future_section)
+        self.assertNotIn("Richer async batch orchestration", future_section)
 
         for phrase in (
             "plugin architecture",
@@ -136,6 +140,7 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         self.assertIn("Examples `131` through `140`", examples)
         self.assertIn("Examples `141` through `146`", examples)
         self.assertIn("Examples `147` through `152`", examples)
+        self.assertIn("Examples `153` through `160`", examples)
         self.assertIn("cover the `v2.2.0` Phase 7", examples)
         self.assertIn("do not require Procore credentials or execute tools", examples)
         self.assertIn("client credentials auth", examples)

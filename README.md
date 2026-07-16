@@ -19,8 +19,8 @@ Current repository status:
   enterprise authentication hardening, Phase 9B scheduled export planning,
   Phase 9C token-store/credential-rotation hardening, and Phase 9D private
   deployment/runbook guidance, plus Phase 12 model-agnostic AI workflow
-  examples, plus Phase 10A async client foundation and Phase 10B async
-  export/download patterns
+  examples, plus Phase 10A async client foundation, Phase 10B async
+  export/download patterns, and Phase 10C async multi-project batch helpers
 - Procore tool execution remains disabled
 
 ```bash
@@ -43,6 +43,7 @@ PyProcore turns Procore REST API responses into typed Python objects and gives y
 - Build model-agnostic local AI workflow prompts, checklists, and vector export manifests.
 - Use the unreleased async client foundation for read-oriented workflows with optional async HTTP support.
 - Use unreleased async export and local download patterns with manifests and conservative concurrency controls.
+- Plan read-only async multi-project batches with local dry-run manifests.
 - Use CLI diagnostics and automation commands without hardcoding credentials.
 - Expose local agent metadata, OpenAPI/JSON Schema, run logs, replay, MCP discovery, and deterministic evals for future assistant integrations.
 
@@ -198,6 +199,23 @@ Phase 10B is additive and read-only. It does not replace sync exports, does not
 upload files, does not mutate Procore data, does not call external AI/model
 APIs, does not enable agent execution, and keeps MCP discovery-only. See
 [Async Client](docs/async-client.md).
+
+### Phase 10C Async Multi-Project Batch Helpers
+
+Prepared in the current unreleased branch:
+
+- async batch plans, manifests, project/resource results, and findings
+- local-only validation and dry-run planning for multi-project async exports
+- async exports for RFIs, submittals, documents, drawings, and specification sections
+- in-memory async collection helpers for the same resource set
+- conservative concurrency controls, partial-failure capture, and simple manifest resume/skip support
+- `procore-sdk async-batch sample-config`, `validate`, and `dry-run`
+
+Phase 10C is additive and read-only. CLI validation and dry-runs do not call
+Procore or require credentials. Library exports call Procore only when a
+developer passes a configured async client and uses a non-dry-run plan. No
+upload, create, update, delete, approval, status-change, external AI/model,
+agent execution, or MCP execution behavior is added.
 
 ### Phase 7 Agent Layer
 
@@ -540,6 +558,9 @@ make quality-check
 - Phase 10A adds an async client foundation, mock async transport, optional
   async HTTP transport, async pagination/retry/error handling, and initial
   read-only async coverage for core resources. It is unreleased branch work.
+- Phase 10C adds async multi-project batch planning, validation, dry-run
+  manifests, read-only exports, in-memory collection helpers, and conservative
+  concurrency controls. It is unreleased branch work.
 
 - Phase 8A read-only coverage for Observations, Punch Items, and Generic Tool correspondence
 - Phase 8B client-credentials auth support
@@ -564,7 +585,7 @@ make quality-check
 - Guarded tool execution and human approval gates
 - Write-action safety model
 - Real MCP execution after explicit safety design
-- Developer platform: async client and plugin architecture
+- Developer platform: richer async orchestration and plugin architecture
 - Evaluation: golden datasets and model evals
 - Deployment: richer MCP integration after explicit safety design
 

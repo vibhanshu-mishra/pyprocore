@@ -381,6 +381,14 @@ The current example set runs from `01_list_companies.py` through
 | `150_async_download_manifest_pattern.py` | Demonstrate async download manifests with mock file responses |
 | `151_async_concurrency_limits.py` | Show async download concurrency limits with a mock transport |
 | `152_async_export_safety_notes.py` | Print Phase 10B async export and download safety notes |
+| `153_async_batch_plan.py` | Build and validate a local async batch plan |
+| `154_async_multi_project_rfi_export.py` | Export multi-project RFI mock data asynchronously |
+| `155_async_multi_project_submittal_export.py` | Export multi-project submittal mock data asynchronously |
+| `156_async_batch_dry_run.py` | Preview an async batch dry-run from a sample config |
+| `157_async_batch_partial_failures.py` | Demonstrate partial failure capture with mock async data |
+| `158_async_batch_concurrency.py` | Demonstrate async batch concurrency limits |
+| `159_async_batch_manifest_resume_pattern.py` | Show simple manifest-based resume/skip planning |
+| `160_phase10c_async_batch_summary.py` | Summarize Phase 10C async batch safety boundaries |
 
 Sample scheduled export configs live in `examples/configs/`:
 
@@ -389,6 +397,9 @@ Sample scheduled export configs live in `examples/configs/`:
 | `scheduled_export_client_credentials.json` | Placeholder Data Connection App scheduled export plan |
 | `scheduled_export_authorization_code.json` | Placeholder user-owned local scheduled export plan |
 | `scheduled_export_multi_project.json` | Placeholder multi-project export planning config |
+| `async_batch_multi_project.json` | Placeholder async multi-project export plan |
+| `async_batch_dry_run.json` | Local-only async batch dry-run validation plan |
+| `async_batch_enterprise_export.json` | Placeholder enterprise async batch export pattern |
 
 Sample workflow plans live in `examples/workflow_plans/`:
 
@@ -465,4 +476,7 @@ Sample webhook payloads live in `examples/webhooks/`:
 - Examples `147` through `152` are local async export/download examples. They
   write only to temporary folders, use mock transports, do not call Procore, do
   not upload files, and do not add mutation actions.
+- Examples `153` through `160` are local async batch examples. They use
+  placeholder IDs, mock clients, or dry-run manifests, do not call Procore, do
+  not upload files, and keep agent/MCP execution disabled.
 - Keep secrets out of code, screenshots, logs, and issue reports.

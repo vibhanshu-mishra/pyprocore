@@ -181,7 +181,7 @@ local dictionaries, or placeholder data only. They do not call Procore, call
 external AI/model APIs, require AI framework dependencies, perform Procore
 writes, enable agent tool execution, or enable MCP execution.
 
-## Phase 10A And 10B Async Coverage Notes
+## Phase 10A Through 10C Async Coverage Notes
 
 Phase 10A adds an unreleased async client foundation for read-oriented
 workflows. Initial async coverage includes companies, projects, RFIs,
@@ -191,6 +191,11 @@ Phase 10B adds unreleased async CSV/JSONL export helpers, local download
 patterns, manifests, and conservative concurrency controls for that initial
 async read set. Download helpers work only when Procore payloads include direct
 download URLs.
+
+Phase 10C adds unreleased async multi-project batch helpers over the same
+read-oriented async resource set. Batch exports and collection helpers support
+RFIs, submittals, documents, drawings, and specification sections. Local
+validation and dry-runs do not call Procore.
 
 The async layer is additive. It does not remove or rewrite the sync client, does
 not add write/upload endpoints, does not enable agent or MCP execution, and

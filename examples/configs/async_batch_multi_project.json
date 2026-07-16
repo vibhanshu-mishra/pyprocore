@@ -1,0 +1,16 @@
+{
+  "plan_name": "sample-async-multi-project",
+  "company_id": 12345,
+  "project_ids": [67890, 11111],
+  "resources": ["rfis", "submittals", "documents"],
+  "output_dir": "./exports/async-batch/multi-project",
+  "output_format": "jsonl",
+  "max_concurrency": 3,
+  "continue_on_error": true,
+  "dry_run": true,
+  "include_timestamp": false,
+  "per_project_subfolders": true,
+  "resource_options": {},
+  "skip_completed": true,
+  "notes": "Placeholder-only sample. Replace IDs only after reviewing Procore permissions."
+}

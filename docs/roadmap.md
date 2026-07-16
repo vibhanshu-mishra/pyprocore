@@ -135,6 +135,25 @@ exports remain supported, no uploads or Procore mutations are added, no live
 Procore calls are made by tests or examples, no external AI/model APIs are
 called, and agent/MCP execution remains disabled.
 
+### Phase 10C — Async Multi-Project Operations And Batch Helpers
+
+Implemented in the current branch and not yet published:
+
+- `AsyncBatchPlan`, `AsyncBatchManifest`, per-project results, per-resource results, and findings
+- Local async batch validation and dry-run manifests
+- Async multi-project CSV/JSONL exports for RFIs, submittals, documents, drawings, and specification sections
+- In-memory async collection helpers for the same resource set
+- Conservative `max_concurrency` controls
+- Partial-failure capture with continue-on-error or fail-fast behavior
+- Simple manifest resume/skip pattern for completed project/resource pairs
+- Local-only CLI commands for `async-batch sample-config`, `async-batch validate`, and `async-batch dry-run`
+- Placeholder-only examples 153–160 and safe sample configs
+
+Focus: read-only async batch operations. The sync client and existing async
+10A/10B APIs remain supported, no upload or Procore mutation actions are added,
+no live Procore calls are made by tests or examples, no external AI/model APIs
+are called, and agent/MCP execution remains disabled.
+
 ### Phase 8A — Expanded Procore API Coverage
 
 Implemented in the current branch and not yet published:
@@ -271,8 +290,6 @@ Planned modules when endpoint shapes are safe and clear:
 
 Planned features:
 
-- Batch fetch helpers
-- Richer async batch orchestration
 - Async attachment extraction helpers across more Procore payload shapes
 - Large-project performance improvements
 

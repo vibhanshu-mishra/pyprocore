@@ -273,6 +273,7 @@ from pyprocore.webhooks import (
 )
 from pyprocore.workflows import (
     AIExportResult,
+    AsyncBatchManifest,
     EnhancedRFIPackageResult,
     EnhancedSubmittalPackageResult,
     EnterpriseReadinessReport,
@@ -285,11 +286,13 @@ from pyprocore.workflows import (
     WorkflowRunResult,
     build_ai_prompt_pack,
     build_ai_review_export,
+    build_async_batch_dry_run_manifest,
     build_enhanced_rfi_package,
     build_enhanced_submittal_package,
     build_production_runbook_summary,
     build_project_context_package,
     evaluate_private_deployment_config,
+    explain_async_batch_plan,
     explain_private_deployment_pattern,
     explain_scheduled_export_plan,
     export_action_plan_change_history_to_csv,
@@ -345,9 +348,11 @@ from pyprocore.workflows import (
     export_vendors_to_csv,
     export_work_order_contracts_to_csv,
     list_available_workflows,
+    load_async_batch_plan,
     load_scheduled_export_plan,
     load_workflow_plan,
     run_workflow_plan,
+    sample_async_batch_plan_json,
     sample_private_folder_layout,
     sample_scheduled_export_plan_json,
     sync_documents_to_folder,
@@ -356,6 +361,7 @@ from pyprocore.workflows import (
     sync_submittals_to_folder,
     validate_scheduled_export_plan,
     validate_workflow_plan,
+    write_async_batch_manifest,
     write_scheduled_export_manifest,
 )
 
@@ -2618,6 +2624,53 @@ def build_parser() -> argparse.ArgumentParser:
         help="Optional local path to write the dry-run manifest JSON",
     )
 
+    async_batch_parser = subcommands.add_parser(
+        "async-batch",
+        help="Validate and dry-run async multi-project batch plans",
+    )
+    async_batch_subcommands = async_batch_parser.add_subparsers(
+        dest="async_batch_command",
+        required=True,
+    )
+    async_batch_sample_parser = async_batch_subcommands.add_parser(
+        "sample-config",
+        help="Print or write a safe async batch sample config",
+    )
+    async_batch_sample_parser.add_argument(
+        "--output",
+        type=Path,
+        help="Optional path to write the sample JSON config",
+    )
+
+    async_batch_validate_parser = async_batch_subcommands.add_parser(
+        "validate",
+        help="Validate an async batch plan without Procore access",
+    )
+    async_batch_validate_parser.add_argument("plan_path", type=Path)
+    async_batch_validate_parser.add_argument(
+        "--json",
+        dest="json_output",
+        action="store_true",
+        help="Print structured JSON output",
+    )
+
+    async_batch_dry_run_parser = async_batch_subcommands.add_parser(
+        "dry-run",
+        help="Explain what an async batch plan would do without calling Procore",
+    )
+    async_batch_dry_run_parser.add_argument("plan_path", type=Path)
+    async_batch_dry_run_parser.add_argument(
+        "--json",
+        dest="json_output",
+        action="store_true",
+        help="Print structured JSON output",
+    )
+    async_batch_dry_run_parser.add_argument(
+        "--write-manifest",
+        type=Path,
+        help="Optional local path to write the dry-run manifest JSON",
+    )
+
     webhook_parser = subcommands.add_parser(
         "webhook",
         help="Validate, save, list, or dry-run local webhook event payloads",
@@ -3158,6 +3211,25 @@ def run_command(args: argparse.Namespace) -> Any:
                 return export_plan_to_manifest(args.plan_path)
             return explain_scheduled_export_plan(args.plan_path)
         raise ValueError(f"Unsupported scheduled-export command: {args.scheduled_export_command}")
+
+    if args.command == "async-batch":
+        if args.async_batch_command == "sample-config":
+            sample_json = sample_async_batch_plan_json()
+            if args.output is not None:
+                args.output.parent.mkdir(parents=True, exist_ok=True)
+                args.output.write_text(sample_json, encoding="utf-8")
+                return args.output
+            return sample_json
+        if args.async_batch_command == "validate":
+            return build_async_batch_dry_run_manifest(load_async_batch_plan(args.plan_path))
+        if args.async_batch_command == "dry-run":
+            if args.write_manifest is not None:
+                manifest = build_async_batch_dry_run_manifest(args.plan_path)
+                return write_async_batch_manifest(manifest, args.write_manifest)
+            if args.json_output:
+                return build_async_batch_dry_run_manifest(args.plan_path)
+            return explain_async_batch_plan(args.plan_path)
+        raise ValueError(f"Unsupported async-batch command: {args.async_batch_command}")
 
     if args.command == "webhook":
         if args.webhook_command == "validate":
@@ -5333,6 +5405,31 @@ def format_scheduled_export_manifest(result: ScheduledExportManifest) -> str:
     return "\n".join(lines)
 
 
+def format_async_batch_manifest(result: AsyncBatchManifest) -> str:
+    """Return a human-readable async batch dry-run summary."""
+    valid = not any(finding.severity == "error" for finding in result.findings)
+    lines = [
+        "Async batch dry run complete.",
+        f"Plan: {result.plan_name}",
+        f"Valid: {valid}",
+        f"Company: {result.company_id}",
+        f"Projects: {', '.join(str(item) for item in result.project_ids) or 'none'}",
+        f"Resources: {', '.join(result.resources) or 'none'}",
+        f"Output format: {result.output_format}",
+        f"Output folder: {result.output_dir}",
+        f"Max concurrency: {result.max_concurrency}",
+        f"Planned project/resource files: {len(result.results)}",
+        "Mode: local dry-run only; no Procore API calls were made.",
+    ]
+    if result.findings:
+        lines.append("")
+        lines.append("Findings:")
+        lines.extend(
+            f"- {finding.severity.upper()}: {finding.message}" for finding in result.findings
+        )
+    return "\n".join(lines)
+
+
 def format_webhook_event_summary(event: WebhookEvent) -> str:
     """Return a human-readable webhook event summary."""
     lines = [
@@ -5626,6 +5723,26 @@ def main() -> None:
         return
 
     if isinstance(result, str) and args.command == "scheduled-export":
+        print(result, end="" if result.endswith("\n") else "\n")
+        return
+
+    if isinstance(result, AsyncBatchManifest):
+        if args.json_output:
+            print(json.dumps(to_serializable(result), indent=2, default=str))
+        else:
+            print(format_async_batch_manifest(result))
+        raise SystemExit(
+            0 if not any(finding.severity == "error" for finding in result.findings) else 1
+        )
+
+    if isinstance(result, Path) and args.command == "async-batch":
+        if getattr(args, "json_output", False):
+            print(json.dumps({"output_path": str(result)}, indent=2))
+        else:
+            print(f"Async batch file written to: {result}")
+        return
+
+    if isinstance(result, str) and args.command == "async-batch":
         print(result, end="" if result.endswith("\n") else "\n")
         return
 

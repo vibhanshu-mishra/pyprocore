@@ -1,0 +1,20 @@
+{
+  "plan_name": "sample-enterprise-async-export",
+  "company_id": 12345,
+  "project_ids": [67890, 11111, 22222],
+  "resources": ["rfis", "submittals", "documents", "drawings", "specification_sections"],
+  "output_dir": "./exports/async-batch/enterprise",
+  "output_format": "jsonl",
+  "max_concurrency": 4,
+  "continue_on_error": true,
+  "dry_run": true,
+  "include_timestamp": true,
+  "per_project_subfolders": true,
+  "resource_options": {
+    "drawings": {
+      "drawing_area_id": 33333
+    }
+  },
+  "skip_completed": true,
+  "notes": "Placeholder-only enterprise pattern. Review project access, storage, and API usage before live exports."
+}
