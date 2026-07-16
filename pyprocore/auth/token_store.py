@@ -136,7 +136,8 @@ class TokenStore:
             return StoredToken.model_validate(raw)
         except ValueError as exc:
             raise AuthenticationError(
-                "Token store contains invalid token data. Recreate it using the configured auth flow."
+                "Token store contains invalid token data. Recreate it using "
+                "the configured auth flow."
             ) from exc
 
     def save(self, token: StoredToken) -> None:
@@ -151,7 +152,8 @@ class TokenStore:
         except OSError as exc:
             temporary_path.unlink(missing_ok=True)
             raise AuthenticationError(
-                f"Unable to save token store at {self._path}. Check its parent directory permissions."
+                f"Unable to save token store at {self._path}. Check its "
+                "parent directory permissions."
             ) from exc
 
     def clear(self) -> None:

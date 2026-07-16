@@ -11,6 +11,7 @@ nav:
   - CLI Usage: cli.md
   - API Coverage: api-coverage.md
   - Workflows: workflows.md
+  - Enterprise Scheduled Exports: enterprise-scheduled-exports.md
   - AI Review: ai-review.md
   - Agent API: agent-api.md
   - Project Status: project-status.md

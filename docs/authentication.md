@@ -103,6 +103,22 @@ This requests and saves a client credentials access token. Procore may omit a
 refresh token for this grant type; PyProcore treats that as normal and requests
 a fresh client credentials token when needed.
 
+## Scheduled Export Planning
+
+For enterprise scheduled exports, prefer `client_credentials` with a Procore
+Data Connection App. Phase 9B adds local-only scheduled export plan validation
+and dry-run manifest helpers. These commands do not require credentials, do not
+call Procore, and should be run before any real scheduled export job:
+
+```bash
+procore-sdk scheduled-export validate examples/configs/scheduled_export_client_credentials.json
+procore-sdk scheduled-export dry-run examples/configs/scheduled_export_client_credentials.json
+```
+
+Keep `.env`, token stores, logs, downloads, generated exports, and private
+project data outside source control. Use separate credentials and token stores
+for sandbox and production.
+
 ## Doctor
 
 ```bash

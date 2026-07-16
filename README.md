@@ -15,7 +15,8 @@ It is model-agnostic, local-first, and safety-first. The current stable release,
 Current repository status:
 
 - Published stable release: `2.2.0`
-- Unreleased branch work: Phase 8A–8G API/auth additions and Phase 9A enterprise authentication hardening and permission diagnostics
+- Unreleased branch work: Phase 8A–8G API/auth additions, Phase 9A
+  enterprise authentication hardening, and Phase 9B scheduled export planning
 - Procore tool execution remains disabled
 
 ```bash
@@ -32,6 +33,7 @@ PyProcore turns Procore REST API responses into typed Python objects and gives y
 - Work with typed Pydantic models instead of raw JSON dictionaries.
 - List, fetch, search, export, sync, and download supported Procore resources.
 - Build local review packages for RFIs, submittals, documents, and project context.
+- Validate and dry-run enterprise scheduled export plans without calling Procore.
 - Use CLI diagnostics and automation commands without hardcoding credentials.
 - Expose local agent metadata, OpenAPI/JSON Schema, run logs, replay, MCP discovery, and deterministic evals for future assistant integrations.
 
@@ -121,6 +123,7 @@ See [API Coverage](docs/api-coverage.md) for endpoint notes, live-verification l
 - Project sync
 - Incremental sync state
 - Workflow plans
+- Scheduled export plan validation and dry-run manifests in the current unreleased branch
 - Scheduled sync examples
 - Local webhook helpers
 - Docker and CI examples
@@ -263,6 +266,8 @@ procore-sdk enhanced-submittal-package --project 352338 --company 4286480 --subm
 procore-sdk ai-review-export --package-dir ./exports/rfi-15
 procore-sdk ai-prompt-pack --package-dir ./exports/rfi-15
 procore-sdk workflow-plan validate examples/workflow_plans/project_context_and_ai_export.json
+procore-sdk scheduled-export validate examples/configs/scheduled_export_client_credentials.json
+procore-sdk scheduled-export dry-run examples/configs/scheduled_export_client_credentials.json
 procore-sdk webhook validate examples/webhooks/rfi_created_event.json
 ```
 
@@ -303,12 +308,32 @@ and [CI Automation](docs/automation/ci.md). Example Docker assets live under
 
 ---
 
+## Enterprise Scheduled Exports
+
+Unreleased Phase 9B adds local scheduled export plan validation and dry-run
+manifests for enterprise Data Connection App deployment patterns:
+
+```bash
+procore-sdk scheduled-export sample-config
+procore-sdk scheduled-export validate examples/configs/scheduled_export_client_credentials.json
+procore-sdk scheduled-export dry-run examples/configs/scheduled_export_client_credentials.json
+```
+
+These commands do not call Procore, do not require credentials, do not run
+exports, and do not print secrets. Use `client_credentials` for unattended
+server-to-server jobs and `authorization_code` for user-owned local workflows.
+
+See [Enterprise Scheduled Exports](docs/enterprise-scheduled-exports.md).
+
+---
+
 ## Security And Safety
 
 - Never commit `.env` files, OAuth token stores, Authorization headers, access tokens, refresh tokens, client secrets, logs containing credentials, downloads, or private project data.
 - Token stores, logs, downloads, generated exports, build artifacts, and local virtual environments are ignored by default.
 - SDK logs redact common secret fields.
 - The SDK is read-oriented; workflow helpers write local files and do not mutate Procore data.
+- Scheduled export validation and dry-runs are local planning tools only.
 - Agent tool execution remains disabled.
 - MCP is discovery-only.
 - Run the local secret scanner before opening pull requests:
@@ -394,8 +419,11 @@ make quality-check
 
 - Phase 9A hardens Authorization Code OAuth and Client Credentials/Data
   Connection App workflows with strict mode validation, safer token-store errors,
-  local permission diagnostics, and scheduled-export patterns. Version `2.2.0`
-  remains the published stable release; this work is unreleased.
+  and local permission diagnostics.
+- Phase 9B adds local scheduled export plan models, validation, dry-run
+  manifests, safe sample configs, examples, scripts, and enterprise deployment
+  guidance. Version `2.2.0` remains the published stable release; this work is
+  unreleased.
 
 - Phase 8A read-only coverage for Observations, Punch Items, and Generic Tool correspondence
 - Phase 8B client-credentials auth support

@@ -8,9 +8,9 @@ the rest of the SDK uses them.
 from __future__ import annotations
 
 import os
+from enum import StrEnum
 from functools import lru_cache
 from pathlib import Path
-from enum import StrEnum
 from typing import Any
 
 from dotenv import load_dotenv

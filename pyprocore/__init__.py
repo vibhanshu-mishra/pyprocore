@@ -280,6 +280,11 @@ from pyprocore.workflows import (  # noqa: F401
     ProjectContextResult,
     ProjectContextSectionResult,
     ProjectSyncResult,
+    ScheduledExportFilePlan,
+    ScheduledExportFinding,
+    ScheduledExportManifest,
+    ScheduledExportPlan,
+    ScheduledExportValidationReport,
     SyncResult,
     WorkflowPlan,
     WorkflowRunManifest,
@@ -292,6 +297,7 @@ from pyprocore.workflows import (  # noqa: F401
     build_enhanced_rfi_package,
     build_enhanced_submittal_package,
     build_project_context_package,
+    explain_scheduled_export_plan,
     export_action_plan_change_history_to_csv,
     export_action_plan_change_history_to_jsonl,
     export_action_plans_to_csv,
@@ -358,6 +364,7 @@ from pyprocore.workflows import (  # noqa: F401
     export_owner_invoice_line_items_to_jsonl,
     export_owner_invoices_to_csv,
     export_owner_invoices_to_jsonl,
+    export_plan_to_manifest,
     export_prime_change_orders_to_csv,
     export_prime_change_orders_to_jsonl,
     export_prime_contract_line_items_to_csv,
@@ -395,13 +402,18 @@ from pyprocore.workflows import (  # noqa: F401
     export_work_order_contracts_to_csv,
     export_work_order_contracts_to_jsonl,
     list_available_workflows,
+    load_scheduled_export_plan,
     load_workflow_plan,
     run_workflow_plan,
+    sample_scheduled_export_plan,
+    sample_scheduled_export_plan_json,
     sync_documents_to_folder,
     sync_project_to_folder,
     sync_rfis_to_folder,
     sync_submittals_to_folder,
+    validate_scheduled_export_plan,
     validate_workflow_plan,
+    write_scheduled_export_manifest,
 )
 
 __version__ = "2.2.0"
@@ -730,5 +742,22 @@ __all__.extend(
         "list_schedule_resource_assignments",
         "list_task_requested_changes",
         "list_tasks",
+    ]
+)
+
+__all__.extend(
+    [
+        "ScheduledExportFilePlan",
+        "ScheduledExportFinding",
+        "ScheduledExportManifest",
+        "ScheduledExportPlan",
+        "ScheduledExportValidationReport",
+        "explain_scheduled_export_plan",
+        "export_plan_to_manifest",
+        "load_scheduled_export_plan",
+        "sample_scheduled_export_plan",
+        "sample_scheduled_export_plan_json",
+        "validate_scheduled_export_plan",
+        "write_scheduled_export_manifest",
     ]
 )

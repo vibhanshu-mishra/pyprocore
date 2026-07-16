@@ -46,6 +46,10 @@ metadata examples.
 Examples `111` through `114` cover unreleased Phase 9A scheduled Client
 Credentials patterns, enterprise diagnostics, token-store safety, and local
 permission explanations. They make no live calls.
+Examples `115` through `120` cover unreleased Phase 9B scheduled export plan
+validation, dry-run manifests, Data Connection App deployment patterns,
+multi-project planning, and private deployment reminders. They make no live
+calls.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -94,6 +98,7 @@ export AI_PROMPT_PACK_OUTPUT_DIR=path/to/local/package/ai-prompt-pack
 export AI_REVIEW_TYPE=general
 export AGENT_EVAL_RESULTS_PATH=example-output/agent-evals/agent-eval-results.json
 export WORKFLOW_PLAN_PATH=examples/workflow_plans/project_context_and_ai_export.json
+export SCHEDULED_EXPORT_PLAN=examples/configs/scheduled_export_client_credentials.json
 export WORKFLOW_RUN_OUTPUT_DIR=exports/workflow-run
 export WORKFLOW_DRY_RUN=1
 export PROCORE_AUTH_MODE=authorization_code
@@ -135,6 +140,8 @@ python3 examples/73_auth_modes_overview.py
 python3 examples/74_list_meetings.py
 python3 examples/76_list_inspections.py
 python3 examples/78_list_incidents.py
+python3 examples/116_validate_scheduled_export_plan.py
+python3 examples/117_scheduled_export_dry_run.py
 ```
 
 Documents use Procore's Project Folders and Files endpoints internally. Before a
@@ -192,7 +199,7 @@ make examples-check
 ## Example Index
 
 The current example set runs from `01_list_companies.py` through
-`110_agent_registry_phase8g.py`.
+`120_private_deployment_pattern.py`.
 
 | File | Demonstrates |
 | ---- | ------------ |
@@ -310,6 +317,20 @@ The current example set runs from `01_list_companies.py` through
 | `112_enterprise_auth_diagnostics.py` | Explain app connection and environment setup locally |
 | `113_token_store_safety.py` | Inspect token-store metadata without printing tokens |
 | `114_permission_diagnostics.py` | Interpret example 401/403 data without a network call |
+| `115_scheduled_export_plan.py` | Build a local scheduled export plan object without Procore access |
+| `116_validate_scheduled_export_plan.py` | Validate a scheduled export plan JSON file locally |
+| `117_scheduled_export_dry_run.py` | Preview a scheduled export dry-run manifest without live calls |
+| `118_data_connection_app_export_pattern.py` | Print a Data Connection App scheduled export deployment pattern |
+| `119_multi_project_export_pattern.py` | Preview planned files for a placeholder multi-project export |
+| `120_private_deployment_pattern.py` | Print private deployment reminders for scheduled exports |
+
+Sample scheduled export configs live in `examples/configs/`:
+
+| File | Demonstrates |
+| ---- | ------------ |
+| `scheduled_export_client_credentials.json` | Placeholder Data Connection App scheduled export plan |
+| `scheduled_export_authorization_code.json` | Placeholder user-owned local scheduled export plan |
+| `scheduled_export_multi_project.json` | Placeholder multi-project export planning config |
 
 Sample workflow plans live in `examples/workflow_plans/`:
 
@@ -362,4 +383,6 @@ Sample webhook payloads live in `examples/webhooks/`:
 - Docker templates are optional and should be dry-run tested before live use.
 - Unit tests do not run these scripts against Procore.
 - Example `71` does not request a token unless `PYPROCORE_RUN_LIVE_EXAMPLE=1`.
+- Examples `115` through `120` are local planning/deployment examples and do
+  not call Procore.
 - Keep secrets out of code, screenshots, logs, and issue reports.

@@ -37,7 +37,22 @@ Safety status for `v2.2.0`:
 
 - Backward-compatible Authorization Code and Client Credentials strategy handling
 - Safe config, token-store, renewal, 401/403, permission, app-connection, and environment diagnostics
-- Local-only scheduled-export examples; no Procore/model calls or agent/MCP execution
+- No Procore/model calls or agent/MCP execution
+
+### Phase 9B — Scheduled Export and Data Connection App Deployment Patterns
+
+Implemented in the current branch and not yet published:
+
+- Local scheduled export plan model
+- Local plan validation for auth mode, company/project scope, resources, output format, output path, and broad-export warnings
+- Dry-run manifests that describe planned files without calling Procore
+- Safe sample configs with placeholder IDs only
+- CLI commands for `scheduled-export sample-config`, `scheduled-export validate`, and `scheduled-export dry-run`
+- Enterprise deployment guidance for `.env`, token stores, sandbox/production separation, credential rotation, private outputs, and permission review
+
+Focus: local planning only. No scheduled jobs are installed, no exports are
+run, no live Procore calls are made, no external AI/model APIs are called, and
+agent/MCP execution remains disabled.
 
 ### Phase 8A — Expanded Procore API Coverage
 
@@ -141,8 +156,6 @@ Focus: read-oriented coverage only. No contract, invoice, payment, approval,
 submission, status-change, PDF-generation, SOV, or line-item mutation behavior
 is included.
 
-## Future
-
 ### Phase 8G — Project Management Extras Read Coverage
 
 Implemented in the current branch and not yet published:
@@ -162,6 +175,8 @@ Focus: read-oriented coverage only. No schedule uploads/import creation, task
 writes, requested-change mutations, coordination issue mutations, form
 submissions, action plan completions, approvals, status changes, or
 project-management mutations are included.
+
+## Future
 
 ### Future Read Coverage
 

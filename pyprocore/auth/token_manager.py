@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from pyprocore.auth.oauth import OAuthClient, OAuthTokenResponse
 from pyprocore.auth.token_store import StoredToken, TokenStore
-from pyprocore.core.config import ProcoreSettings, get_settings
+from pyprocore.core.config import AuthMode, ProcoreSettings, get_settings
 from pyprocore.core.exceptions import AuthenticationError
 
 
@@ -55,7 +55,7 @@ class TokenManager:
         """
         token = self._token_store.load()
         if token is None:
-            if self._auth_mode() == "client_credentials":
+            if self._auth_mode() is AuthMode.CLIENT_CREDENTIALS:
                 token = self.request_client_credentials_token()
                 return token.access_token.get_secret_value()
             raise AuthenticationError(
@@ -82,12 +82,13 @@ class TokenManager:
         """
         current_token = token or self._token_store.load()
         if current_token is None:
-            if self._auth_mode() == "client_credentials":
+            if self._auth_mode() is AuthMode.CLIENT_CREDENTIALS:
                 return self.request_client_credentials_token()
             raise AuthenticationError("No Procore token is available to refresh.")
 
-        if self._auth_mode() == "client_credentials" or (
-            current_token.auth_mode == "client_credentials" and current_token.refresh_token is None
+        if self._auth_mode() is AuthMode.CLIENT_CREDENTIALS or (
+            current_token.auth_mode is AuthMode.CLIENT_CREDENTIALS
+            and current_token.refresh_token is None
         ):
             return self.request_client_credentials_token()
 
@@ -99,7 +100,7 @@ class TokenManager:
         refreshed_token = StoredToken.from_oauth_response(
             refreshed_response,
             existing_refresh_token=refresh_token,
-            auth_mode="authorization_code",
+            auth_mode=AuthMode.AUTHORIZATION_CODE,
         )
         self._token_store.save(refreshed_token)
         return refreshed_token
@@ -113,7 +114,7 @@ class TokenManager:
         token_response = self._oauth_client.request_client_credentials_token()
         token = StoredToken.from_oauth_response(
             token_response,
-            auth_mode="client_credentials",
+            auth_mode=AuthMode.CLIENT_CREDENTIALS,
         )
         self._token_store.save(token)
         return token
@@ -128,7 +129,10 @@ class TokenManager:
         Returns:
             The stored token representation.
         """
-        token = StoredToken.from_oauth_response(token_response, auth_mode="authorization_code")
+        token = StoredToken.from_oauth_response(
+            token_response,
+            auth_mode=AuthMode.AUTHORIZATION_CODE,
+        )
         self._token_store.save(token)
         return token
 
@@ -136,10 +140,10 @@ class TokenManager:
         """Remove the saved token from the local token store."""
         self._token_store.clear()
 
-    def _auth_mode(self) -> str:
+    def _auth_mode(self) -> AuthMode:
         """Return the configured auth mode, defaulting to authorization code."""
         if self._settings is None:
-            return "authorization_code"
+            return AuthMode.AUTHORIZATION_CODE
         return self._settings.auth_mode
 
 

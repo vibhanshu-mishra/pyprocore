@@ -1,0 +1,14 @@
+{
+  "plan_name": "sample-authorization-code-local-export",
+  "auth_mode": "authorization_code",
+  "company_id": 12345,
+  "project_ids": [67890],
+  "resources": ["rfis", "submittals"],
+  "output_dir": "./exports/scheduled/authorization-code",
+  "output_format": "jsonl",
+  "include_timestamp": true,
+  "dry_run": true,
+  "redaction_enabled": true,
+  "max_projects": 3,
+  "notes": "Placeholder-only sample for user-owned local workflows. Authorization Code token stores must stay private."
+}

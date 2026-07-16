@@ -1,0 +1,14 @@
+{
+  "plan_name": "sample-multi-project-data-connection-export",
+  "auth_mode": "client_credentials",
+  "company_id": 12345,
+  "project_ids": [67890, 11111, 22222],
+  "resources": ["project_users", "rfis", "submittals", "documents", "daily_logs"],
+  "output_dir": "./exports/scheduled/multi-project",
+  "output_format": "csv",
+  "include_timestamp": true,
+  "dry_run": true,
+  "redaction_enabled": true,
+  "max_projects": 10,
+  "notes": "Placeholder-only sample for reviewing a multi-project scheduled export before enabling a real job."
+}

@@ -7,8 +7,9 @@
 - `v2.2.0` is published on PyPI and released on GitHub.
 - Current unreleased branch work: Phase 8A, Phase 8C, Phase 8D, Phase 8E, Phase 8F, and Phase 8G read-only
   API coverage, plus Phase 8B client-credentials auth support for Data
-  Connection Apps, and Phase 9A enterprise auth hardening and permission
-  diagnostics. The package remains `2.2.0`; this branch work is unpublished.
+  Connection Apps, Phase 9A enterprise auth hardening and permission
+  diagnostics, and Phase 9B scheduled export planning and deployment
+  patterns. The package remains `2.2.0`; this branch work is unpublished.
 
 ## Current Stable Release: 2.2.0
 
@@ -36,6 +37,12 @@ Phase 9A hardens the two existing auth strategies, token-store resilience,
 config/doctor output, and local-only permission explanations. It does not call
 Procore or external model APIs, enable agent execution, or change discovery-only
 MCP behavior.
+
+Phase 9B adds local scheduled export plan models, validation helpers, dry-run
+manifests, safe sample configs, examples, scripts, and enterprise Data
+Connection App deployment guidance. It does not call Procore, run exports,
+create scheduled jobs, call external model APIs, enable agent execution, or
+change discovery-only MCP behavior.
 
 Phase 8A adds read-only SDK coverage for Observations, Punch Items, Generic
 Tools, and Generic Tool correspondence items. It includes service helpers,
@@ -90,6 +97,7 @@ approvals, status changes, or project-management mutations.
 - Live SDK workflows still require valid Procore credentials and permissions.
 - Client credentials support does not enable Procore tool execution.
 - Phase 8C, Phase 8D, Phase 8E, Phase 8F, and Phase 8G service helpers are read-only.
+- Phase 9B scheduled export validation and dry-runs are local planning tools only.
 
 ## Known Limitations
 
@@ -98,6 +106,8 @@ approvals, status changes, or project-management mutations.
 - Hosted webhook ingestion is not included; webhook helpers are local utilities.
 - Scheduled GitHub Actions examples require a deliberate OAuth token-store
   strategy before live use.
+- Enterprise scheduled exports need private token-store and output-storage
+  handling before production scheduling.
 - Some download helpers depend on Procore returning direct download URLs.
 - Live project-level behavior can vary by company, project, OAuth app
   installation, user permissions, enabled tools, and sandbox vs production
@@ -112,4 +122,4 @@ approvals, status changes, or project-management mutations.
 - Async client and plugin architecture
 - Vector DB examples and engineering assistant examples
 - Golden datasets and model evals
-- Private deployment patterns and richer MCP integration
+- Richer MCP integration

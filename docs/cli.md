@@ -27,6 +27,24 @@ procore-sdk auth refresh
 setups such as Procore Data Connection Apps. It requests and stores a
 server-to-server access token without using a redirect URI.
 
+## Scheduled Export Planning
+
+Phase 9B adds local-only scheduled export planning commands for enterprise
+Data Connection App deployment patterns. These commands validate and explain
+plan files; they do not call Procore, do not fetch data, and do not run exports.
+
+```bash
+procore-sdk scheduled-export sample-config
+procore-sdk scheduled-export sample-config --output examples/configs/my_scheduled_export.json
+procore-sdk scheduled-export validate examples/configs/scheduled_export_client_credentials.json
+procore-sdk scheduled-export dry-run examples/configs/scheduled_export_client_credentials.json
+procore-sdk scheduled-export dry-run examples/configs/scheduled_export_client_credentials.json --json
+```
+
+Use `client_credentials` for unattended server-to-server jobs. Use
+`authorization_code` only for user-owned local workflows with a private token
+store.
+
 ## Companies And Projects
 
 ```bash

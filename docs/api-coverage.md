@@ -150,6 +150,13 @@ discovery-only, and no external AI/model APIs are called.
 Transmittals and Project Emails are left as future coverage until clear
 read/list endpoint shapes are confirmed for this SDK.
 
+## Phase 9B Planning Notes
+
+Phase 9B does not add new Procore endpoint coverage. It adds local scheduled
+export plan validation and dry-run manifests for enterprise Data Connection App
+deployment patterns. These helpers do not construct a Procore client, do not
+read tokens, do not call live Procore APIs, and do not run exports.
+
 ## Live Verification Notes
 
 Procore access varies by environment, company, project, app connection, and user
