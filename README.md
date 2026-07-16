@@ -19,7 +19,7 @@ Current repository status:
   enterprise authentication hardening, Phase 9B scheduled export planning,
   Phase 9C token-store/credential-rotation hardening, and Phase 9D private
   deployment/runbook guidance, plus Phase 12 model-agnostic AI workflow
-  examples
+  examples, plus Phase 10A async client foundation
 - Procore tool execution remains disabled
 
 ```bash
@@ -40,6 +40,7 @@ PyProcore turns Procore REST API responses into typed Python objects and gives y
 - Inspect token-store safety and print credential rotation checklists locally.
 - Check private deployment readiness and review production runbook guidance locally.
 - Build model-agnostic local AI workflow prompts, checklists, and vector export manifests.
+- Use the unreleased async client foundation for read-oriented workflows with optional async HTTP support.
 - Use CLI diagnostics and automation commands without hardcoding credentials.
 - Expose local agent metadata, OpenAPI/JSON Schema, run logs, replay, MCP discovery, and deterministic evals for future assistant integrations.
 
@@ -164,6 +165,22 @@ Phase 12 is model-agnostic and local-only. PyProcore does not call external
 AI/model APIs, does not require AI framework dependencies, does not execute MCP
 tools, and does not enable Procore tool execution. See
 [AI Workflows](docs/ai-workflows.md).
+
+### Phase 10A Async Client Foundation
+
+Prepared in the current unreleased branch:
+
+- `AsyncProcore` async entry point
+- async transport abstraction and local `MockAsyncTransport`
+- optional real async HTTP transport via `pyprocore[async]`
+- async request, retry, 401 refresh, error mapping, and pagination helpers
+- async read coverage for companies, projects, RFIs, submittals, documents,
+  drawings, and specification sections
+
+The existing sync `Procore` client remains supported and unchanged. Phase 10A
+does not add write actions, does not call external AI/model APIs, does not
+enable agent execution, and keeps MCP discovery-only. See
+[Async Client](docs/async-client.md).
 
 ### Phase 7 Agent Layer
 
@@ -425,6 +442,7 @@ See [Security](docs/security.md) and [SECURITY.md](SECURITY.md).
 - [Workflows](docs/workflows.md)
 - [AI Review](docs/ai-review.md)
 - [AI Workflows](docs/ai-workflows.md)
+- [Async Client](docs/async-client.md)
 - [Agent API](docs/agent-api.md)
 - [Automation](docs/automation.md)
 - [Recipes](docs/recipes/)
@@ -502,6 +520,9 @@ make quality-check
 - Phase 12 adds model-agnostic AI workflow examples, local prompt/checklist
   helpers, vector export manifest samples, templates, and safety checks. It is
   unreleased branch work and does not call external AI/model APIs.
+- Phase 10A adds an async client foundation, mock async transport, optional
+  async HTTP transport, async pagination/retry/error handling, and initial
+  read-only async coverage for core resources. It is unreleased branch work.
 
 - Phase 8A read-only coverage for Observations, Punch Items, and Generic Tool correspondence
 - Phase 8B client-credentials auth support

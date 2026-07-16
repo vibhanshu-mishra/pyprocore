@@ -101,6 +101,23 @@ external AI/model APIs, does not add required AI framework dependencies, does
 not call live Procore APIs, does not perform Procore writes, and agent/MCP
 execution remains disabled.
 
+### Phase 10A — Async Client Foundation
+
+Implemented in the current branch and not yet published:
+
+- `AsyncProcore` read-oriented client
+- Async transport abstraction with local `MockAsyncTransport`
+- Optional real async HTTP transport through `pyprocore[async]`
+- Async request parsing, retry, 401 refresh, error mapping, and pagination
+- Initial async coverage for companies, projects, RFIs, submittals, documents,
+  drawings, and specification sections
+- Placeholder-only examples 141–146
+
+Focus: async read foundation only. The sync client remains supported, no
+Procore write actions are added, no live Procore calls are made by tests or
+examples, no external AI/model APIs are called, and agent/MCP execution remains
+disabled.
+
 ### Phase 8A — Expanded Procore API Coverage
 
 Implemented in the current branch and not yet published:
@@ -233,12 +250,10 @@ Planned modules when endpoint shapes are safe and clear:
 - Project Emails
 - Additional read-only Procore resources
 
-### Phase 9 — Async Client
+### Future Async Work
 
 Planned features:
 
-- Async Procore client
-- Async pagination
 - Async exports
 - Async downloads
 - Batch fetch helpers

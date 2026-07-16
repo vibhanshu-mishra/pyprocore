@@ -10,8 +10,9 @@
   Connection Apps, Phase 9A enterprise auth hardening and permission
   diagnostics, Phase 9B scheduled export planning and deployment patterns,
   Phase 9C token-store backend and credential rotation hardening, and Phase 9D
-  private deployment/runbook guidance, plus Phase 12 model-agnostic AI workflow
-  examples. The package remains `2.2.0`; this branch work is unpublished.
+  private deployment/runbook guidance, Phase 12 model-agnostic AI workflow
+  examples, and Phase 10A async client foundation. The package remains `2.2.0`;
+  this branch work is unpublished.
 
 ## Current Stable Release: 2.2.0
 
@@ -60,6 +61,12 @@ Phase 12 adds model-agnostic AI workflow examples, local prompt/checklist
 helpers, vector export manifests, templates, examples, and safety checks. It
 does not call Procore, call external AI/model APIs, add AI framework
 dependencies, enable agent execution, or change discovery-only MCP behavior.
+
+Phase 10A adds an async client foundation for read-oriented workflows. It adds
+`AsyncProcore`, async transport abstractions, mock async tests/examples,
+optional `pyprocore[async]` HTTP support, async pagination/retry/error handling,
+and initial async coverage for companies, projects, RFIs, submittals, documents,
+drawings, and specification sections. It does not add Procore write actions.
 
 Phase 8A adds read-only SDK coverage for Observations, Punch Items, Generic
 Tools, and Generic Tool correspondence items. It includes service helpers,
@@ -116,6 +123,7 @@ approvals, status changes, or project-management mutations.
 - Phase 8C, Phase 8D, Phase 8E, Phase 8F, and Phase 8G service helpers are read-only.
 - Phase 9B scheduled export validation and dry-runs are local planning tools only.
 - Phase 12 AI workflow examples are local-only and model-agnostic.
+- Phase 10A async client support is read-oriented and additive.
 
 ## Known Limitations
 

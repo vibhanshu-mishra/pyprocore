@@ -94,9 +94,10 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         self.assertIn("AI Workflow Examples", unreleased_section)
         self.assertIn("vector export", unreleased_section)
         self.assertIn("engineering context", unreleased_section)
+        self.assertIn("Phase 10A", unreleased_section)
+        self.assertIn("Async Client Foundation", unreleased_section)
 
         for phrase in (
-            "async client",
             "plugin architecture",
             "golden datasets",
             "richer MCP integration",
@@ -128,6 +129,7 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         self.assertIn("Examples `64` through `69`", examples)
         self.assertIn("Examples `70` through `73`", examples)
         self.assertIn("Examples `131` through `140`", examples)
+        self.assertIn("Examples `141` through `146`", examples)
         self.assertIn("cover the `v2.2.0` Phase 7", examples)
         self.assertIn("do not require Procore credentials or execute tools", examples)
         self.assertIn("client credentials auth", examples)

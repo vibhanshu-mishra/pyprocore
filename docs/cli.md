@@ -73,6 +73,13 @@ python3 scripts/check_ai_workflow_safety.py
 These scripts use placeholder/local data only. They do not call Procore,
 external AI/model APIs, MCP execution, or Procore tool execution.
 
+## Async Client
+
+Phase 10A does not add CLI commands. It adds the unreleased `AsyncProcore`
+Python client foundation, local mock async examples, and optional async HTTP
+transport support for Python code. Existing CLI commands remain sync and
+backward compatible.
+
 ## Scheduled Export Planning
 
 Phase 9B adds local-only scheduled export planning commands for enterprise

@@ -60,6 +60,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+async = [
+    "httpx>=0.27.0",
+]
 dev = [
     "black>=24.10.0",
     "coverage>=7.6.0",

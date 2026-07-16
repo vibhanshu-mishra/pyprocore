@@ -181,6 +181,16 @@ local dictionaries, or placeholder data only. They do not call Procore, call
 external AI/model APIs, require AI framework dependencies, perform Procore
 writes, enable agent tool execution, or enable MCP execution.
 
+## Phase 10A Async Coverage Notes
+
+Phase 10A adds an unreleased async client foundation for read-oriented
+workflows. Initial async coverage includes companies, projects, RFIs,
+submittals, documents, drawing areas/drawings, and specification sections.
+
+The async layer is additive. It does not remove or rewrite the sync client, does
+not add write endpoints, and uses mocked/local tests instead of live Procore
+calls.
+
 ## Live Verification Notes
 
 Procore access varies by environment, company, project, app connection, and user

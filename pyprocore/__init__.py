@@ -59,6 +59,16 @@ from pyprocore.agent import (
     run_mcp_stdio_server,
     write_agent_eval_results,
 )
+from pyprocore.async_client import (
+    AsyncCompaniesClient,
+    AsyncDocumentsClient,
+    AsyncDrawingsClient,
+    AsyncProcore,
+    AsyncProjectsClient,
+    AsyncRFIsClient,
+    AsyncSpecificationsClient,
+    AsyncSubmittalsClient,
+)
 from pyprocore.auth import (  # noqa: F401
     FileTokenStoreBackend,
     MemoryTokenStoreBackend,
@@ -84,6 +94,14 @@ from pyprocore.automation import (
     build_workflow_package,
 )
 from pyprocore.client import Procore
+from pyprocore.core.async_client import AsyncProcoreClient
+from pyprocore.core.async_transport import (
+    AsyncRequest,
+    AsyncResponse,
+    AsyncTransport,
+    HttpxAsyncTransport,
+    MockAsyncTransport,
+)
 from pyprocore.core.exceptions import DuplicateMatchError, MultipleResultsError, NotFoundError
 from pyprocore.services.contracts import (  # noqa: F401
     get_billing_period,
@@ -487,6 +505,18 @@ __all__ = [
     "AgentToolPermission",
     "AgentToolRegistry",
     "AgentToolSafety",
+    "AsyncCompaniesClient",
+    "AsyncDocumentsClient",
+    "AsyncDrawingsClient",
+    "AsyncProcore",
+    "AsyncProcoreClient",
+    "AsyncProjectsClient",
+    "AsyncRFIsClient",
+    "AsyncRequest",
+    "AsyncResponse",
+    "AsyncSpecificationsClient",
+    "AsyncSubmittalsClient",
+    "AsyncTransport",
     "DuplicateMatchError",
     "DownloadedFile",
     "EnhancedRFIPackageManifest",
@@ -499,7 +529,9 @@ __all__ = [
     "EnhancedSubmittalRelatedSectionResult",
     "EnterpriseReadinessFinding",
     "EnterpriseReadinessReport",
+    "HttpxAsyncTransport",
     "MultipleResultsError",
+    "MockAsyncTransport",
     "NotFoundError",
     "Procore",
     "ProjectSyncResult",

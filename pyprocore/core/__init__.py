@@ -7,8 +7,14 @@ from typing import Any
 __all__ = [
     "AuthenticationError",
     "AuthorizationError",
+    "AsyncProcoreClient",
+    "AsyncRequest",
+    "AsyncResponse",
+    "AsyncTransport",
     "ConfigurationError",
     "DuplicateMatchError",
+    "HttpxAsyncTransport",
+    "MockAsyncTransport",
     "MultipleResultsError",
     "NotFoundError",
     "ProcoreAPIError",
@@ -30,6 +36,22 @@ def __getattr__(name: str) -> Any:
         from pyprocore.core.client import ProcoreClient
 
         return ProcoreClient
+
+    if name == "AsyncProcoreClient":
+        from pyprocore.core.async_client import AsyncProcoreClient
+
+        return AsyncProcoreClient
+
+    if name in {
+        "AsyncRequest",
+        "AsyncResponse",
+        "AsyncTransport",
+        "HttpxAsyncTransport",
+        "MockAsyncTransport",
+    }:
+        from pyprocore.core import async_transport
+
+        return getattr(async_transport, name)
 
     if name in {"ProcoreSettings", "get_settings"}:
         from pyprocore.core.config import ProcoreSettings, get_settings

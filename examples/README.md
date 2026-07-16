@@ -60,6 +60,9 @@ Examples `131` through `140` cover unreleased Phase 12 model-agnostic AI
 workflow patterns, prompt packages, vector export manifests, engineering
 context bundles, field issue summaries, change-risk reviews, and safety
 checklists. They make no live Procore calls and no external AI/model calls.
+Examples `141` through `146` cover unreleased Phase 10A async client patterns,
+mock async transport, async pagination, and async safety notes. They use local
+mock responses and make no live Procore calls.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -363,6 +366,12 @@ The current example set runs from `01_list_companies.py` through
 | `138_change_risk_review_package.py` | Prepare a change-risk review prompt package |
 | `139_ai_workflow_safety_checklist.py` | Print the Phase 12 AI workflow safety checklist |
 | `140_phase12_ai_workflows_summary.py` | Summarize Phase 12 AI workflow patterns |
+| `141_async_client_quickstart.py` | Run a local-only AsyncProcore quickstart with mock data |
+| `142_async_list_projects.py` | Demonstrate async project listing with mock data |
+| `143_async_rfis_and_submittals.py` | Demonstrate async RFI and submittal reads with mock data |
+| `144_async_documents_drawings_specs.py` | Demonstrate async document, drawing, and specification reads |
+| `145_async_pagination_pattern.py` | Demonstrate async pagination with mock responses |
+| `146_async_client_safety_notes.py` | Print Phase 10A async client safety boundaries |
 
 Sample scheduled export configs live in `examples/configs/`:
 
@@ -441,4 +450,7 @@ Sample webhook payloads live in `examples/webhooks/`:
 - Examples `131` through `140` are local AI workflow examples. They do not call
   Procore, external AI/model APIs, vector databases, MCP execution, or Procore
   tool execution.
+- Examples `141` through `146` are local async client examples. They use
+  `MockAsyncTransport`, do not call Procore, do not require credentials, and do
+  not add write actions.
 - Keep secrets out of code, screenshots, logs, and issue reports.

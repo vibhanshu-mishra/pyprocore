@@ -25,6 +25,7 @@ assistant integrations. Tool execution remains disabled.
 - Return typed Pydantic models.
 - Build local project context packages for review workflows.
 - Prepare model-agnostic local AI workflow prompts, checklists, and vector manifests.
+- Use the unreleased async client foundation for read-oriented workflows.
 - Export CSV, JSONL, Markdown, and manifest files.
 - Run repeatable workflow plans from local JSON files.
 - Inspect a local agent tool registry, local HTTP discovery API, OpenAPI export, JSON Schema export, MCP-style discovery metadata, opt-in run logs, and deterministic agent evals for future assistant integrations.
@@ -39,6 +40,7 @@ assistant integrations. Tool execution remains disabled.
 - [Workflows](workflows.md)
 - [AI Review](ai-review.md)
 - [AI Workflows](ai-workflows.md)
+- [Async Client](async-client.md)
 - [Agent API](agent-api.md)
 - [Project Status](project-status.md)
 - [Security](security.md)
