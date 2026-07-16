@@ -14,6 +14,9 @@ and this project follows semantic versioning.
 - Phase 9B local scheduled export planning for enterprise Data Connection App deployment patterns.
 - `ScheduledExportPlan` models, validation reports, dry-run manifests, safe sample configs, CLI commands, helper scripts, examples, and deployment docs.
 - `procore-sdk scheduled-export sample-config`, `procore-sdk scheduled-export validate`, and `procore-sdk scheduled-export dry-run`.
+- Phase 9C token-store backend architecture with file and memory backends, safe diagnostics, and credential rotation guidance.
+- `procore-sdk token-store status`, `procore-sdk token-store inspect`, `procore-sdk token-store clear`, `procore-sdk token-store sample-paths`, and `procore-sdk auth rotation-checklist`.
+- Examples 121–125 and local scripts for token-store inspection, safety checks, and credential rotation checklists.
 
 - Phase 8A read-only API coverage for Observations, Punch Items, and Generic Tool correspondence items.
 - Typed flexible models for `Observation`, `PunchItem`, `GenericTool`, and `Correspondence`.
@@ -49,6 +52,7 @@ and this project follows semantic versioning.
 - Phase 9A redacts credential-like OAuth error fields and prevents malformed token-store validation details from echoing stored token values.
 - Phase 9A makes no live Procore or external model calls, does not enable agent execution, and leaves MCP discovery-only.
 - Phase 9B scheduled export validation and dry-runs are local-only, do not require credentials, do not call Procore, do not run exports, and do not print secrets.
+- Phase 9C token-store diagnostics never print raw token values or client secrets, do not call Procore, do not add cloud secret-manager integrations, and do not enable agent/MCP execution.
 
 - Phase 8A remains read-only and does not add create/update/delete Procore actions.
 - Agent tool execution remains disabled; new Phase 8A agent entries are metadata only.

@@ -9,7 +9,8 @@
   API coverage, plus Phase 8B client-credentials auth support for Data
   Connection Apps, Phase 9A enterprise auth hardening and permission
   diagnostics, and Phase 9B scheduled export planning and deployment
-  patterns. The package remains `2.2.0`; this branch work is unpublished.
+  patterns, plus Phase 9C token-store backend and credential rotation
+  hardening. The package remains `2.2.0`; this branch work is unpublished.
 
 ## Current Stable Release: 2.2.0
 
@@ -43,6 +44,12 @@ manifests, safe sample configs, examples, scripts, and enterprise Data
 Connection App deployment guidance. It does not call Procore, run exports,
 create scheduled jobs, call external model APIs, enable agent execution, or
 change discovery-only MCP behavior.
+
+Phase 9C adds file and memory token-store backend architecture, safe token-store
+diagnostics, credential rotation checklists, and sandbox/production separation
+guidance. It does not call Procore, add cloud secret-manager integrations, call
+external model APIs, enable agent execution, or change discovery-only MCP
+behavior.
 
 Phase 8A adds read-only SDK coverage for Observations, Punch Items, Generic
 Tools, and Generic Tool correspondence items. It includes service helpers,

@@ -16,7 +16,8 @@ Current repository status:
 
 - Published stable release: `2.2.0`
 - Unreleased branch work: Phase 8A–8G API/auth additions, Phase 9A
-  enterprise authentication hardening, and Phase 9B scheduled export planning
+  enterprise authentication hardening, Phase 9B scheduled export planning,
+  and Phase 9C token-store/credential-rotation hardening
 - Procore tool execution remains disabled
 
 ```bash
@@ -34,6 +35,7 @@ PyProcore turns Procore REST API responses into typed Python objects and gives y
 - List, fetch, search, export, sync, and download supported Procore resources.
 - Build local review packages for RFIs, submittals, documents, and project context.
 - Validate and dry-run enterprise scheduled export plans without calling Procore.
+- Inspect token-store safety and print credential rotation checklists locally.
 - Use CLI diagnostics and automation commands without hardcoding credentials.
 - Expose local agent metadata, OpenAPI/JSON Schema, run logs, replay, MCP discovery, and deterministic evals for future assistant integrations.
 
@@ -327,6 +329,26 @@ See [Enterprise Scheduled Exports](docs/enterprise-scheduled-exports.md).
 
 ---
 
+## Token Store And Credential Rotation
+
+Unreleased Phase 9C adds local token-store backend diagnostics and credential
+rotation guidance:
+
+```bash
+procore-sdk token-store status
+procore-sdk token-store inspect
+procore-sdk token-store sample-paths
+procore-sdk auth rotation-checklist --auth-mode client_credentials
+```
+
+These commands never print raw token values or client secrets. Keep token stores
+outside the repository, separate sandbox and production token stores, and dry-run
+scheduled exports after credential rotation.
+
+See [Token Store and Rotation](docs/token-store-and-rotation.md).
+
+---
+
 ## Security And Safety
 
 - Never commit `.env` files, OAuth token stores, Authorization headers, access tokens, refresh tokens, client secrets, logs containing credentials, downloads, or private project data.
@@ -424,6 +446,9 @@ make quality-check
   manifests, safe sample configs, examples, scripts, and enterprise deployment
   guidance. Version `2.2.0` remains the published stable release; this work is
   unreleased.
+- Phase 9C adds token-store backend architecture, safe token-store inspection,
+  memory backends for tests/examples, credential rotation checklists, and
+  enterprise deployment readiness guidance. It is unreleased branch work.
 
 - Phase 8A read-only coverage for Observations, Punch Items, and Generic Tool correspondence
 - Phase 8B client-credentials auth support

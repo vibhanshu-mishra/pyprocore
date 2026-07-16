@@ -14,7 +14,7 @@ from urllib.parse import urlparse
 
 from dotenv import dotenv_values
 
-from pyprocore.auth.token_store import DEFAULT_TOKEN_FILE
+from pyprocore.auth.token_store import DEFAULT_TOKEN_FILE, inspect_token_store
 from pyprocore.core.config import normalize_auth_mode
 from pyprocore.core.exceptions import ProcoreError
 from pyprocore.models import ProcoreModel
@@ -323,6 +323,18 @@ def _token_checks(token_store_path: Path) -> list[DoctorCheck]:
         )
     )
     checks.append(_token_expiry_check(raw_token))
+    diagnostics = inspect_token_store(token_store_path)
+    for warning in diagnostics.warnings:
+        checks.append(
+            _check(
+                "Token store safety",
+                "warn",
+                warning,
+                suggested_fix=(
+                    "Move token stores outside the repository and restrict file permissions."
+                ),
+            )
+        )
     return checks
 
 

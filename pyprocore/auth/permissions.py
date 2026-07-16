@@ -106,3 +106,72 @@ def explain_environment_mismatch(login_url: str | None, api_base: str | None) ->
         "Confirm that the credentials, login URL, API URL, and target company "
         "all belong to the same Procore environment (sandbox or production)."
     )
+
+
+def explain_credential_rotation(auth_mode: Any = None) -> str:
+    """Return local-only credential rotation guidance."""
+    mode = normalize_auth_mode(auth_mode)
+    if mode is AuthMode.CLIENT_CREDENTIALS:
+        return (
+            "Client Credentials rotation is a server-to-server operations task. "
+            "Rotate the Data Connection App secret in Procore, update the private "
+            "deployment secret store, request a fresh client-credentials token, "
+            "verify DMSA/app permissions, and dry-run scheduled exports before "
+            "resuming automation."
+        )
+    return (
+        "Authorization Code rotation may require app secret rotation, a fresh "
+        "login URL, a new authorization-code exchange, safe token-store clearance, "
+        "and a permission check for the authenticated user. Never commit old token "
+        "stores or .env files."
+    )
+
+
+def build_credential_rotation_checklist(auth_mode: Any = None) -> list[str]:
+    """Build a safe local credential rotation checklist."""
+    mode = normalize_auth_mode(auth_mode)
+    if mode is AuthMode.CLIENT_CREDENTIALS:
+        return [
+            "Rotate the Data Connection App client secret in Procore.",
+            "Update the deployment secret store without printing the secret.",
+            "Clear or replace the old token store file in the private runtime location.",
+            "Request a new client-credentials token through the normal SDK flow.",
+            "Verify the DMSA/app has company, project, and tool permissions.",
+            "Keep sandbox and production credentials in separate secret stores.",
+            "Run scheduled-export validate and dry-run before enabling a schedule.",
+        ]
+    return [
+        "Rotate the OAuth app client secret in Procore if required.",
+        "Update the local or deployment .env value without committing it.",
+        "Generate a fresh login URL if redirect or app settings changed.",
+        "Exchange a new authorization code when reauthorization is needed.",
+        "Clear the old token store only after confirming the replacement path.",
+        "Verify the authenticated user's company, project, and tool permissions.",
+        "Keep old token stores, .env files, logs, and exports out of source control.",
+    ]
+
+
+def explain_token_clearance(auth_mode: Any = None) -> str:
+    """Explain safe token-store clearance for an auth mode."""
+    mode = normalize_auth_mode(auth_mode)
+    if mode is AuthMode.CLIENT_CREDENTIALS:
+        return (
+            "For client_credentials, clearing the token store removes the cached "
+            "access token only. The next authenticated SDK operation can request "
+            "a fresh token using configured client credentials."
+        )
+    return (
+        "For authorization_code, clearing the token store removes the cached "
+        "access and refresh tokens. Reauthorize with a fresh authorization code "
+        "before running authenticated SDK commands again."
+    )
+
+
+def explain_sandbox_production_separation() -> str:
+    """Explain why sandbox and production credentials must stay separate."""
+    return (
+        "Keep sandbox and production login URLs, API bases, client IDs, client "
+        "secrets, company IDs, and token stores separate. Mixing environments can "
+        "produce confusing 401/403 responses and may send automation to the wrong "
+        "Procore tenant."
+    )

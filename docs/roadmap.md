@@ -54,6 +54,20 @@ Focus: local planning only. No scheduled jobs are installed, no exports are
 run, no live Procore calls are made, no external AI/model APIs are called, and
 agent/MCP execution remains disabled.
 
+### Phase 9C — Token Store Backends and Credential Rotation Guidance
+
+Implemented in the current branch and not yet published:
+
+- Token-store backend interface with file and memory backends
+- Safer file token-store writes, clears, diagnostics, and permission warnings
+- CLI commands for token-store status, inspect, clear, and sample paths
+- Credential rotation checklist helpers for Authorization Code and Client Credentials
+- Public docs and examples for sandbox/production separation and private token stores
+
+Focus: local token-store safety and enterprise readiness only. No cloud
+secret-manager integrations are implemented, no live Procore calls are made, no
+external AI/model APIs are called, and agent/MCP execution remains disabled.
+
 ### Phase 8A — Expanded Procore API Coverage
 
 Implemented in the current branch and not yet published:

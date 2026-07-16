@@ -59,6 +59,22 @@ from pyprocore.agent import (
     run_mcp_stdio_server,
     write_agent_eval_results,
 )
+from pyprocore.auth import (  # noqa: F401
+    FileTokenStoreBackend,
+    MemoryTokenStoreBackend,
+    TokenStore,
+    TokenStoreBackend,
+    TokenStoreDiagnostic,
+    build_credential_rotation_checklist,
+    check_token_store_permissions,
+    diagnose_token_store,
+    explain_credential_rotation,
+    explain_sandbox_production_separation,
+    explain_token_clearance,
+    explain_token_store_risk,
+    inspect_token_store,
+    is_path_inside_project,
+)
 from pyprocore.automation import (
     AutomationInput,
     DownloadedFile,
@@ -759,5 +775,24 @@ __all__.extend(
         "sample_scheduled_export_plan_json",
         "validate_scheduled_export_plan",
         "write_scheduled_export_manifest",
+    ]
+)
+
+__all__.extend(
+    [
+        "FileTokenStoreBackend",
+        "MemoryTokenStoreBackend",
+        "TokenStore",
+        "TokenStoreBackend",
+        "TokenStoreDiagnostic",
+        "build_credential_rotation_checklist",
+        "check_token_store_permissions",
+        "diagnose_token_store",
+        "explain_credential_rotation",
+        "explain_sandbox_production_separation",
+        "explain_token_clearance",
+        "explain_token_store_risk",
+        "inspect_token_store",
+        "is_path_inside_project",
     ]
 )

@@ -144,6 +144,23 @@ pass an explicit `TokenStore` path. Legacy stores without `auth_mode` metadata
 remain authorization-code stores. Never commit `.env`, token stores, logs,
 downloads, or generated exports.
 
+Phase 9C adds safe token-store backend diagnostics and credential rotation
+guidance. File token stores remain the default, existing JSON token stores
+continue to work, and the memory token store is intended for tests/examples
+only.
+
+```bash
+procore-sdk token-store status
+procore-sdk token-store inspect
+procore-sdk token-store sample-paths
+procore-sdk auth rotation-checklist --auth-mode authorization_code
+procore-sdk auth rotation-checklist --auth-mode client_credentials
+```
+
+Use `PROCORE_TOKEN_STORE_PATH` to keep token stores outside the repository.
+Use separate token stores for sandbox and production. See
+[Token Store and Rotation](token-store-and-rotation.md).
+
 ## Common Errors
 
 ### 401 Unauthorized

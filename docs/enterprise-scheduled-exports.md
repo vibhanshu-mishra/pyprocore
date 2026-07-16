@@ -80,14 +80,18 @@ Keep private deployment material out of the repository:
 - Write export outputs to private storage outside the checkout.
 - Separate sandbox and production credentials, token stores, logs, and outputs.
 - Rotate Data Connection App credentials on a documented schedule.
+- Inspect token-store safety with `procore-sdk token-store status`.
+- Use `procore-sdk auth rotation-checklist --auth-mode client_credentials`
+  before rotating scheduled export credentials.
 - Run `procore-sdk doctor` and a scheduled-export dry run before enabling a real
   schedule.
 - Review company, project, app, service-account, and tool permissions before
   adding projects or resources.
 
-Token-store backend hardening for managed enterprise secret stores is future
-work. For now, use private filesystem storage and platform secret management
-around `.env` and scheduled job configuration.
+Phase 9C adds file and memory token-store backend architecture plus local
+diagnostics. File token stores remain the persistent default, memory token
+stores are for tests/examples only, and cloud secret-manager backends remain
+future work unless explicitly implemented later.
 
 ## Safe Scheduling Pattern
 

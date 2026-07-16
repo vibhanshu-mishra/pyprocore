@@ -52,6 +52,8 @@ class ProcoreSettings(BaseModel):
     api_base: str = Field(..., min_length=1)
     company_id: int = Field(..., gt=0)
     auth_mode: AuthMode = AuthMode.AUTHORIZATION_CODE
+    token_store_path: str | None = None
+    token_store_backend: str = "file"
 
     @field_validator(
         "client_id",
@@ -80,6 +82,24 @@ class ProcoreSettings(BaseModel):
             return None
         normalized = str(value).strip()
         return normalized or None
+
+    @field_validator("token_store_path", mode="before")
+    @classmethod
+    def _strip_optional_path(cls, value: Any) -> str | None:
+        """Normalize optional token-store path values."""
+        if value is None:
+            return None
+        normalized = str(value).strip()
+        return normalized or None
+
+    @field_validator("token_store_backend", mode="before")
+    @classmethod
+    def _normalize_token_store_backend(cls, value: Any) -> str:
+        """Normalize the configured token-store backend."""
+        normalized = str(value or "file").strip().casefold().replace("-", "_")
+        if normalized not in {"file", "memory"}:
+            raise ValueError("token_store_backend must be file or memory")
+        return normalized
 
     @field_validator("auth_mode", mode="before")
     @classmethod
@@ -128,6 +148,8 @@ def _read_environment() -> dict[str, str | None]:
         "api_base": os.getenv("PROCORE_API_BASE"),
         "company_id": os.getenv("PROCORE_COMPANY_ID"),
         "auth_mode": os.getenv("PROCORE_AUTH_MODE"),
+        "token_store_path": os.getenv("PROCORE_TOKEN_STORE_PATH"),
+        "token_store_backend": os.getenv("PROCORE_TOKEN_STORE_BACKEND"),
     }
 
 

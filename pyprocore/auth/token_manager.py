@@ -8,7 +8,7 @@ needed, and returns a plain access token string for HTTP clients.
 from __future__ import annotations
 
 from pyprocore.auth.oauth import OAuthClient, OAuthTokenResponse
-from pyprocore.auth.token_store import StoredToken, TokenStore
+from pyprocore.auth.token_store import MemoryTokenStoreBackend, StoredToken, TokenStore
 from pyprocore.core.config import AuthMode, ProcoreSettings, get_settings
 from pyprocore.core.exceptions import AuthenticationError
 
@@ -33,7 +33,7 @@ class TokenManager:
         self._settings = settings
         if oauth_client is None:
             self._settings = settings or get_settings()
-        self._token_store = token_store or TokenStore()
+        self._token_store = token_store or self._build_token_store()
         if oauth_client is None:
             assert self._settings is not None
             self._oauth_client = OAuthClient(settings=self._settings)
@@ -145,6 +145,14 @@ class TokenManager:
         if self._settings is None:
             return AuthMode.AUTHORIZATION_CODE
         return self._settings.auth_mode
+
+    def _build_token_store(self) -> TokenStore:
+        """Build the configured token store without exposing secrets."""
+        if self._settings is None:
+            return TokenStore()
+        if self._settings.token_store_backend == "memory":
+            return TokenStore(backend=MemoryTokenStoreBackend())
+        return TokenStore(path=self._settings.token_store_path)
 
 
 def get_access_token() -> str:

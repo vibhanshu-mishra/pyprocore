@@ -157,6 +157,14 @@ export plan validation and dry-run manifests for enterprise Data Connection App
 deployment patterns. These helpers do not construct a Procore client, do not
 read tokens, do not call live Procore APIs, and do not run exports.
 
+## Phase 9C Token-Store Notes
+
+Phase 9C does not add new Procore endpoint coverage. It adds local token-store
+backend diagnostics, file/memory token-store architecture, and credential
+rotation guidance. These helpers do not construct a Procore client, do not print
+token values, do not call live Procore APIs, and do not enable agent/MCP
+execution.
+
 ## Live Verification Notes
 
 Procore access varies by environment, company, project, app connection, and user

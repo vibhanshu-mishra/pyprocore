@@ -21,11 +21,29 @@ procore-sdk auth exchange-code YOUR_AUTHORIZATION_CODE
 procore-sdk auth client-credentials-token
 procore-sdk auth status
 procore-sdk auth refresh
+procore-sdk auth rotation-checklist --auth-mode client_credentials
 ```
 
 `auth client-credentials-token` is for `PROCORE_AUTH_MODE=client_credentials`
 setups such as Procore Data Connection Apps. It requests and stores a
 server-to-server access token without using a redirect URI.
+
+## Token Store Safety
+
+Phase 9C adds local-only token-store inspection and credential rotation helpers.
+These commands do not print access tokens, refresh tokens, client secrets, or
+raw token-store contents.
+
+```bash
+procore-sdk token-store status
+procore-sdk token-store inspect --json
+procore-sdk token-store sample-paths
+procore-sdk token-store clear --yes
+```
+
+Use `PROCORE_TOKEN_STORE_PATH` to keep token stores outside the repository.
+Use `PROCORE_TOKEN_STORE_BACKEND=file` for persistent storage and
+`PROCORE_TOKEN_STORE_BACKEND=memory` only for tests/examples.
 
 ## Scheduled Export Planning
 

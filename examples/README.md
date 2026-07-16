@@ -50,6 +50,9 @@ Examples `115` through `120` cover unreleased Phase 9B scheduled export plan
 validation, dry-run manifests, Data Connection App deployment patterns,
 multi-project planning, and private deployment reminders. They make no live
 calls.
+Examples `121` through `125` cover unreleased Phase 9C token-store backends,
+safe diagnostics, credential rotation checklists, safe clearance, and
+sandbox/production separation. They make no live calls.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -102,6 +105,8 @@ export SCHEDULED_EXPORT_PLAN=examples/configs/scheduled_export_client_credential
 export WORKFLOW_RUN_OUTPUT_DIR=exports/workflow-run
 export WORKFLOW_DRY_RUN=1
 export PROCORE_AUTH_MODE=authorization_code
+export PROCORE_TOKEN_STORE_BACKEND=file
+export PROCORE_TOKEN_STORE_PATH=~/.config/pyprocore/token_store.json
 export PYPROCORE_RUN_LIVE_EXAMPLE=0
 ```
 
@@ -142,6 +147,9 @@ python3 examples/76_list_inspections.py
 python3 examples/78_list_incidents.py
 python3 examples/116_validate_scheduled_export_plan.py
 python3 examples/117_scheduled_export_dry_run.py
+python3 examples/121_token_store_backends.py
+python3 examples/122_token_store_diagnostics.py
+python3 examples/123_credential_rotation_checklist.py
 ```
 
 Documents use Procore's Project Folders and Files endpoints internally. Before a
@@ -323,6 +331,11 @@ The current example set runs from `01_list_companies.py` through
 | `118_data_connection_app_export_pattern.py` | Print a Data Connection App scheduled export deployment pattern |
 | `119_multi_project_export_pattern.py` | Preview planned files for a placeholder multi-project export |
 | `120_private_deployment_pattern.py` | Print private deployment reminders for scheduled exports |
+| `121_token_store_backends.py` | Show file and memory token-store backend patterns locally |
+| `122_token_store_diagnostics.py` | Inspect token-store safety without printing token values |
+| `123_credential_rotation_checklist.py` | Print local-only credential rotation guidance |
+| `124_safe_token_clearance.py` | Demonstrate token-store clear behavior with a temporary file |
+| `125_sandbox_production_separation.py` | Explain separate sandbox and production token stores |
 
 Sample scheduled export configs live in `examples/configs/`:
 

@@ -60,6 +60,13 @@ from pyprocore.auth.diagnostics import (
     refresh_auth_token,
     request_client_credentials_token_and_save,
 )
+from pyprocore.auth.permissions import (
+    build_credential_rotation_checklist,
+    explain_credential_rotation,
+    explain_sandbox_production_separation,
+    explain_token_clearance,
+)
+from pyprocore.auth.token_store import TokenStore, TokenStoreDiagnostic, inspect_token_store
 from pyprocore.automation import AutomationInput, build_workflow_package
 from pyprocore.core.config import get_settings
 from pyprocore.core.doctor import DoctorReport, format_doctor_report, run_doctor
@@ -348,6 +355,24 @@ from pyprocore.workflows import (
 )
 
 
+class TokenStoreClearResult(BaseModel):
+    """Safe result for token-store clear operations."""
+
+    cleared: bool
+    path: str
+    message: str
+
+
+class AuthRotationChecklistResult(BaseModel):
+    """Safe credential rotation checklist result."""
+
+    auth_mode: str
+    summary: str
+    checklist: list[str]
+    token_clearance: str
+    environment_separation: str
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Build the command-line parser."""
     parser = argparse.ArgumentParser(description="Procore SDK utility commands")
@@ -393,6 +418,73 @@ def build_parser() -> argparse.ArgumentParser:
     )
     auth_exchange_parser.set_defaults(auth_command="exchange-code")
     auth_exchange_parser.add_argument("code", help="Authorization code returned by Procore")
+    rotation_parser = auth_subcommands.add_parser(
+        "rotation-checklist",
+        help="Print a local credential rotation checklist",
+    )
+    rotation_parser.add_argument(
+        "--auth-mode",
+        choices=["authorization_code", "client_credentials"],
+        default=None,
+        help="Auth mode to explain. Defaults to configured auth mode when available.",
+    )
+    rotation_parser.add_argument(
+        "--json",
+        dest="json_output",
+        action="store_true",
+        help="Print structured JSON output",
+    )
+
+    token_store_parser = subcommands.add_parser(
+        "token-store",
+        help="Inspect or clear the local token store safely",
+    )
+    token_store_subcommands = token_store_parser.add_subparsers(
+        dest="token_store_command",
+        required=True,
+    )
+    token_store_status_parser = token_store_subcommands.add_parser(
+        "status",
+        help="Show safe token-store status",
+    )
+    token_store_status_parser.add_argument("--path", type=Path, help="Token store path")
+    token_store_status_parser.add_argument(
+        "--json",
+        dest="json_output",
+        action="store_true",
+        help="Print structured JSON output",
+    )
+    token_store_inspect_parser = token_store_subcommands.add_parser(
+        "inspect",
+        help="Inspect token-store safety without printing tokens",
+    )
+    token_store_inspect_parser.add_argument("--path", type=Path, help="Token store path")
+    token_store_inspect_parser.add_argument(
+        "--json",
+        dest="json_output",
+        action="store_true",
+        help="Print structured JSON output",
+    )
+    token_store_clear_parser = token_store_subcommands.add_parser(
+        "clear",
+        help="Clear the configured token-store file",
+    )
+    token_store_clear_parser.add_argument("--path", type=Path, help="Token store path")
+    token_store_clear_parser.add_argument(
+        "--yes",
+        action="store_true",
+        help="Confirm token-store clearance without prompting",
+    )
+    token_store_clear_parser.add_argument(
+        "--json",
+        dest="json_output",
+        action="store_true",
+        help="Print structured JSON output",
+    )
+    token_store_subcommands.add_parser(
+        "sample-paths",
+        help="Show safe token-store path examples",
+    )
 
     agent_parser = subcommands.add_parser("agent", help="Inspect the local agent tool registry")
     agent_subcommands = agent_parser.add_subparsers(dest="agent_command", required=True)
@@ -2833,7 +2925,18 @@ def run_command(args: argparse.Namespace) -> Any:
             return request_client_credentials_token_and_save()
         if args.auth_command == "exchange-code":
             return exchange_code_and_save(args.code)
+        if args.auth_command == "rotation-checklist":
+            return build_auth_rotation_checklist(args.auth_mode)
         raise ValueError(f"Unsupported auth command: {args.auth_command}")
+
+    if args.command == "token-store":
+        if args.token_store_command in {"status", "inspect"}:
+            return inspect_token_store(args.path)
+        if args.token_store_command == "clear":
+            return clear_token_store_cli(args.path, confirmed=args.yes)
+        if args.token_store_command == "sample-paths":
+            return token_store_sample_paths()
+        raise ValueError(f"Unsupported token-store command: {args.token_store_command}")
 
     if args.command == "agent":
         if args.agent_command == "manifest":
@@ -4655,6 +4758,112 @@ def _webhook_filters_from_args(args: argparse.Namespace) -> dict[str, str | None
     }
 
 
+def build_auth_rotation_checklist(auth_mode: str | None = None) -> AuthRotationChecklistResult:
+    """Build a local-only credential rotation checklist."""
+    if auth_mode is None:
+        try:
+            auth_mode = get_settings().auth_mode.value
+        except ConfigurationError:
+            auth_mode = "authorization_code"
+    return AuthRotationChecklistResult(
+        auth_mode=auth_mode,
+        summary=explain_credential_rotation(auth_mode),
+        checklist=build_credential_rotation_checklist(auth_mode),
+        token_clearance=explain_token_clearance(auth_mode),
+        environment_separation=explain_sandbox_production_separation(),
+    )
+
+
+def clear_token_store_cli(path: Path | None, *, confirmed: bool) -> TokenStoreClearResult:
+    """Clear a token store from CLI input after explicit confirmation."""
+    store = TokenStore(path)
+    token_path = store.path
+    if not confirmed:
+        answer = input(
+            "This will delete only the token-store file at "
+            f"{token_path}. Type CLEAR to continue: "
+        )
+        if answer.strip() != "CLEAR":
+            return TokenStoreClearResult(
+                cleared=False,
+                path=str(token_path),
+                message="Token store was not cleared.",
+            )
+    store.clear()
+    return TokenStoreClearResult(
+        cleared=True,
+        path=str(token_path),
+        message="Token store cleared. Reauthenticate before running authenticated commands.",
+    )
+
+
+def token_store_sample_paths() -> str:
+    """Return safe token-store path examples."""
+    return "\n".join(
+        [
+            "Safe token-store path examples:",
+            "- macOS/Linux: ~/.config/pyprocore/token_store.json",
+            "- CI runtime: $RUNNER_TEMP/pyprocore/token_store.json",
+            "- Windows: %APPDATA%\\pyprocore\\token_store.json",
+            "",
+            "Keep token stores outside the repository and never commit them.",
+            "Set PROCORE_TOKEN_STORE_PATH to use a private location.",
+            "Use PROCORE_TOKEN_STORE_BACKEND=file for persistent local storage.",
+            "Use PROCORE_TOKEN_STORE_BACKEND=memory only for tests/examples.",
+        ]
+    )
+
+
+def format_token_store_diagnostic(result: TokenStoreDiagnostic) -> str:
+    """Format token-store diagnostics without exposing token values."""
+    lines = [
+        "PyProcore Token Store",
+        f"Backend: {result.backend_type}",
+        f"Description: {result.description}",
+        f"Path: {result.path or 'not applicable'}",
+        f"Exists: {'Yes' if result.exists else 'No'}",
+        f"Readable: {'Yes' if result.readable else 'No'}",
+        f"Contains token: {'Yes' if result.contains_token else 'No'}",
+        f"Access token: {'Present' if result.access_token_present else 'Missing'}",
+        f"Refresh token: {'Present' if result.refresh_token_present else 'Missing'}",
+        f"Auth mode: {result.auth_mode or 'Unknown'}",
+        f"Token status: {result.token_status}",
+    ]
+    if result.warnings:
+        lines.append("Warnings:")
+        lines.extend(f"- {warning}" for warning in result.warnings)
+    if result.errors:
+        lines.append("Errors:")
+        lines.extend(f"- {error}" for error in result.errors)
+    return "\n".join(lines)
+
+
+def format_auth_rotation_checklist(result: AuthRotationChecklistResult) -> str:
+    """Format credential rotation guidance for humans."""
+    lines = [
+        "PyProcore Credential Rotation Checklist",
+        f"Auth mode: {result.auth_mode}",
+        "",
+        result.summary,
+        "",
+        "Checklist:",
+    ]
+    lines.extend(f"- {item}" for item in result.checklist)
+    lines.extend(
+        [
+            "",
+            "Token clearance:",
+            result.token_clearance,
+            "",
+            "Sandbox/production separation:",
+            result.environment_separation,
+            "",
+            "No Procore API calls were made.",
+        ]
+    )
+    return "\n".join(lines)
+
+
 def format_export_summary(path: Path) -> str:
     """Return a human-readable export summary."""
     return f"Export complete.\nOutput: {path}"
@@ -5124,6 +5333,32 @@ def main() -> None:
     if isinstance(result, AuthLoginUrlResult):
         print(format_login_url(result))
         raise SystemExit(0)
+
+    if isinstance(result, AuthRotationChecklistResult):
+        if args.json_output:
+            print(json.dumps(to_serializable(result), indent=2, default=str))
+        else:
+            print(format_auth_rotation_checklist(result))
+        return
+
+    if isinstance(result, TokenStoreDiagnostic):
+        if args.json_output:
+            print(json.dumps(to_serializable(result), indent=2, default=str))
+        else:
+            print(format_token_store_diagnostic(result))
+        raise SystemExit(0 if not result.errors else 1)
+
+    if isinstance(result, TokenStoreClearResult):
+        if args.json_output:
+            print(json.dumps(to_serializable(result), indent=2, default=str))
+        else:
+            print(result.message)
+            print(f"Path: {result.path}")
+        return
+
+    if isinstance(result, str) and args.command == "token-store":
+        print(result)
+        return
 
     if args.command == "agent" and args.agent_command in {"openapi", "schemas"}:
         if isinstance(result, Path):
