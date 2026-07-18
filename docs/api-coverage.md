@@ -181,7 +181,7 @@ local dictionaries, or placeholder data only. They do not call Procore, call
 external AI/model APIs, require AI framework dependencies, perform Procore
 writes, enable agent tool execution, or enable MCP execution.
 
-## Phase 10A Through 10D Async Coverage Notes
+## Phase 10A Through 10E Async Coverage Notes
 
 Phase 10A adds an unreleased async client foundation for read-oriented
 workflows. Initial async coverage includes companies, projects, RFIs,
@@ -203,9 +203,18 @@ Logs, observations, punch items, Generic Tools/correspondence, meetings,
 inspections, incidents, incident configuration, and directory resources. It also
 adds local async export helpers for those resource families.
 
+Phase 10E adds unreleased async read coverage for selected financial,
+change-management, contract, billing, and project-management resources. It
+includes async helpers for change events, change orders, direct costs, budget
+views/details, cost codes, WBS codes, commitments, contracts, invoices,
+payments, billing periods, schedule metadata, tasks, calendar items,
+coordination issues, forms, form templates, and action plans.
+
 The async layer is additive. It does not remove or rewrite the sync client, does
-not add write/upload endpoints, does not enable agent or MCP execution, and
-uses mocked/local tests instead of live Procore calls.
+not add write/upload endpoints, approvals, submissions, status changes, payment
+actions, budget edits, contract edits, schedule imports, form submissions, or
+action-plan completions, does not enable agent or MCP execution, and uses
+mocked/local tests instead of live Procore calls.
 
 ## Live Verification Notes
 

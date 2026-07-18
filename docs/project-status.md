@@ -13,7 +13,8 @@
   private deployment/runbook guidance, Phase 12 model-agnostic AI workflow
   examples, Phase 10A async client foundation, Phase 10B async
   export/download patterns, Phase 10C async multi-project batch helpers, and
-  Phase 10D async field/operations/correspondence/directory coverage.
+  Phase 10D async field/operations/correspondence/directory coverage, plus
+  Phase 10E async financial/contract/billing/project-management read coverage.
   The package remains `2.2.0`; this branch work is unpublished.
 
 ## Current Stable Release: 2.2.0
@@ -87,6 +88,13 @@ incidents, incident configuration, and directory resources. It also adds local
 async export helpers and extends async batch support for selected field,
 operations, and directory resources.
 
+Phase 10E expands async read coverage for selected financial,
+change-management, contract, billing, schedule, task, calendar, coordination
+issue, form, and action-plan resources. It also adds local async export helpers
+and selected async batch resources. It does not add approvals, submissions,
+status changes, payment actions, budget edits, contract edits, schedule imports,
+form submissions, action-plan completions, agent execution, or MCP execution.
+
 Phase 8A adds read-only SDK coverage for Observations, Punch Items, Generic
 Tools, and Generic Tool correspondence items. It includes service helpers,
 typed flexible models, search helpers, local CSV/JSONL exports, CLI commands,
@@ -147,6 +155,9 @@ approvals, status changes, or project-management mutations.
 - Phase 10C async batch helpers are read-only, additive, and local-first.
 - Phase 10D async coverage is read-only, mocked/local in tests and examples,
   and does not enable agent/MCP execution.
+- Phase 10E async coverage is read-only, mocked/local in tests and examples,
+  and does not enable financial/contract/project-management mutations,
+  agent execution, or MCP execution.
 
 ## Known Limitations
 

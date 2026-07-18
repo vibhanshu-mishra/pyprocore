@@ -38,6 +38,11 @@ and this project follows semantic versioning.
 - Async CSV/JSONL export helpers for Phase 10D resource families.
 - Async batch support for observations, punch items, meetings, inspections, incidents, locations, project users, and vendors.
 - Examples 161–168 for local-only Phase 10D async coverage patterns.
+- Phase 10E async coverage expansion for financial, change-management, contract, billing, and project-management resources.
+- Async read/find helpers for selected Phase 10E resources including change events, contracts, tasks, coordination issues, forms, and action plans.
+- Async CSV/JSONL export helpers for selected financial, contract, billing, and project-management resource families.
+- Async batch support for selected Phase 10E resources including change events, contracts, subcontractor invoices, project schedule, tasks, forms, and action plans.
+- Examples 169–176 for local-only Phase 10E async coverage patterns.
 
 - Phase 8A read-only API coverage for Observations, Punch Items, and Generic Tool correspondence items.
 - Typed flexible models for `Observation`, `PunchItem`, `GenericTool`, and `Correspondence`.
@@ -80,6 +85,7 @@ and this project follows semantic versioning.
 - Phase 10B async exports and download helpers are read-only, local-file-only, mocked in tests/examples, do not add upload or Procore mutation actions, keep agent tool execution disabled, and keep MCP discovery-only.
 - Phase 10C async batch helpers are read-only, mocked/local in tests/examples, do not add upload or Procore mutation actions, keep agent tool execution disabled, and keep MCP discovery-only.
 - Phase 10D async field, operations, correspondence, and directory helpers are read-only, mocked/local in tests/examples, do not add Procore mutation actions, keep agent tool execution disabled, and keep MCP discovery-only.
+- Phase 10E async financial, contract, billing, and project-management helpers are read-only, mocked/local in tests/examples, do not add approvals, submissions, status changes, payment actions, budget edits, contract edits, schedule imports, form submissions, action-plan completions, or Procore mutation actions, keep agent tool execution disabled, and keep MCP discovery-only.
 
 - Phase 8A remains read-only and does not add create/update/delete Procore actions.
 - Agent tool execution remains disabled; new Phase 8A agent entries are metadata only.

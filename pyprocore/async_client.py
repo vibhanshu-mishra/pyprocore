@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import builtins
 from collections.abc import Mapping, Sequence
 from typing import Any, Self, TypeVar
 
@@ -13,17 +14,42 @@ from pyprocore.core.config import ProcoreSettings
 from pyprocore.core.exceptions import MultipleResultsError, NotFoundError, ValidationError
 from pyprocore.models import (
     RFI,
+    ActionPlan,
+    ActionPlanChangeHistoryEvent,
+    BillingPeriod,
+    BudgetDetailColumn,
+    BudgetDetailRow,
+    BudgetSummaryRow,
+    BudgetView,
+    CalendarItem,
+    ChangeEvent,
+    ChangeEventSettings,
+    ChangeEventStatus,
+    ChangeEventType,
+    ChangeOrderPackage,
+    Commitment,
+    CommitmentChangeOrder,
     Company,
     CompanyUser,
+    ContractPayment,
+    CoordinationIssue,
+    CoordinationIssueActivity,
+    CoordinationIssueChangeHistoryEvent,
+    CoordinationIssueFilterOption,
     Correspondence,
+    CostCode,
+    CostType,
     DailyLogCount,
     DailyLogEntry,
     DailyLogHeader,
     Department,
+    DirectCost,
     DistributionGroup,
     Document,
     Drawing,
     DrawingArea,
+    Form,
+    FormTemplate,
     GenericTool,
     Incident,
     IncidentConfiguration,
@@ -31,14 +57,28 @@ from pyprocore.models import (
     Location,
     Meeting,
     Observation,
+    OwnerInvoice,
     PhotoAlbum,
     PhotoImage,
+    PrimeChangeOrder,
+    PrimeContract,
     Project,
+    ProjectSchedule,
     ProjectUser,
     PunchItem,
+    ScheduleImportStatus,
+    ScheduleIntegration,
+    ScheduleResourceAssignment,
+    ScheduleSettings,
+    ScheduleType,
     SpecificationSection,
+    SubcontractorInvoice,
     Submittal,
+    Task,
+    TaskRequestedChange,
+    TaxCode,
     Vendor,
+    WbsCode,
 )
 from pyprocore.models.base import ProcoreModel
 from pyprocore.services.query_params import build_query_params
@@ -467,6 +507,141 @@ class AsyncDirectoryClient:
         return await self._owner.list_locations(company_id, project_id, **filters)
 
 
+class AsyncFinancialsClient:
+    """Async grouped client for read-only financial and change-management resources."""
+
+    def __init__(self, owner: "AsyncProcore") -> None:
+        """Initialize the grouped client."""
+        self._owner = owner
+
+    async def list_change_events(
+        self, company_id: int, project_id: int, **filters: Any
+    ) -> list[ChangeEvent]:
+        """Return project change events."""
+        return await self._owner.list_change_events(company_id, project_id, **filters)
+
+    async def get_change_event(
+        self, company_id: int, project_id: int, change_event_id: int
+    ) -> ChangeEvent:
+        """Return one project change event."""
+        return await self._owner.get_change_event(company_id, project_id, change_event_id)
+
+    async def find_change_event(
+        self, company_id: int, project_id: int, **criteria: Any
+    ) -> ChangeEvent:
+        """Find one change event by ID, number, title, name, or text."""
+        return await self._owner.find_change_event(company_id, project_id, **criteria)
+
+    async def list_direct_costs(
+        self, company_id: int, project_id: int, **filters: Any
+    ) -> list[DirectCost]:
+        """Return project direct costs."""
+        return await self._owner.list_direct_costs(company_id, project_id, **filters)
+
+    async def list_budget_views(
+        self, company_id: int, project_id: int, **filters: Any
+    ) -> list[BudgetView]:
+        """Return project budget views."""
+        return await self._owner.list_budget_views(company_id, project_id, **filters)
+
+    async def list_commitments(
+        self, company_id: int, project_id: int, **filters: Any
+    ) -> list[Commitment]:
+        """Return project commitments."""
+        return await self._owner.list_commitments(company_id, project_id, **filters)
+
+
+class AsyncContractsClient:
+    """Async grouped client for read-only contracts, invoices, and billing resources."""
+
+    def __init__(self, owner: "AsyncProcore") -> None:
+        """Initialize the grouped client."""
+        self._owner = owner
+
+    async def list(self, company_id: int, project_id: int, **filters: Any) -> list[PrimeContract]:
+        """Return project prime contracts."""
+        return await self._owner.list_contracts(company_id, project_id, **filters)
+
+    async def get(self, company_id: int, project_id: int, contract_id: int) -> PrimeContract:
+        """Return one prime contract."""
+        return await self._owner.get_contract(company_id, project_id, contract_id)
+
+    async def find(self, company_id: int, project_id: int, **criteria: Any) -> PrimeContract:
+        """Find one prime contract by ID, number, title, name, or text."""
+        return await self._owner.find_contract(company_id, project_id, **criteria)
+
+    async def list_owner_invoices(
+        self,
+        company_id: int,
+        project_id: int,
+        prime_contract_id: int,
+        **filters: Any,
+    ) -> builtins.list[OwnerInvoice]:
+        """Return owner invoices for one prime contract."""
+        return await self._owner.list_owner_invoices(
+            company_id,
+            project_id,
+            prime_contract_id,
+            **filters,
+        )
+
+    async def list_subcontractor_invoices(
+        self,
+        company_id: int,
+        project_id: int,
+        **filters: Any,
+    ) -> builtins.list[SubcontractorInvoice]:
+        """Return subcontractor invoices for a project."""
+        return await self._owner.list_subcontractor_invoices(company_id, project_id, **filters)
+
+
+class AsyncProjectManagementClient:
+    """Async grouped client for read-only schedule, task, form, and action-plan data."""
+
+    def __init__(self, owner: "AsyncProcore") -> None:
+        """Initialize the grouped client."""
+        self._owner = owner
+
+    async def get_schedule(self, company_id: int, project_id: int) -> ProjectSchedule:
+        """Return read-only project schedule metadata."""
+        return await self._owner.get_project_schedule(company_id, project_id)
+
+    async def list_tasks(self, company_id: int, project_id: int, **filters: Any) -> list[Task]:
+        """Return project tasks."""
+        return await self._owner.list_tasks(company_id, project_id, **filters)
+
+    async def list_calendar_items(
+        self,
+        company_id: int,
+        project_id: int,
+        **filters: Any,
+    ) -> list[CalendarItem]:
+        """Return project calendar items."""
+        return await self._owner.list_calendar_items(company_id, project_id, **filters)
+
+    async def list_coordination_issues(
+        self,
+        company_id: int,
+        project_id: int,
+        **filters: Any,
+    ) -> list[CoordinationIssue]:
+        """Return project coordination issues."""
+        return await self._owner.list_coordination_issues(company_id, project_id, **filters)
+
+    async def list_forms(self, company_id: int, project_id: int, **filters: Any) -> list[Form]:
+        """Return project forms."""
+        return await self._owner.list_forms(company_id, project_id, **filters)
+
+    async def list_action_plans(
+        self,
+        company_id: int,
+        project_id: int,
+        **filters: Any,
+    ) -> list[ActionPlan]:
+        """Return project action plans."""
+        return await self._owner.list_action_plans(company_id, project_id, **filters)
+
+
 class AsyncProcore:
     """Async object-oriented entry point for read-oriented PyProcore workflows."""
 
@@ -507,6 +682,9 @@ class AsyncProcore:
         self.correspondence = AsyncCorrespondenceClient(self)
         self.operations = AsyncOperationsClient(self)
         self.directory = AsyncDirectoryClient(self)
+        self.financials = AsyncFinancialsClient(self)
+        self.contracts = AsyncContractsClient(self)
+        self.project_management = AsyncProjectManagementClient(self)
 
     async def __aenter__(self) -> Self:
         """Return this async client for context manager use."""
@@ -1512,6 +1690,1060 @@ class AsyncProcore:
             query=query,
         )
 
+    async def list_change_events(
+        self,
+        company_id: int,
+        project_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[ChangeEvent]:
+        """Return project change events."""
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.change_events(project_id),
+            ChangeEvent,
+            ("change_events",),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def get_change_event(
+        self,
+        company_id: int,
+        project_id: int,
+        change_event_id: int,
+    ) -> ChangeEvent:
+        """Return one project change event."""
+        return await self._get_project_model(
+            company_id,
+            project_id,
+            change_event_id,
+            "change_event_id",
+            endpoints.change_event(project_id, change_event_id),
+            ChangeEvent,
+            "change event",
+        )
+
+    async def find_change_event(
+        self,
+        company_id: int,
+        project_id: int,
+        *,
+        change_event_id: int | None = None,
+        number: str | int | None = None,
+        title: str | None = None,
+        name: str | None = None,
+        query: str | None = None,
+    ) -> ChangeEvent:
+        """Find one change event by ID, number, title, name, or text."""
+        records = await self.list_change_events(company_id, project_id)
+        return self._find_one(
+            records,
+            "change event",
+            resource_id=change_event_id,
+            criteria={"number": number, "title": title, "name": name},
+            query=query,
+        )
+
+    async def list_change_event_statuses(
+        self,
+        company_id: int,
+        project_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[ChangeEventStatus]:
+        """Return project change event statuses."""
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.change_event_statuses(project_id),
+            ChangeEventStatus,
+            ("change_event_statuses", "statuses"),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def list_change_event_types(
+        self,
+        company_id: int,
+        project_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[ChangeEventType]:
+        """Return project change event types."""
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.change_event_types(project_id),
+            ChangeEventType,
+            ("change_event_types", "types"),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def get_change_event_settings(
+        self,
+        company_id: int,
+        project_id: int,
+    ) -> ChangeEventSettings:
+        """Return read-only project change event settings."""
+        response = await self._project_get(
+            company_id,
+            project_id,
+            endpoints.change_event_settings(project_id),
+        )
+        return ChangeEventSettings.model_validate(
+            self._expect_object(response, "change event settings")
+        )
+
+    async def list_prime_change_orders(
+        self,
+        company_id: int,
+        project_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[PrimeChangeOrder]:
+        """Return project prime change orders."""
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.prime_change_orders(project_id),
+            PrimeChangeOrder,
+            ("prime_change_orders",),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def get_prime_change_order(
+        self,
+        company_id: int,
+        project_id: int,
+        prime_change_order_id: int,
+    ) -> PrimeChangeOrder:
+        """Return one prime change order."""
+        return await self._get_project_model(
+            company_id,
+            project_id,
+            prime_change_order_id,
+            "prime_change_order_id",
+            endpoints.prime_change_order(project_id, prime_change_order_id),
+            PrimeChangeOrder,
+            "prime change order",
+        )
+
+    async def list_commitment_change_orders(
+        self,
+        company_id: int,
+        project_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[CommitmentChangeOrder]:
+        """Return project commitment change orders."""
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.commitment_change_orders(project_id),
+            CommitmentChangeOrder,
+            ("commitment_change_orders",),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def get_commitment_change_order(
+        self,
+        company_id: int,
+        project_id: int,
+        commitment_change_order_id: int,
+    ) -> CommitmentChangeOrder:
+        """Return one commitment change order."""
+        return await self._get_project_model(
+            company_id,
+            project_id,
+            commitment_change_order_id,
+            "commitment_change_order_id",
+            endpoints.commitment_change_order(project_id, commitment_change_order_id),
+            CommitmentChangeOrder,
+            "commitment change order",
+        )
+
+    async def list_change_order_packages(
+        self,
+        company_id: int,
+        project_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[ChangeOrderPackage]:
+        """Return project change order packages."""
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.change_order_packages(project_id),
+            ChangeOrderPackage,
+            ("change_order_packages",),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def get_change_order_package(
+        self,
+        company_id: int,
+        project_id: int,
+        change_order_package_id: int,
+    ) -> ChangeOrderPackage:
+        """Return one change order package."""
+        return await self._get_project_model(
+            company_id,
+            project_id,
+            change_order_package_id,
+            "change_order_package_id",
+            endpoints.change_order_package(project_id, change_order_package_id),
+            ChangeOrderPackage,
+            "change order package",
+        )
+
+    async def list_direct_costs(
+        self,
+        company_id: int,
+        project_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[DirectCost]:
+        """Return project direct costs."""
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.direct_costs(project_id),
+            DirectCost,
+            ("direct_costs",),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def get_direct_cost(
+        self,
+        company_id: int,
+        project_id: int,
+        direct_cost_id: int,
+    ) -> DirectCost:
+        """Return one direct cost."""
+        return await self._get_project_model(
+            company_id,
+            project_id,
+            direct_cost_id,
+            "direct_cost_id",
+            endpoints.direct_cost(project_id, direct_cost_id),
+            DirectCost,
+            "direct cost",
+        )
+
+    async def list_budget_views(
+        self,
+        company_id: int,
+        project_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[BudgetView]:
+        """Return project budget views."""
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.budget_views(project_id),
+            BudgetView,
+            ("budget_views",),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def list_budget_view_columns(
+        self,
+        company_id: int,
+        project_id: int,
+        budget_view_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[BudgetDetailColumn]:
+        """Return columns for one project budget view."""
+        self._validate_positive_id(budget_view_id, "budget_view_id")
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.budget_detail_columns(project_id, budget_view_id),
+            BudgetDetailColumn,
+            ("budget_detail_columns", "columns"),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def list_budget_details(
+        self,
+        company_id: int,
+        project_id: int,
+        budget_view_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[BudgetDetailRow]:
+        """Return detail rows for one project budget view."""
+        self._validate_positive_id(budget_view_id, "budget_view_id")
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.budget_details(project_id, budget_view_id),
+            BudgetDetailRow,
+            ("budget_details", "budget_detail_rows", "rows"),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def list_budget_summary_rows(
+        self,
+        company_id: int,
+        project_id: int,
+        budget_view_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[BudgetSummaryRow]:
+        """Return summary rows for one project budget view."""
+        self._validate_positive_id(budget_view_id, "budget_view_id")
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.budget_view_summary_rows(project_id, budget_view_id),
+            BudgetSummaryRow,
+            ("budget_summary_rows", "summary_rows", "rows"),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def list_cost_codes(
+        self,
+        company_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[CostCode]:
+        """Return company cost codes."""
+        return await self._list_company_models(
+            company_id,
+            endpoints.cost_codes(company_id),
+            CostCode,
+            ("cost_codes",),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def list_standard_cost_codes(
+        self,
+        company_id: int,
+        standard_cost_code_list_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[CostCode]:
+        """Return cost codes for one standard cost code list."""
+        self._validate_positive_id(standard_cost_code_list_id, "standard_cost_code_list_id")
+        return await self._list_company_models(
+            company_id,
+            endpoints.standard_cost_codes(company_id, standard_cost_code_list_id),
+            CostCode,
+            ("cost_codes",),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def list_wbs_items(
+        self,
+        company_id: int,
+        project_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[WbsCode]:
+        """Return project WBS codes/items."""
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.wbs_codes(project_id),
+            WbsCode,
+            ("wbs_codes", "wbs_items"),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def list_commitments(
+        self,
+        company_id: int,
+        project_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[Commitment]:
+        """Return project commitments."""
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.commitments(project_id),
+            Commitment,
+            ("commitments", "contracts"),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def get_commitment(
+        self,
+        company_id: int,
+        project_id: int,
+        commitment_id: int,
+    ) -> Commitment:
+        """Return one project commitment."""
+        return await self._get_project_model(
+            company_id,
+            project_id,
+            commitment_id,
+            "commitment_id",
+            endpoints.commitment(project_id, commitment_id),
+            Commitment,
+            "commitment",
+        )
+
+    async def list_contracts(
+        self,
+        company_id: int,
+        project_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[PrimeContract]:
+        """Return project prime contracts."""
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.prime_contracts(project_id),
+            PrimeContract,
+            ("prime_contracts",),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def get_contract(
+        self, company_id: int, project_id: int, contract_id: int
+    ) -> PrimeContract:
+        """Return one prime contract."""
+        return await self._get_project_model(
+            company_id,
+            project_id,
+            contract_id,
+            "contract_id",
+            endpoints.prime_contract(project_id, contract_id),
+            PrimeContract,
+            "contract",
+        )
+
+    async def find_contract(
+        self,
+        company_id: int,
+        project_id: int,
+        *,
+        contract_id: int | None = None,
+        number: str | int | None = None,
+        title: str | None = None,
+        name: str | None = None,
+        query: str | None = None,
+    ) -> PrimeContract:
+        """Find one prime contract by ID, number, title, name, or text."""
+        records = await self.list_contracts(company_id, project_id)
+        return self._find_one(
+            records,
+            "contract",
+            resource_id=contract_id,
+            criteria={"number": number, "title": title, "name": name},
+            query=query,
+        )
+
+    async def list_owner_invoices(
+        self,
+        company_id: int,
+        project_id: int,
+        prime_contract_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[OwnerInvoice]:
+        """Return owner invoices/payment applications for one prime contract."""
+        self._validate_positive_id(prime_contract_id, "prime_contract_id")
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.owner_invoices(project_id, prime_contract_id),
+            OwnerInvoice,
+            ("owner_invoices", "payment_applications", "invoices"),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def get_owner_invoice(
+        self,
+        company_id: int,
+        project_id: int,
+        prime_contract_id: int,
+        invoice_id: int,
+    ) -> OwnerInvoice:
+        """Return one owner invoice/payment application."""
+        self._validate_positive_id(prime_contract_id, "prime_contract_id")
+        return await self._get_project_model(
+            company_id,
+            project_id,
+            invoice_id,
+            "invoice_id",
+            endpoints.owner_invoice(project_id, prime_contract_id, invoice_id),
+            OwnerInvoice,
+            "owner invoice",
+        )
+
+    async def list_subcontractor_invoices(
+        self,
+        company_id: int,
+        project_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[SubcontractorInvoice]:
+        """Return subcontractor invoices/requisitions for a project."""
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.subcontractor_invoices(project_id),
+            SubcontractorInvoice,
+            ("subcontractor_invoices", "requisitions", "invoices"),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def get_subcontractor_invoice(
+        self,
+        company_id: int,
+        project_id: int,
+        invoice_id: int,
+    ) -> SubcontractorInvoice:
+        """Return one subcontractor invoice/requisition."""
+        return await self._get_project_model(
+            company_id,
+            project_id,
+            invoice_id,
+            "invoice_id",
+            endpoints.subcontractor_invoice(project_id, invoice_id),
+            SubcontractorInvoice,
+            "subcontractor invoice",
+        )
+
+    async def list_contract_payments(
+        self,
+        company_id: int,
+        project_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[ContractPayment]:
+        """Return project contract payments."""
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.contract_payments(project_id),
+            ContractPayment,
+            ("contract_payments", "payments"),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def list_billing_periods(
+        self,
+        company_id: int,
+        project_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[BillingPeriod]:
+        """Return project billing periods."""
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.billing_periods(project_id),
+            BillingPeriod,
+            ("billing_periods",),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def list_cost_types(
+        self,
+        company_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[CostType]:
+        """Return company cost types."""
+        return await self._list_company_models(
+            company_id,
+            endpoints.cost_types(company_id),
+            CostType,
+            ("cost_types",),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def list_tax_codes(
+        self,
+        company_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[TaxCode]:
+        """Return company tax codes."""
+        return await self._list_company_models(
+            company_id,
+            endpoints.tax_codes(company_id),
+            TaxCode,
+            ("tax_codes",),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def get_project_schedule(self, company_id: int, project_id: int) -> ProjectSchedule:
+        """Return read-only project schedule metadata."""
+        response = await self._project_get(
+            company_id, project_id, endpoints.project_schedule(project_id)
+        )
+        return ProjectSchedule.model_validate(self._expect_object(response, "project schedule"))
+
+    async def get_schedule_settings(self, company_id: int, project_id: int) -> ScheduleSettings:
+        """Return read-only project schedule settings."""
+        response = await self._project_get(
+            company_id, project_id, endpoints.schedule_settings(project_id)
+        )
+        return ScheduleSettings.model_validate(self._expect_object(response, "schedule settings"))
+
+    async def get_schedule_type(self, company_id: int, project_id: int) -> ScheduleType:
+        """Return read-only project schedule type metadata."""
+        response = await self._project_get(
+            company_id, project_id, endpoints.schedule_type(project_id)
+        )
+        return ScheduleType.model_validate(self._expect_object(response, "schedule type"))
+
+    async def get_schedule_integration(
+        self,
+        company_id: int,
+        project_id: int,
+    ) -> ScheduleIntegration:
+        """Return read-only project schedule integration metadata."""
+        response = await self._project_get(
+            company_id,
+            project_id,
+            endpoints.schedule_integration(project_id),
+        )
+        return ScheduleIntegration.model_validate(
+            self._expect_object(response, "schedule integration")
+        )
+
+    async def get_schedule_import_status(
+        self,
+        company_id: int,
+        project_id: int,
+    ) -> ScheduleImportStatus:
+        """Return read-only status for the latest project schedule import."""
+        response = await self._project_get(
+            company_id,
+            project_id,
+            endpoints.schedule_import_status(project_id),
+        )
+        return ScheduleImportStatus.model_validate(
+            self._expect_object(response, "schedule import status")
+        )
+
+    async def list_schedule_resource_assignments(
+        self,
+        company_id: int,
+        project_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[ScheduleResourceAssignment]:
+        """Return project schedule resource assignments."""
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.schedule_resource_assignments(project_id),
+            ScheduleResourceAssignment,
+            ("schedule_resource_assignments", "resource_assignments", "assignments"),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def list_tasks(
+        self,
+        company_id: int,
+        project_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[Task]:
+        """Return read-only project tasks."""
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.tasks(project_id),
+            Task,
+            ("tasks", "schedule_tasks"),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def get_task(self, company_id: int, project_id: int, task_id: int) -> Task:
+        """Return one read-only project task."""
+        return await self._get_project_model(
+            company_id,
+            project_id,
+            task_id,
+            "task_id",
+            endpoints.task(project_id, task_id),
+            Task,
+            "task",
+        )
+
+    async def list_task_requested_changes(
+        self,
+        company_id: int,
+        project_id: int,
+        task_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[TaskRequestedChange]:
+        """Return read-only requested changes for one task."""
+        self._validate_positive_id(task_id, "task_id")
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.task_requested_changes(project_id, task_id),
+            TaskRequestedChange,
+            ("task_requested_changes", "requested_changes"),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def list_calendar_items(
+        self,
+        company_id: int,
+        project_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[CalendarItem]:
+        """Return read-only project calendar items."""
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.calendar_items(project_id),
+            CalendarItem,
+            ("calendar_items",),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def get_calendar_item(
+        self,
+        company_id: int,
+        project_id: int,
+        calendar_item_id: int,
+    ) -> CalendarItem:
+        """Return one read-only project calendar item."""
+        return await self._get_project_model(
+            company_id,
+            project_id,
+            calendar_item_id,
+            "calendar_item_id",
+            endpoints.calendar_item(project_id, calendar_item_id),
+            CalendarItem,
+            "calendar item",
+        )
+
+    async def list_coordination_issues(
+        self,
+        company_id: int,
+        project_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[CoordinationIssue]:
+        """Return read-only project coordination issues."""
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.coordination_issues(project_id),
+            CoordinationIssue,
+            ("coordination_issues",),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def get_coordination_issue(
+        self,
+        company_id: int,
+        project_id: int,
+        coordination_issue_id: int,
+    ) -> CoordinationIssue:
+        """Return one read-only project coordination issue."""
+        return await self._get_project_model(
+            company_id,
+            project_id,
+            coordination_issue_id,
+            "coordination_issue_id",
+            endpoints.coordination_issue(project_id, coordination_issue_id),
+            CoordinationIssue,
+            "coordination issue",
+        )
+
+    async def list_coordination_issue_change_history(
+        self,
+        company_id: int,
+        project_id: int,
+        coordination_issue_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[CoordinationIssueChangeHistoryEvent]:
+        """Return read-only change history for one coordination issue."""
+        self._validate_positive_id(coordination_issue_id, "coordination_issue_id")
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.coordination_issue_change_history(project_id, coordination_issue_id),
+            CoordinationIssueChangeHistoryEvent,
+            ("coordination_issue_change_history", "change_history", "events"),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def list_coordination_issue_activity(
+        self,
+        company_id: int,
+        project_id: int,
+        coordination_issue_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[CoordinationIssueActivity]:
+        """Return read-only activity entries for one coordination issue."""
+        self._validate_positive_id(coordination_issue_id, "coordination_issue_id")
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.coordination_issue_activity_feed(project_id, coordination_issue_id),
+            CoordinationIssueActivity,
+            ("coordination_issue_activity_feed", "activity_feed", "activities"),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def list_coordination_issue_filter_options(
+        self,
+        company_id: int,
+        project_id: int,
+        *,
+        option_type: str | None = None,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[CoordinationIssueFilterOption]:
+        """Return read-only coordination issue filter options."""
+        option_params = dict(extra_params)
+        if option_type is not None:
+            option_params["option_type"] = option_type
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.coordination_issue_filter_options(project_id),
+            CoordinationIssueFilterOption,
+            ("coordination_issue_filter_options", "filter_options", "options"),
+            params=params,
+            extra_params=option_params,
+        )
+
+    async def list_forms(
+        self,
+        company_id: int,
+        project_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[Form]:
+        """Return read-only project forms."""
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.forms(project_id),
+            Form,
+            ("forms",),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def get_form(self, company_id: int, project_id: int, form_id: int) -> Form:
+        """Return one read-only project form."""
+        return await self._get_project_model(
+            company_id,
+            project_id,
+            form_id,
+            "form_id",
+            endpoints.form(project_id, form_id),
+            Form,
+            "form",
+        )
+
+    async def list_form_templates(
+        self,
+        company_id: int,
+        project_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[FormTemplate]:
+        """Return read-only project form templates."""
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.form_templates(project_id),
+            FormTemplate,
+            ("form_templates", "templates"),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def list_action_plans(
+        self,
+        company_id: int,
+        project_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[ActionPlan]:
+        """Return read-only project action plans."""
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.action_plans(project_id),
+            ActionPlan,
+            ("action_plans",),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def get_action_plan(
+        self,
+        company_id: int,
+        project_id: int,
+        action_plan_id: int,
+    ) -> ActionPlan:
+        """Return one read-only project action plan."""
+        return await self._get_project_model(
+            company_id,
+            project_id,
+            action_plan_id,
+            "action_plan_id",
+            endpoints.action_plan(project_id, action_plan_id),
+            ActionPlan,
+            "action plan",
+        )
+
+    async def list_action_plan_change_history(
+        self,
+        company_id: int,
+        project_id: int,
+        action_plan_id: int,
+        *,
+        params: Mapping[str, Any] | None = None,
+        **extra_params: Any,
+    ) -> list[ActionPlanChangeHistoryEvent]:
+        """Return read-only change history events for one action plan."""
+        self._validate_positive_id(action_plan_id, "action_plan_id")
+        return await self._list_project_models(
+            company_id,
+            project_id,
+            endpoints.action_plan_change_history_events(project_id, action_plan_id),
+            ActionPlanChangeHistoryEvent,
+            ("action_plan_change_history_events", "change_history_events", "events"),
+            params=params,
+            extra_params=extra_params,
+        )
+
+    async def _list_project_models(
+        self,
+        company_id: int,
+        project_id: int,
+        endpoint: str,
+        model_type: type[_ModelT],
+        keys: Sequence[str],
+        *,
+        params: Mapping[str, Any] | None = None,
+        extra_params: Mapping[str, Any] | None = None,
+    ) -> list[_ModelT]:
+        """Return typed models from a project-scoped read-only collection."""
+        response = await self._project_get_all(
+            company_id,
+            project_id,
+            endpoint,
+            params=params,
+            extra_params=extra_params,
+        )
+        return [
+            model_type.model_validate(item) for item in self._extract_items_by_keys(response, keys)
+        ]
+
+    async def _get_project_model(
+        self,
+        company_id: int,
+        project_id: int,
+        resource_id: int,
+        resource_name: str,
+        endpoint: str,
+        model_type: type[_ModelT],
+        label: str,
+    ) -> _ModelT:
+        """Return one typed model from a project-scoped read-only endpoint."""
+        self._validate_positive_id(resource_id, resource_name)
+        response = await self._project_get(company_id, project_id, endpoint)
+        return model_type.model_validate(self._expect_object(response, label))
+
+    async def _list_company_models(
+        self,
+        company_id: int,
+        endpoint: str,
+        model_type: type[_ModelT],
+        keys: Sequence[str],
+        *,
+        params: Mapping[str, Any] | None = None,
+        extra_params: Mapping[str, Any] | None = None,
+    ) -> list[_ModelT]:
+        """Return typed models from a company-scoped read-only collection."""
+        self._validate_positive_id(company_id, "company_id")
+        response = await self._client.get_all(
+            endpoint,
+            params=build_query_params(params=params, extra_params=extra_params or {}),
+            headers=self._company_headers(company_id),
+        )
+        return [
+            model_type.model_validate(item) for item in self._extract_items_by_keys(response, keys)
+        ]
+
     async def _project_get_all(
         self,
         company_id: int,
@@ -1700,14 +2932,17 @@ class AsyncProcore:
 
 __all__ = [
     "AsyncCompaniesClient",
+    "AsyncContractsClient",
     "AsyncCorrespondenceClient",
     "AsyncDirectoryClient",
     "AsyncDocumentsClient",
     "AsyncDrawingsClient",
+    "AsyncFinancialsClient",
     "AsyncObservationsClient",
     "AsyncOperationsClient",
     "AsyncPhotosClient",
     "AsyncProcore",
+    "AsyncProjectManagementClient",
     "AsyncProjectsClient",
     "AsyncPunchItemsClient",
     "AsyncRFIsClient",

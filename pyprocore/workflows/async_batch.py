@@ -41,6 +41,21 @@ SUPPORTED_ASYNC_BATCH_RESOURCES: tuple[str, ...] = (
     "locations",
     "project_users",
     "vendors",
+    "change_events",
+    "prime_change_orders",
+    "commitment_change_orders",
+    "direct_costs",
+    "budget_views",
+    "commitments",
+    "contracts",
+    "subcontractor_invoices",
+    "billing_periods",
+    "project_schedule",
+    "tasks",
+    "calendar_items",
+    "coordination_issues",
+    "forms",
+    "action_plans",
 )
 
 SECRET_PATTERN = re.compile(
@@ -774,6 +789,40 @@ async def _fetch_resource(
         return await client.list_project_users(company_id, project_id, **dict(options))
     if resource == "vendors":
         return await client.list_vendors(company_id, **dict(options))
+    if resource == "change_events":
+        return await client.list_change_events(company_id, project_id, **dict(options))
+    if resource == "prime_change_orders":
+        return await client.list_prime_change_orders(company_id, project_id, **dict(options))
+    if resource == "commitment_change_orders":
+        return await client.list_commitment_change_orders(
+            company_id,
+            project_id,
+            **dict(options),
+        )
+    if resource == "direct_costs":
+        return await client.list_direct_costs(company_id, project_id, **dict(options))
+    if resource == "budget_views":
+        return await client.list_budget_views(company_id, project_id, **dict(options))
+    if resource == "commitments":
+        return await client.list_commitments(company_id, project_id, **dict(options))
+    if resource == "contracts":
+        return await client.list_contracts(company_id, project_id, **dict(options))
+    if resource == "subcontractor_invoices":
+        return await client.list_subcontractor_invoices(company_id, project_id, **dict(options))
+    if resource == "billing_periods":
+        return await client.list_billing_periods(company_id, project_id, **dict(options))
+    if resource == "project_schedule":
+        return [await client.get_project_schedule(company_id, project_id)]
+    if resource == "tasks":
+        return await client.list_tasks(company_id, project_id, **dict(options))
+    if resource == "calendar_items":
+        return await client.list_calendar_items(company_id, project_id, **dict(options))
+    if resource == "coordination_issues":
+        return await client.list_coordination_issues(company_id, project_id, **dict(options))
+    if resource == "forms":
+        return await client.list_forms(company_id, project_id, **dict(options))
+    if resource == "action_plans":
+        return await client.list_action_plans(company_id, project_id, **dict(options))
     raise ValidationError(f"Unsupported async batch resource: {resource}")
 
 

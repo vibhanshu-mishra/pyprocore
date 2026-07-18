@@ -21,7 +21,9 @@ Current repository status:
   deployment/runbook guidance, plus Phase 12 model-agnostic AI workflow
   examples, plus Phase 10A async client foundation, Phase 10B async
   export/download patterns, Phase 10C async multi-project batch helpers, and
-  Phase 10D async field, operations, correspondence, and directory coverage
+  Phase 10D async field, operations, correspondence, and directory coverage,
+  plus Phase 10E async financial, contract, billing, and project-management
+  read coverage
 - Procore tool execution remains disabled
 
 ```bash
@@ -46,6 +48,8 @@ PyProcore turns Procore REST API responses into typed Python objects and gives y
 - Use unreleased async export and local download patterns with manifests and conservative concurrency controls.
 - Plan read-only async multi-project batches with local dry-run manifests.
 - Read additional field, operations, correspondence, and directory resources through the unreleased async client.
+- Read financial, contract, billing, and project-management resources through
+  the unreleased async client.
 - Use CLI diagnostics and automation commands without hardcoding credentials.
 - Expose local agent metadata, OpenAPI/JSON Schema, run logs, replay, MCP discovery, and deterministic evals for future assistant integrations.
 
@@ -232,6 +236,22 @@ Prepared in the current unreleased branch:
 Phase 10D is additive and read-only. It does not add Procore writes, uploads,
 approvals, status changes, external AI/model calls, agent execution, or MCP
 execution.
+
+### Phase 10E Async Financial, Contract, And Project Management Coverage
+
+Prepared in the current unreleased branch:
+
+- async read coverage for change events, change orders, direct costs, budget views/details, cost codes, WBS codes, and commitments
+- async read coverage for prime contracts, owner invoices, subcontractor invoices, contract payments, billing periods, cost types, and tax codes
+- async read coverage for schedule metadata, tasks, calendar items, coordination issues, forms, form templates, and action plans
+- async CSV/JSONL export helpers for selected Phase 10E resource families
+- async batch support for selected financial, contract, billing, and project-management resources
+- examples 169–176 using mock transports or local dry-runs
+
+Phase 10E is additive and read-only. It does not add approvals, submissions,
+status changes, payment actions, budget edits, contract edits, schedule imports,
+form submissions, action-plan completions, external AI/model calls, agent
+execution, or MCP execution.
 
 ### Phase 7 Agent Layer
 
@@ -579,6 +599,9 @@ make quality-check
   concurrency controls. It is unreleased branch work.
 - Phase 10D expands async read coverage to field, operations, correspondence,
   and directory resources, with local exports and selected async batch
+  resources. It is unreleased branch work.
+- Phase 10E expands async read coverage to financial, contract, billing, and
+  project-management resources, with local exports and selected async batch
   resources. It is unreleased branch work.
 
 - Phase 8A read-only coverage for Observations, Punch Items, and Generic Tool correspondence

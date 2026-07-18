@@ -175,6 +175,26 @@ APIs remain supported, no Procore mutations are added, no live Procore calls are
 made by tests or examples, no external AI/model APIs are called, and agent/MCP
 execution remains disabled.
 
+### Phase 10E — Async Financial, Contract, And Project Management Coverage
+
+Implemented in the current branch and not yet published:
+
+- Async read and find helpers for selected financial and change-management resources
+- Async read helpers for contracts, owner invoices, subcontractor invoices,
+  contract payments, billing periods, cost types, and tax codes
+- Async read helpers for schedule metadata, tasks, calendar items,
+  coordination issues, forms, form templates, and action plans
+- Local async CSV/JSONL export helpers for selected Phase 10E resource families
+- Async batch support for selected financial, contract, billing, and
+  project-management resources
+- Placeholder/mock examples 169–176
+
+Focus: read-only async coverage expansion for business-sensitive resource
+families. No approvals, submissions, status changes, payment actions, budget
+edits, contract edits, schedule imports, form submissions, action-plan
+completions, Procore mutations, external AI/model calls, agent execution, or
+MCP execution are added.
+
 ### Phase 8A — Expanded Procore API Coverage
 
 Implemented in the current branch and not yet published:

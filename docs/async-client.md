@@ -5,8 +5,10 @@ Phase 10B builds on that foundation with async export helpers, local download
 patterns, manifests, and simple concurrency controls. Phase 10C adds async
 multi-project batch planning, collection, and export helpers. Phase 10D expands
 async read coverage across field, operations, correspondence, and directory
-resources. The published stable release remains `2.2.0`; Phase 10A through
-Phase 10D remain branch-only until a future release is cut.
+resources. Phase 10E expands async read coverage to financial, contract,
+billing, and project-management resources. The published stable release remains
+`2.2.0`; Phase 10A through Phase 10E remain branch-only until a future release
+is cut.
 
 ## What this does
 
@@ -29,9 +31,16 @@ Initial async coverage includes:
 - Generic Tools and correspondence items
 - Meetings, inspections, incidents, and incident configuration
 - Company/project users, vendors, departments, distribution groups, and locations
+- Financial and change-management records such as change events, change orders,
+  direct costs, budget views/details, cost codes, WBS codes, and commitments
+- Contract and billing records such as prime contracts, owner invoices,
+  subcontractor invoices, contract payments, billing periods, cost types, and
+  tax codes
+- Project-management records such as schedule metadata, tasks, calendar items,
+  coordination issues, forms, form templates, and action plans
 
 No create, update, delete, upload, approval, status-change, or mutation helpers
-are added in Phase 10A, Phase 10B, Phase 10C, or Phase 10D.
+are added in Phase 10A through Phase 10E.
 
 ## Optional async transport
 
@@ -135,6 +144,26 @@ Phase 10B adds local CSV and JSONL export helpers for the async client:
 - `async_export_departments`
 - `async_export_distribution_groups`
 - `async_export_locations`
+- `async_export_change_events`
+- `async_export_prime_change_orders`
+- `async_export_commitment_change_orders`
+- `async_export_change_order_packages`
+- `async_export_direct_costs`
+- `async_export_budget_views`
+- `async_export_budget_details`
+- `async_export_cost_codes`
+- `async_export_commitments`
+- `async_export_contracts`
+- `async_export_owner_invoices`
+- `async_export_subcontractor_invoices`
+- `async_export_contract_payments`
+- `async_export_billing_periods`
+- `async_export_project_schedule`
+- `async_export_tasks`
+- `async_export_calendar_items`
+- `async_export_coordination_issues`
+- `async_export_forms`
+- `async_export_action_plans`
 
 Each helper writes to a local path, creates parent directories, and returns an
 `AsyncExportResult` with the resource name, output path, record count, format,
@@ -253,6 +282,21 @@ Supported async batch resources are:
 - `locations`
 - `project_users`
 - `vendors`
+- `change_events`
+- `prime_change_orders`
+- `commitment_change_orders`
+- `direct_costs`
+- `budget_views`
+- `commitments`
+- `contracts`
+- `subcontractor_invoices`
+- `billing_periods`
+- `project_schedule`
+- `tasks`
+- `calendar_items`
+- `coordination_issues`
+- `forms`
+- `action_plans`
 
 Batch helpers use the existing `AsyncProcore` read methods and Phase 10B
 CSV/JSONL writers. They do not add Procore write, upload, approval, or mutation
@@ -364,7 +408,11 @@ of the CLI for this phase.
 - No required vector DB or AI dependencies are added.
 - Async exports and downloads are read-only and local-file-only.
 - Async batch helpers are read-only and additive.
+- Financial, contract, billing, and project-management async coverage is
+  read-only.
 - No upload or Procore mutation actions are added.
+- No invoice submissions, payment actions, budget edits, contract edits,
+  schedule imports, form submissions, or action-plan completions are added.
 - Agent tool execution remains disabled.
 - MCP remains discovery-only.
 - Agent evals remain local and deterministic.

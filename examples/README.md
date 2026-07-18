@@ -73,6 +73,9 @@ Procore calls.
 Examples `161` through `168` cover unreleased Phase 10D async field,
 operations, correspondence, and directory coverage. They use local mock
 responses or local dry-runs and make no live Procore calls.
+Examples `169` through `176` cover unreleased Phase 10E async financial,
+contract, billing, and project-management read coverage. They use local mock
+responses or local dry-runs and make no live Procore calls.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -407,6 +410,14 @@ The current example set runs from `01_list_companies.py` through
 | `166_async_batch_field_resources.py` | Build a local async batch dry-run for field resources |
 | `167_async_correspondence_pattern.py` | Demonstrate the async Generic Tool correspondence pattern |
 | `168_phase10d_async_coverage_summary.py` | Summarize Phase 10D async coverage safety boundaries |
+| `169_async_financial_read_coverage.py` | Demonstrate async financial read coverage with mock data |
+| `170_async_contract_invoice_read_coverage.py` | Demonstrate async contract and invoice reads with mock data |
+| `171_async_project_management_read_coverage.py` | Demonstrate async project-management reads with mock data |
+| `172_async_export_financial_resources.py` | Export mock financial resources asynchronously to a temporary file |
+| `173_async_batch_financial_contract_resources.py` | Build a dry-run async batch for financial and contract resources |
+| `174_async_project_management_exports.py` | Export mock project-management resources asynchronously |
+| `175_async_financial_safety_boundaries.py` | Print Phase 10E financial safety boundaries |
+| `176_phase10e_async_coverage_summary.py` | Summarize Phase 10E async coverage safety boundaries |
 
 Sample scheduled export configs live in `examples/configs/`:
 
@@ -497,4 +508,8 @@ Sample webhook payloads live in `examples/webhooks/`:
 - Examples `153` through `160` are local async batch examples. They use
   placeholder IDs, mock clients, or dry-run manifests, do not call Procore, do
   not upload files, and keep agent/MCP execution disabled.
+- Examples `161` through `176` are local async expansion examples. They use
+  mock transports or dry-run manifests, do not call Procore, do not modify
+  financial/contract/project-management data, and keep agent/MCP execution
+  disabled.
 - Keep secrets out of code, screenshots, logs, and issue reports.
