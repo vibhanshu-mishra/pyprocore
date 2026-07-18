@@ -238,6 +238,262 @@ async def async_export_specification_sections(
     )
 
 
+async def async_export_photo_albums(
+    client: AsyncProcore,
+    company_id: int,
+    project_id: int,
+    output_path: Path | str,
+    *,
+    output_format: Literal["csv", "jsonl"] = "jsonl",
+    dry_run: bool = False,
+    **filters: Any,
+) -> AsyncExportResult:
+    """Export photo albums for a project."""
+    records = await client.list_photo_albums(company_id, project_id, **filters)
+    return await _write_export_result(records, output_path, "photo_albums", output_format, dry_run)
+
+
+async def async_export_photos(
+    client: AsyncProcore,
+    company_id: int,
+    project_id: int,
+    output_path: Path | str,
+    *,
+    output_format: Literal["csv", "jsonl"] = "jsonl",
+    dry_run: bool = False,
+    **filters: Any,
+) -> AsyncExportResult:
+    """Export photos for a project."""
+    records = await client.list_photos(company_id, project_id, **filters)
+    return await _write_export_result(records, output_path, "photos", output_format, dry_run)
+
+
+async def async_export_daily_logs(
+    client: AsyncProcore,
+    company_id: int,
+    project_id: int,
+    output_path: Path | str,
+    *,
+    log_type: str = "manpower",
+    output_format: Literal["csv", "jsonl"] = "jsonl",
+    dry_run: bool = False,
+    **filters: Any,
+) -> AsyncExportResult:
+    """Export Daily Log entries for one log type."""
+    records = await client.list_daily_logs(company_id, project_id, log_type, **filters)
+    return await _write_export_result(records, output_path, "daily_logs", output_format, dry_run)
+
+
+async def async_export_observations(
+    client: AsyncProcore,
+    company_id: int,
+    project_id: int,
+    output_path: Path | str,
+    *,
+    output_format: Literal["csv", "jsonl"] = "jsonl",
+    dry_run: bool = False,
+    **filters: Any,
+) -> AsyncExportResult:
+    """Export observations for a project."""
+    records = await client.list_observations(company_id, project_id, **filters)
+    return await _write_export_result(records, output_path, "observations", output_format, dry_run)
+
+
+async def async_export_punch_items(
+    client: AsyncProcore,
+    company_id: int,
+    project_id: int,
+    output_path: Path | str,
+    *,
+    output_format: Literal["csv", "jsonl"] = "jsonl",
+    dry_run: bool = False,
+    **filters: Any,
+) -> AsyncExportResult:
+    """Export punch items for a project."""
+    records = await client.list_punch_items(company_id, project_id, **filters)
+    return await _write_export_result(records, output_path, "punch_items", output_format, dry_run)
+
+
+async def async_export_generic_tools(
+    client: AsyncProcore,
+    company_id: int,
+    project_id: int,
+    output_path: Path | str,
+    *,
+    output_format: Literal["csv", "jsonl"] = "jsonl",
+    dry_run: bool = False,
+    **filters: Any,
+) -> AsyncExportResult:
+    """Export Generic Tool metadata for a project."""
+    records = await client.list_generic_tools(company_id, project_id, **filters)
+    return await _write_export_result(records, output_path, "generic_tools", output_format, dry_run)
+
+
+async def async_export_correspondences(
+    client: AsyncProcore,
+    company_id: int,
+    project_id: int,
+    generic_tool_id: int,
+    output_path: Path | str,
+    *,
+    output_format: Literal["csv", "jsonl"] = "jsonl",
+    dry_run: bool = False,
+    **filters: Any,
+) -> AsyncExportResult:
+    """Export correspondence items for a Generic Tool."""
+    records = await client.list_correspondences(
+        company_id,
+        project_id,
+        generic_tool_id,
+        **filters,
+    )
+    return await _write_export_result(
+        records,
+        output_path,
+        "correspondences",
+        output_format,
+        dry_run,
+    )
+
+
+async def async_export_meetings(
+    client: AsyncProcore,
+    company_id: int,
+    project_id: int,
+    output_path: Path | str,
+    *,
+    output_format: Literal["csv", "jsonl"] = "jsonl",
+    dry_run: bool = False,
+    **filters: Any,
+) -> AsyncExportResult:
+    """Export meetings for a project."""
+    records = await client.list_meetings(company_id, project_id, **filters)
+    return await _write_export_result(records, output_path, "meetings", output_format, dry_run)
+
+
+async def async_export_inspections(
+    client: AsyncProcore,
+    company_id: int,
+    project_id: int,
+    output_path: Path | str,
+    *,
+    output_format: Literal["csv", "jsonl"] = "jsonl",
+    dry_run: bool = False,
+    **filters: Any,
+) -> AsyncExportResult:
+    """Export inspections for a project."""
+    records = await client.list_inspections(company_id, project_id, **filters)
+    return await _write_export_result(records, output_path, "inspections", output_format, dry_run)
+
+
+async def async_export_incidents(
+    client: AsyncProcore,
+    company_id: int,
+    project_id: int,
+    output_path: Path | str,
+    *,
+    output_format: Literal["csv", "jsonl"] = "jsonl",
+    dry_run: bool = False,
+    **filters: Any,
+) -> AsyncExportResult:
+    """Export incidents for a project."""
+    records = await client.list_incidents(company_id, project_id, **filters)
+    return await _write_export_result(records, output_path, "incidents", output_format, dry_run)
+
+
+async def async_export_company_users(
+    client: AsyncProcore,
+    company_id: int,
+    output_path: Path | str,
+    *,
+    output_format: Literal["csv", "jsonl"] = "jsonl",
+    dry_run: bool = False,
+    **filters: Any,
+) -> AsyncExportResult:
+    """Export company directory users."""
+    records = await client.list_company_users(company_id, **filters)
+    return await _write_export_result(records, output_path, "company_users", output_format, dry_run)
+
+
+async def async_export_project_users(
+    client: AsyncProcore,
+    company_id: int,
+    project_id: int,
+    output_path: Path | str,
+    *,
+    output_format: Literal["csv", "jsonl"] = "jsonl",
+    dry_run: bool = False,
+    **filters: Any,
+) -> AsyncExportResult:
+    """Export project directory users."""
+    records = await client.list_project_users(company_id, project_id, **filters)
+    return await _write_export_result(records, output_path, "project_users", output_format, dry_run)
+
+
+async def async_export_vendors(
+    client: AsyncProcore,
+    company_id: int,
+    output_path: Path | str,
+    *,
+    output_format: Literal["csv", "jsonl"] = "jsonl",
+    dry_run: bool = False,
+    **filters: Any,
+) -> AsyncExportResult:
+    """Export company vendors."""
+    records = await client.list_vendors(company_id, **filters)
+    return await _write_export_result(records, output_path, "vendors", output_format, dry_run)
+
+
+async def async_export_departments(
+    client: AsyncProcore,
+    company_id: int,
+    output_path: Path | str,
+    *,
+    output_format: Literal["csv", "jsonl"] = "jsonl",
+    dry_run: bool = False,
+    **filters: Any,
+) -> AsyncExportResult:
+    """Export company departments."""
+    records = await client.list_departments(company_id, **filters)
+    return await _write_export_result(records, output_path, "departments", output_format, dry_run)
+
+
+async def async_export_distribution_groups(
+    client: AsyncProcore,
+    company_id: int,
+    project_id: int,
+    output_path: Path | str,
+    *,
+    output_format: Literal["csv", "jsonl"] = "jsonl",
+    dry_run: bool = False,
+    **filters: Any,
+) -> AsyncExportResult:
+    """Export project distribution groups."""
+    records = await client.list_project_distribution_groups(company_id, project_id, **filters)
+    return await _write_export_result(
+        records,
+        output_path,
+        "distribution_groups",
+        output_format,
+        dry_run,
+    )
+
+
+async def async_export_locations(
+    client: AsyncProcore,
+    company_id: int,
+    project_id: int,
+    output_path: Path | str,
+    *,
+    output_format: Literal["csv", "jsonl"] = "jsonl",
+    dry_run: bool = False,
+    **filters: Any,
+) -> AsyncExportResult:
+    """Export project locations."""
+    records = await client.list_locations(company_id, project_id, **filters)
+    return await _write_export_result(records, output_path, "locations", output_format, dry_run)
+
+
 async def async_download_file_from_url(
     transport: AsyncTransport,
     url: str,
@@ -554,12 +810,28 @@ __all__ = [
     "async_download_specification_files",
     "async_download_with_manifest",
     "async_export_companies",
+    "async_export_company_users",
+    "async_export_correspondences",
+    "async_export_daily_logs",
+    "async_export_departments",
     "async_export_documents",
+    "async_export_distribution_groups",
     "async_export_drawings",
+    "async_export_generic_tools",
+    "async_export_incidents",
+    "async_export_inspections",
+    "async_export_locations",
+    "async_export_meetings",
+    "async_export_observations",
+    "async_export_photo_albums",
+    "async_export_photos",
     "async_export_projects",
+    "async_export_project_users",
+    "async_export_punch_items",
     "async_export_records_csv",
     "async_export_records_jsonl",
     "async_export_rfis",
     "async_export_specification_sections",
     "async_export_submittals",
+    "async_export_vendors",
 ]

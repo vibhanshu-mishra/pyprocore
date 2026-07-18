@@ -66,6 +66,13 @@ mock responses and make no live Procore calls.
 Examples `147` through `152` cover unreleased Phase 10B async export and
 download patterns, local manifests, and concurrency limits. They use local mock
 responses, temporary folders, and make no live Procore calls.
+Examples `153` through `160` cover unreleased Phase 10C async batch planning,
+dry-runs, multi-project exports, partial failures, concurrency, and simple
+resume patterns. They use mock clients or local dry-runs and make no live
+Procore calls.
+Examples `161` through `168` cover unreleased Phase 10D async field,
+operations, correspondence, and directory coverage. They use local mock
+responses or local dry-runs and make no live Procore calls.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -168,6 +175,9 @@ python3 examples/123_credential_rotation_checklist.py
 python3 examples/131_rfi_review_assistant_package.py
 python3 examples/135_vector_db_export_pattern.py
 python3 examples/139_ai_workflow_safety_checklist.py
+python3 examples/161_async_observations_and_punch_items.py
+python3 examples/164_async_directory_resources.py
+python3 examples/168_phase10d_async_coverage_summary.py
 ```
 
 Documents use Procore's Project Folders and Files endpoints internally. Before a
@@ -225,7 +235,7 @@ make examples-check
 ## Example Index
 
 The current example set runs from `01_list_companies.py` through
-`140_phase12_ai_workflows_summary.py`.
+`168_phase10d_async_coverage_summary.py`.
 
 | File | Demonstrates |
 | ---- | ------------ |
@@ -389,6 +399,14 @@ The current example set runs from `01_list_companies.py` through
 | `158_async_batch_concurrency.py` | Demonstrate async batch concurrency limits |
 | `159_async_batch_manifest_resume_pattern.py` | Show simple manifest-based resume/skip planning |
 | `160_phase10c_async_batch_summary.py` | Summarize Phase 10C async batch safety boundaries |
+| `161_async_observations_and_punch_items.py` | Demonstrate async observations and punch items with mock data |
+| `162_async_photos_and_daily_logs.py` | Demonstrate async photos and Daily Logs with mock data |
+| `163_async_meetings_inspections_incidents.py` | Demonstrate async meetings, inspections, incidents, and incident configuration |
+| `164_async_directory_resources.py` | Demonstrate async directory resources with mock data |
+| `165_async_export_field_resources.py` | Export field resources asynchronously to local files with mock data |
+| `166_async_batch_field_resources.py` | Build a local async batch dry-run for field resources |
+| `167_async_correspondence_pattern.py` | Demonstrate the async Generic Tool correspondence pattern |
+| `168_phase10d_async_coverage_summary.py` | Summarize Phase 10D async coverage safety boundaries |
 
 Sample scheduled export configs live in `examples/configs/`:
 

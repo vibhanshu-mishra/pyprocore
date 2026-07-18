@@ -20,7 +20,8 @@ Current repository status:
   Phase 9C token-store/credential-rotation hardening, and Phase 9D private
   deployment/runbook guidance, plus Phase 12 model-agnostic AI workflow
   examples, plus Phase 10A async client foundation, Phase 10B async
-  export/download patterns, and Phase 10C async multi-project batch helpers
+  export/download patterns, Phase 10C async multi-project batch helpers, and
+  Phase 10D async field, operations, correspondence, and directory coverage
 - Procore tool execution remains disabled
 
 ```bash
@@ -44,6 +45,7 @@ PyProcore turns Procore REST API responses into typed Python objects and gives y
 - Use the unreleased async client foundation for read-oriented workflows with optional async HTTP support.
 - Use unreleased async export and local download patterns with manifests and conservative concurrency controls.
 - Plan read-only async multi-project batches with local dry-run manifests.
+- Read additional field, operations, correspondence, and directory resources through the unreleased async client.
 - Use CLI diagnostics and automation commands without hardcoding credentials.
 - Expose local agent metadata, OpenAPI/JSON Schema, run logs, replay, MCP discovery, and deterministic evals for future assistant integrations.
 
@@ -216,6 +218,20 @@ Procore or require credentials. Library exports call Procore only when a
 developer passes a configured async client and uses a non-dry-run plan. No
 upload, create, update, delete, approval, status-change, external AI/model,
 agent execution, or MCP execution behavior is added.
+
+### Phase 10D Async Coverage Expansion
+
+Prepared in the current unreleased branch:
+
+- async read coverage for photo albums, photos, Daily Logs, observations, punch items, Generic Tools, correspondence, meetings, inspections, incidents, and directory resources
+- async find helpers for observations, punch items, correspondence, meetings, inspections, incidents, users, vendors, departments, distribution groups, and locations
+- async CSV/JSONL export helpers for the new resource families
+- async batch support for observations, punch items, meetings, inspections, incidents, locations, project users, and vendors
+- examples 161–168 using mock transports or local dry-runs
+
+Phase 10D is additive and read-only. It does not add Procore writes, uploads,
+approvals, status changes, external AI/model calls, agent execution, or MCP
+execution.
 
 ### Phase 7 Agent Layer
 
@@ -561,6 +577,9 @@ make quality-check
 - Phase 10C adds async multi-project batch planning, validation, dry-run
   manifests, read-only exports, in-memory collection helpers, and conservative
   concurrency controls. It is unreleased branch work.
+- Phase 10D expands async read coverage to field, operations, correspondence,
+  and directory resources, with local exports and selected async batch
+  resources. It is unreleased branch work.
 
 - Phase 8A read-only coverage for Observations, Punch Items, and Generic Tool correspondence
 - Phase 8B client-credentials auth support

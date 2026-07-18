@@ -33,6 +33,14 @@ SUPPORTED_ASYNC_BATCH_RESOURCES: tuple[str, ...] = (
     "documents",
     "drawings",
     "specification_sections",
+    "observations",
+    "punch_items",
+    "meetings",
+    "inspections",
+    "incidents",
+    "locations",
+    "project_users",
+    "vendors",
 )
 
 SECRET_PATTERN = re.compile(
@@ -750,6 +758,22 @@ async def _fetch_resource(
         return await client.list_drawings(company_id, project_id, **dict(options))
     if resource == "specification_sections":
         return await client.list_specification_sections(company_id, project_id, **dict(options))
+    if resource == "observations":
+        return await client.list_observations(company_id, project_id, **dict(options))
+    if resource == "punch_items":
+        return await client.list_punch_items(company_id, project_id, **dict(options))
+    if resource == "meetings":
+        return await client.list_meetings(company_id, project_id, **dict(options))
+    if resource == "inspections":
+        return await client.list_inspections(company_id, project_id, **dict(options))
+    if resource == "incidents":
+        return await client.list_incidents(company_id, project_id, **dict(options))
+    if resource == "locations":
+        return await client.list_locations(company_id, project_id, **dict(options))
+    if resource == "project_users":
+        return await client.list_project_users(company_id, project_id, **dict(options))
+    if resource == "vendors":
+        return await client.list_vendors(company_id, **dict(options))
     raise ValidationError(f"Unsupported async batch resource: {resource}")
 
 

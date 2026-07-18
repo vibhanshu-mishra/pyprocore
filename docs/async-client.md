@@ -3,9 +3,10 @@
 Phase 10A adds an async client foundation in the current unreleased branch.
 Phase 10B builds on that foundation with async export helpers, local download
 patterns, manifests, and simple concurrency controls. Phase 10C adds async
-multi-project batch planning, collection, and export helpers. The published
-stable release remains `2.2.0`; Phase 10A through Phase 10C remain branch-only
-until a future release is cut.
+multi-project batch planning, collection, and export helpers. Phase 10D expands
+async read coverage across field, operations, correspondence, and directory
+resources. The published stable release remains `2.2.0`; Phase 10A through
+Phase 10D remain branch-only until a future release is cut.
 
 ## What this does
 
@@ -22,9 +23,15 @@ Initial async coverage includes:
 - Documents
 - Drawing areas and drawings
 - Specification sections
+- Photo albums and photos
+- Daily Logs
+- Observations and punch items
+- Generic Tools and correspondence items
+- Meetings, inspections, incidents, and incident configuration
+- Company/project users, vendors, departments, distribution groups, and locations
 
 No create, update, delete, upload, approval, status-change, or mutation helpers
-are added in Phase 10A, Phase 10B, or Phase 10C.
+are added in Phase 10A, Phase 10B, Phase 10C, or Phase 10D.
 
 ## Optional async transport
 
@@ -112,6 +119,22 @@ Phase 10B adds local CSV and JSONL export helpers for the async client:
 - `async_export_documents`
 - `async_export_drawings`
 - `async_export_specification_sections`
+- `async_export_photo_albums`
+- `async_export_photos`
+- `async_export_daily_logs`
+- `async_export_observations`
+- `async_export_punch_items`
+- `async_export_generic_tools`
+- `async_export_correspondences`
+- `async_export_meetings`
+- `async_export_inspections`
+- `async_export_incidents`
+- `async_export_company_users`
+- `async_export_project_users`
+- `async_export_vendors`
+- `async_export_departments`
+- `async_export_distribution_groups`
+- `async_export_locations`
 
 Each helper writes to a local path, creates parent directories, and returns an
 `AsyncExportResult` with the resource name, output path, record count, format,
@@ -215,13 +238,21 @@ need to collect or export the same resource family across many projects:
 - `async_export_multi_project_resources`
 - `async_collect_multi_project_resources`
 
-Supported Phase 10C batch resources are:
+Supported async batch resources are:
 
 - `rfis`
 - `submittals`
 - `documents`
 - `drawings`
 - `specification_sections`
+- `observations`
+- `punch_items`
+- `meetings`
+- `inspections`
+- `incidents`
+- `locations`
+- `project_users`
+- `vendors`
 
 Batch helpers use the existing `AsyncProcore` read methods and Phase 10B
 CSV/JSONL writers. They do not add Procore write, upload, approval, or mutation

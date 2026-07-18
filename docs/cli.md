@@ -75,11 +75,11 @@ external AI/model APIs, MCP execution, or Procore tool execution.
 
 ## Async Client
 
-Phase 10A and Phase 10B add the unreleased `AsyncProcore` Python client
+Phase 10A through Phase 10D add the unreleased `AsyncProcore` Python client
 foundation, async export/download helper patterns, local mock async examples,
-manifests, conservative concurrency controls, and optional async HTTP transport
-support for Python code. Existing live CLI commands remain sync and backward
-compatible.
+async field/operations/correspondence/directory read coverage, manifests,
+conservative concurrency controls, and optional async HTTP transport support
+for Python code. Existing live CLI commands remain sync and backward compatible.
 
 Phase 10C adds local-only async batch planning commands:
 
@@ -93,8 +93,8 @@ procore-sdk async-batch dry-run examples/configs/async_batch_dry_run.json --json
 
 These commands validate and explain async multi-project batch plans without
 credentials, without constructing a Procore client, and without calling Procore.
-Live async batch exports are exposed as Python helpers, not CLI commands, in
-Phase 10C.
+Live async batch exports and Phase 10D async resource reads are exposed as
+Python helpers, not CLI commands, in this branch.
 
 ## Scheduled Export Planning
 

@@ -154,6 +154,27 @@ Focus: read-only async batch operations. The sync client and existing async
 no live Procore calls are made by tests or examples, no external AI/model APIs
 are called, and agent/MCP execution remains disabled.
 
+### Phase 10D — Async Field, Operations, And Directory Coverage
+
+Implemented in the current branch and not yet published:
+
+- Async read coverage for photo albums, photos, and Daily Logs
+- Async read and find helpers for observations and punch items
+- Async read and find helpers for Generic Tool correspondence
+- Async read and find helpers for meetings, inspections, and incidents
+- Async incident configuration read helper
+- Async directory helpers for company users, project users, vendors,
+  departments, distribution groups, and locations
+- Local async CSV/JSONL export helpers for the new resource families
+- Async batch support for observations, punch items, meetings, inspections,
+  incidents, locations, project users, and vendors
+- Placeholder/mock examples 161–168
+
+Focus: read-only async coverage expansion. The sync client and existing async
+APIs remain supported, no Procore mutations are added, no live Procore calls are
+made by tests or examples, no external AI/model APIs are called, and agent/MCP
+execution remains disabled.
+
 ### Phase 8A — Expanded Procore API Coverage
 
 Implemented in the current branch and not yet published:

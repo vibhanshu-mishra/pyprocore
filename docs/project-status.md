@@ -12,7 +12,8 @@
   Phase 9C token-store backend and credential rotation hardening, and Phase 9D
   private deployment/runbook guidance, Phase 12 model-agnostic AI workflow
   examples, Phase 10A async client foundation, Phase 10B async
-  export/download patterns, and Phase 10C async multi-project batch helpers.
+  export/download patterns, Phase 10C async multi-project batch helpers, and
+  Phase 10D async field/operations/correspondence/directory coverage.
   The package remains `2.2.0`; this branch work is unpublished.
 
 ## Current Stable Release: 2.2.0
@@ -80,6 +81,12 @@ read-only CSV/JSONL exports, in-memory collection helpers, conservative
 concurrency controls, partial-failure capture, and simple manifest resume/skip
 behavior. CLI planning commands are local-only and do not call Procore.
 
+Phase 10D expands async read coverage for photo albums/photos, Daily Logs,
+observations, punch items, Generic Tools/correspondence, meetings, inspections,
+incidents, incident configuration, and directory resources. It also adds local
+async export helpers and extends async batch support for selected field,
+operations, and directory resources.
+
 Phase 8A adds read-only SDK coverage for Observations, Punch Items, Generic
 Tools, and Generic Tool correspondence items. It includes service helpers,
 typed flexible models, search helpers, local CSV/JSONL exports, CLI commands,
@@ -138,6 +145,8 @@ approvals, status changes, or project-management mutations.
 - Phase 10A async client support is read-oriented and additive.
 - Phase 10B async export/download helpers are read-only, local-file-only, and additive.
 - Phase 10C async batch helpers are read-only, additive, and local-first.
+- Phase 10D async coverage is read-only, mocked/local in tests and examples,
+  and does not enable agent/MCP execution.
 
 ## Known Limitations
 
