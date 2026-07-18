@@ -112,6 +112,33 @@ from pyprocore.core.async_transport import (
     MockAsyncTransport,
 )
 from pyprocore.core.exceptions import DuplicateMatchError, MultipleResultsError, NotFoundError
+from pyprocore.plugins import (  # noqa: F401
+    PLUGIN_SCHEMA_VERSION,
+    PluginCapability,
+    PluginDiscoveryResult,
+    PluginManifest,
+    PluginMetadata,
+    PluginRegistration,
+    PluginRegistry,
+    PluginRegistryManifest,
+    PluginSafetyLevel,
+    PluginValidationResult,
+    builtin_plugin_manifests,
+    discover_builtin_plugins,
+    discover_installed_plugin_metadata,
+    discover_local_plugin_manifests,
+    discover_plugins,
+    export_plugin_registry_manifest,
+    find_plugins_by_capability,
+    get_plugin,
+    list_plugins,
+    load_local_plugin_manifest_file,
+    load_plugin_manifest_from_dict,
+    register_plugin_manifest,
+    unregister_plugin,
+    validate_plugin_manifest,
+    validate_plugin_manifest_data,
+)
 from pyprocore.services.contracts import (  # noqa: F401
     get_billing_period,
     get_commitment_contract,
@@ -1039,6 +1066,36 @@ __all__.extend(
         "sample_scheduled_export_plan_json",
         "validate_scheduled_export_plan",
         "write_scheduled_export_manifest",
+    ]
+)
+
+__all__.extend(
+    [
+        "PLUGIN_SCHEMA_VERSION",
+        "PluginCapability",
+        "PluginDiscoveryResult",
+        "PluginManifest",
+        "PluginMetadata",
+        "PluginRegistration",
+        "PluginRegistry",
+        "PluginRegistryManifest",
+        "PluginSafetyLevel",
+        "PluginValidationResult",
+        "builtin_plugin_manifests",
+        "discover_builtin_plugins",
+        "discover_installed_plugin_metadata",
+        "discover_local_plugin_manifests",
+        "discover_plugins",
+        "export_plugin_registry_manifest",
+        "find_plugins_by_capability",
+        "get_plugin",
+        "list_plugins",
+        "load_local_plugin_manifest_file",
+        "load_plugin_manifest_from_dict",
+        "register_plugin_manifest",
+        "unregister_plugin",
+        "validate_plugin_manifest",
+        "validate_plugin_manifest_data",
     ]
 )
 

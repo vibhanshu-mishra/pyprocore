@@ -14,7 +14,8 @@
   examples, Phase 10A async client foundation, Phase 10B async
   export/download patterns, Phase 10C async multi-project batch helpers, and
   Phase 10D async field/operations/correspondence/directory coverage, plus
-  Phase 10E async financial/contract/billing/project-management read coverage.
+  Phase 10E async financial/contract/billing/project-management read coverage,
+  plus Phase 11A metadata-only plugin architecture foundation.
   The package remains `2.2.0`; this branch work is unpublished.
 
 ## Current Stable Release: 2.2.0
@@ -95,6 +96,13 @@ and selected async batch resources. It does not add approvals, submissions,
 status changes, payment actions, budget edits, contract edits, schedule imports,
 form submissions, action-plan completions, agent execution, or MCP execution.
 
+Phase 11A adds a metadata-only plugin architecture foundation for future
+extension packs, custom workflows, exporters, validators, reports, integration
+adapters, agent metadata, and MCP metadata. It does not install plugins, fetch
+remote registries, import arbitrary plugin modules, execute plugin code, call
+Procore, call external AI/model APIs, enable agent execution, or change
+discovery-only MCP behavior.
+
 Phase 8A adds read-only SDK coverage for Observations, Punch Items, Generic
 Tools, and Generic Tool correspondence items. It includes service helpers,
 typed flexible models, search helpers, local CSV/JSONL exports, CLI commands,
@@ -158,6 +166,8 @@ approvals, status changes, or project-management mutations.
 - Phase 10E async coverage is read-only, mocked/local in tests and examples,
   and does not enable financial/contract/project-management mutations,
   agent execution, or MCP execution.
+- Phase 11A plugin helpers are metadata-only, local-first, and do not install,
+  fetch, import, or execute plugins.
 
 ## Known Limitations
 
@@ -179,6 +189,7 @@ approvals, status changes, or project-management mutations.
 - Write-action safety model
 - Real MCP execution after explicit safety design
 - Additional read-only Procore coverage beyond Phase 8G
-- Richer async attachment extraction and plugin architecture
+- Richer async attachment extraction
+- Controlled plugin extension hooks beyond metadata
 - Golden datasets and model evals
 - Richer MCP integration

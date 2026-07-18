@@ -96,6 +96,22 @@ credentials, without constructing a Procore client, and without calling Procore.
 Live async batch exports and Phase 10D async resource reads are exposed as
 Python helpers, not CLI commands, in this branch.
 
+## Plugin Metadata
+
+Phase 11A adds local-only plugin metadata commands:
+
+```bash
+procore-sdk plugins list
+procore-sdk plugins show csv_exporter_plugin
+procore-sdk plugins manifest --json
+procore-sdk plugins sample-manifest --json
+procore-sdk plugins validate ./plugin-manifest.json
+```
+
+These commands inspect or validate plugin manifests only. They do not install
+plugins, fetch remote registries, import plugin modules, execute plugin code,
+call Procore, call external AI/model APIs, or enable agent/MCP execution.
+
 ## Scheduled Export Planning
 
 Phase 9B adds local-only scheduled export planning commands for enterprise

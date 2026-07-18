@@ -10,6 +10,10 @@ billing, and project-management resources. The published stable release remains
 `2.2.0`; Phase 10A through Phase 10E remain branch-only until a future release
 is cut.
 
+Phase 11A plugin manifests may describe future async extension categories, but
+they are metadata-only and do not execute async plugin code. See
+[Plugin Architecture](plugins.md).
+
 ## What this does
 
 `AsyncProcore` is an additive, read-oriented client for scalable workflows such

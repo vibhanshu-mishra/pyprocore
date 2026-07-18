@@ -76,6 +76,10 @@ responses or local dry-runs and make no live Procore calls.
 Examples `169` through `176` cover unreleased Phase 10E async financial,
 contract, billing, and project-management read coverage. They use local mock
 responses or local dry-runs and make no live Procore calls.
+Examples `177` through `184` cover unreleased Phase 11A plugin architecture
+metadata, registry, validation, CLI patterns, and safety boundaries. They do
+not install plugins, execute plugin code, call Procore, or call external
+AI/model APIs.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -418,6 +422,14 @@ The current example set runs from `01_list_companies.py` through
 | `174_async_project_management_exports.py` | Export mock project-management resources asynchronously |
 | `175_async_financial_safety_boundaries.py` | Print Phase 10E financial safety boundaries |
 | `176_phase10e_async_coverage_summary.py` | Summarize Phase 10E async coverage safety boundaries |
+| `177_plugin_manifest_quickstart.py` | Create and validate a metadata-only plugin manifest |
+| `178_plugin_registry_list_and_show.py` | List and show safe built-in plugin manifests |
+| `179_plugin_validation.py` | Validate safe and unsafe plugin manifest dictionaries |
+| `180_plugin_capability_discovery.py` | Find plugin manifests by capability |
+| `181_plugin_cli_patterns.py` | Print safe plugin CLI command patterns |
+| `182_plugin_safety_boundaries.py` | Summarize Phase 11A plugin safety boundaries |
+| `183_plugin_export_manifest.py` | Export the plugin registry manifest to a temporary file |
+| `184_phase11a_plugin_architecture_summary.py` | Summarize Phase 11A plugin architecture foundation |
 
 Sample scheduled export configs live in `examples/configs/`:
 
@@ -512,4 +524,8 @@ Sample webhook payloads live in `examples/webhooks/`:
   mock transports or dry-run manifests, do not call Procore, do not modify
   financial/contract/project-management data, and keep agent/MCP execution
   disabled.
+- Examples `177` through `184` are local plugin metadata examples. They do not
+  install plugins, fetch remote registries, import arbitrary plugin modules,
+  execute plugin code, call Procore, call external AI/model APIs, or enable
+  agent/MCP execution.
 - Keep secrets out of code, screenshots, logs, and issue reports.

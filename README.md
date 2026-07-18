@@ -23,7 +23,7 @@ Current repository status:
   export/download patterns, Phase 10C async multi-project batch helpers, and
   Phase 10D async field, operations, correspondence, and directory coverage,
   plus Phase 10E async financial, contract, billing, and project-management
-  read coverage
+  read coverage, plus Phase 11A metadata-only plugin architecture foundation
 - Procore tool execution remains disabled
 
 ```bash
@@ -50,6 +50,8 @@ PyProcore turns Procore REST API responses into typed Python objects and gives y
 - Read additional field, operations, correspondence, and directory resources through the unreleased async client.
 - Read financial, contract, billing, and project-management resources through
   the unreleased async client.
+- Inspect metadata-only plugin manifests through the unreleased Phase 11A
+  plugin architecture foundation.
 - Use CLI diagnostics and automation commands without hardcoding credentials.
 - Expose local agent metadata, OpenAPI/JSON Schema, run logs, replay, MCP discovery, and deterministic evals for future assistant integrations.
 
@@ -252,6 +254,25 @@ Phase 10E is additive and read-only. It does not add approvals, submissions,
 status changes, payment actions, budget edits, contract edits, schedule imports,
 form submissions, action-plan completions, external AI/model calls, agent
 execution, or MCP execution.
+
+### Phase 11A Plugin Architecture Foundation
+
+Prepared in the current unreleased branch:
+
+- metadata-only plugin manifests
+- safe local plugin registry
+- built-in example manifests for future exporter, workflow, validator, report,
+  agent metadata, and MCP metadata extension categories
+- local manifest validation
+- `procore-sdk plugins list`
+- `procore-sdk plugins show NAME`
+- `procore-sdk plugins manifest`
+- `procore-sdk plugins sample-manifest`
+- `procore-sdk plugins validate PATH`
+
+Phase 11A does not install plugins, fetch remote registries, import arbitrary
+plugin modules, execute plugin code, call Procore, call external AI/model APIs,
+or enable agent/MCP execution. See [Plugin Architecture](docs/plugins.md).
 
 ### Phase 7 Agent Layer
 

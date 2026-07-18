@@ -26,6 +26,7 @@ assistant integrations. Tool execution remains disabled.
 - Build local project context packages for review workflows.
 - Prepare model-agnostic local AI workflow prompts, checklists, and vector manifests.
 - Use the unreleased async client foundation for read-oriented workflows.
+- Inspect unreleased metadata-only plugin manifests for future extension packs.
 - Export CSV, JSONL, Markdown, and manifest files.
 - Run repeatable workflow plans from local JSON files.
 - Inspect a local agent tool registry, local HTTP discovery API, OpenAPI export, JSON Schema export, MCP-style discovery metadata, opt-in run logs, and deterministic agent evals for future assistant integrations.
@@ -43,6 +44,7 @@ assistant integrations. Tool execution remains disabled.
 - [Async Client](async-client.md), including unreleased Phase 10A async reads,
   Phase 10B async export/download patterns, and Phase 10C async batch helpers
 - [Agent API](agent-api.md)
+- [Plugin Architecture](plugins.md)
 - [Project Status](project-status.md)
 - [Security](security.md)
 - [Automation](automation.md)

@@ -320,6 +320,11 @@ OpenAPI and schema exports are local metadata. They do not:
 - include access tokens, refresh tokens, client secrets, or authorization headers
 - enable MCP tool execution
 
+Phase 11A plugin manifests may describe future `agent_metadata` or
+`mcp_metadata` capabilities, but those manifests are also metadata-only. They
+do not install plugins, import plugin modules, execute plugin code, or enable
+agent/MCP execution.
+
 ## Safety Model
 
 Each tool declares whether it:

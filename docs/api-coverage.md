@@ -216,6 +216,15 @@ actions, budget edits, contract edits, schedule imports, form submissions, or
 action-plan completions, does not enable agent or MCP execution, and uses
 mocked/local tests instead of live Procore calls.
 
+## Phase 11A Plugin Architecture Notes
+
+Phase 11A does not add new Procore endpoint coverage. It adds a metadata-only
+plugin architecture foundation for future extension packs, custom workflows,
+exporters, validators, reports, integration adapters, agent metadata, and MCP
+metadata. Plugin manifests are validated locally and do not install plugins,
+fetch remote registries, import arbitrary modules, execute plugin code, call
+Procore, call external AI/model APIs, or enable agent/MCP execution.
+
 ## Live Verification Notes
 
 Procore access varies by environment, company, project, app connection, and user

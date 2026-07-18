@@ -195,6 +195,24 @@ edits, contract edits, schedule imports, form submissions, action-plan
 completions, Procore mutations, external AI/model calls, agent execution, or
 MCP execution are added.
 
+### Phase 11A — Plugin Architecture Foundation
+
+Implemented in the current branch and not yet published:
+
+- Metadata-only plugin manifest models
+- Safe local plugin registry
+- Local manifest validation
+- Built-in example manifests for future exporter, workflow, validator, report,
+  agent metadata, and MCP metadata extension categories
+- CLI commands for `plugins list`, `plugins show`, `plugins manifest`,
+  `plugins sample-manifest`, and `plugins validate`
+- Placeholder/local examples 177–184
+
+Focus: plugin architecture foundation only. No plugin installation, remote
+registry fetching, arbitrary plugin imports, plugin code execution, Procore
+mutations, live Procore calls, external AI/model calls, agent execution, or MCP
+execution are added.
+
 ### Phase 8A — Expanded Procore API Coverage
 
 Implemented in the current branch and not yet published:
@@ -334,12 +352,12 @@ Planned features:
 - Async attachment extraction helpers across more Procore payload shapes
 - Large-project performance improvements
 
-### Phase 10 — Plugin Architecture
+### Future Controlled Plugin Hooks
 
 Planned features:
 
-- Plugin registration
-- Custom tool registration
+- Explicit extension hook execution design
+- Custom tool metadata registration
 - Custom exporters
 - Custom package builders
 - Custom workflow steps

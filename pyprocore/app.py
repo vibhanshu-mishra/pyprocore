@@ -77,6 +77,16 @@ from pyprocore.core.exceptions import (
     ResourceNotFoundError,
     ValidationError,
 )
+from pyprocore.plugins import (
+    PluginCapability,
+    PluginManifest,
+    PluginRegistry,
+    PluginRegistryManifest,
+    PluginValidationResult,
+    discover_plugins,
+    load_local_plugin_manifest_file,
+    validate_plugin_manifest,
+)
 from pyprocore.services import (
     download_document,
     download_drawing,
@@ -823,6 +833,44 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Exit nonzero when eval warnings are present",
     )
+
+    plugins_parser = subcommands.add_parser(
+        "plugins",
+        help="Inspect safe metadata-only plugin manifests",
+    )
+    plugins_subcommands = plugins_parser.add_subparsers(dest="plugins_command", required=True)
+    plugins_list_parser = plugins_subcommands.add_parser(
+        "list",
+        help="List registered metadata-only plugins",
+    )
+    plugins_list_parser.add_argument("--json", dest="json_output", action="store_true")
+    plugins_list_parser.add_argument("--pretty", action="store_true")
+    plugins_show_parser = plugins_subcommands.add_parser(
+        "show",
+        help="Show one metadata-only plugin manifest",
+    )
+    plugins_show_parser.add_argument("name")
+    plugins_show_parser.add_argument("--json", dest="json_output", action="store_true")
+    plugins_show_parser.add_argument("--pretty", action="store_true")
+    plugins_manifest_parser = plugins_subcommands.add_parser(
+        "manifest",
+        help="Export the safe plugin registry manifest",
+    )
+    plugins_manifest_parser.add_argument("--json", dest="json_output", action="store_true")
+    plugins_manifest_parser.add_argument("--pretty", action="store_true")
+    plugins_sample_parser = plugins_subcommands.add_parser(
+        "sample-manifest",
+        help="Print a placeholder plugin manifest",
+    )
+    plugins_sample_parser.add_argument("--json", dest="json_output", action="store_true")
+    plugins_sample_parser.add_argument("--pretty", action="store_true")
+    plugins_validate_parser = plugins_subcommands.add_parser(
+        "validate",
+        help="Validate a local JSON plugin manifest without executing plugin code",
+    )
+    plugins_validate_parser.add_argument("manifest_path", type=Path)
+    plugins_validate_parser.add_argument("--json", dest="json_output", action="store_true")
+    plugins_validate_parser.add_argument("--pretty", action="store_true")
 
     subcommands.add_parser("companies", help="List companies")
 
@@ -3180,6 +3228,21 @@ def run_command(args: argparse.Namespace) -> Any:
             )
         raise ValueError(f"Unsupported agent command: {args.agent_command}")
 
+    if args.command == "plugins":
+        registry = build_default_plugin_registry()
+        if args.plugins_command == "list":
+            return registry.list_plugins()
+        if args.plugins_command == "show":
+            return registry.get_plugin(args.name)
+        if args.plugins_command == "manifest":
+            return registry.export_plugin_registry_manifest()
+        if args.plugins_command == "sample-manifest":
+            return sample_plugin_manifest()
+        if args.plugins_command == "validate":
+            plugin_manifest = load_local_plugin_manifest_file(args.manifest_path)
+            return validate_plugin_manifest(plugin_manifest)
+        raise ValueError(f"Unsupported plugins command: {args.plugins_command}")
+
     if args.command == "workflow-plan":
         if args.workflow_plan_command == "list":
             return list_available_workflows()
@@ -3224,8 +3287,8 @@ def run_command(args: argparse.Namespace) -> Any:
             return build_async_batch_dry_run_manifest(load_async_batch_plan(args.plan_path))
         if args.async_batch_command == "dry-run":
             if args.write_manifest is not None:
-                manifest = build_async_batch_dry_run_manifest(args.plan_path)
-                return write_async_batch_manifest(manifest, args.write_manifest)
+                async_batch_manifest = build_async_batch_dry_run_manifest(args.plan_path)
+                return write_async_batch_manifest(async_batch_manifest, args.write_manifest)
             if args.json_output:
                 return build_async_batch_dry_run_manifest(args.plan_path)
             return explain_async_batch_plan(args.plan_path)
@@ -4911,6 +4974,39 @@ def to_serializable(value: Any) -> Any:
     return value
 
 
+def build_default_plugin_registry() -> PluginRegistry:
+    """Build a registry containing safe built-in plugin manifests."""
+    discovery = discover_plugins()
+    registry = PluginRegistry()
+    for manifest in discovery.discovered:
+        registry.register_plugin_manifest(manifest, source=discovery.source)
+    return registry
+
+
+def sample_plugin_manifest() -> PluginManifest:
+    """Return a placeholder plugin manifest for local experimentation."""
+    return PluginManifest(
+        name="example_exporter_plugin",
+        version="1.0.0",
+        description="Placeholder metadata for a future local exporter plugin.",
+        author="Your Name",
+        homepage="https://example.com/pyprocore-plugin",
+        capabilities=[PluginCapability.EXPORTER, PluginCapability.FORMATTER],
+        requires_pyprocore=">=2.2.0",
+        entry_points={"exporter": "example_package.exporters"},
+        tags=["example", "metadata-only"],
+        enabled_by_default=False,
+        supports_sync=True,
+        supports_async=False,
+        supports_agent_metadata=False,
+        supports_cli=True,
+        notes=[
+            "Phase 11A validates this metadata only.",
+            "No plugin code is installed, imported, or executed.",
+        ],
+    )
+
+
 def _webhook_filters_from_args(args: argparse.Namespace) -> dict[str, str | None]:
     """Return webhook event store filters from parsed CLI arguments."""
     return {
@@ -5210,6 +5306,72 @@ def format_agent_tools(tools: list[AgentTool]) -> str:
         return "No agent tools are registered."
     lines = [f"Registered agent tools: {len(tools)}"]
     lines.extend(f"- {tool.name}: {tool.title}" for tool in tools)
+    return "\n".join(lines)
+
+
+def format_plugins(plugins: list[PluginManifest]) -> str:
+    """Return a human-readable plugin manifest list."""
+    if not plugins:
+        return "No plugin manifests are registered."
+    lines = [f"Registered plugin manifests: {len(plugins)}"]
+    lines.extend(
+        f"- {plugin.name} {plugin.version}: {', '.join(item.value for item in plugin.capabilities)}"
+        for plugin in plugins
+    )
+    lines.append("Mode: metadata only; no plugin code is installed, imported, or executed.")
+    return "\n".join(lines)
+
+
+def format_plugin(plugin: PluginManifest) -> str:
+    """Return a human-readable plugin manifest summary."""
+    lines = [
+        f"{plugin.name} {plugin.version}",
+        f"Description: {plugin.description}",
+        f"Safety: {plugin.safety_level.value}",
+        f"Capabilities: {', '.join(item.value for item in plugin.capabilities)}",
+        f"Requires PyProcore: {plugin.requires_pyprocore or 'not specified'}",
+        f"Supports sync: {plugin.supports_sync}",
+        f"Supports async: {plugin.supports_async}",
+        f"Supports agent metadata: {plugin.supports_agent_metadata}",
+        f"Supports CLI metadata: {plugin.supports_cli}",
+        "Mode: metadata only; no plugin code is installed, imported, or executed.",
+    ]
+    if plugin.homepage:
+        lines.insert(3, f"Homepage: {plugin.homepage}")
+    if plugin.notes:
+        lines.append("Notes:")
+        lines.extend(f"- {note}" for note in plugin.notes)
+    return "\n".join(lines)
+
+
+def format_plugin_registry_manifest(manifest: PluginRegistryManifest) -> str:
+    """Return a human-readable plugin registry manifest summary."""
+    return "\n".join(
+        [
+            "PyProcore plugin registry manifest.",
+            f"Schema version: {manifest.schema_version}",
+            f"Plugins: {manifest.plugin_count}",
+            f"Mode: {manifest.mode}",
+            "No plugin code is installed, imported, or executed.",
+        ]
+    )
+
+
+def format_plugin_validation(result: PluginValidationResult) -> str:
+    """Return a human-readable plugin validation result."""
+    lines = [
+        "Plugin manifest validation complete.",
+        f"Valid: {result.valid}",
+        "Mode: metadata validation only; no plugin code was executed.",
+    ]
+    if result.errors:
+        lines.append("Errors:")
+        lines.extend(f"- {error}" for error in result.errors)
+    if result.warnings:
+        lines.append("Warnings:")
+        lines.extend(f"- {warning}" for warning in result.warnings)
+    if result.manifest is not None:
+        lines.append(f"Plugin: {result.manifest.name} {result.manifest.version}")
     return "\n".join(lines)
 
 
@@ -5679,6 +5841,32 @@ def main() -> None:
         else:
             print(format_agent_tools(result))
         return
+
+    if args.command == "plugins":
+        if isinstance(result, list):
+            if args.json_output or getattr(args, "pretty", False):
+                print(json.dumps(to_serializable(result), indent=2, default=str))
+            else:
+                print(format_plugins(result))
+            return
+        if isinstance(result, PluginManifest):
+            if args.json_output or getattr(args, "pretty", False):
+                print(json.dumps(to_serializable(result), indent=2, default=str))
+            else:
+                print(format_plugin(result))
+            return
+        if isinstance(result, PluginRegistryManifest):
+            if args.json_output or getattr(args, "pretty", False):
+                print(json.dumps(to_serializable(result), indent=2, default=str))
+            else:
+                print(format_plugin_registry_manifest(result))
+            return
+        if isinstance(result, PluginValidationResult):
+            if args.json_output or getattr(args, "pretty", False):
+                print(json.dumps(to_serializable(result), indent=2, default=str))
+            else:
+                print(format_plugin_validation(result))
+            raise SystemExit(0 if result.valid else 1)
 
     if args.command == "workflow-plan" and args.workflow_plan_command == "list":
         if args.json_output:
