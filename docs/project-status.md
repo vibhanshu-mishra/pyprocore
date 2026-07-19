@@ -133,6 +133,13 @@ commands, docs, and examples for local artifacts. It evaluates saved/local
 structures only and does not call Procore, call external AI/model APIs, execute
 plugins, fetch remote datasets, upload reports, or enable tool/MCP execution.
 
+Phase 13B adds workflow-specific golden eval suites for RFIs, submittals, async
+exports, async batch manifests, AI workflow packages, plugin metadata/configs,
+and safety boundaries. It remains local and deterministic, uses placeholder
+fixtures only, and does not call Procore, call external AI/model APIs, execute
+plugins, fetch remote datasets, load arbitrary code, upload reports, or enable
+tool/MCP execution.
+
 Phase 8A adds read-only SDK coverage for Observations, Punch Items, Generic
 Tools, and Generic Tool correspondence items. It includes service helpers,
 typed flexible models, search helpers, local CSV/JSONL exports, CLI commands,

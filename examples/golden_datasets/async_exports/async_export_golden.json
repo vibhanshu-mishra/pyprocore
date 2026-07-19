@@ -1,0 +1,45 @@
+{
+  "schema_version": "1",
+  "metadata": {
+    "name": "async_export_golden_file",
+    "description": "Placeholder async export golden dataset for local deterministic evals.",
+    "owner": "pyprocore",
+    "tags": ["phase13b", "async", "exports"],
+    "mode": "local_deterministic"
+  },
+  "cases": [
+    {
+      "id": "async_export_manifest_stays_under_output_dir",
+      "case_type": "async_export_manifest",
+      "description": "Async export manifest keeps output paths under the output directory.",
+      "input": {
+        "artifact_name": "sample_async_export_manifest",
+        "artifact": {
+          "name": "sample_async_export_manifest",
+          "resource": "rfis",
+          "output_path": "./exports/sample-async/rfis.jsonl",
+          "record_count": 2,
+          "warnings": [],
+          "errors": ["redacted sample warning only"],
+          "dry_run": true
+        }
+      },
+      "expected": {
+        "manifest_required_keys": [
+          "name",
+          "resource",
+          "output_path",
+          "record_count",
+          "warnings",
+          "errors",
+          "dry_run"
+        ],
+        "output_dir": "./exports/sample-async",
+        "output_paths": ["./exports/sample-async/rfis.jsonl"],
+        "required_values": {"dry_run": true},
+        "placeholder_only": true,
+        "no_secret_like_values": true
+      }
+    }
+  ]
+}

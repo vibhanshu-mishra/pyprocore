@@ -37,6 +37,18 @@ from pyprocore.evals.scoring import (
     row_count_score,
     safety_boundary_score,
 )
+from pyprocore.evals.workflow_scoring import (
+    allowed_capability_score,
+    allowed_hook_type_score,
+    expected_field_set_score,
+    forbidden_phrase_score,
+    manifest_status_score,
+    no_mutation_instruction_score,
+    no_secret_like_value_score,
+    path_within_output_dir_score,
+    placeholder_only_score,
+    required_phrase_score,
+)
 
 
 def list_builtin_eval_suites() -> list[EvalSuite]:
@@ -116,6 +128,50 @@ def run_eval_case(case: GoldenDatasetCase) -> EvalCaseResult:
                 case_id=case.id,
             )
         )
+    if expected.expected_fields:
+        scores.append(
+            expected_field_set_score(
+                artifact,
+                expected.expected_fields,
+                case_id=case.id,
+            )
+        )
+    if expected.required_phrases:
+        scores.append(required_phrase_score(artifact, expected.required_phrases, case_id=case.id))
+    if expected.forbidden_phrases:
+        scores.append(forbidden_phrase_score(artifact, expected.forbidden_phrases, case_id=case.id))
+    if expected.output_dir and expected.output_paths:
+        scores.append(
+            path_within_output_dir_score(
+                expected.output_dir,
+                expected.output_paths,
+                case_id=case.id,
+            )
+        )
+    if expected.manifest_status:
+        scores.append(manifest_status_score(artifact, expected.manifest_status, case_id=case.id))
+    if expected.allowed_capabilities:
+        scores.append(
+            allowed_capability_score(
+                artifact,
+                expected.allowed_capabilities,
+                case_id=case.id,
+            )
+        )
+    if expected.allowed_hook_types:
+        scores.append(
+            allowed_hook_type_score(
+                artifact,
+                expected.allowed_hook_types,
+                case_id=case.id,
+            )
+        )
+    if expected.placeholder_only:
+        scores.append(placeholder_only_score(artifact, case_id=case.id))
+    if expected.no_mutation_instructions:
+        scores.append(no_mutation_instruction_score(artifact, case_id=case.id))
+    if expected.no_secret_like_values:
+        scores.append(no_secret_like_value_score(artifact, case_id=case.id))
     scores.append(safety_boundary_score(artifact, case_id=case.id))
     return _case_result_from_scores(case, scores)
 

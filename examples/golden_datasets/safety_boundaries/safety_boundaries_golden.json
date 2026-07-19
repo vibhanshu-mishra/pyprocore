@@ -1,0 +1,39 @@
+{
+  "schema_version": "1",
+  "metadata": {
+    "name": "safety_boundaries_golden_file",
+    "description": "Placeholder safety-boundary golden dataset for local deterministic evals.",
+    "owner": "pyprocore",
+    "tags": ["phase13b", "safety"],
+    "mode": "local_deterministic"
+  },
+  "cases": [
+    {
+      "id": "agent_and_mcp_execution_remain_disabled",
+      "case_type": "safety_boundary",
+      "description": "Agent, MCP, plugin, model, and remote dataset execution stay disabled.",
+      "input": {
+        "artifact_name": "sample_safety_boundaries",
+        "artifact": {
+          "agent_tool_execution_enabled": false,
+          "mcp_execution_enabled": false,
+          "plugin_execution_from_config_enabled": false,
+          "remote_dataset_fetching_enabled": false,
+          "external_model_calls_enabled": false,
+          "mode": "local deterministic placeholder fixtures"
+        }
+      },
+      "expected": {
+        "required_values": {
+          "agent_tool_execution_enabled": false,
+          "mcp_execution_enabled": false,
+          "plugin_execution_from_config_enabled": false,
+          "remote_dataset_fetching_enabled": false,
+          "external_model_calls_enabled": false
+        },
+        "placeholder_only": true,
+        "no_secret_like_values": true
+      }
+    }
+  ]
+}

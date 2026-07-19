@@ -1,0 +1,40 @@
+{
+  "schema_version": "1",
+  "metadata": {
+    "name": "plugin_config_golden_file",
+    "description": "Placeholder plugin config golden dataset for local deterministic evals.",
+    "owner": "pyprocore",
+    "tags": ["phase13b", "plugins", "config"],
+    "mode": "local_deterministic"
+  },
+  "cases": [
+    {
+      "id": "plugin_config_is_metadata_only",
+      "case_type": "plugin_config",
+      "description": "Plugin config stores metadata and preferences only.",
+      "input": {
+        "artifact_name": "sample_plugin_config",
+        "artifact": {
+          "config_version": "1",
+          "enabled_plugins": ["sample_exporter"],
+          "hooks_enabled_from_config": false,
+          "preferences": {"default_output": "./exports/sample-plugin"}
+        }
+      },
+      "expected": {
+        "required_keys": [
+          "config_version",
+          "enabled_plugins",
+          "hooks_enabled_from_config"
+        ],
+        "required_values": {
+          "hooks_enabled_from_config": false
+        },
+        "output_dir": "./exports",
+        "output_paths": ["./exports/sample-plugin"],
+        "placeholder_only": true,
+        "no_secret_like_values": true
+      }
+    }
+  ]
+}

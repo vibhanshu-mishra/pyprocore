@@ -1,0 +1,49 @@
+{
+  "schema_version": "1",
+  "metadata": {
+    "name": "submittal_workflow_golden_file",
+    "description": "Placeholder submittal workflow golden dataset for local deterministic evals.",
+    "owner": "pyprocore",
+    "tags": ["phase13b", "submittals", "workflows"],
+    "mode": "local_deterministic"
+  },
+  "cases": [
+    {
+      "id": "submittal_export_rows_have_expected_fields",
+      "case_type": "export_rows",
+      "description": "Submittal export rows include stable workflow fields.",
+      "input": {
+        "artifact_name": "sample_submittal_export_rows",
+        "artifact": [
+          {
+            "id": "sample-submittal-001",
+            "number": "SUB-001",
+            "title": "Sample product data",
+            "status": "under_review",
+            "due_date": "2026-02-15",
+            "submitter": "Sample Submitter",
+            "reviewer": "Sample Reviewer",
+            "spec_section": "Sample Section 07 00 00",
+            "ball_in_court": "Sample Reviewer"
+          }
+        ]
+      },
+      "expected": {
+        "row_count": 1,
+        "expected_fields": [
+          "id",
+          "number",
+          "title",
+          "status",
+          "due_date",
+          "submitter",
+          "reviewer",
+          "spec_section",
+          "ball_in_court"
+        ],
+        "placeholder_only": true,
+        "no_secret_like_values": true
+      }
+    }
+  ]
+}

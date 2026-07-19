@@ -6,6 +6,7 @@ from typing import Any
 
 from pyprocore.evals.datasets import DATASET_SCHEMA_VERSION, load_golden_dataset_from_dict
 from pyprocore.evals.models import GoldenDataset
+from pyprocore.evals.workflow_suites import get_workflow_dataset_payloads
 
 
 def list_builtin_dataset_names() -> list[str]:
@@ -58,7 +59,7 @@ def _dataset(
 
 def _builtin_dataset_payloads() -> dict[str, dict[str, Any]]:
     """Return static safe built-in dataset payloads."""
-    return {
+    payloads = {
         "golden_agent_manifest_basic": _dataset(
             "golden_agent_manifest_basic",
             "Validate a placeholder agent manifest shape.",
@@ -257,3 +258,5 @@ def _builtin_dataset_payloads() -> dict[str, dict[str, Any]]:
             tags=["safety"],
         ),
     }
+    payloads.update(get_workflow_dataset_payloads())
+    return payloads

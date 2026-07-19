@@ -97,6 +97,12 @@ Examples `209` through `218` cover unreleased Phase 13A local deterministic
 golden datasets and eval reports. They validate local artifacts only and do not
 call Procore, call external AI/model APIs, execute plugins, fetch remote
 datasets, or enable tool/MCP execution.
+Examples `219` through `228` cover unreleased Phase 13B workflow-specific
+golden eval suites for RFI, submittal, async export, async batch, AI workflow,
+plugin metadata/config, and safety-boundary artifacts. They use placeholder
+fixtures only and do not call Procore, call external AI/model APIs, execute
+plugins, fetch remote datasets, load arbitrary code, or enable tool/MCP
+execution.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -202,6 +208,8 @@ python3 examples/139_ai_workflow_safety_checklist.py
 python3 examples/161_async_observations_and_punch_items.py
 python3 examples/164_async_directory_resources.py
 python3 examples/168_phase10d_async_coverage_summary.py
+python3 examples/219_eval_rfi_workflow_suite.py
+python3 examples/225_eval_safety_boundary_suite.py
 ```
 
 Documents use Procore's Project Folders and Files endpoints internally. Before a
@@ -259,7 +267,7 @@ make examples-check
 ## Example Index
 
 The current example set runs from `01_list_companies.py` through
-`168_phase10d_async_coverage_summary.py`.
+`228_phase13b_workflow_eval_summary.py`.
 
 | File | Demonstrates |
 | ---- | ------------ |
@@ -481,6 +489,16 @@ The current example set runs from `01_list_companies.py` through
 | `216_eval_report_generation.py` | Write local JSON and Markdown eval reports to a temporary folder |
 | `217_eval_safety_boundaries.py` | Demonstrate deterministic safety-boundary checks |
 | `218_phase13a_eval_summary.py` | Summarize Phase 13A golden eval capabilities and limits |
+| `219_eval_rfi_workflow_suite.py` | Run the local RFI workflow golden eval suite |
+| `220_eval_submittal_workflow_suite.py` | Run the local submittal workflow golden eval suite |
+| `221_eval_async_export_suite.py` | Run the local async export golden eval suite |
+| `222_eval_async_batch_suite.py` | Run the local async batch golden eval suite |
+| `223_eval_ai_workflow_suite.py` | Run the local AI workflow package golden eval suite |
+| `224_eval_plugin_suite.py` | Run local plugin metadata and config golden eval suites |
+| `225_eval_safety_boundary_suite.py` | Run the local safety-boundary golden eval suite |
+| `226_eval_suite_filtering.py` | List workflow-specific eval suites and run one by name |
+| `227_eval_workflow_report.py` | Generate a local Markdown report for workflow-specific evals |
+| `228_phase13b_workflow_eval_summary.py` | Summarize Phase 13B workflow-specific golden eval support |
 
 Sample golden datasets live in `examples/golden_datasets/`:
 
@@ -493,6 +511,14 @@ Sample golden datasets live in `examples/golden_datasets/`:
 | `golden_plugin_manifest_basic.json` | Metadata-only plugin manifest checks |
 | `golden_plugin_config_basic.json` | Metadata-only plugin config checks |
 | `golden_safety_boundaries_basic.json` | Local deterministic safety-boundary checks |
+| `rfi_workflows/rfi_workflow_golden.json` | RFI workflow golden checks |
+| `submittal_workflows/submittal_workflow_golden.json` | Submittal workflow golden checks |
+| `async_exports/async_export_golden.json` | Async export manifest checks |
+| `async_batch/async_batch_golden.json` | Async batch plan checks |
+| `ai_workflows/ai_workflow_package_golden.json` | AI workflow package checks |
+| `plugins/plugin_metadata_golden.json` | Plugin metadata checks |
+| `plugins/plugin_config_golden.json` | Plugin config checks |
+| `safety_boundaries/safety_boundaries_golden.json` | Cross-SDK safety-boundary checks |
 
 Sample scheduled export configs live in `examples/configs/`:
 
@@ -621,4 +647,8 @@ Sample webhook payloads live in `examples/webhooks/`:
   They do not call Procore, call external AI/model APIs, execute plugins, fetch
   remote datasets, upload reports, load arbitrary code, or enable tool/MCP
   execution.
+- Examples `219` through `228` are local workflow-specific golden eval
+  examples. They use placeholder fixtures only and do not call Procore, call
+  external AI/model APIs, execute plugins, fetch remote datasets, load
+  arbitrary code, upload reports, or enable tool/MCP execution.
 - Keep secrets out of code, screenshots, logs, and issue reports.

@@ -291,6 +291,29 @@ calls, plugin execution, MCP execution, remote dataset fetching, dataset
 upload, arbitrary code loading, Procore tool execution, or Procore writes are
 added.
 
+### Phase 13B — Workflow-Specific Golden Eval Suites
+
+Implemented in the current branch and not yet published:
+
+- RFI workflow evals for export rows, package context, and grounded prompt
+  packages.
+- Submittal workflow evals for export rows, review package context, and
+  human-review prompt boundaries.
+- Async export and async batch evals for row shape, manifest integrity,
+  dry-run flags, partial failures, and output path boundaries.
+- AI workflow package evals for local prompt packages, context manifests,
+  safety checklists, and vector-export metadata.
+- Plugin metadata/config evals for metadata-only manifests, allowed
+  capabilities, hook metadata, config preferences, and extension packs.
+- Safety-boundary evals for disabled tool/MCP/plugin/model/remote dataset
+  execution.
+- Examples 219–228 and sample workflow golden dataset files.
+
+Focus: deterministic local workflow fixtures only. No live Procore calls,
+external AI/model calls, plugin execution, MCP execution, remote dataset
+fetching, dataset upload, arbitrary code loading, Procore tool execution, or
+Procore writes are added.
+
 ### Phase 8A — Expanded Procore API Coverage
 
 Implemented in the current branch and not yet published:

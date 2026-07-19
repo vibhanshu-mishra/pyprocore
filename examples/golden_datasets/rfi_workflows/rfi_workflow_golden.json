@@ -1,0 +1,45 @@
+{
+  "schema_version": "1",
+  "metadata": {
+    "name": "rfi_workflow_golden_file",
+    "description": "Placeholder RFI workflow golden dataset for local deterministic evals.",
+    "owner": "pyprocore",
+    "tags": ["phase13b", "rfis", "workflows"],
+    "mode": "local_deterministic"
+  },
+  "cases": [
+    {
+      "id": "rfi_export_rows_have_expected_fields",
+      "case_type": "export_rows",
+      "description": "RFI export rows include stable workflow fields.",
+      "input": {
+        "artifact_name": "sample_rfi_export_rows",
+        "artifact": [
+          {
+            "id": "sample-rfi-001",
+            "number": "RFI-001",
+            "title": "Sample coordination question",
+            "status": "open",
+            "responsible_contractor": "Sample Contractor",
+            "assignee": "Sample Reviewer",
+            "due_date": "2026-01-15"
+          }
+        ]
+      },
+      "expected": {
+        "row_count": 1,
+        "expected_fields": [
+          "id",
+          "number",
+          "title",
+          "status",
+          "responsible_contractor",
+          "assignee",
+          "due_date"
+        ],
+        "placeholder_only": true,
+        "no_secret_like_values": true
+      }
+    }
+  ]
+}

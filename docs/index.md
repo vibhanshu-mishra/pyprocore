@@ -48,7 +48,7 @@ assistant integrations. Tool execution remains disabled.
   includes metadata-only manifests, local hooks, JSON configs, extension packs,
   and unreleased local plugin developer scaffolding.
 - [Golden Evals](evals.md), including unreleased Phase 13A local deterministic
-  datasets, scoring helpers, and JSON/Markdown reports.
+  datasets and Phase 13B workflow-specific eval suites.
 - Safe local plugin hooks are documented in the plugin architecture guide.
 - Plugin configuration and local extension-pack metadata are documented in the
   plugin architecture guide.

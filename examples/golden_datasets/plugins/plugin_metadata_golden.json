@@ -1,0 +1,43 @@
+{
+  "schema_version": "1",
+  "metadata": {
+    "name": "plugin_metadata_golden_file",
+    "description": "Placeholder plugin metadata golden dataset for local deterministic evals.",
+    "owner": "pyprocore",
+    "tags": ["phase13b", "plugins", "metadata"],
+    "mode": "local_deterministic"
+  },
+  "cases": [
+    {
+      "id": "plugin_manifest_uses_allowed_capabilities",
+      "case_type": "plugin_manifest",
+      "description": "Plugin manifest uses allowed metadata-only capabilities.",
+      "input": {
+        "artifact_name": "sample_plugin_manifest",
+        "artifact": {
+          "name": "sample_exporter",
+          "version": "0.1.0",
+          "description": "Sample metadata-only export extension.",
+          "capabilities": ["exporter", "formatter"],
+          "safety_level": "metadata_only",
+          "enabled_by_default": false,
+          "hooks": [{"name": "format_rows", "type": "metadata"}]
+        }
+      },
+      "expected": {
+        "manifest_required_keys": [
+          "name",
+          "version",
+          "description",
+          "capabilities",
+          "safety_level"
+        ],
+        "allowed_capabilities": ["exporter", "formatter", "validator"],
+        "allowed_hook_types": ["metadata", "local_registered_callable"],
+        "required_values": {"enabled_by_default": false},
+        "placeholder_only": true,
+        "no_secret_like_values": true
+      }
+    }
+  ]
+}

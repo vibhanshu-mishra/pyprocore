@@ -254,12 +254,12 @@ Scaffolding creates static files only and does not call Procore, install
 plugins, fetch remote resources, load generated code, execute hooks, add write
 actions, or enable agent/MCP execution.
 
-## Phase 13A Golden Eval Notes
+## Phase 13 Golden Eval Notes
 
-Phase 13A does not add new Procore endpoint coverage. It adds local golden
-dataset schemas, deterministic scoring helpers, built-in placeholder datasets,
-an eval runner, reports, examples, and CLI commands for checking local
-artifacts.
+Phase 13A and Phase 13B do not add new Procore endpoint coverage. They add
+local golden dataset schemas, deterministic scoring helpers, built-in
+placeholder datasets, workflow-specific eval suites, reports, examples, and CLI
+commands for checking local artifacts.
 
 Golden evals inspect local JSON-like structures only. They do not call Procore,
 call external AI/model APIs, execute tools, execute plugins, fetch remote

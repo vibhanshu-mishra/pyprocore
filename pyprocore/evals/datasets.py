@@ -114,6 +114,7 @@ def validate_golden_dataset(dataset: GoldenDataset) -> list[EvalFinding]:
         if isinstance(expected, dict):
             expected["does_not_contain_text"] = []
             expected["forbidden_keys"] = []
+            expected["forbidden_phrases"] = []
         _scan_value(payload, findings, case_id=case.id)
     return findings or [
         EvalFinding(

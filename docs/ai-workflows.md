@@ -6,8 +6,8 @@ choose their own model stack, review the data they want to share, and keep human
 review in the loop.
 
 The current published stable release remains `2.2.0`. Phase 8A through 8G,
-Phase 9A through 9D, Phase 12, and Phase 13A are unreleased branch work unless
-a later release publishes them.
+Phase 9A through 9D, Phase 12, Phase 13A, and Phase 13B are unreleased branch
+work unless a later release publishes them.
 
 ## What This Does
 

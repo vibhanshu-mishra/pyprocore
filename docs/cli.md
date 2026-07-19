@@ -162,12 +162,16 @@ code, execute hooks, call Procore, or enable agent/MCP execution.
 
 Phase 13A adds unreleased local deterministic eval commands for safe JSON-like
 artifacts such as export rows, agent metadata, AI workflow packages, async
-batch plans, and plugin metadata:
+batch plans, and plugin metadata. Phase 13B adds workflow-specific suites for
+RFI, submittal, async export, async batch, AI workflow, plugin metadata/config,
+and safety-boundary artifacts:
 
 ```bash
 procore-sdk evals list
 procore-sdk evals run
 procore-sdk evals run --suite golden_export_rows_basic
+procore-sdk evals run --suite rfi_workflow_golden
+procore-sdk evals run --suite safety_boundaries_golden
 procore-sdk evals validate-dataset examples/golden_datasets/golden_export_rows_basic.json
 procore-sdk evals report --format json
 procore-sdk evals sample-dataset

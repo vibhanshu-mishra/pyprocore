@@ -58,6 +58,9 @@ and this project follows semantic versioning.
 - Phase 13A golden dataset foundation with typed local dataset models, deterministic scoring helpers, built-in placeholder datasets, eval runners, and JSON/Markdown report builders.
 - `procore-sdk evals list`, `procore-sdk evals run`, `procore-sdk evals validate-dataset`, `procore-sdk evals report`, `procore-sdk evals sample-dataset`, and `procore-sdk evals sample-report`.
 - Examples 209–218 and sample golden dataset JSON files for local deterministic export, agent metadata, AI workflow package, async batch, plugin metadata, and safety-boundary evals.
+- Phase 13B workflow-specific golden eval suites for RFI workflows, submittal workflows, async exports, async batch manifests, AI workflow packages, plugin metadata/configs, and safety boundaries.
+- Workflow-specific deterministic scoring helpers for expected fields, required/forbidden phrases, output path boundaries, manifest status, mutation-instruction checks, placeholder-only fixtures, allowed plugin capabilities, and allowed hook metadata types.
+- Examples 219–228 and sample workflow golden dataset JSON files for local deterministic workflow evals.
 
 - Phase 8A read-only API coverage for Observations, Punch Items, and Generic Tool correspondence items.
 - Typed flexible models for `Observation`, `PunchItem`, `GenericTool`, and `Correspondence`.
@@ -106,6 +109,7 @@ and this project follows semantic versioning.
 - Phase 11B plugin hooks are explicit local callables only, do not install plugins, do not fetch remote registries, do not import arbitrary plugin modules, do not execute manifest metadata, do not call Procore or external AI/model APIs, do not add Procore write actions, and keep agent/MCP execution disabled.
 - Phase 11D scaffolding creates local templates only; it does not install plugins, fetch remote resources, auto-load modules, execute generated files, execute hooks from config, call Procore, call external AI/model APIs, add write actions, or enable agent/MCP execution.
 - Phase 13A golden evals are local deterministic artifact checks only; they do not call Procore, call external AI/model APIs, fetch or upload datasets, execute plugins, load arbitrary code, add Procore write actions, or enable agent/MCP execution.
+- Phase 13B workflow-specific golden evals remain local deterministic artifact checks only; they do not call Procore, call external AI/model APIs, fetch remote datasets, execute plugins, load arbitrary code, add Procore write actions, or enable agent/MCP execution.
 
 - Phase 8A remains read-only and does not add create/update/delete Procore actions.
 - Agent tool execution remains disabled; new Phase 8A agent entries are metadata only.

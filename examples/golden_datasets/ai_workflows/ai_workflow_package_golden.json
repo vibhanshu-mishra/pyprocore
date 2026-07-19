@@ -1,0 +1,49 @@
+{
+  "schema_version": "1",
+  "metadata": {
+    "name": "ai_workflow_package_golden_file",
+    "description": "Placeholder AI workflow package golden dataset for local deterministic evals.",
+    "owner": "pyprocore",
+    "tags": ["phase13b", "ai-workflows"],
+    "mode": "local_deterministic"
+  },
+  "cases": [
+    {
+      "id": "ai_package_has_expected_sections",
+      "case_type": "ai_workflow_package",
+      "description": "AI workflow package includes local context and safety sections.",
+      "input": {
+        "artifact_name": "sample_ai_workflow_package",
+        "artifact": {
+          "title": "Sample AI Review Package",
+          "purpose": "Prepare local project context for human review.",
+          "inputs": ["sample-rfis.jsonl"],
+          "context_documents": ["sample-specifications-index.json"],
+          "prompt_templates": [
+            {
+              "name": "grounded_review",
+              "text": "Use only provided context. Do not invent facts."
+            }
+          ],
+          "safety_checklist": ["Do not invent facts", "Cite source labels"],
+          "output_expectations": {"format": "markdown", "human_review_required": true}
+        }
+      },
+      "expected": {
+        "required_keys": [
+          "title",
+          "purpose",
+          "inputs",
+          "context_documents",
+          "prompt_templates",
+          "safety_checklist",
+          "output_expectations"
+        ],
+        "required_phrases": ["do not invent facts", "human_review_required"],
+        "placeholder_only": true,
+        "no_mutation_instructions": true,
+        "no_secret_like_values": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "schema_version": "1",
+  "metadata": {
+    "name": "async_batch_golden_file",
+    "description": "Placeholder async batch golden dataset for local deterministic evals.",
+    "owner": "pyprocore",
+    "tags": ["phase13b", "async", "batch"],
+    "mode": "local_deterministic"
+  },
+  "cases": [
+    {
+      "id": "batch_plan_is_dry_run_safe",
+      "case_type": "async_batch_plan",
+      "description": "Async batch plan uses placeholders and dry-run mode.",
+      "input": {
+        "artifact_name": "sample_async_batch_plan",
+        "artifact": {
+          "plan_name": "sample_nightly_batch",
+          "company_id": "placeholder-company",
+          "project_ids": ["placeholder-project-a"],
+          "resources": ["rfis", "submittals"],
+          "output_dir": "./exports/sample-batch",
+          "max_concurrency": 3,
+          "dry_run": true,
+          "continue_on_error": true
+        }
+      },
+      "expected": {
+        "required_keys": [
+          "company_id",
+          "project_ids",
+          "resources",
+          "output_dir",
+          "max_concurrency",
+          "dry_run"
+        ],
+        "required_values": {"dry_run": true, "continue_on_error": true},
+        "placeholder_only": true,
+        "no_secret_like_values": true
+      }
+    }
+  ]
+}

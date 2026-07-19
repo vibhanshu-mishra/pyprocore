@@ -18,6 +18,9 @@ class GoldenDatasetCaseType(str, Enum):
     AGENT_MANIFEST = "agent_manifest"
     AGENT_TOOL_SCHEMA = "agent_tool_schema"
     AI_WORKFLOW_PACKAGE = "ai_workflow_package"
+    RFI_WORKFLOW_PACKAGE = "rfi_workflow_package"
+    SUBMITTAL_WORKFLOW_PACKAGE = "submittal_workflow_package"
+    ASYNC_EXPORT_MANIFEST = "async_export_manifest"
     ASYNC_BATCH_PLAN = "async_batch_plan"
     ASYNC_BATCH_MANIFEST = "async_batch_manifest"
     PLUGIN_MANIFEST = "plugin_manifest"
@@ -74,6 +77,17 @@ class GoldenDatasetExpectedOutput(ProcoreModel):
     json_serializable: bool = True
     redaction_required: bool = True
     manifest_required_keys: list[str] = Field(default_factory=list)
+    expected_fields: list[str] = Field(default_factory=list)
+    required_phrases: list[str] = Field(default_factory=list)
+    forbidden_phrases: list[str] = Field(default_factory=list)
+    output_dir: str | None = None
+    output_paths: list[str] = Field(default_factory=list)
+    manifest_status: str | None = None
+    allowed_capabilities: list[str] = Field(default_factory=list)
+    allowed_hook_types: list[str] = Field(default_factory=list)
+    placeholder_only: bool = False
+    no_mutation_instructions: bool = False
+    no_secret_like_values: bool = False
 
 
 class GoldenDatasetCase(ProcoreModel):
