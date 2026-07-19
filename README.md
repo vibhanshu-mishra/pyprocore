@@ -24,7 +24,8 @@ Current repository status:
   Phase 10D async field, operations, correspondence, and directory coverage,
   plus Phase 10E async financial, contract, billing, and project-management
   read coverage, plus Phase 11A metadata-only plugin architecture foundation
-  and Phase 11B safe local plugin extension hooks
+  and Phase 11B safe local plugin extension hooks, plus Phase 11C plugin
+  configuration and local extension-pack manifests
 - Procore tool execution remains disabled
 
 ```bash
@@ -55,6 +56,8 @@ PyProcore turns Procore REST API responses into typed Python objects and gives y
   plugin architecture foundation.
 - Register trusted local plugin hooks explicitly in-process through the
   unreleased Phase 11B hook registry.
+- Validate JSON-only plugin configuration and extension-pack metadata through
+  the unreleased Phase 11C helpers.
 - Use CLI diagnostics and automation commands without hardcoding credentials.
 - Expose local agent metadata, OpenAPI/JSON Schema, run logs, replay, MCP discovery, and deterministic evals for future assistant integrations.
 
@@ -294,6 +297,29 @@ Prepared in the current unreleased branch:
 Phase 11B does not install plugins, fetch remote registries, import arbitrary
 modules, run manifest metadata as code, call Procore, call external AI/model
 APIs, add write actions, or enable agent/MCP execution. See
+[Plugin Architecture](docs/plugins.md).
+
+### Phase 11C Plugin Configuration and Local Extension Packs
+
+Prepared in the current unreleased branch:
+
+- JSON-only plugin configuration models
+- hook preference metadata
+- capability preference metadata
+- local extension-pack manifests
+- registry metadata filtering from config
+- `procore-sdk plugins config sample`
+- `procore-sdk plugins config validate PATH`
+- `procore-sdk plugins config summary PATH`
+- `procore-sdk plugins config manifest PATH`
+- `procore-sdk plugins extension-pack sample`
+- `procore-sdk plugins extension-pack validate PATH`
+- `procore-sdk plugins extension-pack summary PATH`
+
+Phase 11C config files and extension packs are metadata only. They do not
+install plugins, fetch remote resources, import modules, register executable
+callables, execute hooks, call Procore, call external AI/model APIs, add write
+actions, or enable agent/MCP execution. See
 [Plugin Architecture](docs/plugins.md).
 
 ### Phase 7 Agent Layer

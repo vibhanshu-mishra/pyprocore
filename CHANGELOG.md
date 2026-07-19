@@ -49,6 +49,9 @@ and this project follows semantic versioning.
 - Phase 11B safe local plugin extension hooks with typed hook metadata, sanitized hook contexts/results, explicit in-process hook registration, and built-in deterministic local hooks.
 - `procore-sdk plugins hooks`, `procore-sdk plugins hook-manifest`, `procore-sdk plugins sample-hook-manifest`, `procore-sdk plugins run-sample-validator`, and `procore-sdk plugins run-sample-formatter`.
 - Examples 185–192 for local-only plugin hook quickstarts, validators, formatters, transformers, hook manifests, and safety boundaries.
+- Phase 11C plugin configuration and local extension-pack manifest support with JSON-only metadata models, safe validation, registry metadata filtering, and no config-driven execution.
+- `procore-sdk plugins config sample`, `procore-sdk plugins config validate`, `procore-sdk plugins config summary`, `procore-sdk plugins config manifest`, `procore-sdk plugins extension-pack sample`, `procore-sdk plugins extension-pack validate`, and `procore-sdk plugins extension-pack summary`.
+- Examples 193–200 and sample JSON config files for local plugin preferences, hook preferences, extension-pack manifests, and safety boundaries.
 
 - Phase 8A read-only API coverage for Observations, Punch Items, and Generic Tool correspondence items.
 - Typed flexible models for `Observation`, `PunchItem`, `GenericTool`, and `Correspondence`.
@@ -88,6 +91,7 @@ and this project follows semantic versioning.
 - Phase 9D enterprise readiness checks are local-only, do not call Procore or external AI/model APIs, do not install schedules, do not add hosted infrastructure, and keep tool execution disabled and MCP discovery-only.
 - Phase 12 AI workflow helpers and examples are local-only, model-agnostic, do not call Procore or external AI/model APIs, do not add required AI framework/vector database dependencies, and keep tool execution disabled and MCP discovery-only.
 - Phase 10A async support is read-oriented, mocked in tests/examples, does not add Procore write actions, keeps agent tool execution disabled, and keeps MCP discovery-only.
+- Phase 11C plugin configuration files and extension-pack manifests are JSON metadata only; they do not install plugins, fetch remote resources, import modules, register callables, execute hooks, call Procore, call external AI/model APIs, or enable agent/MCP execution.
 - Phase 10B async exports and download helpers are read-only, local-file-only, mocked in tests/examples, do not add upload or Procore mutation actions, keep agent tool execution disabled, and keep MCP discovery-only.
 - Phase 10C async batch helpers are read-only, mocked/local in tests/examples, do not add upload or Procore mutation actions, keep agent tool execution disabled, and keep MCP discovery-only.
 - Phase 10D async field, operations, correspondence, and directory helpers are read-only, mocked/local in tests/examples, do not add Procore mutation actions, keep agent tool execution disabled, and keep MCP discovery-only.

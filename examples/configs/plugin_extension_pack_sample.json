@@ -1,0 +1,39 @@
+{
+  "schema_version": "1",
+  "name": "starter_export_pack",
+  "version": "1.0.0",
+  "description": "Metadata-only starter bundle for local export helpers.",
+  "author": "PyProcore",
+  "included_plugins": [
+    {
+      "plugin_name": "csv_exporter_plugin",
+      "required": false
+    },
+    {
+      "plugin_name": "jsonl_exporter_plugin",
+      "required": false
+    }
+  ],
+  "included_hooks": [
+    {
+      "hook_name": "validate_required_fields",
+      "plugin_name": "enterprise_readiness_plugin",
+      "hook_type": "validator",
+      "description": "Validate required local record fields before export."
+    }
+  ],
+  "capabilities": [
+    "exporter",
+    "validator"
+  ],
+  "tags": [
+    "example",
+    "metadata-only"
+  ],
+  "notes": [
+    "Extension packs are descriptive metadata only.",
+    "This manifest does not load, register, or execute plugin code."
+  ],
+  "safety_level": "metadata_only",
+  "requires_pyprocore": ">=2.2.0"
+}

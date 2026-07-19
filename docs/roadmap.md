@@ -230,6 +230,26 @@ fetching, arbitrary plugin imports, manifest-driven execution, Procore
 mutations, live Procore calls, external AI/model calls, agent execution, or MCP
 execution are added.
 
+### Phase 11C — Plugin Configuration and Local Extension Packs
+
+Implemented in the current branch and not yet published:
+
+- JSON-only plugin configuration models
+- Hook preference and capability preference metadata
+- Local extension-pack manifest models
+- Safe config and extension-pack validation helpers
+- Metadata filtering for registered plugin manifests
+- CLI commands for `plugins config sample`, `plugins config validate`,
+  `plugins config summary`, `plugins config manifest`,
+  `plugins extension-pack sample`, `plugins extension-pack validate`, and
+  `plugins extension-pack summary`
+- Placeholder/local examples 193–200 and sample JSON config files
+
+Focus: plugin configuration metadata only. No plugin installation, remote
+registry fetching, arbitrary plugin imports, config-driven execution,
+extension-pack execution, Procore mutations, live Procore calls, external
+AI/model calls, agent execution, or MCP execution are added.
+
 ### Phase 8A — Expanded Procore API Coverage
 
 Implemented in the current branch and not yet published:

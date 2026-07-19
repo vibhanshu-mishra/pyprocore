@@ -15,7 +15,9 @@
   export/download patterns, Phase 10C async multi-project batch helpers, and
   Phase 10D async field/operations/correspondence/directory coverage, plus
   Phase 10E async financial/contract/billing/project-management read coverage,
-  plus Phase 11A metadata-only plugin architecture foundation.
+  plus Phase 11A metadata-only plugin architecture foundation, Phase 11B safe
+  local plugin extension hooks, and Phase 11C plugin configuration/local
+  extension-pack manifests.
   The package remains `2.2.0`; this branch work is unpublished.
 
 ## Current Stable Release: 2.2.0
@@ -109,6 +111,13 @@ formatters, transformers, exporters, and reports for local data only. Manifest
 hook metadata does not execute code, and no remote loading, plugin installation,
 Procore writes, live API calls, external AI/model calls, agent execution, or MCP
 execution are added.
+
+Phase 11C adds JSON-only plugin configuration and local extension-pack manifest
+support. Config files can describe enabled plugin metadata, capability
+preferences, hook preferences, and extension-pack metadata. They do not install
+plugins, fetch remote resources, import modules, register callables, execute
+hooks, call Procore, call external AI/model APIs, add write actions, or enable
+agent/MCP execution.
 
 Phase 8A adds read-only SDK coverage for Observations, Punch Items, Generic
 Tools, and Generic Tool correspondence items. It includes service helpers,

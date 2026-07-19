@@ -173,6 +173,83 @@ for review:
 procore-sdk plugins hook-manifest --json
 ```
 
+## Plugin Configuration Files
+
+Phase 11C adds safe JSON plugin configuration files as unreleased branch work.
+These files store preferences only:
+
+- enabled and disabled plugin metadata names
+- enabled and disabled capability categories
+- hook preference metadata
+- local extension-pack names
+- tags, notes, and a metadata-only safety policy
+
+Example:
+
+```json
+{
+  "config_version": "1",
+  "enabled_plugins": ["csv_exporter_plugin"],
+  "enabled_capabilities": ["exporter"],
+  "hook_preferences": [
+    {
+      "hook_name": "validate_required_fields",
+      "hook_type": "validator",
+      "enabled": true
+    }
+  ],
+  "safety_policy": "metadata_only"
+}
+```
+
+Validate and summarize config locally:
+
+```bash
+procore-sdk plugins config sample --json
+procore-sdk plugins config validate examples/configs/plugin_config_minimal.json
+procore-sdk plugins config summary examples/configs/plugin_config_hooks.json
+procore-sdk plugins config manifest examples/configs/plugin_config_enterprise.json
+```
+
+The config manifest command applies preferences to registered plugin metadata
+only. It does not install, import, fetch, register, or execute plugin code.
+
+## Local Extension-Pack Manifests
+
+Extension packs are JSON metadata bundles. They can describe related plugin
+manifests, hook metadata, capabilities, tags, and notes:
+
+```json
+{
+  "schema_version": "1",
+  "name": "starter_export_pack",
+  "version": "1.0.0",
+  "description": "Metadata-only bundle for local export helpers.",
+  "included_plugins": [{"plugin_name": "csv_exporter_plugin"}],
+  "included_hooks": [
+    {
+      "hook_name": "validate_required_fields",
+      "plugin_name": "enterprise_readiness_plugin",
+      "hook_type": "validator",
+      "description": "Validate required local record fields."
+    }
+  ],
+  "capabilities": ["exporter", "validator"],
+  "safety_level": "metadata_only"
+}
+```
+
+Inspect extension-pack metadata locally:
+
+```bash
+procore-sdk plugins extension-pack sample --json
+procore-sdk plugins extension-pack validate examples/configs/plugin_extension_pack_sample.json
+procore-sdk plugins extension-pack summary examples/configs/plugin_extension_pack_ai_workflows.json
+```
+
+Extension packs cannot execute hooks, register callables, import modules,
+install packages, fetch remote resources, or call Procore.
+
 ## What Phase 11B Does Not Do
 
 - It does not enable remote plugin installation.
@@ -184,7 +261,22 @@ procore-sdk plugins hook-manifest --json
 - It does not enable MCP execution.
 - It does not call external AI/model APIs.
 
+## What Phase 11C Does Not Do
+
+- It does not support YAML or Python config files.
+- It does not allow config files to point to executable Python code.
+- It does not auto-load plugins from arbitrary paths.
+- It does not install packages.
+- It does not fetch remote plugin registries.
+- It does not dynamically import modules.
+- It does not execute hooks from config.
+- It does not register callables from extension-pack manifests.
+- It does not add Procore write actions.
+- It does not enable agent tool execution.
+- It does not enable MCP execution.
+- It does not call external AI/model APIs.
+
 ## Future Work
 
 Future phases may add stricter signed or trusted plugin loading, but Phase 11B
-stays local and explicit.
+and Phase 11C stay local, explicit, and metadata-first.

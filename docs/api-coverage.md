@@ -235,6 +235,16 @@ explicitly registers a callable. No remote plugin installs, plugin fetching,
 arbitrary imports, Procore writes, live API calls, external AI/model calls,
 agent execution, or MCP execution are added.
 
+## Phase 11C Plugin Config Notes
+
+Phase 11C does not add new Procore endpoint coverage. It adds JSON-only plugin
+configuration models, local extension-pack manifests, safe validation, and
+metadata filtering for registered plugin manifests and hook preferences.
+Configuration files and extension-pack manifests are descriptive metadata only:
+they do not install plugins, fetch remote resources, import modules, register
+callables, execute hooks, call Procore, call external AI/model APIs, add write
+actions, or enable agent/MCP execution.
+
 ## Live Verification Notes
 
 Procore access varies by environment, company, project, app connection, and user

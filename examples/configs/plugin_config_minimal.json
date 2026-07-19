@@ -1,0 +1,18 @@
+{
+  "config_version": "1",
+  "enabled_plugins": [
+    "csv_exporter_plugin"
+  ],
+  "enabled_capabilities": [
+    "exporter"
+  ],
+  "tags": [
+    "example",
+    "metadata-only"
+  ],
+  "notes": [
+    "Minimal plugin configuration example.",
+    "This file stores preferences only and does not execute plugin code."
+  ],
+  "safety_policy": "metadata_only"
+}

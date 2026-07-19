@@ -1,0 +1,38 @@
+{
+  "config_version": "1",
+  "enabled_plugins": [
+    "enterprise_readiness_plugin"
+  ],
+  "enabled_capabilities": [
+    "validator",
+    "formatter"
+  ],
+  "hook_preferences": [
+    {
+      "hook_name": "validate_required_fields",
+      "hook_type": "validator",
+      "enabled": true,
+      "priority": 10,
+      "options": {
+        "required_fields": [
+          "id",
+          "name"
+        ]
+      },
+      "notes": [
+        "Preference metadata only; this does not register or run a hook."
+      ]
+    },
+    {
+      "hook_name": "format_records_as_summary",
+      "hook_type": "formatter",
+      "enabled": true,
+      "priority": 20
+    }
+  ],
+  "tags": [
+    "hooks",
+    "metadata-only"
+  ],
+  "safety_policy": "metadata_only"
+}

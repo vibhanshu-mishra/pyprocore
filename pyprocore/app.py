@@ -79,6 +79,11 @@ from pyprocore.core.exceptions import (
 )
 from pyprocore.plugins import (
     PluginCapability,
+    PluginConfig,
+    PluginConfigSummary,
+    PluginConfigValidationResult,
+    PluginExtensionPack,
+    PluginExtensionPackValidationResult,
     PluginHookMetadata,
     PluginHookRegistry,
     PluginHookRegistryManifest,
@@ -90,7 +95,14 @@ from pyprocore.plugins import (
     PluginValidationResult,
     builtin_hook_registry,
     discover_plugins,
+    export_extension_pack_template,
+    export_plugin_config_template,
+    load_extension_pack_manifest_from_file,
     load_local_plugin_manifest_file,
+    load_plugin_config_from_file,
+    merge_plugin_config_with_registry_metadata,
+    validate_extension_pack_manifest,
+    validate_plugin_config,
     validate_plugin_manifest,
 )
 from pyprocore.services import (
@@ -908,6 +920,69 @@ def build_parser() -> argparse.ArgumentParser:
     )
     plugins_sample_formatter_parser.add_argument("--json", dest="json_output", action="store_true")
     plugins_sample_formatter_parser.add_argument("--pretty", action="store_true")
+    plugins_config_parser = plugins_subcommands.add_parser(
+        "config",
+        help="Inspect safe JSON plugin configuration metadata",
+    )
+    plugins_config_subcommands = plugins_config_parser.add_subparsers(
+        dest="plugins_config_command",
+        required=True,
+    )
+    plugins_config_sample_parser = plugins_config_subcommands.add_parser(
+        "sample",
+        help="Print a safe plugin config template",
+    )
+    plugins_config_sample_parser.add_argument("--json", dest="json_output", action="store_true")
+    plugins_config_sample_parser.add_argument("--pretty", action="store_true")
+    plugins_config_validate_parser = plugins_config_subcommands.add_parser(
+        "validate",
+        help="Validate a local JSON plugin config without executing code",
+    )
+    plugins_config_validate_parser.add_argument("config_path", type=Path)
+    plugins_config_validate_parser.add_argument("--json", dest="json_output", action="store_true")
+    plugins_config_validate_parser.add_argument("--pretty", action="store_true")
+    plugins_config_summary_parser = plugins_config_subcommands.add_parser(
+        "summary",
+        help="Summarize a local JSON plugin config without executing code",
+    )
+    plugins_config_summary_parser.add_argument("config_path", type=Path)
+    plugins_config_summary_parser.add_argument("--json", dest="json_output", action="store_true")
+    plugins_config_summary_parser.add_argument("--pretty", action="store_true")
+    plugins_config_manifest_parser = plugins_config_subcommands.add_parser(
+        "manifest",
+        help="Apply plugin config preferences to registered metadata",
+    )
+    plugins_config_manifest_parser.add_argument("config_path", type=Path)
+    plugins_config_manifest_parser.add_argument("--json", dest="json_output", action="store_true")
+    plugins_config_manifest_parser.add_argument("--pretty", action="store_true")
+    plugins_pack_parser = plugins_subcommands.add_parser(
+        "extension-pack",
+        help="Inspect safe local extension-pack metadata",
+    )
+    plugins_pack_subcommands = plugins_pack_parser.add_subparsers(
+        dest="plugins_extension_pack_command",
+        required=True,
+    )
+    plugins_pack_sample_parser = plugins_pack_subcommands.add_parser(
+        "sample",
+        help="Print a safe extension-pack template",
+    )
+    plugins_pack_sample_parser.add_argument("--json", dest="json_output", action="store_true")
+    plugins_pack_sample_parser.add_argument("--pretty", action="store_true")
+    plugins_pack_validate_parser = plugins_pack_subcommands.add_parser(
+        "validate",
+        help="Validate a local JSON extension-pack manifest",
+    )
+    plugins_pack_validate_parser.add_argument("extension_pack_path", type=Path)
+    plugins_pack_validate_parser.add_argument("--json", dest="json_output", action="store_true")
+    plugins_pack_validate_parser.add_argument("--pretty", action="store_true")
+    plugins_pack_summary_parser = plugins_pack_subcommands.add_parser(
+        "summary",
+        help="Summarize a local JSON extension-pack manifest",
+    )
+    plugins_pack_summary_parser.add_argument("extension_pack_path", type=Path)
+    plugins_pack_summary_parser.add_argument("--json", dest="json_output", action="store_true")
+    plugins_pack_summary_parser.add_argument("--pretty", action="store_true")
 
     subcommands.add_parser("companies", help="List companies")
 
@@ -3298,6 +3373,32 @@ def run_command(args: argparse.Namespace) -> Any:
                 "format_records_as_summary",
                 sample_hook_records(),
             )
+        if args.plugins_command == "config":
+            if args.plugins_config_command == "sample":
+                return export_plugin_config_template()
+            config = load_plugin_config_from_file(args.config_path)
+            if args.plugins_config_command == "validate":
+                return validate_plugin_config(config)
+            if args.plugins_config_command == "summary":
+                return config
+            if args.plugins_config_command == "manifest":
+                return merge_plugin_config_with_registry_metadata(
+                    config,
+                    registry.list_plugins(),
+                )
+            raise ValueError(f"Unsupported plugins config command: {args.plugins_config_command}")
+        if args.plugins_command == "extension-pack":
+            if args.plugins_extension_pack_command == "sample":
+                return export_extension_pack_template()
+            extension_pack = load_extension_pack_manifest_from_file(args.extension_pack_path)
+            if args.plugins_extension_pack_command == "validate":
+                return validate_extension_pack_manifest(extension_pack)
+            if args.plugins_extension_pack_command == "summary":
+                return extension_pack
+            raise ValueError(
+                "Unsupported plugins extension-pack command: "
+                f"{args.plugins_extension_pack_command}"
+            )
         raise ValueError(f"Unsupported plugins command: {args.plugins_command}")
 
     if args.command == "workflow-plan":
@@ -5494,6 +5595,103 @@ def format_plugin_validation(result: PluginValidationResult) -> str:
     return "\n".join(lines)
 
 
+def format_plugin_config(config: PluginConfig) -> str:
+    """Return a human-readable plugin config summary."""
+    lines = [
+        "PyProcore plugin configuration.",
+        f"Config version: {config.config_version}",
+        f"Safety policy: {config.safety_policy}",
+        f"Enabled plugins: {len(config.enabled_plugins)}",
+        f"Disabled plugins: {len(config.disabled_plugins)}",
+        f"Hook preferences: {len(config.hook_preferences)}",
+        f"Extension packs: {len(config.extension_packs)}",
+        "Mode: metadata only; no plugin code is loaded, imported, or executed.",
+    ]
+    if config.enabled_capabilities:
+        lines.append(
+            "Enabled capabilities: "
+            + ", ".join(capability.value for capability in config.enabled_capabilities)
+        )
+    if config.notes:
+        lines.append("Notes:")
+        lines.extend(f"- {note}" for note in config.notes)
+    return "\n".join(lines)
+
+
+def format_plugin_config_validation(result: PluginConfigValidationResult) -> str:
+    """Return a human-readable plugin config validation result."""
+    lines = [
+        "Plugin config validation complete.",
+        f"Valid: {result.valid}",
+        "Mode: JSON metadata validation only; no plugin code was executed.",
+    ]
+    if result.errors:
+        lines.append("Errors:")
+        lines.extend(f"- {error}" for error in result.errors)
+    if result.warnings:
+        lines.append("Warnings:")
+        lines.extend(f"- {warning}" for warning in result.warnings)
+    return "\n".join(lines)
+
+
+def format_plugin_config_manifest(summary: PluginConfigSummary) -> str:
+    """Return a human-readable configured plugin metadata summary."""
+    lines = [
+        "Configured plugin metadata summary.",
+        f"Config version: {summary.config_version}",
+        f"Matched plugins: {len(summary.matched_plugins)}",
+        f"Unmatched names: {len(summary.unmatched_plugins)}",
+        f"Hook preferences: {len(summary.hook_preferences)}",
+        f"Mode: {summary.mode}",
+    ]
+    if summary.matched_plugins:
+        lines.append("Matched plugins:")
+        lines.extend(f"- {name}" for name in summary.matched_plugins)
+    if summary.unmatched_plugins:
+        lines.append("Unmatched names:")
+        lines.extend(f"- {name}" for name in summary.unmatched_plugins)
+    return "\n".join(lines)
+
+
+def format_extension_pack(extension_pack: PluginExtensionPack) -> str:
+    """Return a human-readable extension-pack summary."""
+    lines = [
+        "PyProcore extension-pack manifest.",
+        f"Name: {extension_pack.name}",
+        f"Version: {extension_pack.version}",
+        f"Description: {extension_pack.description}",
+        f"Safety: {extension_pack.safety_level.value}",
+        f"Included plugins: {len(extension_pack.included_plugins)}",
+        f"Included hooks: {len(extension_pack.included_hooks)}",
+        "Mode: metadata only; no plugin code is loaded, registered, or executed.",
+    ]
+    if extension_pack.capabilities:
+        lines.append(
+            "Capabilities: "
+            + ", ".join(capability.value for capability in extension_pack.capabilities)
+        )
+    if extension_pack.notes:
+        lines.append("Notes:")
+        lines.extend(f"- {note}" for note in extension_pack.notes)
+    return "\n".join(lines)
+
+
+def format_extension_pack_validation(result: PluginExtensionPackValidationResult) -> str:
+    """Return a human-readable extension-pack validation result."""
+    lines = [
+        "Extension-pack validation complete.",
+        f"Valid: {result.valid}",
+        "Mode: JSON metadata validation only; no plugin code was executed.",
+    ]
+    if result.errors:
+        lines.append("Errors:")
+        lines.extend(f"- {error}" for error in result.errors)
+    if result.warnings:
+        lines.append("Warnings:")
+        lines.extend(f"- {warning}" for warning in result.warnings)
+    return "\n".join(lines)
+
+
 def format_plugin_hooks(hooks: list[PluginHookMetadata]) -> str:
     """Return a human-readable plugin hook metadata list."""
     if not hooks:
@@ -6047,6 +6245,36 @@ def main() -> None:
                 print(json.dumps(to_serializable(result), indent=2, default=str))
             else:
                 print(format_plugin_validation(result))
+            raise SystemExit(0 if result.valid else 1)
+        if isinstance(result, PluginConfig):
+            if args.json_output or getattr(args, "pretty", False):
+                print(json.dumps(to_serializable(result), indent=2, default=str))
+            else:
+                print(format_plugin_config(result))
+            return
+        if isinstance(result, PluginConfigValidationResult):
+            if args.json_output or getattr(args, "pretty", False):
+                print(json.dumps(to_serializable(result), indent=2, default=str))
+            else:
+                print(format_plugin_config_validation(result))
+            raise SystemExit(0 if result.valid else 1)
+        if isinstance(result, PluginConfigSummary):
+            if args.json_output or getattr(args, "pretty", False):
+                print(json.dumps(to_serializable(result), indent=2, default=str))
+            else:
+                print(format_plugin_config_manifest(result))
+            return
+        if isinstance(result, PluginExtensionPack):
+            if args.json_output or getattr(args, "pretty", False):
+                print(json.dumps(to_serializable(result), indent=2, default=str))
+            else:
+                print(format_extension_pack(result))
+            return
+        if isinstance(result, PluginExtensionPackValidationResult):
+            if args.json_output or getattr(args, "pretty", False):
+                print(json.dumps(to_serializable(result), indent=2, default=str))
+            else:
+                print(format_extension_pack_validation(result))
             raise SystemExit(0 if result.valid else 1)
         if isinstance(result, PluginHookResult):
             if args.json_output or getattr(args, "pretty", False):

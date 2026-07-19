@@ -1,0 +1,40 @@
+{
+  "schema_version": "1",
+  "name": "ai_workflow_metadata_pack",
+  "version": "1.0.0",
+  "description": "Metadata-only bundle for AI-ready workflow planning examples.",
+  "author": "PyProcore",
+  "included_plugins": [
+    {
+      "plugin_name": "ai_workflow_prompt_pack_plugin",
+      "required": false
+    },
+    {
+      "plugin_name": "async_batch_plugin",
+      "required": false
+    }
+  ],
+  "included_hooks": [
+    {
+      "hook_name": "build_basic_quality_report",
+      "plugin_name": "enterprise_readiness_plugin",
+      "hook_type": "report",
+      "description": "Describe local record quality metadata without calling AI services."
+    }
+  ],
+  "capabilities": [
+    "workflow",
+    "report",
+    "agent_metadata"
+  ],
+  "tags": [
+    "ai-workflows",
+    "metadata-only"
+  ],
+  "notes": [
+    "This pack describes local AI workflow metadata only.",
+    "It does not call external AI providers or Procore APIs."
+  ],
+  "safety_level": "metadata_only",
+  "requires_pyprocore": ">=2.2.0"
+}

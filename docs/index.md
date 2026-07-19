@@ -46,6 +46,8 @@ assistant integrations. Tool execution remains disabled.
 - [Agent API](agent-api.md)
 - [Plugin Architecture](plugins.md)
 - Safe local plugin hooks are documented in the plugin architecture guide.
+- Plugin configuration and local extension-pack metadata are documented in the
+  plugin architecture guide.
 - [Project Status](project-status.md)
 - [Security](security.md)
 - [Automation](automation.md)

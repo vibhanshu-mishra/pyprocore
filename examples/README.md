@@ -84,6 +84,10 @@ Examples `185` through `192` cover unreleased Phase 11B safe local plugin
 extension hooks. They use explicit in-process registration or built-in
 deterministic hooks only and do not install plugins, fetch remote registries,
 call Procore, call external AI/model APIs, or enable agent/MCP execution.
+Examples `193` through `200` cover unreleased Phase 11C plugin configuration
+and local extension-pack manifests. They read JSON metadata only and do not
+install plugins, fetch remote resources, load plugin code, execute hooks, call
+Procore, call external AI/model APIs, or enable agent/MCP execution.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -442,6 +446,14 @@ The current example set runs from `01_list_companies.py` through
 | `190_hook_manifest_export.py` | Export the hook registry manifest as JSON |
 | `191_plugin_hook_safety_boundaries.py` | Summarize Phase 11B hook safety boundaries |
 | `192_phase11b_plugin_hooks_summary.py` | Summarize Phase 11B safe local hook support |
+| `193_plugin_config_quickstart.py` | Create and validate a safe plugin config template |
+| `194_plugin_config_validation.py` | Validate a local JSON plugin config file |
+| `195_plugin_config_summary.py` | Summarize config preferences against built-in metadata |
+| `196_extension_pack_manifest.py` | Create a safe extension-pack manifest template |
+| `197_extension_pack_validation.py` | Validate a local JSON extension-pack manifest |
+| `198_plugin_config_hook_preferences.py` | Inspect hook preferences without executing hooks |
+| `199_plugin_config_safety_boundaries.py` | Summarize Phase 11C config safety boundaries |
+| `200_phase11c_plugin_config_summary.py` | Summarize Phase 11C plugin config support |
 
 Sample scheduled export configs live in `examples/configs/`:
 
@@ -453,6 +465,11 @@ Sample scheduled export configs live in `examples/configs/`:
 | `async_batch_multi_project.json` | Placeholder async multi-project export plan |
 | `async_batch_dry_run.json` | Local-only async batch dry-run validation plan |
 | `async_batch_enterprise_export.json` | Placeholder enterprise async batch export pattern |
+| `plugin_config_minimal.json` | Minimal metadata-only plugin config |
+| `plugin_config_hooks.json` | Hook preference metadata config |
+| `plugin_config_enterprise.json` | Enterprise-style plugin metadata preferences |
+| `plugin_extension_pack_sample.json` | Starter extension-pack manifest metadata |
+| `plugin_extension_pack_ai_workflows.json` | AI workflow extension-pack metadata |
 
 Sample workflow plans live in `examples/workflow_plans/`:
 
@@ -544,4 +561,8 @@ Sample webhook payloads live in `examples/webhooks/`:
   install plugins, fetch remote registries, import arbitrary plugin modules,
   execute manifest metadata, call Procore, call external AI/model APIs, or
   enable agent/MCP execution.
+- Examples `193` through `200` are local plugin config and extension-pack
+  examples. They read JSON metadata only, do not install plugins, do not fetch
+  remote resources, do not load arbitrary plugin code, do not execute hooks,
+  do not call Procore, and keep agent/MCP execution disabled.
 - Keep secrets out of code, screenshots, logs, and issue reports.

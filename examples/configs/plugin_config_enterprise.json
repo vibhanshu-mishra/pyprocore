@@ -1,0 +1,29 @@
+{
+  "config_version": "1",
+  "enabled_plugins": [
+    "enterprise_readiness_plugin",
+    "ai_workflow_prompt_pack_plugin",
+    "async_batch_plugin"
+  ],
+  "disabled_plugins": [],
+  "enabled_capabilities": [
+    "validator",
+    "report",
+    "workflow",
+    "agent_metadata"
+  ],
+  "disabled_capabilities": [],
+  "extension_packs": [
+    "enterprise_metadata_pack"
+  ],
+  "tags": [
+    "enterprise",
+    "local",
+    "metadata-only"
+  ],
+  "notes": [
+    "Enterprise-style metadata preferences for local planning.",
+    "No plugin installation, remote fetching, or hook execution is performed."
+  ],
+  "safety_policy": "metadata_only"
+}

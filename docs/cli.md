@@ -127,6 +127,22 @@ Hook commands do not install plugins, fetch remote registries, import arbitrary
 modules, call Procore, or enable agent/MCP execution. The sample run commands
 use only built-in deterministic sample data and built-in hooks.
 
+Phase 11C adds JSON-only plugin config and extension-pack metadata commands:
+
+```bash
+procore-sdk plugins config sample --json
+procore-sdk plugins config validate examples/configs/plugin_config_minimal.json
+procore-sdk plugins config summary examples/configs/plugin_config_hooks.json
+procore-sdk plugins config manifest examples/configs/plugin_config_enterprise.json
+procore-sdk plugins extension-pack sample --json
+procore-sdk plugins extension-pack validate examples/configs/plugin_extension_pack_sample.json
+procore-sdk plugins extension-pack summary examples/configs/plugin_extension_pack_ai_workflows.json
+```
+
+Config and extension-pack commands validate or summarize JSON metadata only.
+They do not install plugins, fetch remote resources, import modules, register
+callables, execute hooks, call Procore, or enable agent/MCP execution.
+
 ## Scheduled Export Planning
 
 Phase 9B adds local-only scheduled export planning commands for enterprise
