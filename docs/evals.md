@@ -370,3 +370,7 @@ Phase 13D does not call model providers, use model-as-judge grading, fetch
 remote fixture data, upload reports, execute plugins, execute MCP, execute
 Procore tools, or verify anything against live Procore. It scores saved local
 fixtures only.
+
+Phase 15A exposes eval suite and sample-report metadata through discovery-only
+MCP resources. Reading these resources does not run evals, call Procore, call
+models, fetch remote datasets, upload reports, or enable MCP execution.

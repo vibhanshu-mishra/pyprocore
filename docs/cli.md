@@ -73,6 +73,25 @@ python3 scripts/check_ai_workflow_safety.py
 These scripts use placeholder/local data only. They do not call Procore,
 external AI/model APIs, MCP execution, or Procore tool execution.
 
+## MCP Discovery
+
+Phase 15A adds unreleased top-level MCP discovery commands:
+
+```bash
+procore-sdk mcp manifest
+procore-sdk mcp resources
+procore-sdk mcp resource pyprocore://agent/manifest
+procore-sdk mcp prompts
+procore-sdk mcp prompt rfi_review_prompt
+procore-sdk mcp capabilities
+procore-sdk mcp safety
+procore-sdk mcp stdio-discovery
+```
+
+These commands print local metadata only. They do not require credentials, call
+Procore, call external AI/model APIs, execute plugins, execute MCP tools, or
+perform uploads, writes, approvals, submissions, status changes, or payments.
+
 ## Async Client
 
 Phase 10A through Phase 10D add the unreleased `AsyncProcore` Python client

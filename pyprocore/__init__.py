@@ -1,5 +1,11 @@
 """Python SDK for the Procore REST API."""
 
+from pyprocore.agent import build_mcp_capability_definitions  # noqa: F401
+from pyprocore.agent import build_mcp_safety_boundaries  # noqa: F401
+from pyprocore.agent import build_mcp_stdio_discovery  # noqa: F401
+from pyprocore.agent import export_mcp_capabilities_json  # noqa: F401
+from pyprocore.agent import export_mcp_safety_json  # noqa: F401
+from pyprocore.agent import read_mcp_prompt  # noqa: F401
 from pyprocore.agent import (
     AgentEvalCase,
     AgentEvalCaseResult,
@@ -251,6 +257,32 @@ from pyprocore.evals import (  # noqa: F401
     write_eval_report_markdown,
     write_regression_report_json,
     write_regression_report_markdown,
+)
+from pyprocore.mcp import (  # noqa: F401
+    McpCapabilitySummary,
+    McpDiscoveryManifest,
+    McpPrompt,
+    McpPromptArgument,
+    McpPromptKind,
+    McpResource,
+    McpResourceKind,
+    McpResourceTemplate,
+    McpSafetyBoundary,
+    McpServerInfo,
+    McpToolSummary,
+    build_mcp_capability_summary,
+    build_mcp_discovery_manifest,
+    build_mcp_resource_templates,
+    build_mcp_tool_summary,
+    disabled_mcp_execution_response,
+    get_mcp_prompt,
+    get_mcp_resource,
+    list_mcp_prompts,
+    list_mcp_resources,
+    mcp_manifest_to_json,
+    read_mcp_resource_payload,
+    safe_mcp_prompt_not_found,
+    safe_mcp_resource_not_found,
 )
 from pyprocore.plugins import (  # noqa: F401
     PLUGIN_CONFIG_SCHEMA_VERSION,
@@ -1490,5 +1522,40 @@ __all__.extend(
         "validate_golden_dataset",
         "write_eval_report_json",
         "write_eval_report_markdown",
+    ]
+)
+
+__all__.extend(
+    [
+        "McpCapabilitySummary",
+        "McpDiscoveryManifest",
+        "McpPrompt",
+        "McpPromptArgument",
+        "McpPromptKind",
+        "McpResource",
+        "McpResourceKind",
+        "McpResourceTemplate",
+        "McpSafetyBoundary",
+        "McpServerInfo",
+        "McpToolSummary",
+        "build_mcp_capability_definitions",
+        "build_mcp_capability_summary",
+        "build_mcp_discovery_manifest",
+        "build_mcp_resource_templates",
+        "build_mcp_safety_boundaries",
+        "build_mcp_stdio_discovery",
+        "build_mcp_tool_summary",
+        "disabled_mcp_execution_response",
+        "export_mcp_capabilities_json",
+        "export_mcp_safety_json",
+        "get_mcp_prompt",
+        "get_mcp_resource",
+        "list_mcp_prompts",
+        "list_mcp_resources",
+        "mcp_manifest_to_json",
+        "read_mcp_prompt",
+        "read_mcp_resource_payload",
+        "safe_mcp_prompt_not_found",
+        "safe_mcp_resource_not_found",
     ]
 )

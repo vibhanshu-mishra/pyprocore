@@ -11,11 +11,14 @@ import sys
 from typing import Any, TextIO
 
 from pyprocore.agent.mcp import (
+    build_mcp_capability_definitions,
     build_mcp_prompt_definitions,
     build_mcp_resource_definitions,
     build_mcp_server_info,
+    build_mcp_stdio_discovery,
     build_mcp_tool_definitions,
     build_mcp_tool_execution_disabled_response,
+    read_mcp_prompt,
     read_mcp_resource,
 )
 
@@ -94,10 +97,14 @@ def _handle_line(line: str) -> JsonObject | None:
 def _dispatch_method(method: str, params: JsonObject) -> JsonObject:
     """Dispatch one supported discovery-only method."""
     if method == "initialize":
+        server_info = build_mcp_server_info()
         return {
             "protocolVersion": "2024-11-05",
-            "serverInfo": build_mcp_server_info(),
-            "capabilities": build_mcp_server_info()["capabilities"],
+            "serverInfo": server_info,
+            "capabilities": server_info["capabilities"],
+            "resources": build_mcp_resource_definitions(),
+            "prompts": build_mcp_prompt_definitions(),
+            "capabilitySummary": build_mcp_capability_definitions(),
         }
     if method == "ping":
         return {}
@@ -117,6 +124,15 @@ def _dispatch_method(method: str, params: JsonObject) -> JsonObject:
         return read_mcp_resource(uri)
     if method == "prompts/list":
         return {"prompts": build_mcp_prompt_definitions()}
+    if method == "prompts/get":
+        name = params.get("name")
+        if not isinstance(name, str) or not name:
+            raise ValueError("prompts/get requires a non-empty string 'name' parameter.")
+        return read_mcp_prompt(name)
+    if method == "capabilities/get":
+        return build_mcp_capability_definitions()
+    if method == "discovery/get":
+        return build_mcp_stdio_discovery()
     raise NotImplementedError
 
 

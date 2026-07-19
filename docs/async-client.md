@@ -420,3 +420,6 @@ of the CLI for this phase.
 - Agent tool execution remains disabled.
 - MCP remains discovery-only.
 - Agent evals remain local and deterministic.
+
+Phase 15A MCP discovery includes an async capability resource so MCP clients can
+inspect async read/export coverage without credentials or live API calls.

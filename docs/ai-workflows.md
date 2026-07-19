@@ -28,6 +28,10 @@ PyProcore does not:
 
 Tool execution remains disabled. MCP remains discovery-only.
 
+Phase 15A adds MCP prompt templates for AI workflow planning and review. These
+templates are local text metadata only; PyProcore does not call external models
+or execute MCP tools.
+
 ## Safe Workflow Pattern
 
 1. Export or read Procore data with existing read-only SDK workflows.

@@ -15,6 +15,11 @@ PyProcore `2.2.0` includes the completed Phase 7 Agent Layer: local discovery,
 schema, replay, MCP discovery, and deterministic eval infrastructure for future
 assistant integrations. Tool execution remains disabled.
 
+Unreleased Phase 15A branch work adds richer discovery-only MCP resources,
+prompt templates, capability summaries, and stdio-friendly discovery metadata.
+It does not enable MCP execution, Procore tool execution, plugin execution, live
+Procore calls, or external model calls.
+
 ## What PyProcore Can Do
 
 - Authenticate with Procore using OAuth.
@@ -44,6 +49,7 @@ assistant integrations. Tool execution remains disabled.
 - [Async Client](async-client.md), including unreleased Phase 10A async reads,
   Phase 10B async export/download patterns, and Phase 10C async batch helpers
 - [Agent API](agent-api.md)
+- [MCP Discovery](mcp.md)
 - [Plugin Architecture](plugins.md)
   includes metadata-only manifests, local hooks, JSON configs, extension packs,
   and unreleased local plugin developer scaffolding.

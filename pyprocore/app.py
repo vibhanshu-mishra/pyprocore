@@ -20,14 +20,17 @@ from pyprocore.agent import (
     AgentTool,
     AgentToolNotFoundError,
     build_agent_manifest,
+    build_mcp_stdio_discovery,
     export_agent_eval_results_json,
     export_agent_openapi_json,
     export_agent_openapi_yaml,
     export_agent_run_bundle,
     export_agent_tool_schemas_json,
+    export_mcp_capabilities_json,
     export_mcp_manifest_json,
     export_mcp_prompts_json,
     export_mcp_resources_json,
+    export_mcp_safety_json,
     export_mcp_tools_json,
     format_agent_eval_summary,
     get_agent_eval_suite,
@@ -36,6 +39,8 @@ from pyprocore.agent import (
     list_agent_runs,
     list_agent_tools,
     load_agent_run,
+    read_mcp_prompt,
+    read_mcp_resource,
     replay_agent_run,
     run_agent_api_server,
     run_agent_eval_suite,
@@ -870,6 +875,76 @@ def build_parser() -> argparse.ArgumentParser:
         "stdio",
         help="Run the experimental discovery-only MCP stdio adapter",
     )
+
+    mcp_parser = subcommands.add_parser(
+        "mcp",
+        help="Inspect discovery-only MCP resources, prompts, and capabilities",
+    )
+    mcp_subcommands = mcp_parser.add_subparsers(dest="mcp_command", required=True)
+
+    mcp_manifest_parser = mcp_subcommands.add_parser(
+        "manifest",
+        help="Show the complete discovery-only MCP manifest",
+    )
+    mcp_manifest_parser.add_argument("--json", dest="json_output", action="store_true")
+    mcp_manifest_parser.add_argument("--pretty", action="store_true")
+    mcp_manifest_parser.add_argument("--output", type=Path, default=None)
+
+    mcp_resources_parser = mcp_subcommands.add_parser(
+        "resources",
+        help="List local MCP resources",
+    )
+    mcp_resources_parser.add_argument("--json", dest="json_output", action="store_true")
+    mcp_resources_parser.add_argument("--pretty", action="store_true")
+    mcp_resources_parser.add_argument("--output", type=Path, default=None)
+
+    mcp_resource_parser = mcp_subcommands.add_parser(
+        "resource",
+        help="Read one local MCP resource by URI",
+    )
+    mcp_resource_parser.add_argument("uri")
+    mcp_resource_parser.add_argument("--json", dest="json_output", action="store_true")
+    mcp_resource_parser.add_argument("--pretty", action="store_true")
+
+    mcp_prompts_parser = mcp_subcommands.add_parser(
+        "prompts",
+        help="List MCP prompt templates",
+    )
+    mcp_prompts_parser.add_argument("--json", dest="json_output", action="store_true")
+    mcp_prompts_parser.add_argument("--pretty", action="store_true")
+    mcp_prompts_parser.add_argument("--output", type=Path, default=None)
+
+    mcp_prompt_parser = mcp_subcommands.add_parser(
+        "prompt",
+        help="Show one MCP prompt template by name",
+    )
+    mcp_prompt_parser.add_argument("name")
+    mcp_prompt_parser.add_argument("--json", dest="json_output", action="store_true")
+    mcp_prompt_parser.add_argument("--pretty", action="store_true")
+
+    mcp_capabilities_parser = mcp_subcommands.add_parser(
+        "capabilities",
+        help="Show MCP discovery capability summary",
+    )
+    mcp_capabilities_parser.add_argument("--json", dest="json_output", action="store_true")
+    mcp_capabilities_parser.add_argument("--pretty", action="store_true")
+    mcp_capabilities_parser.add_argument("--output", type=Path, default=None)
+
+    mcp_safety_parser = mcp_subcommands.add_parser(
+        "safety",
+        help="Show MCP discovery safety boundaries",
+    )
+    mcp_safety_parser.add_argument("--json", dest="json_output", action="store_true")
+    mcp_safety_parser.add_argument("--pretty", action="store_true")
+    mcp_safety_parser.add_argument("--output", type=Path, default=None)
+
+    mcp_stdio_parser = mcp_subcommands.add_parser(
+        "stdio-discovery",
+        help="Show stdio-friendly discovery payload without starting a server",
+    )
+    mcp_stdio_parser.add_argument("--json", dest="json_output", action="store_true")
+    mcp_stdio_parser.add_argument("--pretty", action="store_true")
+    mcp_stdio_parser.add_argument("--output", type=Path, default=None)
 
     agent_evals_parser = agent_subcommands.add_parser(
         "evals",
@@ -3659,6 +3734,45 @@ def run_command(args: argparse.Namespace) -> Any:
                 run_id=args.run_id,
             )
         raise ValueError(f"Unsupported agent command: {args.agent_command}")
+
+    if args.command == "mcp":
+        if args.mcp_command == "manifest":
+            return _write_optional_output(
+                export_mcp_manifest_json(pretty=args.pretty),
+                args.output,
+            )
+        if args.mcp_command == "resources":
+            return _write_optional_output(
+                export_mcp_resources_json(pretty=args.pretty),
+                args.output,
+            )
+        if args.mcp_command == "resource":
+            return read_mcp_resource(args.uri)
+        if args.mcp_command == "prompts":
+            return _write_optional_output(
+                export_mcp_prompts_json(pretty=args.pretty),
+                args.output,
+            )
+        if args.mcp_command == "prompt":
+            return read_mcp_prompt(args.name)
+        if args.mcp_command == "capabilities":
+            return _write_optional_output(
+                export_mcp_capabilities_json(pretty=args.pretty),
+                args.output,
+            )
+        if args.mcp_command == "safety":
+            return _write_optional_output(
+                export_mcp_safety_json(pretty=args.pretty),
+                args.output,
+            )
+        if args.mcp_command == "stdio-discovery":
+            discovery_text = json.dumps(
+                build_mcp_stdio_discovery(),
+                indent=2 if args.pretty else None,
+                sort_keys=True,
+            )
+            return _write_optional_output(discovery_text, args.output)
+        raise ValueError(f"Unsupported MCP command: {args.mcp_command}")
 
     if args.command == "evals":
         if args.evals_command == "list":
@@ -6761,6 +6875,19 @@ def main() -> None:
                 print(f"MCP metadata written to: {result}")
             return
         print(result)
+        return
+
+    if args.command == "mcp":
+        if isinstance(result, Path):
+            if args.json_output:
+                print(json.dumps({"output_path": str(result)}, indent=2))
+            else:
+                print(f"MCP metadata written to: {result}")
+            return
+        if isinstance(result, str):
+            print(result)
+            return
+        print(json.dumps(to_serializable(result), indent=2, default=str))
         return
 
     if args.command == "agent" and args.agent_command == "runs":

@@ -60,6 +60,9 @@ start a server.
 
 See [Agent API](agent-api.md) for the CLI and Python usage.
 
+Phase 15A MCP resources, prompts, and capability summaries add no new Procore
+endpoint coverage. They are local metadata only and do not call Procore.
+
 ## Phase 8A Endpoint Notes
 
 Phase 8A adds read-only SDK coverage for Observations, Punch Items, and Generic

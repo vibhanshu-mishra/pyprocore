@@ -19,6 +19,7 @@ nav:
   - AI Workflows: ai-workflows.md
   - Async Client: async-client.md
   - Agent API: agent-api.md
+  - MCP Discovery: mcp.md
   - Plugins: plugins.md
   - Golden Evals: evals.md
   - Project Status: project-status.md

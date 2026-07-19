@@ -114,6 +114,11 @@ citations, hallucination risk, prohibited action language, and safety
 boundaries. They do not call Procore, call external AI/model APIs, use
 model-as-judge scoring, execute plugins, fetch remote fixtures, upload reports,
 load arbitrary code, or enable tool/MCP execution.
+Examples `249` through `258` cover unreleased Phase 15A richer MCP discovery,
+resources, prompt templates, capability summaries, stdio-friendly discovery
+payloads, and safety boundaries. They do not call Procore, call external
+AI/model APIs, execute plugins, fetch remote resources, upload reports, load
+arbitrary code, or enable MCP/tool execution.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -227,6 +232,10 @@ python3 examples/235_eval_history_snapshot.py
 python3 examples/239_model_fixture_quickstart.py
 python3 examples/243_eval_fake_citation_detection.py
 python3 examples/248_phase13d_model_fixture_summary.py
+python3 examples/249_mcp_resources_quickstart.py
+python3 examples/250_mcp_prompt_templates.py
+python3 examples/251_mcp_capability_summary.py
+python3 examples/258_phase15a_mcp_discovery_summary.py
 ```
 
 Documents use Procore's Project Folders and Files endpoints internally. Before a
@@ -284,7 +293,7 @@ make examples-check
 ## Example Index
 
 The current example set runs from `01_list_companies.py` through
-`248_phase13d_model_fixture_summary.py`.
+`258_phase15a_mcp_discovery_summary.py`.
 
 | File | Demonstrates |
 | ---- | ------------ |
@@ -536,6 +545,16 @@ The current example set runs from `01_list_companies.py` through
 | `246_eval_model_fixture_report.py` | Run all built-in offline model-response fixture suites |
 | `247_eval_model_fixture_baseline_pattern.py` | Compare a model fixture suite to a local baseline |
 | `248_phase13d_model_fixture_summary.py` | Summarize Phase 13D model-response fixture evals |
+| `249_mcp_resources_quickstart.py` | List local MCP resources without credentials |
+| `250_mcp_prompt_templates.py` | Inspect local MCP prompt templates |
+| `251_mcp_capability_summary.py` | Show the MCP discovery capability summary |
+| `252_mcp_agent_schema_resources.py` | Read local agent schema MCP resources |
+| `253_mcp_eval_resources.py` | Inspect local eval suite MCP resources |
+| `254_mcp_plugin_resources.py` | Inspect metadata-only plugin MCP resources |
+| `255_mcp_ai_workflow_resources.py` | Inspect AI workflow MCP template resources |
+| `256_mcp_safety_boundaries.py` | Print MCP discovery safety boundaries |
+| `257_mcp_stdio_discovery_pattern.py` | Build a local stdio-friendly MCP discovery payload |
+| `258_phase15a_mcp_discovery_summary.py` | Summarize Phase 15A MCP discovery additions |
 
 Sample golden datasets live in `examples/golden_datasets/`:
 
@@ -720,4 +739,8 @@ Sample webhook payloads live in `examples/webhooks/`:
   call external AI/model APIs, use model-as-judge scoring, execute plugins,
   fetch remote fixtures, upload reports, load arbitrary code, or enable
   tool/MCP execution.
+- Examples `249` through `258` are richer MCP discovery examples. They inspect
+  local metadata only and do not call Procore, call external AI/model APIs,
+  execute plugins, fetch remote resources, upload reports, load arbitrary code,
+  or enable MCP/tool execution.
 - Keep secrets out of code, screenshots, logs, and issue reports.

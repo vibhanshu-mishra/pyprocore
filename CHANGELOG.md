@@ -68,6 +68,19 @@ and this project follows semantic versioning.
 - `procore-sdk evals model-fixture` local-only CLI commands for sample, validate, score, and policy inspection.
 - Built-in Phase 13D model fixture suites for RFI review, submittal review, project context Q&A, drawing/spec comparison, engineering assistant, field issue summary, change-risk review, and safety boundaries.
 - Examples 239–248 and local model-response fixture JSON files.
+- Phase 15A richer discovery-only MCP metadata with typed resource, prompt,
+  server, capability, tool-summary, and safety models.
+- Local MCP resource discovery for agent manifests, tool schemas, OpenAPI,
+  eval suites, plugin metadata, async capabilities, AI workflow templates,
+  safety boundaries, and docs references.
+- Local MCP prompt templates for RFI review, submittal review, project context
+  Q&A, drawing/spec comparison, engineering assistant, field issue summaries,
+  change-risk review, async export planning, plugin development, eval review,
+  and safety-boundary review.
+- `procore-sdk mcp` local discovery commands for manifest, resources, resource
+  reads, prompts, prompt reads, capabilities, safety, and stdio discovery.
+- Examples 249–258 for local MCP resources, prompts, capabilities, safety
+  boundaries, plugin/eval/async/AI workflow resources, and stdio discovery.
 
 - Phase 8A read-only API coverage for Observations, Punch Items, and Generic Tool correspondence items.
 - Typed flexible models for `Observation`, `PunchItem`, `GenericTool`, and `Correspondence`.
@@ -119,6 +132,10 @@ and this project follows semantic versioning.
 - Phase 13B workflow-specific golden evals remain local deterministic artifact checks only; they do not call Procore, call external AI/model APIs, fetch remote datasets, execute plugins, load arbitrary code, add Procore write actions, or enable agent/MCP execution.
 - Phase 13C baseline/regression helpers compare local deterministic eval artifacts only; they do not call Procore, call external AI/model APIs, fetch remote baselines, upload reports, execute plugins, load arbitrary code, add Procore write actions, or enable agent/MCP execution.
 - Phase 13D model-response fixture evals are local deterministic checks only; they do not call Procore, call external AI/model APIs, use model-as-judge scoring, fetch remote fixtures, upload reports, execute plugins, load arbitrary code, add Procore write actions, or enable agent/MCP execution.
+- Phase 15A MCP discovery remains metadata-only; it does not enable MCP
+  execution, Procore tool execution, plugin execution, live Procore calls,
+  external AI/model calls, remote resource fetching, uploads, write actions,
+  or arbitrary code loading.
 
 - Phase 8A remains read-only and does not add create/update/delete Procore actions.
 - Agent tool execution remains disabled; new Phase 8A agent entries are metadata only.

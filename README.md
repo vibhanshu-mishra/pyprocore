@@ -31,7 +31,9 @@ Current repository status:
   RFI, submittal, async export, async batch, AI workflow, plugin metadata/config,
   and safety-boundary artifacts, plus Phase 13C local eval baselines,
   regression comparison, threshold policies, and history snapshots, plus Phase
-  13D offline model-response fixture evals for saved/sample AI-style responses
+  13D offline model-response fixture evals for saved/sample AI-style responses,
+  plus Phase 15A richer discovery-only MCP resources, prompt templates,
+  capability summaries, stdio discovery payloads, and safety metadata
 - Procore tool execution remains disabled
 
 ```bash
@@ -77,6 +79,9 @@ PyProcore turns Procore REST API responses into typed Python objects and gives y
 - Score unreleased Phase 13D offline model-response fixtures for grounding,
   citations, hallucination risk, prohibited action language, limitation
   disclosure, and safety boundaries without calling a model.
+- Inspect unreleased Phase 15A MCP resources, prompt templates, capabilities,
+  safety boundaries, and stdio discovery payloads without credentials,
+  Procore calls, model calls, plugin execution, or tool execution.
 - Use CLI diagnostics and automation commands without hardcoding credentials.
 - Expose local agent metadata, OpenAPI/JSON Schema, run logs, replay, MCP discovery, and deterministic evals for future assistant integrations.
 
@@ -662,6 +667,7 @@ See [Security](docs/security.md) and [SECURITY.md](SECURITY.md).
 - [AI Workflows](docs/ai-workflows.md)
 - [Async Client](docs/async-client.md)
 - [Agent API](docs/agent-api.md)
+- [MCP Discovery](docs/mcp.md)
 - [Automation](docs/automation.md)
 - [Recipes](docs/recipes/)
 - [Examples](examples/README.md)

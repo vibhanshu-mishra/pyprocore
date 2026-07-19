@@ -21,7 +21,8 @@
   Phase 13A local deterministic golden datasets and eval reports, Phase 13B
   workflow-specific golden eval suites, and Phase 13C local eval baselines,
   regression comparison, threshold policies, and history snapshots, plus Phase
-  13D offline model-response fixture evals.
+  13D offline model-response fixture evals, plus Phase 15A richer
+  discovery-only MCP resources, prompts, capabilities, and safety metadata.
   The package remains `2.2.0`; this branch work is unpublished.
 
 ## Current Stable Release: 2.2.0
@@ -155,6 +156,11 @@ action language, limitation disclosure, secret-like text, and live/model-call
 claims. It does not call Procore, call model providers, use model-as-judge
 scoring, execute plugins, fetch remote fixtures, upload reports, load arbitrary
 code, or enable tool/MCP execution.
+
+Phase 15A adds richer MCP discovery resources, prompt templates, capability
+summaries, and stdio-friendly discovery payloads. It does not enable MCP
+execution, Procore tool execution, plugin execution, live Procore calls,
+external model calls, remote resource fetching, uploads, or write actions.
 
 Phase 8A adds read-only SDK coverage for Observations, Punch Items, Generic
 Tools, and Generic Tool correspondence items. It includes service helpers,

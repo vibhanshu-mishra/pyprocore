@@ -33,6 +33,22 @@ Safety status for `v2.2.0`:
 
 ## Unreleased Branch Work
 
+### Phase 15A — Richer MCP Discovery, Resources, And Prompt Templates
+
+Implemented in the current branch and not yet published:
+
+- Typed MCP resource, prompt, server, capability, tool-summary, and safety models
+- Local MCP resource discovery for agent, eval, plugin, async, AI workflow,
+  safety, and docs metadata
+- Local MCP prompt templates for construction review and planning workflows
+- Top-level `procore-sdk mcp` discovery commands
+- Stdio-friendly discovery payloads
+- Placeholder-only examples 249–258
+
+Focus: discovery metadata only. No MCP execution, Procore tool execution,
+plugin execution, live Procore calls, external AI/model calls, remote resource
+fetching, uploads, or write actions are enabled.
+
 ### Phase 9A — Enterprise Authentication Hardening
 
 - Backward-compatible Authorization Code and Client Credentials strategy handling

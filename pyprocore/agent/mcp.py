@@ -8,12 +8,25 @@ executes tools.
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
 from typing import Any
 
-from pyprocore.agent.models import AgentTool, AgentToolRegistry
-from pyprocore.agent.openapi import build_agent_openapi_spec, build_agent_tool_schemas
-from pyprocore.agent.registry import get_agent_registry
+from pyprocore.agent.models import AgentToolRegistry
+from pyprocore.mcp import (
+    build_mcp_capability_summary,
+    build_mcp_discovery_manifest,
+)
+from pyprocore.mcp import build_mcp_server_info as build_typed_mcp_server_info
+from pyprocore.mcp import (
+    build_mcp_stdio_discovery_payload,
+)
+from pyprocore.mcp import build_mcp_tool_definitions as build_typed_mcp_tool_definitions
+from pyprocore.mcp import (
+    disabled_mcp_execution_response,
+    get_mcp_prompt,
+    get_mcp_resource,
+    list_mcp_prompts,
+    list_mcp_resources,
+)
 
 JsonObject = dict[str, Any]
 
@@ -30,10 +43,7 @@ def build_mcp_tool_definitions(
     Returns:
         JSON-serializable MCP-style tool definition list.
     """
-    active_registry = registry or get_agent_registry()
-    return [
-        _build_mcp_tool(tool) for tool in sorted(active_registry.tools, key=lambda item: item.name)
-    ]
+    return build_typed_mcp_tool_definitions(registry)
 
 
 def build_mcp_resource_definitions() -> list[JsonObject]:
@@ -42,27 +52,10 @@ def build_mcp_resource_definitions() -> list[JsonObject]:
     Returns:
         JSON-serializable resource definition list.
     """
-    resources = [
-        {
-            "uri": "pyprocore://agent/manifest",
-            "name": "PyProcore Agent MCP Manifest",
-            "description": "Discovery-only MCP manifest for the local PyProcore agent registry.",
-            "mimeType": "application/json",
-        },
-        {
-            "uri": "pyprocore://agent/openapi",
-            "name": "PyProcore Agent OpenAPI",
-            "description": "OpenAPI document for the local PyProcore Agent API.",
-            "mimeType": "application/json",
-        },
-        {
-            "uri": "pyprocore://agent/schemas",
-            "name": "PyProcore Agent JSON Schemas",
-            "description": "JSON Schema export for PyProcore agent models and tool inputs.",
-            "mimeType": "application/json",
-        },
+    return [
+        _mcp_resource_to_wire(resource.model_dump(mode="json", by_alias=True))
+        for resource in list_mcp_resources()
     ]
-    return sorted(resources, key=lambda resource: str(resource["uri"]))
 
 
 def build_mcp_prompt_definitions() -> list[JsonObject]:
@@ -72,27 +65,7 @@ def build_mcp_prompt_definitions() -> list[JsonObject]:
         JSON-serializable prompt definitions. These are templates only and do
         not execute PyProcore workflows.
     """
-    return [
-        {
-            "name": "pyprocore.discovery_summary",
-            "description": (
-                "Summarize the available PyProcore tools from MCP discovery metadata. "
-                "This prompt is informational only."
-            ),
-            "arguments": [
-                {
-                    "name": "task",
-                    "description": "What the user wants to discover or plan.",
-                    "required": False,
-                }
-            ],
-            "metadata": {
-                "discovery_only": True,
-                "calls_live_api": False,
-                "requires_auth": False,
-            },
-        }
-    ]
+    return [_mcp_prompt_to_wire(prompt.model_dump(mode="json")) for prompt in list_mcp_prompts()]
 
 
 def build_mcp_server_info(
@@ -106,39 +79,28 @@ def build_mcp_server_info(
     Returns:
         JSON-serializable server information.
     """
-    from pyprocore import __version__
+    server = build_typed_mcp_server_info(registry).model_dump(mode="json")
+    server["protocolVersion"] = server.pop("protocol_version")
+    server["safety"]["tool_execution_enabled"] = server["safety"]["procore_tool_execution_enabled"]
+    server["safety"]["phase"] = "15A"
+    return server
 
-    active_registry = registry or get_agent_registry()
-    return {
-        "name": "pyprocore-agent-mcp",
-        "title": "PyProcore Agent MCP Adapter",
-        "version": __version__,
-        "protocolVersion": "2024-11-05",
-        "description": (
-            "Discovery-only MCP adapter for PyProcore agent tools. Tool execution "
-            "is disabled in Phase 7E."
-        ),
-        "generated_at": datetime.now(timezone.utc).isoformat(),
-        "registry_version": active_registry.registry_version,
-        "tool_count": active_registry.tool_count,
-        "capabilities": {
-            "tools": {"listChanged": False},
-            "resources": {"subscribe": False, "listChanged": False},
-            "prompts": {"listChanged": False},
-        },
-        "safety": {
-            "discovery_only": True,
-            "tool_execution_enabled": False,
-            "calls_live_procore_api": False,
-            "requires_credentials": False,
-            "phase": "7E",
-            "notes": [
-                "MCP clients can inspect tool metadata only.",
-                "tools/call returns a disabled execution response.",
-                "No access tokens, refresh tokens, client secrets, or .env values are exported.",
-            ],
-        },
-    }
+
+def build_mcp_capability_definitions(
+    registry: AgentToolRegistry | None = None,
+) -> JsonObject:
+    """Build the discovery-only MCP capability summary."""
+    return build_mcp_capability_summary(registry).model_dump(mode="json")
+
+
+def build_mcp_safety_boundaries() -> JsonObject:
+    """Build the MCP safety boundary summary."""
+    return build_mcp_capability_summary().safety.model_dump(mode="json")
+
+
+def build_mcp_stdio_discovery() -> JsonObject:
+    """Build the stdio-friendly discovery payload."""
+    return build_mcp_stdio_discovery_payload()
 
 
 def build_mcp_tool_execution_disabled_response(tool_name: str) -> JsonObject:
@@ -150,23 +112,17 @@ def build_mcp_tool_execution_disabled_response(tool_name: str) -> JsonObject:
     Returns:
         Structured MCP-style response explaining that execution is disabled.
     """
+    response = disabled_mcp_execution_response(tool_name)
     return {
         "isError": True,
-        "content": [
-            {
-                "type": "text",
-                "text": (
-                    f"Tool execution is disabled for '{tool_name}'. Phase 7E is "
-                    "discovery-only, so no Procore API call was made."
-                ),
-            }
-        ],
+        "content": [{"type": "text", "text": response["message"]}],
         "metadata": {
             "tool_name": tool_name,
             "execution_enabled": False,
             "discovery_only": True,
             "calls_live_api": False,
-            "phase": "7E",
+            "mcp_execution_enabled": False,
+            "phase": "15A",
         },
     }
 
@@ -212,6 +168,16 @@ def export_mcp_prompts_json(*, pretty: bool = False) -> str:
     return _json_dumps(build_mcp_prompt_definitions(), pretty=pretty)
 
 
+def export_mcp_capabilities_json(*, pretty: bool = False) -> str:
+    """Return the MCP capability summary as deterministic JSON."""
+    return _json_dumps(build_mcp_capability_definitions(), pretty=pretty)
+
+
+def export_mcp_safety_json(*, pretty: bool = False) -> str:
+    """Return MCP safety boundaries as deterministic JSON."""
+    return _json_dumps(build_mcp_safety_boundaries(), pretty=pretty)
+
+
 def export_mcp_manifest_json(
     *,
     pretty: bool = False,
@@ -226,12 +192,8 @@ def export_mcp_manifest_json(
     Returns:
         JSON string.
     """
-    manifest = {
-        "server": build_mcp_server_info(registry=registry),
-        "tools": build_mcp_tool_definitions(registry=registry),
-        "resources": build_mcp_resource_definitions(),
-        "prompts": build_mcp_prompt_definitions(),
-    }
+    manifest = build_mcp_discovery_manifest(registry).model_dump(mode="json", by_alias=True)
+    manifest["server"] = build_mcp_server_info(registry)
     return _json_dumps(manifest, pretty=pretty)
 
 
@@ -247,48 +209,57 @@ def read_mcp_resource(uri: str) -> JsonObject:
     Returns:
         JSON-serializable resource read response.
     """
-    if uri == "pyprocore://agent/manifest":
-        text = export_mcp_manifest_json(pretty=True)
-    elif uri == "pyprocore://agent/openapi":
-        text = json.dumps(build_agent_openapi_spec(), indent=2, sort_keys=True)
-    elif uri == "pyprocore://agent/schemas":
-        text = json.dumps(build_agent_tool_schemas(), indent=2, sort_keys=True)
-    else:
-        raise FileNotFoundError(f"MCP resource is not registered: {uri}")
+    return get_mcp_resource(uri)
 
+
+def read_mcp_prompt(name: str) -> JsonObject:
+    """Return one local prompt template as an MCP-style response."""
+    try:
+        prompt = get_mcp_prompt(name)
+    except KeyError as exc:
+        raise FileNotFoundError(str(exc)) from exc
     return {
-        "contents": [
+        "description": prompt.description,
+        "messages": [
             {
-                "uri": uri,
-                "mimeType": "application/json",
-                "text": text,
+                "role": "user",
+                "content": {"type": "text", "text": prompt.template},
             }
-        ]
+        ],
+        "metadata": prompt.model_dump(mode="json"),
     }
 
 
-def _build_mcp_tool(tool: AgentTool) -> JsonObject:
-    """Convert one AgentTool into an MCP-style tool definition."""
+def _mcp_resource_to_wire(resource: JsonObject) -> JsonObject:
+    """Convert typed resource data to MCP wire naming."""
     return {
-        "name": tool.name,
-        "title": tool.title,
-        "description": tool.description,
-        "inputSchema": tool.input_schema,
+        "uri": resource["uri"],
+        "name": resource["name"],
+        "description": resource["description"],
+        "mimeType": resource.get("mime_type", "application/json"),
         "metadata": {
-            "category": tool.category.value,
-            "permissions": [permission.value for permission in tool.permissions],
-            "requires_auth": tool.requires_auth,
-            "calls_live_api": tool.calls_live_api,
-            "produces_files": tool.produces_files,
-            "side_effects": list(tool.side_effects),
-            "safety_level": tool.safety_level.value,
-            "version_added": tool.version_added,
-            "service_path": tool.service_path,
-            "operation_path": tool.operation_path,
-            "cli_command": tool.cli_command,
-            "examples": list(tool.examples),
-            "execution_enabled": False,
+            "kind": resource["kind"],
+            "tags": resource.get("tags", []),
+            "safety": resource["safety"],
+        },
+    }
+
+
+def _mcp_prompt_to_wire(prompt: JsonObject) -> JsonObject:
+    """Convert typed prompt data to MCP wire naming."""
+    return {
+        "name": prompt["name"],
+        "title": prompt["title"],
+        "description": prompt["description"],
+        "arguments": prompt["arguments"],
+        "metadata": {
+            "kind": prompt["kind"],
+            "tags": prompt.get("tags", []),
+            "template": prompt["template"],
             "discovery_only": True,
+            "calls_live_api": False,
+            "requires_auth": False,
+            "safety": prompt["safety"],
         },
     }
 
