@@ -1,0 +1,48 @@
+{
+  "cases": [
+    {
+      "case_type": "ai_workflow_package",
+      "description": "AI workflow package is model-agnostic and local-only.",
+      "expected": {
+        "contains_text": [
+          "model_agnostic_local_files"
+        ],
+        "required_keys": [
+          "package_name",
+          "mode",
+          "safety.external_model_calls"
+        ],
+        "required_values": {
+          "safety.external_model_calls": false
+        }
+      },
+      "id": "ai_workflow_package_is_local_only",
+      "input": {
+        "artifact": {
+          "mode": "model_agnostic_local_files",
+          "package_name": "sample_rfi_review_pack",
+          "prompts": [
+            {
+              "name": "rfi_review",
+              "text": "Review placeholder RFI."
+            }
+          ],
+          "safety": {
+            "external_model_calls": false
+          }
+        },
+        "artifact_name": "ai_workflow_package"
+      }
+    }
+  ],
+  "metadata": {
+    "description": "Safe placeholder AI workflow package golden dataset.",
+    "mode": "local_deterministic",
+    "name": "golden_ai_workflow_package_basic",
+    "tags": [
+      "ai-workflows",
+      "local"
+    ]
+  },
+  "schema_version": "1"
+}

@@ -1,0 +1,31 @@
+{
+  "cases": [
+    {
+      "case_type": "safety_boundary",
+      "description": "Safety text keeps evals local and execution disabled.",
+      "expected": {
+        "contains_text": [
+          "do not call Procore",
+          "do not execute tools"
+        ],
+        "does_not_contain_text": [
+          "client_secret"
+        ]
+      },
+      "id": "safety_boundary_disables_execution",
+      "input": {
+        "artifact": "Local deterministic evals do not call Procore, do not call external models, do not execute tools, and do not execute plugins.",
+        "artifact_name": "safety_boundary"
+      }
+    }
+  ],
+  "metadata": {
+    "description": "Safe placeholder safety-boundary golden dataset.",
+    "mode": "local_deterministic",
+    "name": "golden_safety_boundaries_basic",
+    "tags": [
+      "safety"
+    ]
+  },
+  "schema_version": "1"
+}

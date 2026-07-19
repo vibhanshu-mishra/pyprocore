@@ -77,6 +77,24 @@ from pyprocore.core.exceptions import (
     ResourceNotFoundError,
     ValidationError,
 )
+from pyprocore.evals import (
+    EvalFinding,
+    EvalReport,
+    EvalSuite,
+    GoldenDataset,
+    eval_report_to_json,
+    eval_report_to_markdown,
+    golden_dataset_to_json,
+    list_builtin_eval_suites,
+    load_golden_dataset_from_file,
+    run_builtin_eval_suites,
+    run_golden_dataset_file,
+    sample_eval_report,
+    sample_golden_dataset,
+    validate_golden_dataset,
+    write_eval_report_json,
+    write_eval_report_markdown,
+)
 from pyprocore.plugins import (
     PluginCapability,
     PluginConfig,
@@ -859,6 +877,62 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Exit nonzero when eval warnings are present",
     )
+
+    evals_parser = subcommands.add_parser(
+        "evals",
+        help="Run local deterministic golden dataset evals",
+    )
+    evals_subcommands = evals_parser.add_subparsers(dest="evals_command", required=True)
+    evals_list_parser = evals_subcommands.add_parser(
+        "list",
+        help="List built-in golden eval suites",
+    )
+    evals_list_parser.add_argument("--json", dest="json_output", action="store_true")
+    evals_list_parser.add_argument("--pretty", action="store_true")
+    evals_run_parser = evals_subcommands.add_parser(
+        "run",
+        help="Run built-in golden evals or one local JSON dataset",
+    )
+    evals_run_parser.add_argument("--suite", default=None)
+    evals_run_parser.add_argument("--dataset", dest="dataset_path", type=Path, default=None)
+    evals_run_parser.add_argument("--json", dest="json_output", action="store_true")
+    evals_run_parser.add_argument("--pretty", action="store_true")
+    evals_run_parser.add_argument("--output", type=Path, default=None)
+    evals_run_parser.add_argument("--format", choices=["json", "markdown"], default="markdown")
+    evals_validate_parser = evals_subcommands.add_parser(
+        "validate-dataset",
+        help="Validate one local JSON golden dataset without live calls",
+    )
+    evals_validate_parser.add_argument("dataset_path", type=Path)
+    evals_validate_parser.add_argument("--json", dest="json_output", action="store_true")
+    evals_validate_parser.add_argument("--pretty", action="store_true")
+    evals_report_parser = evals_subcommands.add_parser(
+        "report",
+        help="Build a local deterministic eval report",
+    )
+    evals_report_parser.add_argument("--suite", default=None)
+    evals_report_parser.add_argument("--dataset", dest="dataset_path", type=Path, default=None)
+    evals_report_parser.add_argument("--format", choices=["json", "markdown"], default="json")
+    evals_report_parser.add_argument("--output", type=Path, default=None)
+    evals_report_parser.add_argument("--json", dest="json_output", action="store_true")
+    evals_report_parser.add_argument("--pretty", action="store_true")
+    evals_sample_dataset_parser = evals_subcommands.add_parser(
+        "sample-dataset",
+        help="Print a safe sample golden dataset",
+    )
+    evals_sample_dataset_parser.add_argument("--json", dest="json_output", action="store_true")
+    evals_sample_dataset_parser.add_argument("--pretty", action="store_true")
+    evals_sample_report_parser = evals_subcommands.add_parser(
+        "sample-report",
+        help="Print a safe sample deterministic eval report",
+    )
+    evals_sample_report_parser.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="json",
+    )
+    evals_sample_report_parser.add_argument("--json", dest="json_output", action="store_true")
+    evals_sample_report_parser.add_argument("--pretty", action="store_true")
 
     plugins_parser = subcommands.add_parser(
         "plugins",
@@ -3419,6 +3493,42 @@ def run_command(args: argparse.Namespace) -> Any:
                 run_id=args.run_id,
             )
         raise ValueError(f"Unsupported agent command: {args.agent_command}")
+
+    if args.command == "evals":
+        if args.evals_command == "list":
+            return list_builtin_eval_suites()
+        if args.evals_command == "run":
+            report = (
+                run_golden_dataset_file(args.dataset_path)
+                if args.dataset_path is not None
+                else run_builtin_eval_suites(suite=args.suite)
+            )
+            if args.output is not None:
+                if args.format == "json":
+                    write_eval_report_json(report, args.output, pretty=True)
+                else:
+                    write_eval_report_markdown(report, args.output)
+            return report
+        if args.evals_command == "validate-dataset":
+            dataset = load_golden_dataset_from_file(args.dataset_path)
+            return validate_golden_dataset(dataset)
+        if args.evals_command == "report":
+            report = (
+                run_golden_dataset_file(args.dataset_path)
+                if args.dataset_path is not None
+                else run_builtin_eval_suites(suite=args.suite)
+            )
+            if args.output is not None:
+                if args.format == "json":
+                    write_eval_report_json(report, args.output, pretty=True)
+                else:
+                    write_eval_report_markdown(report, args.output)
+            return report
+        if args.evals_command == "sample-dataset":
+            return sample_golden_dataset()
+        if args.evals_command == "sample-report":
+            return sample_eval_report()
+        raise ValueError(f"Unsupported evals command: {args.evals_command}")
 
     if args.command == "plugins":
         registry = build_default_plugin_registry()
@@ -6025,6 +6135,43 @@ def agent_eval_exit_code(
     return 1 if has_failure or (fail_on_warning and has_warning) else 0
 
 
+def format_eval_suites(suites: list[EvalSuite]) -> str:
+    """Return a human-readable list of built-in golden eval suites."""
+    lines = [f"Built-in golden eval suites: {len(suites)}"]
+    lines.extend(f"- {suite.name}: {suite.description}" for suite in suites)
+    lines.append(
+        "Mode: local deterministic fixtures only; no Procore, model, plugin, MCP, "
+        "or tool execution."
+    )
+    return "\n".join(lines)
+
+
+def format_eval_findings(findings: list[EvalFinding]) -> str:
+    """Return a human-readable dataset validation summary."""
+    failed = [finding for finding in findings if finding.severity.value == "failure"]
+    lines = [
+        "Golden dataset validation.",
+        f"Findings: {len(findings)}",
+        f"Failures: {len(failed)}",
+    ]
+    lines.extend(
+        f"- {finding.severity.value}: {finding.case_id or 'dataset'}: {finding.message}"
+        for finding in findings
+    )
+    lines.append("Mode: local JSON validation only; no live calls were made.")
+    return "\n".join(lines)
+
+
+def format_eval_report(report: EvalReport) -> str:
+    """Return a human-readable deterministic eval report."""
+    return eval_report_to_markdown(report).rstrip()
+
+
+def eval_report_exit_code(report: EvalReport) -> int:
+    """Return the CLI exit code for a deterministic eval report."""
+    return 0 if report.passed else 1
+
+
 def format_workflow_plan_validation(plan: WorkflowPlan) -> str:
     """Return a human-readable workflow plan validation summary."""
     enabled_count = sum(1 for step in plan.steps if step.enabled)
@@ -6351,6 +6498,31 @@ def main() -> None:
                     print(f"Agent eval results written to: {args.output}")
                 print(format_agent_eval_results(result))
             raise SystemExit(agent_eval_exit_code(result, fail_on_warning=args.fail_on_warning))
+
+    if args.command == "evals":
+        if args.evals_command == "list" and isinstance(result, list):
+            if args.json_output or getattr(args, "pretty", False):
+                print(json.dumps(to_serializable(result), indent=2, default=str))
+            else:
+                print(format_eval_suites(result))
+            return
+        if args.evals_command == "validate-dataset" and isinstance(result, list):
+            if args.json_output or getattr(args, "pretty", False):
+                print(json.dumps(to_serializable(result), indent=2, default=str))
+            else:
+                print(format_eval_findings(result))
+            raise SystemExit(0 if not any(f.severity.value == "failure" for f in result) else 1)
+        if isinstance(result, GoldenDataset):
+            print(golden_dataset_to_json(result, pretty=True))
+            return
+        if isinstance(result, EvalReport):
+            if args.evals_command in {"run", "report"} and args.output is not None:
+                print(f"Golden eval report written to: {args.output}")
+            if args.json_output or getattr(args, "format", None) == "json":
+                print(eval_report_to_json(result, pretty=True))
+            else:
+                print(format_eval_report(result))
+            raise SystemExit(eval_report_exit_code(result))
 
     if isinstance(result, AgentManifest):
         if args.json_output or args.pretty:

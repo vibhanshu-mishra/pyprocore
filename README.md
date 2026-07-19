@@ -26,7 +26,8 @@ Current repository status:
   read coverage, plus Phase 11A metadata-only plugin architecture foundation,
   Phase 11B safe local plugin extension hooks, Phase 11C plugin configuration
   and local extension-pack manifests, and Phase 11D plugin developer
-  scaffolding/templates
+  scaffolding/templates, plus Phase 13A local deterministic golden datasets
+  and eval reports
 - Procore tool execution remains disabled
 
 ```bash
@@ -61,6 +62,9 @@ PyProcore turns Procore REST API responses into typed Python objects and gives y
   the unreleased Phase 11C helpers.
 - Generate safe local plugin developer templates through the unreleased Phase
   11D scaffolding helpers.
+- Run unreleased Phase 13A local deterministic golden evals for exports,
+  manifests, workflow packages, async batch plans, plugin metadata, and safety
+  boundaries.
 - Use CLI diagnostics and automation commands without hardcoding credentials.
 - Expose local agent metadata, OpenAPI/JSON Schema, run logs, replay, MCP discovery, and deterministic evals for future assistant integrations.
 
@@ -346,6 +350,30 @@ fetch remote resources, auto-load modules, execute generated files, execute
 hooks from config, call Procore, call external AI/model APIs, add write
 actions, or enable agent/MCP execution. See
 [Plugin Architecture](docs/plugins.md).
+
+### Phase 13A Golden Dataset Evals
+
+Prepared in the current unreleased branch:
+
+- typed golden dataset, case, expected-output, finding, score, suite, and
+  report models
+- deterministic scoring helpers for exact matches, required keys, forbidden
+  keys, text checks, row counts, JSON serializability, redaction checks, and
+  manifest integrity
+- built-in placeholder datasets for export rows, agent manifests, AI workflow
+  packages, async batch plans, plugin metadata, and safety boundaries
+- JSON and Markdown report builders
+- `procore-sdk evals list`
+- `procore-sdk evals run`
+- `procore-sdk evals validate-dataset PATH`
+- `procore-sdk evals report --format json`
+- `procore-sdk evals sample-dataset`
+- `procore-sdk evals sample-report`
+
+Phase 13A evals inspect local deterministic artifacts only. They do not call
+Procore, call external AI/model APIs, execute Procore tools, execute MCP,
+execute plugins, fetch remote datasets, or upload reports. See
+[Golden Evals](docs/evals.md).
 
 ### Phase 7 Agent Layer
 
@@ -722,7 +750,7 @@ make quality-check
 - Write-action safety model
 - Real MCP execution after explicit safety design
 - Developer platform: richer async orchestration and plugin architecture
-- Evaluation: golden datasets and model evals
+- Evaluation: saved model-response comparison patterns without live model calls
 - Deployment: richer MCP integration after explicit safety design
 
 See [Roadmap](docs/roadmap.md).

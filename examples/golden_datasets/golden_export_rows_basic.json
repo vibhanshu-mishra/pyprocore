@@ -1,0 +1,44 @@
+{
+  "cases": [
+    {
+      "case_type": "export_rows",
+      "description": "Rows include stable placeholder fields.",
+      "expected": {
+        "required_keys": [
+          "0.id",
+          "0.number",
+          "1.title"
+        ],
+        "row_count": 2
+      },
+      "id": "export_rows_have_stable_columns",
+      "input": {
+        "artifact": [
+          {
+            "id": "sample-rfi-1",
+            "number": "RFI-001",
+            "status": "open",
+            "title": "Sample question"
+          },
+          {
+            "id": "sample-rfi-2",
+            "number": "RFI-002",
+            "status": "closed",
+            "title": "Sample answer"
+          }
+        ],
+        "artifact_name": "rfi_export_rows"
+      }
+    }
+  ],
+  "metadata": {
+    "description": "Safe placeholder export row golden dataset.",
+    "mode": "local_deterministic",
+    "name": "golden_export_rows_basic",
+    "tags": [
+      "exports",
+      "rows"
+    ]
+  },
+  "schema_version": "1"
+}

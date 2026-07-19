@@ -158,6 +158,26 @@ Scaffold commands generate local template files only. They do not require
 Procore credentials, install plugins, fetch remote resources, load generated
 code, execute hooks, call Procore, or enable agent/MCP execution.
 
+## Golden Dataset Evals
+
+Phase 13A adds unreleased local deterministic eval commands for safe JSON-like
+artifacts such as export rows, agent metadata, AI workflow packages, async
+batch plans, and plugin metadata:
+
+```bash
+procore-sdk evals list
+procore-sdk evals run
+procore-sdk evals run --suite golden_export_rows_basic
+procore-sdk evals validate-dataset examples/golden_datasets/golden_export_rows_basic.json
+procore-sdk evals report --format json
+procore-sdk evals sample-dataset
+procore-sdk evals sample-report
+```
+
+These commands do not call Procore, call external AI/model APIs, execute
+plugins, execute MCP tools, execute Procore tools, fetch remote datasets, or
+upload reports. Reports are local JSON or Markdown artifacts only.
+
 ## Scheduled Export Planning
 
 Phase 9B adds local-only scheduled export planning commands for enterprise

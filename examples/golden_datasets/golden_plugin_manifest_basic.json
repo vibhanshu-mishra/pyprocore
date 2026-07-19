@@ -1,0 +1,47 @@
+{
+  "cases": [
+    {
+      "case_type": "plugin_manifest",
+      "description": "Plugin manifest remains metadata-only.",
+      "expected": {
+        "manifest_required_keys": [
+          "name",
+          "version",
+          "capabilities"
+        ],
+        "required_keys": [
+          "name",
+          "version",
+          "capabilities",
+          "safety_level"
+        ],
+        "required_values": {
+          "safety_level": "metadata_only"
+        }
+      },
+      "id": "plugin_manifest_is_metadata_only",
+      "input": {
+        "artifact": {
+          "capabilities": [
+            "exporter"
+          ],
+          "enabled_by_default": false,
+          "name": "csv_exporter_plugin",
+          "safety_level": "metadata_only",
+          "version": "1.0.0"
+        },
+        "artifact_name": "plugin_manifest"
+      }
+    }
+  ],
+  "metadata": {
+    "description": "Safe placeholder plugin manifest golden dataset.",
+    "mode": "local_deterministic",
+    "name": "golden_plugin_manifest_basic",
+    "tags": [
+      "plugins",
+      "manifest"
+    ]
+  },
+  "schema_version": "1"
+}

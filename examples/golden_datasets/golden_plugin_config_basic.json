@@ -1,0 +1,42 @@
+{
+  "cases": [
+    {
+      "case_type": "plugin_config",
+      "description": "Plugin config stores metadata preferences only.",
+      "expected": {
+        "required_keys": [
+          "config_version",
+          "enabled_plugins",
+          "safety_policy"
+        ],
+        "required_values": {
+          "safety_policy": "metadata_only"
+        }
+      },
+      "id": "plugin_config_is_metadata_only",
+      "input": {
+        "artifact": {
+          "config_version": "1",
+          "enabled_plugins": [
+            "csv_exporter_plugin"
+          ],
+          "notes": [
+            "Configuration stores preferences only."
+          ],
+          "safety_policy": "metadata_only"
+        },
+        "artifact_name": "plugin_config"
+      }
+    }
+  ],
+  "metadata": {
+    "description": "Safe placeholder plugin config golden dataset.",
+    "mode": "local_deterministic",
+    "name": "golden_plugin_config_basic",
+    "tags": [
+      "plugins",
+      "config"
+    ]
+  },
+  "schema_version": "1"
+}

@@ -1,0 +1,45 @@
+{
+  "cases": [
+    {
+      "case_type": "async_batch_plan",
+      "description": "Async batch plan is dry-run friendly.",
+      "expected": {
+        "required_keys": [
+          "plan_name",
+          "project_ids",
+          "resources",
+          "dry_run"
+        ],
+        "required_values": {
+          "dry_run": true
+        }
+      },
+      "id": "async_batch_plan_is_dry_run_friendly",
+      "input": {
+        "artifact": {
+          "company_id": "placeholder-company",
+          "dry_run": true,
+          "plan_name": "sample_batch_plan",
+          "project_ids": [
+            "placeholder-project"
+          ],
+          "resources": [
+            "rfis",
+            "submittals"
+          ]
+        },
+        "artifact_name": "async_batch_plan"
+      }
+    }
+  ],
+  "metadata": {
+    "description": "Safe placeholder async batch plan golden dataset.",
+    "mode": "local_deterministic",
+    "name": "golden_async_batch_plan_basic",
+    "tags": [
+      "async",
+      "batch"
+    ]
+  },
+  "schema_version": "1"
+}

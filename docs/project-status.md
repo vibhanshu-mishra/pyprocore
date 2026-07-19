@@ -17,7 +17,8 @@
   Phase 10E async financial/contract/billing/project-management read coverage,
   plus Phase 11A metadata-only plugin architecture foundation, Phase 11B safe
   local plugin extension hooks, and Phase 11C plugin configuration/local
-  extension-pack manifests, plus Phase 11D plugin developer scaffolding.
+  extension-pack manifests, plus Phase 11D plugin developer scaffolding, plus
+  Phase 13A local deterministic golden datasets and eval reports.
   The package remains `2.2.0`; this branch work is unpublished.
 
 ## Current Stable Release: 2.2.0
@@ -126,6 +127,12 @@ plugins, fetch remote resources, auto-load modules, execute generated files,
 execute hooks, call Procore, call external AI/model APIs, add write actions, or
 enable agent/MCP execution.
 
+Phase 13A adds local golden dataset models, deterministic scoring helpers,
+built-in placeholder datasets, eval runners, JSON/Markdown reports, CLI
+commands, docs, and examples for local artifacts. It evaluates saved/local
+structures only and does not call Procore, call external AI/model APIs, execute
+plugins, fetch remote datasets, upload reports, or enable tool/MCP execution.
+
 Phase 8A adds read-only SDK coverage for Observations, Punch Items, Generic
 Tools, and Generic Tool correspondence items. It includes service helpers,
 typed flexible models, search helpers, local CSV/JSONL exports, CLI commands,
@@ -191,6 +198,9 @@ approvals, status changes, or project-management mutations.
   agent execution, or MCP execution.
 - Phase 11A plugin helpers are metadata-only, local-first, and do not install,
   fetch, import, or execute plugins.
+- Phase 13A golden evals are local and deterministic; they do not call Procore,
+  call external AI/model APIs, execute plugins, fetch/upload datasets, or enable
+  tool/MCP execution.
 
 ## Known Limitations
 
@@ -214,5 +224,5 @@ approvals, status changes, or project-management mutations.
 - Additional read-only Procore coverage beyond Phase 8G
 - Richer async attachment extraction
 - Controlled plugin extension hooks beyond metadata
-- Golden datasets and model evals
+- Saved model-response comparison patterns without live model calls
 - Richer MCP integration

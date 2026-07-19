@@ -272,6 +272,25 @@ extension-pack execution, generated-code execution, Procore mutations, live
 Procore calls, external AI/model calls, agent execution, or MCP execution are
 added.
 
+### Phase 13A — Golden Dataset Foundation and Deterministic Eval Harness
+
+Implemented in the current branch and not yet published:
+
+- Typed local golden dataset models for deterministic eval cases.
+- Deterministic scoring helpers for exact matches, required/forbidden keys,
+  text checks, JSON serializability, redaction, row counts, manifest integrity,
+  and safety boundaries.
+- Built-in placeholder datasets for export rows, agent manifests, AI workflow
+  packages, async batch plans, plugin manifests, plugin configs, and safety
+  boundaries.
+- Local eval runner, JSON/Markdown report builders, CLI commands, docs, and
+  examples 209–218.
+
+Focus: local artifact checks only. No live Procore calls, external AI/model
+calls, plugin execution, MCP execution, remote dataset fetching, dataset
+upload, arbitrary code loading, Procore tool execution, or Procore writes are
+added.
+
 ### Phase 8A — Expanded Procore API Coverage
 
 Implemented in the current branch and not yet published:

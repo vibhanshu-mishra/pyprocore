@@ -1,0 +1,52 @@
+{
+  "cases": [
+    {
+      "case_type": "agent_manifest",
+      "description": "Agent manifest exposes disabled execution flags.",
+      "expected": {
+        "manifest_required_keys": [
+          "name",
+          "version",
+          "safety"
+        ],
+        "required_keys": [
+          "name",
+          "version",
+          "safety.tool_execution_enabled",
+          "safety.mcp_execution_enabled"
+        ],
+        "required_values": {
+          "safety.mcp_execution_enabled": false,
+          "safety.tool_execution_enabled": false
+        }
+      },
+      "id": "agent_manifest_has_safety_flags",
+      "input": {
+        "artifact": {
+          "name": "pyprocore-agent",
+          "safety": {
+            "mcp_execution_enabled": false,
+            "tool_execution_enabled": false
+          },
+          "tools": [
+            {
+              "name": "procore.find_rfi"
+            }
+          ],
+          "version": "2.2.0"
+        },
+        "artifact_name": "agent_manifest"
+      }
+    }
+  ],
+  "metadata": {
+    "description": "Safe placeholder agent manifest golden dataset.",
+    "mode": "local_deterministic",
+    "name": "golden_agent_manifest_basic",
+    "tags": [
+      "agent",
+      "manifest"
+    ]
+  },
+  "schema_version": "1"
+}

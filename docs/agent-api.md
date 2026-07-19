@@ -45,6 +45,12 @@ local prompt/checklist/vector-manifest files for user-selected model stacks, but
 they do not enable agent tool execution, do not call external AI/model APIs, and
 do not change discovery-only MCP behavior.
 
+Phase 13A golden evals complement the Phase 7 agent eval command. The
+top-level `procore-sdk evals` commands check local deterministic artifacts such
+as agent manifests, export rows, workflow packages, async batch plans, and
+plugin metadata. They do not replace `procore-sdk agent evals`, and they do not
+enable tool execution.
+
 ## What It Provides
 
 - Stable tool names such as `procore.find_rfi`.

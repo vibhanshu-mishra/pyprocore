@@ -93,6 +93,10 @@ scaffolding. They render local templates or write to temporary folders only and
 do not install plugins, fetch remote resources, load generated code, execute
 hooks, call Procore, call external AI/model APIs, or enable agent/MCP
 execution.
+Examples `209` through `218` cover unreleased Phase 13A local deterministic
+golden datasets and eval reports. They validate local artifacts only and do not
+call Procore, call external AI/model APIs, execute plugins, fetch remote
+datasets, or enable tool/MCP execution.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -467,6 +471,28 @@ The current example set runs from `01_list_companies.py` through
 | `206_plugin_scaffold_overwrite_safety.py` | Demonstrate skip and overwrite behavior |
 | `207_plugin_scaffold_path_safety.py` | Demonstrate path traversal rejection |
 | `208_phase11d_plugin_scaffolding_summary.py` | Summarize Phase 11D scaffold safety boundaries |
+| `209_golden_dataset_quickstart.py` | Create and validate a safe golden dataset locally |
+| `210_eval_runner_basic.py` | Run all built-in deterministic golden eval suites |
+| `211_eval_export_rows.py` | Evaluate placeholder export row shape and counts |
+| `212_eval_agent_manifest.py` | Evaluate agent manifest safety metadata |
+| `213_eval_ai_workflow_package.py` | Evaluate local AI workflow package metadata |
+| `214_eval_async_batch_plan.py` | Evaluate a placeholder async batch plan |
+| `215_eval_plugin_metadata.py` | Evaluate plugin manifest and config metadata |
+| `216_eval_report_generation.py` | Write local JSON and Markdown eval reports to a temporary folder |
+| `217_eval_safety_boundaries.py` | Demonstrate deterministic safety-boundary checks |
+| `218_phase13a_eval_summary.py` | Summarize Phase 13A golden eval capabilities and limits |
+
+Sample golden datasets live in `examples/golden_datasets/`:
+
+| File | Demonstrates |
+| ---- | ------------ |
+| `golden_export_rows_basic.json` | Placeholder export row checks |
+| `golden_agent_manifest_basic.json` | Agent manifest safety metadata checks |
+| `golden_ai_workflow_package_basic.json` | Local AI workflow package checks |
+| `golden_async_batch_plan_basic.json` | Async batch plan checks |
+| `golden_plugin_manifest_basic.json` | Metadata-only plugin manifest checks |
+| `golden_plugin_config_basic.json` | Metadata-only plugin config checks |
+| `golden_safety_boundaries_basic.json` | Local deterministic safety-boundary checks |
 
 Sample scheduled export configs live in `examples/configs/`:
 
@@ -591,4 +617,8 @@ Sample webhook payloads live in `examples/webhooks/`:
   templates only, do not install plugins, do not fetch remote resources, do not
   load generated code, do not execute hooks, do not call Procore, and keep
   agent/MCP execution disabled.
+- Examples `209` through `218` are local deterministic golden eval examples.
+  They do not call Procore, call external AI/model APIs, execute plugins, fetch
+  remote datasets, upload reports, load arbitrary code, or enable tool/MCP
+  execution.
 - Keep secrets out of code, screenshots, logs, and issue reports.

@@ -20,6 +20,7 @@ nav:
   - Async Client: async-client.md
   - Agent API: agent-api.md
   - Plugins: plugins.md
+  - Golden Evals: evals.md
   - Project Status: project-status.md
   - Security: security.md
   - Automation:

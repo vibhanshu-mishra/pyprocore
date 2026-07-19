@@ -55,6 +55,9 @@ and this project follows semantic versioning.
 - Phase 11D plugin developer scaffolding with typed scaffold request/plan/result models, dry-run planning, safe local writes, overwrite controls, and static JSON/Markdown/text templates.
 - `procore-sdk plugins scaffold sample-plan`, `procore-sdk plugins scaffold dry-run`, `procore-sdk plugins scaffold create`, `procore-sdk plugins scaffold extension-pack`, `procore-sdk plugins scaffold config`, and `procore-sdk plugins scaffold hook-pack`.
 - Examples 201–208 and sample scaffold metadata files for local plugin manifests, plugin configs, extension-pack manifests, hook manifests, and scaffolding safety boundaries.
+- Phase 13A golden dataset foundation with typed local dataset models, deterministic scoring helpers, built-in placeholder datasets, eval runners, and JSON/Markdown report builders.
+- `procore-sdk evals list`, `procore-sdk evals run`, `procore-sdk evals validate-dataset`, `procore-sdk evals report`, `procore-sdk evals sample-dataset`, and `procore-sdk evals sample-report`.
+- Examples 209–218 and sample golden dataset JSON files for local deterministic export, agent metadata, AI workflow package, async batch, plugin metadata, and safety-boundary evals.
 
 - Phase 8A read-only API coverage for Observations, Punch Items, and Generic Tool correspondence items.
 - Typed flexible models for `Observation`, `PunchItem`, `GenericTool`, and `Correspondence`.
@@ -102,6 +105,7 @@ and this project follows semantic versioning.
 - Phase 11A plugin architecture is metadata-only, local-first, does not install plugins, does not fetch remote registries, does not import arbitrary plugin modules, does not execute plugin code, does not call Procore or external AI/model APIs, does not add Procore write actions, and keeps agent/MCP execution disabled.
 - Phase 11B plugin hooks are explicit local callables only, do not install plugins, do not fetch remote registries, do not import arbitrary plugin modules, do not execute manifest metadata, do not call Procore or external AI/model APIs, do not add Procore write actions, and keep agent/MCP execution disabled.
 - Phase 11D scaffolding creates local templates only; it does not install plugins, fetch remote resources, auto-load modules, execute generated files, execute hooks from config, call Procore, call external AI/model APIs, add write actions, or enable agent/MCP execution.
+- Phase 13A golden evals are local deterministic artifact checks only; they do not call Procore, call external AI/model APIs, fetch or upload datasets, execute plugins, load arbitrary code, add Procore write actions, or enable agent/MCP execution.
 
 - Phase 8A remains read-only and does not add create/update/delete Procore actions.
 - Agent tool execution remains disabled; new Phase 8A agent entries are metadata only.

@@ -22,6 +22,10 @@ Phase 11D adds local developer scaffolding for templates. A scaffold can create
 placeholder JSON, Markdown, docs, example, and test files, but generated files
 are not loaded, imported, installed, or executed by PyProcore.
 
+Phase 13A adds local golden evals that can inspect plugin manifests, plugin
+configuration, and extension-pack metadata. These evals are deterministic
+checks only and do not execute plugin code.
+
 ## Safety Boundaries
 
 - No remote plugin installation.
