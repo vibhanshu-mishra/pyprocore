@@ -164,7 +164,8 @@ Phase 13A adds unreleased local deterministic eval commands for safe JSON-like
 artifacts such as export rows, agent metadata, AI workflow packages, async
 batch plans, and plugin metadata. Phase 13B adds workflow-specific suites for
 RFI, submittal, async export, async batch, AI workflow, plugin metadata/config,
-and safety-boundary artifacts:
+and safety-boundary artifacts. Phase 13C adds local baselines, regression
+comparison, score thresholds, regression reports, and history snapshots:
 
 ```bash
 procore-sdk evals list
@@ -174,13 +175,23 @@ procore-sdk evals run --suite rfi_workflow_golden
 procore-sdk evals run --suite safety_boundaries_golden
 procore-sdk evals validate-dataset examples/golden_datasets/golden_export_rows_basic.json
 procore-sdk evals report --format json
+procore-sdk evals baseline sample
+procore-sdk evals baseline create --output local-eval-baseline.json
+procore-sdk evals baseline validate local-eval-baseline.json
+procore-sdk evals compare --baseline local-eval-baseline.json
+procore-sdk evals compare --baseline local-eval-baseline.json --suite rfi_workflow_golden
+procore-sdk evals regression-report --baseline local-eval-baseline.json --format markdown
+procore-sdk evals history sample
+procore-sdk evals history append --output local-eval-history.json
+procore-sdk evals history summary local-eval-history.json
 procore-sdk evals sample-dataset
 procore-sdk evals sample-report
 ```
 
 These commands do not call Procore, call external AI/model APIs, execute
 plugins, execute MCP tools, execute Procore tools, fetch remote datasets, or
-upload reports. Reports are local JSON or Markdown artifacts only.
+upload reports. Baselines, reports, and history snapshots are local JSON or
+Markdown artifacts only.
 
 ## Scheduled Export Planning
 

@@ -78,22 +78,46 @@ from pyprocore.core.exceptions import (
     ValidationError,
 )
 from pyprocore.evals import (
+    EvalBaseline,
     EvalFinding,
+    EvalHistorySnapshot,
+    EvalHistorySummary,
+    EvalRegressionResult,
     EvalReport,
     EvalSuite,
     GoldenDataset,
+    append_eval_history_snapshot,
+    baseline_to_summary,
+    build_eval_baseline,
+    build_eval_history_markdown,
+    build_eval_history_snapshot,
+    build_regression_report_json,
+    build_regression_report_markdown,
+    compare_current_to_baseline_file,
+    default_eval_threshold_policy,
+    eval_baseline_to_json,
+    eval_history_to_json,
     eval_report_to_json,
     eval_report_to_markdown,
     golden_dataset_to_json,
     list_builtin_eval_suites,
+    load_eval_baseline_from_file,
+    load_eval_history_file,
     load_golden_dataset_from_file,
     run_builtin_eval_suites,
     run_golden_dataset_file,
+    sample_eval_baseline,
+    sample_eval_history_summary,
     sample_eval_report,
     sample_golden_dataset,
+    summarize_eval_history,
+    summarize_eval_regressions,
     validate_golden_dataset,
+    write_eval_baseline_json,
     write_eval_report_json,
     write_eval_report_markdown,
+    write_regression_report_json,
+    write_regression_report_markdown,
 )
 from pyprocore.plugins import (
     PluginCapability,
@@ -933,6 +957,99 @@ def build_parser() -> argparse.ArgumentParser:
     )
     evals_sample_report_parser.add_argument("--json", dest="json_output", action="store_true")
     evals_sample_report_parser.add_argument("--pretty", action="store_true")
+    evals_baseline_parser = evals_subcommands.add_parser(
+        "baseline",
+        help="Create and validate local deterministic eval baselines",
+    )
+    evals_baseline_subcommands = evals_baseline_parser.add_subparsers(
+        dest="evals_baseline_command",
+        required=True,
+    )
+    evals_baseline_sample_parser = evals_baseline_subcommands.add_parser(
+        "sample",
+        help="Print a safe sample eval baseline",
+    )
+    evals_baseline_sample_parser.add_argument("--json", dest="json_output", action="store_true")
+    evals_baseline_sample_parser.add_argument("--pretty", action="store_true")
+    evals_baseline_create_parser = evals_baseline_subcommands.add_parser(
+        "create",
+        help="Create a local baseline from current deterministic eval results",
+    )
+    evals_baseline_create_parser.add_argument("--suite", default=None)
+    evals_baseline_create_parser.add_argument("--output", type=Path, required=True)
+    evals_baseline_create_parser.add_argument("--name", default="pyprocore-local-baseline")
+    evals_baseline_create_parser.add_argument("--notes", default=None)
+    evals_baseline_create_parser.add_argument("--json", dest="json_output", action="store_true")
+    evals_baseline_create_parser.add_argument("--pretty", action="store_true")
+    evals_baseline_validate_parser = evals_baseline_subcommands.add_parser(
+        "validate",
+        help="Validate one local JSON eval baseline",
+    )
+    evals_baseline_validate_parser.add_argument("baseline_path", type=Path)
+    evals_baseline_validate_parser.add_argument("--json", dest="json_output", action="store_true")
+    evals_baseline_validate_parser.add_argument("--pretty", action="store_true")
+    evals_compare_parser = evals_subcommands.add_parser(
+        "compare",
+        help="Compare current deterministic eval results to a local baseline",
+    )
+    evals_compare_parser.add_argument("--baseline", dest="baseline_path", type=Path, required=True)
+    evals_compare_parser.add_argument("--suite", default=None)
+    evals_compare_parser.add_argument("--json", dest="json_output", action="store_true")
+    evals_compare_parser.add_argument("--pretty", action="store_true")
+    evals_regression_report_parser = evals_subcommands.add_parser(
+        "regression-report",
+        help="Build a JSON or Markdown regression report from a local baseline",
+    )
+    evals_regression_report_parser.add_argument(
+        "--baseline",
+        dest="baseline_path",
+        type=Path,
+        required=True,
+    )
+    evals_regression_report_parser.add_argument("--suite", default=None)
+    evals_regression_report_parser.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="json",
+    )
+    evals_regression_report_parser.add_argument("--output", type=Path, default=None)
+    evals_regression_report_parser.add_argument("--json", dest="json_output", action="store_true")
+    evals_regression_report_parser.add_argument("--pretty", action="store_true")
+    evals_history_parser = evals_subcommands.add_parser(
+        "history",
+        help="Create and summarize local deterministic eval history snapshots",
+    )
+    evals_history_subcommands = evals_history_parser.add_subparsers(
+        dest="evals_history_command",
+        required=True,
+    )
+    evals_history_sample_parser = evals_history_subcommands.add_parser(
+        "sample",
+        help="Print a safe sample eval history summary",
+    )
+    evals_history_sample_parser.add_argument("--json", dest="json_output", action="store_true")
+    evals_history_sample_parser.add_argument("--pretty", action="store_true")
+    evals_history_append_parser = evals_history_subcommands.add_parser(
+        "append",
+        help="Append a current deterministic eval snapshot to a local history file",
+    )
+    evals_history_append_parser.add_argument("--suite", default=None)
+    evals_history_append_parser.add_argument("--output", type=Path, required=True)
+    evals_history_append_parser.add_argument("--label", default=None)
+    evals_history_append_parser.add_argument("--json", dest="json_output", action="store_true")
+    evals_history_append_parser.add_argument("--pretty", action="store_true")
+    evals_history_summary_parser = evals_history_subcommands.add_parser(
+        "summary",
+        help="Summarize a local JSON eval history file",
+    )
+    evals_history_summary_parser.add_argument("history_path", type=Path)
+    evals_history_summary_parser.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="markdown",
+    )
+    evals_history_summary_parser.add_argument("--json", dest="json_output", action="store_true")
+    evals_history_summary_parser.add_argument("--pretty", action="store_true")
 
     plugins_parser = subcommands.add_parser(
         "plugins",
@@ -3528,6 +3645,51 @@ def run_command(args: argparse.Namespace) -> Any:
             return sample_golden_dataset()
         if args.evals_command == "sample-report":
             return sample_eval_report()
+        if args.evals_command == "baseline":
+            if args.evals_baseline_command == "sample":
+                return sample_eval_baseline()
+            if args.evals_baseline_command == "create":
+                report = run_builtin_eval_suites(suite=args.suite)
+                baseline = build_eval_baseline(
+                    report,
+                    baseline_name=args.name,
+                    notes=args.notes,
+                )
+                write_eval_baseline_json(baseline, args.output, pretty=True)
+                return baseline
+            if args.evals_baseline_command == "validate":
+                return load_eval_baseline_from_file(args.baseline_path)
+            raise ValueError(f"Unsupported eval baseline command: {args.evals_baseline_command}")
+        if args.evals_command == "compare":
+            return compare_current_to_baseline_file(
+                args.baseline_path,
+                suite=args.suite,
+                policy=default_eval_threshold_policy(),
+            )
+        if args.evals_command == "regression-report":
+            result = compare_current_to_baseline_file(
+                args.baseline_path,
+                suite=args.suite,
+                policy=default_eval_threshold_policy(),
+            )
+            if args.output is not None:
+                if args.format == "json":
+                    write_regression_report_json(result, args.output, pretty=True)
+                else:
+                    write_regression_report_markdown(result, args.output)
+            return result
+        if args.evals_command == "history":
+            if args.evals_history_command == "sample":
+                return sample_eval_history_summary()
+            if args.evals_history_command == "append":
+                report = run_builtin_eval_suites(suite=args.suite)
+                snapshot = build_eval_history_snapshot(report, label=args.label)
+                append_eval_history_snapshot(args.output, snapshot)
+                return snapshot
+            if args.evals_history_command == "summary":
+                snapshots = load_eval_history_file(args.history_path)
+                return summarize_eval_history(snapshots)
+            raise ValueError(f"Unsupported eval history command: {args.evals_history_command}")
         raise ValueError(f"Unsupported evals command: {args.evals_command}")
 
     if args.command == "plugins":
@@ -6172,6 +6334,41 @@ def eval_report_exit_code(report: EvalReport) -> int:
     return 0 if report.passed else 1
 
 
+def format_eval_baseline(baseline: EvalBaseline) -> str:
+    """Return a human-readable deterministic eval baseline summary."""
+    return baseline_to_summary(baseline)
+
+
+def format_eval_regression_result(result: EvalRegressionResult) -> str:
+    """Return a human-readable deterministic regression summary."""
+    return summarize_eval_regressions(result)
+
+
+def eval_regression_exit_code(result: EvalRegressionResult) -> int:
+    """Return the CLI exit code for a deterministic regression result."""
+    return 0 if result.passed else 1
+
+
+def format_eval_history_snapshot(snapshot: EvalHistorySnapshot) -> str:
+    """Return a human-readable eval history append summary."""
+    return "\n".join(
+        [
+            "PyProcore eval history snapshot appended.",
+            f"Label: {snapshot.label or ''}",
+            f"Status: {snapshot.status.value}",
+            f"Suites: {snapshot.total_suites}",
+            f"Cases: {snapshot.passed_cases}/{snapshot.total_cases}",
+            f"Score: {snapshot.score}/{snapshot.max_score}",
+            "Mode: local deterministic history only; no live calls were made.",
+        ]
+    )
+
+
+def format_eval_history_summary(summary: EvalHistorySummary) -> str:
+    """Return a human-readable eval history summary."""
+    return build_eval_history_markdown(summary).rstrip()
+
+
 def format_workflow_plan_validation(plan: WorkflowPlan) -> str:
     """Return a human-readable workflow plan validation summary."""
     enabled_count = sum(1 for step in plan.steps if step.enabled)
@@ -6523,6 +6720,39 @@ def main() -> None:
             else:
                 print(format_eval_report(result))
             raise SystemExit(eval_report_exit_code(result))
+        if isinstance(result, EvalBaseline):
+            if (
+                args.evals_command == "baseline"
+                and getattr(args, "evals_baseline_command", None) == "create"
+            ):
+                print(f"Golden eval baseline written to: {args.output}")
+            if args.json_output or getattr(args, "pretty", False):
+                print(eval_baseline_to_json(result, pretty=True))
+            else:
+                print(format_eval_baseline(result))
+            return
+        if isinstance(result, EvalRegressionResult):
+            if args.evals_command == "regression-report" and args.output is not None:
+                print(f"Golden eval regression report written to: {args.output}")
+            if args.json_output or getattr(args, "format", None) == "json":
+                print(build_regression_report_json(result, pretty=True))
+            elif getattr(args, "format", None) == "markdown":
+                print(build_regression_report_markdown(result).rstrip())
+            else:
+                print(format_eval_regression_result(result))
+            raise SystemExit(eval_regression_exit_code(result))
+        if isinstance(result, EvalHistorySnapshot):
+            if args.json_output or getattr(args, "pretty", False):
+                print(json.dumps(to_serializable(result), indent=2, default=str))
+            else:
+                print(format_eval_history_snapshot(result))
+            return
+        if isinstance(result, EvalHistorySummary):
+            if args.json_output or getattr(args, "format", None) == "json":
+                print(eval_history_to_json(result.snapshots, pretty=True))
+            else:
+                print(format_eval_history_summary(result))
+            return
 
     if isinstance(result, AgentManifest):
         if args.json_output or args.pretty:

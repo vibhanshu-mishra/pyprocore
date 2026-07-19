@@ -61,6 +61,9 @@ and this project follows semantic versioning.
 - Phase 13B workflow-specific golden eval suites for RFI workflows, submittal workflows, async exports, async batch manifests, AI workflow packages, plugin metadata/configs, and safety boundaries.
 - Workflow-specific deterministic scoring helpers for expected fields, required/forbidden phrases, output path boundaries, manifest status, mutation-instruction checks, placeholder-only fixtures, allowed plugin capabilities, and allowed hook metadata types.
 - Examples 219–228 and sample workflow golden dataset JSON files for local deterministic workflow evals.
+- Phase 13C local eval baselines, deterministic regression comparison, threshold policies, JSON/Markdown regression reports, and history snapshots.
+- `procore-sdk evals baseline`, `procore-sdk evals compare`, `procore-sdk evals regression-report`, and `procore-sdk evals history` local-only CLI commands.
+- Examples 229–238 and sample local eval baseline, regression report, and history files.
 
 - Phase 8A read-only API coverage for Observations, Punch Items, and Generic Tool correspondence items.
 - Typed flexible models for `Observation`, `PunchItem`, `GenericTool`, and `Correspondence`.
@@ -110,6 +113,7 @@ and this project follows semantic versioning.
 - Phase 11D scaffolding creates local templates only; it does not install plugins, fetch remote resources, auto-load modules, execute generated files, execute hooks from config, call Procore, call external AI/model APIs, add write actions, or enable agent/MCP execution.
 - Phase 13A golden evals are local deterministic artifact checks only; they do not call Procore, call external AI/model APIs, fetch or upload datasets, execute plugins, load arbitrary code, add Procore write actions, or enable agent/MCP execution.
 - Phase 13B workflow-specific golden evals remain local deterministic artifact checks only; they do not call Procore, call external AI/model APIs, fetch remote datasets, execute plugins, load arbitrary code, add Procore write actions, or enable agent/MCP execution.
+- Phase 13C baseline/regression helpers compare local deterministic eval artifacts only; they do not call Procore, call external AI/model APIs, fetch remote baselines, upload reports, execute plugins, load arbitrary code, add Procore write actions, or enable agent/MCP execution.
 
 - Phase 8A remains read-only and does not add create/update/delete Procore actions.
 - Agent tool execution remains disabled; new Phase 8A agent entries are metadata only.

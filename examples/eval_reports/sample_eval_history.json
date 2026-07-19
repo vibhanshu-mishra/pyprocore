@@ -1,0 +1,20 @@
+{
+  "schema_version": "1",
+  "snapshots": [
+    {
+      "failed_cases": 0,
+      "generated_at": "2026-07-19T14:50:32.772076Z",
+      "label": "sample-local-eval",
+      "max_score": 15,
+      "mode": "local_deterministic",
+      "passed": true,
+      "passed_cases": 2,
+      "pyprocore_version": "2.2.0",
+      "score": 15,
+      "status": "pass",
+      "total_cases": 2,
+      "total_suites": 1,
+      "warnings": 0
+    }
+  ]
+}

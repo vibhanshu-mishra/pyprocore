@@ -29,7 +29,8 @@ Current repository status:
   scaffolding/templates, plus Phase 13A local deterministic golden datasets
   and eval reports, plus Phase 13B workflow-specific golden eval suites for
   RFI, submittal, async export, async batch, AI workflow, plugin metadata/config,
-  and safety-boundary artifacts
+  and safety-boundary artifacts, plus Phase 13C local eval baselines,
+  regression comparison, threshold policies, and history snapshots
 - Procore tool execution remains disabled
 
 ```bash
@@ -70,6 +71,8 @@ PyProcore turns Procore REST API responses into typed Python objects and gives y
 - Run unreleased Phase 13B workflow-specific golden evals for RFI, submittal,
   async export, async batch, AI workflow package, plugin metadata/config, and
   safety-boundary artifacts.
+- Compare deterministic eval results against unreleased Phase 13C local
+  baselines, threshold policies, regression reports, and history snapshots.
 - Use CLI diagnostics and automation commands without hardcoding credentials.
 - Expose local agent metadata, OpenAPI/JSON Schema, run logs, replay, MCP discovery, and deterministic evals for future assistant integrations.
 
@@ -370,19 +373,28 @@ Prepared in the current unreleased branch:
 - workflow-specific golden eval suites for RFI exports/packages, submittal
   exports/packages, async exports, async batch manifests, AI workflow packages,
   plugin metadata/config, and cross-SDK safety boundaries
+- local baseline files, regression comparison, threshold policies, score
+  deltas, JSON/Markdown regression reports, and history snapshots
 - JSON and Markdown report builders
 - `procore-sdk evals list`
 - `procore-sdk evals run`
 - `procore-sdk evals run --suite rfi_workflow_golden`
 - `procore-sdk evals validate-dataset PATH`
 - `procore-sdk evals report --format json`
+- `procore-sdk evals baseline sample`
+- `procore-sdk evals baseline create --output PATH`
+- `procore-sdk evals baseline validate PATH`
+- `procore-sdk evals compare --baseline PATH`
+- `procore-sdk evals regression-report --baseline PATH --format markdown`
+- `procore-sdk evals history append --output PATH`
+- `procore-sdk evals history summary PATH`
 - `procore-sdk evals sample-dataset`
 - `procore-sdk evals sample-report`
 
 Phase 13 evals inspect local deterministic artifacts only. They do not call
 Procore, call external AI/model APIs, execute Procore tools, execute MCP,
-execute plugins, fetch remote datasets, load arbitrary code, or upload reports. See
-[Golden Evals](docs/evals.md).
+execute plugins, fetch remote datasets, fetch remote baselines, upload reports,
+or load arbitrary code. See [Golden Evals](docs/evals.md).
 
 ### Phase 7 Agent Layer
 

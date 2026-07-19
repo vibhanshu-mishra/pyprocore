@@ -314,6 +314,26 @@ external AI/model calls, plugin execution, MCP execution, remote dataset
 fetching, dataset upload, arbitrary code loading, Procore tool execution, or
 Procore writes are added.
 
+### Phase 13C — Eval Reports, Baselines, And Regression Tracking
+
+Implemented in the current branch and not yet published:
+
+- Local JSON eval baseline models and helpers.
+- Deterministic comparison of current eval reports to baseline files.
+- Regression findings for missing suites/cases, pass-to-fail changes, warnings,
+  score drops, max score changes, and new suites/cases.
+- Default and strict local threshold policies.
+- JSON and Markdown regression report builders.
+- Optional append-only local history snapshots and summaries.
+- CLI commands for `evals baseline`, `evals compare`,
+  `evals regression-report`, and `evals history`.
+- Examples 229–238 and sample local baseline/report/history files.
+
+Focus: deterministic local baseline comparison only. No live Procore calls,
+external AI/model calls, plugin execution, MCP execution, remote dataset or
+baseline fetching, remote report upload, arbitrary code loading, Procore tool
+execution, or Procore writes are added.
+
 ### Phase 8A — Expanded Procore API Coverage
 
 Implemented in the current branch and not yet published:

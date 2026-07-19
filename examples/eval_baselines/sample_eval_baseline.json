@@ -1,0 +1,74 @@
+{
+  "metadata": {
+    "baseline_name": "sample-eval-baseline",
+    "case_count": 2,
+    "created_at": "2026-07-19T14:50:32.772673Z",
+    "fail_count": 0,
+    "max_score": 15,
+    "mode": "local_deterministic",
+    "notes": null,
+    "pass_count": 2,
+    "pyprocore_version": "2.2.0",
+    "suite_count": 1,
+    "total_score": 15,
+    "warning_count": 0
+  },
+  "schema_version": "1",
+  "suites": [
+    {
+      "cases": [
+        {
+          "case_id": "ai_package_has_expected_sections",
+          "case_type": "ai_workflow_package",
+          "failure_count": 0,
+          "finding_count": 8,
+          "finding_messages": [
+            "All required keys are present.",
+            "Artifact is JSON serializable.",
+            "No secret-like text is present.",
+            "Required workflow phrases are present.",
+            "Artifact uses placeholder-only local data.",
+            "Artifact contains no Procore mutation instructions.",
+            "No secret-like values are present.",
+            "Artifact stays inside local deterministic safety boundaries."
+          ],
+          "max_score": 8,
+          "passed": true,
+          "score": 8,
+          "status": "pass",
+          "warning_count": 0
+        },
+        {
+          "case_id": "ai_vector_manifest_is_local_and_redacted",
+          "case_type": "ai_workflow_package",
+          "failure_count": 0,
+          "finding_count": 7,
+          "finding_messages": [
+            "All required keys are present.",
+            "Required values match.",
+            "Artifact is JSON serializable.",
+            "No secret-like text is present.",
+            "Manifest integrity checks passed.",
+            "Artifact uses placeholder-only local data.",
+            "Artifact stays inside local deterministic safety boundaries."
+          ],
+          "max_score": 7,
+          "passed": true,
+          "score": 7,
+          "status": "pass",
+          "warning_count": 0
+        }
+      ],
+      "dataset_name": "ai_workflow_package_golden",
+      "failed_cases": 0,
+      "max_score": 15,
+      "passed": true,
+      "passed_cases": 2,
+      "score": 15,
+      "status": "pass",
+      "suite_name": "ai_workflow_package_golden",
+      "total_cases": 2,
+      "warnings": 0
+    }
+  ]
+}

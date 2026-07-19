@@ -103,6 +103,11 @@ plugin metadata/config, and safety-boundary artifacts. They use placeholder
 fixtures only and do not call Procore, call external AI/model APIs, execute
 plugins, fetch remote datasets, load arbitrary code, or enable tool/MCP
 execution.
+Examples `229` through `238` cover unreleased Phase 13C local eval baselines,
+regression comparison, threshold policies, JSON/Markdown regression reports,
+and history snapshots. They use placeholder fixtures or temporary folders only
+and do not call Procore, call external AI/model APIs, execute plugins, fetch or
+upload remote reports, load arbitrary code, or enable tool/MCP execution.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -210,6 +215,9 @@ python3 examples/164_async_directory_resources.py
 python3 examples/168_phase10d_async_coverage_summary.py
 python3 examples/219_eval_rfi_workflow_suite.py
 python3 examples/225_eval_safety_boundary_suite.py
+python3 examples/229_eval_baseline_quickstart.py
+python3 examples/231_eval_compare_to_baseline.py
+python3 examples/235_eval_history_snapshot.py
 ```
 
 Documents use Procore's Project Folders and Files endpoints internally. Before a
@@ -267,7 +275,7 @@ make examples-check
 ## Example Index
 
 The current example set runs from `01_list_companies.py` through
-`228_phase13b_workflow_eval_summary.py`.
+`238_phase13c_baseline_regression_summary.py`.
 
 | File | Demonstrates |
 | ---- | ------------ |
@@ -499,6 +507,16 @@ The current example set runs from `01_list_companies.py` through
 | `226_eval_suite_filtering.py` | List workflow-specific eval suites and run one by name |
 | `227_eval_workflow_report.py` | Generate a local Markdown report for workflow-specific evals |
 | `228_phase13b_workflow_eval_summary.py` | Summarize Phase 13B workflow-specific golden eval support |
+| `229_eval_baseline_quickstart.py` | Create an in-memory local eval baseline |
+| `230_eval_baseline_create_and_validate.py` | Write and reload a local baseline in a temporary folder |
+| `231_eval_compare_to_baseline.py` | Compare current deterministic eval results to a baseline |
+| `232_eval_regression_report_json.py` | Render a local JSON regression report |
+| `233_eval_regression_report_markdown.py` | Render a local Markdown regression report |
+| `234_eval_threshold_policy.py` | Compare default and strict local threshold policies |
+| `235_eval_history_snapshot.py` | Append a local history snapshot in a temporary folder |
+| `236_eval_history_summary.py` | Summarize local eval history snapshots |
+| `237_eval_release_readiness_pattern.py` | Demonstrate a strict local release-readiness eval pattern |
+| `238_phase13c_baseline_regression_summary.py` | Summarize Phase 13C baseline and regression support |
 
 Sample golden datasets live in `examples/golden_datasets/`:
 
@@ -519,6 +537,16 @@ Sample golden datasets live in `examples/golden_datasets/`:
 | `plugins/plugin_metadata_golden.json` | Plugin metadata checks |
 | `plugins/plugin_config_golden.json` | Plugin config checks |
 | `safety_boundaries/safety_boundaries_golden.json` | Cross-SDK safety-boundary checks |
+
+Sample eval baselines and reports live in `examples/eval_baselines/` and
+`examples/eval_reports/`:
+
+| File | Demonstrates |
+| ---- | ------------ |
+| `eval_baselines/sample_eval_baseline.json` | Placeholder local eval baseline |
+| `eval_reports/sample_regression_report.json` | Placeholder JSON regression report |
+| `eval_reports/sample_regression_report.md` | Placeholder Markdown regression report |
+| `eval_reports/sample_eval_history.json` | Placeholder local eval history snapshot file |
 
 Sample scheduled export configs live in `examples/configs/`:
 
@@ -651,4 +679,8 @@ Sample webhook payloads live in `examples/webhooks/`:
   examples. They use placeholder fixtures only and do not call Procore, call
   external AI/model APIs, execute plugins, fetch remote datasets, load
   arbitrary code, upload reports, or enable tool/MCP execution.
+- Examples `229` through `238` are local eval baseline and regression examples.
+  They use placeholder fixtures or temporary folders only and do not call
+  Procore, call external AI/model APIs, execute plugins, fetch remote datasets,
+  upload remote reports, load arbitrary code, or enable tool/MCP execution.
 - Keep secrets out of code, screenshots, logs, and issue reports.

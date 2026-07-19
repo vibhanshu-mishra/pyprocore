@@ -18,7 +18,9 @@
   plus Phase 11A metadata-only plugin architecture foundation, Phase 11B safe
   local plugin extension hooks, and Phase 11C plugin configuration/local
   extension-pack manifests, plus Phase 11D plugin developer scaffolding, plus
-  Phase 13A local deterministic golden datasets and eval reports.
+  Phase 13A local deterministic golden datasets and eval reports, Phase 13B
+  workflow-specific golden eval suites, and Phase 13C local eval baselines,
+  regression comparison, threshold policies, and history snapshots.
   The package remains `2.2.0`; this branch work is unpublished.
 
 ## Current Stable Release: 2.2.0
@@ -140,6 +142,12 @@ fixtures only, and does not call Procore, call external AI/model APIs, execute
 plugins, fetch remote datasets, load arbitrary code, upload reports, or enable
 tool/MCP execution.
 
+Phase 13C adds local eval baseline files, deterministic regression comparison,
+score threshold policies, JSON/Markdown regression reports, and optional local
+history snapshots. It compares local eval results only and does not call
+Procore, call external AI/model APIs, execute plugins, fetch remote datasets,
+upload remote reports, load arbitrary code, or enable tool/MCP execution.
+
 Phase 8A adds read-only SDK coverage for Observations, Punch Items, Generic
 Tools, and Generic Tool correspondence items. It includes service helpers,
 typed flexible models, search helpers, local CSV/JSONL exports, CLI commands,
@@ -208,6 +216,9 @@ approvals, status changes, or project-management mutations.
 - Phase 13A golden evals are local and deterministic; they do not call Procore,
   call external AI/model APIs, execute plugins, fetch/upload datasets, or enable
   tool/MCP execution.
+- Phase 13B and Phase 13C eval work remains local and deterministic; it does
+  not call Procore, call external AI/model APIs, execute plugins, fetch remote
+  datasets or baselines, upload reports, or enable tool/MCP execution.
 
 ## Known Limitations
 

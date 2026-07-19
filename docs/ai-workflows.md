@@ -6,8 +6,8 @@ choose their own model stack, review the data they want to share, and keep human
 review in the loop.
 
 The current published stable release remains `2.2.0`. Phase 8A through 8G,
-Phase 9A through 9D, Phase 12, Phase 13A, and Phase 13B are unreleased branch
-work unless a later release publishes them.
+Phase 9A through 9D, Phase 12, Phase 13A, Phase 13B, and Phase 13C are
+unreleased branch work unless a later release publishes them.
 
 ## What This Does
 
@@ -124,6 +124,7 @@ The examples are intentionally local-only patterns. They show where users may
 plug in their own model or vector stack after reviewing data, but PyProcore does
 not select or call that stack.
 
-Phase 13A golden evals can validate local AI workflow package structure and
-safety metadata with deterministic checks. They do not call a model and do not
-grade live model responses.
+Phase 13A through Phase 13C golden evals can validate local AI workflow package
+structure, safety metadata, baselines, and regression reports with
+deterministic checks. They do not call a model and do not grade live model
+responses.

@@ -1,0 +1,37 @@
+{
+  "baseline_max_score": 5,
+  "baseline_name": "sample-regression-baseline",
+  "baseline_score": 5,
+  "case_count": 1,
+  "findings": [
+    {
+      "case_id": null,
+      "check": "regression_summary",
+      "message": "Current deterministic eval report matches the baseline thresholds.",
+      "score_delta": null,
+      "severity": "pass",
+      "suite_name": null
+    }
+  ],
+  "generated_at": "2026-07-19T14:50:42.911981Z",
+  "max_score": 5,
+  "mode": "local_deterministic",
+  "passed": true,
+  "pyprocore_version": "2.2.0",
+  "score": 5,
+  "status": "pass",
+  "suite_count": 1,
+  "threshold_policy": {
+    "allow_new_failures": false,
+    "allow_new_warnings": true,
+    "fail_on_missing_case": true,
+    "fail_on_missing_suite": true,
+    "fail_on_score_drop": true,
+    "max_allowed_failures": 0,
+    "max_allowed_warnings": null,
+    "minimum_score_ratio": null,
+    "minimum_total_score": null,
+    "notes": null,
+    "warning_on_new_suite": true
+  }
+}

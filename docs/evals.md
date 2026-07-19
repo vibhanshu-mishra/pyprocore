@@ -3,9 +3,11 @@
 Phase 13A adds the local deterministic golden dataset foundation. Phase 13B
 adds workflow-specific golden eval suites for RFI, submittal, async export,
 async batch, AI workflow, plugin metadata/config, and safety-boundary artifacts.
+Phase 13C adds local baseline files, regression comparison, threshold policies,
+and history snapshots for those deterministic eval suites.
 
-Current stable release: `2.2.0`. Phase 13A and Phase 13B are unreleased branch
-work unless included in a later published release.
+Current stable release: `2.2.0`. Phase 13A, Phase 13B, and Phase 13C are
+unreleased branch work unless included in a later published release.
 
 ## What This Does
 
@@ -63,6 +65,46 @@ Write a local report:
 
 ```bash
 PYTHONPATH=. procore-sdk evals report --suite async_batch_golden --format markdown --output local-eval-report.md
+```
+
+Print a sample baseline:
+
+```bash
+PYTHONPATH=. procore-sdk evals baseline sample
+```
+
+Create a local baseline:
+
+```bash
+PYTHONPATH=. procore-sdk evals baseline create --output local-eval-baseline.json
+```
+
+Validate a baseline:
+
+```bash
+PYTHONPATH=. procore-sdk evals baseline validate local-eval-baseline.json
+```
+
+Compare current evals to a baseline:
+
+```bash
+PYTHONPATH=. procore-sdk evals compare --baseline local-eval-baseline.json
+PYTHONPATH=. procore-sdk evals compare --baseline local-eval-baseline.json --suite rfi_workflow_golden
+```
+
+Build regression reports:
+
+```bash
+PYTHONPATH=. procore-sdk evals regression-report --baseline local-eval-baseline.json --format json
+PYTHONPATH=. procore-sdk evals regression-report --baseline local-eval-baseline.json --format markdown
+```
+
+Create local history snapshots:
+
+```bash
+PYTHONPATH=. procore-sdk evals history sample
+PYTHONPATH=. procore-sdk evals history append --output local-eval-history.json
+PYTHONPATH=. procore-sdk evals history summary local-eval-history.json
 ```
 
 ## Python
@@ -163,8 +205,105 @@ Use Markdown for quick human review and JSON for CI artifacts:
 PYTHONPATH=. procore-sdk evals report --suite plugin_metadata_golden --format json
 ```
 
-## What Phase 13B Does Not Do
+## Baselines
 
-Phase 13B does not evaluate live Procore responses, live model responses, remote
-datasets, plugin runtime behavior, or MCP tool execution. It evaluates local
-deterministic artifacts only.
+Baselines are local JSON snapshots of deterministic eval reports. They store
+suite names, case IDs, statuses, scores, warning counts, failure counts, and
+sanitized finding messages. They do not store credentials, Authorization
+headers, real Procore IDs, or live response payloads.
+
+Use a baseline when you want to compare today’s local eval run against a
+known-good result:
+
+```python
+from pyprocore.evals import build_eval_baseline, run_builtin_eval_suites
+
+report = run_builtin_eval_suites()
+baseline = build_eval_baseline(report, baseline_name="release-check")
+```
+
+## Regression Comparison
+
+Regression comparison checks current deterministic eval results against a local
+baseline. It can detect:
+
+- missing suites
+- missing cases
+- pass-to-fail changes
+- pass-to-warning changes
+- suite and case score drops
+- max score changes
+- new suites or cases
+- increased failures or warnings
+
+Unknown new suites are informational or warning-level findings depending on the
+threshold policy. They are not treated as live API verification.
+
+## Threshold Policies
+
+Threshold policies are local rules applied after comparison. The default policy
+is conservative: missing baseline suites/cases, score drops, and new failures
+fail the comparison. Strict policy is useful before release-candidate checks
+because it can require a perfect score ratio and disallow new warnings.
+
+```python
+from pyprocore.evals import (
+    build_eval_baseline,
+    compare_eval_report_to_baseline,
+    run_builtin_eval_suites,
+    strict_eval_threshold_policy,
+)
+
+report = run_builtin_eval_suites()
+baseline = build_eval_baseline(report)
+result = compare_eval_report_to_baseline(
+    report,
+    baseline,
+    policy=strict_eval_threshold_policy(),
+)
+```
+
+## Local History Snapshots
+
+History snapshots are optional local JSON records of eval summary scores over
+time. They are useful for release notes, local quality reports, and comparing
+recent branch runs. PyProcore only writes history when you pass an explicit
+local output path.
+
+```bash
+PYTHONPATH=. procore-sdk evals history append --output local-eval-history.json --label pre-release
+PYTHONPATH=. procore-sdk evals history summary local-eval-history.json
+```
+
+## Sample Artifacts
+
+Static sample files live in:
+
+- `examples/eval_baselines/sample_eval_baseline.json`
+- `examples/eval_reports/sample_regression_report.json`
+- `examples/eval_reports/sample_regression_report.md`
+- `examples/eval_reports/sample_eval_history.json`
+
+These samples use placeholder local metadata only.
+
+## Before a Release
+
+For a local release-readiness pattern:
+
+1. Run `PYTHONPATH=. procore-sdk evals run`.
+2. Create or update a local baseline with `procore-sdk evals baseline create`.
+3. Compare current results with `procore-sdk evals compare --baseline ...`.
+4. Save JSON or Markdown regression reports for local review.
+5. Keep generated reports/history files out of commits unless they are curated
+   examples.
+
+Phase 13C does not modify GitHub Actions. Teams can wire the commands into CI
+later if they choose.
+
+## What Phase 13C Does Not Do
+
+Phase 13C does not evaluate live Procore responses, live model responses,
+remote datasets, plugin runtime behavior, or MCP tool execution. It does not
+fetch remote baselines, upload reports, execute plugins, call external models,
+call Procore, or enable tool execution. It compares local deterministic eval
+results only.
