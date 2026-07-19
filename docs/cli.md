@@ -143,6 +143,21 @@ Config and extension-pack commands validate or summarize JSON metadata only.
 They do not install plugins, fetch remote resources, import modules, register
 callables, execute hooks, call Procore, or enable agent/MCP execution.
 
+Phase 11D adds local-only plugin scaffold commands:
+
+```bash
+procore-sdk plugins scaffold sample-plan
+procore-sdk plugins scaffold dry-run --name example_local_plugin --output-dir ./tmp-plugin
+procore-sdk plugins scaffold create --name example_local_plugin --output-dir ./tmp-plugin
+procore-sdk plugins scaffold extension-pack --name example_local_plugin --output-dir ./tmp-pack
+procore-sdk plugins scaffold config --name example_local_plugin --output-dir ./tmp-config
+procore-sdk plugins scaffold hook-pack --name example_local_plugin --output-dir ./tmp-hooks
+```
+
+Scaffold commands generate local template files only. They do not require
+Procore credentials, install plugins, fetch remote resources, load generated
+code, execute hooks, call Procore, or enable agent/MCP execution.
+
 ## Scheduled Export Planning
 
 Phase 9B adds local-only scheduled export planning commands for enterprise

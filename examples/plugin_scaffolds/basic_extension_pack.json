@@ -1,0 +1,28 @@
+{
+  "author": "Your Name",
+  "capabilities": [
+    "exporter",
+    "formatter"
+  ],
+  "description": "Metadata-only local extension-pack sample.",
+  "included_hooks": [],
+  "included_plugins": [
+    {
+      "notes": [],
+      "plugin_name": "example_local_plugin",
+      "required": false
+    }
+  ],
+  "name": "example_local_plugin_pack",
+  "notes": [
+    "Sample only. Extension packs group metadata and do not execute code."
+  ],
+  "requires_pyprocore": ">=2.2.0",
+  "safety_level": "metadata_only",
+  "schema_version": "1",
+  "tags": [
+    "sample",
+    "metadata-only"
+  ],
+  "version": "0.1.0"
+}

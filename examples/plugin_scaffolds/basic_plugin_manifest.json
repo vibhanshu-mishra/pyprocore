@@ -1,0 +1,27 @@
+{
+  "author": "Your Name",
+  "capabilities": [
+    "exporter",
+    "formatter"
+  ],
+  "description": "Metadata-only local plugin manifest sample.",
+  "enabled_by_default": false,
+  "entry_points": {},
+  "hooks": [],
+  "name": "example_local_plugin",
+  "notes": [
+    "Sample only. PyProcore does not load, install, import, or execute this file."
+  ],
+  "requires_pyprocore": ">=2.2.0",
+  "safety_level": "metadata_only",
+  "schema_version": "1",
+  "supports_agent_metadata": false,
+  "supports_async": false,
+  "supports_cli": false,
+  "supports_sync": true,
+  "tags": [
+    "sample",
+    "metadata-only"
+  ],
+  "version": "0.1.0"
+}

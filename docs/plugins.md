@@ -1,8 +1,9 @@
 # Plugin Architecture
 
 Phase 11A added safe plugin architecture foundations in the current stable
-`v2.2.0` release. Phase 11B extends that foundation with safe local plugin hook
-metadata and explicit in-process hook registration as unreleased branch work.
+`v2.2.0` release. Phase 11B, Phase 11C, and Phase 11D extend that foundation
+as unreleased branch work with safe local hooks, JSON configuration,
+extension-pack manifests, and plugin developer scaffolding.
 
 ## What This Does
 
@@ -16,6 +17,10 @@ modules, or execute plugin code.
 Phase 11B adds explicit local extension hooks. Hooks can run only when trusted
 application code registers a Python callable in-process. Hook metadata in a
 manifest is descriptive by itself and never executes code.
+
+Phase 11D adds local developer scaffolding for templates. A scaffold can create
+placeholder JSON, Markdown, docs, example, and test files, but generated files
+are not loaded, imported, installed, or executed by PyProcore.
 
 ## Safety Boundaries
 
@@ -250,6 +255,76 @@ procore-sdk plugins extension-pack summary examples/configs/plugin_extension_pac
 Extension packs cannot execute hooks, register callables, import modules,
 install packages, fetch remote resources, or call Procore.
 
+## Plugin Developer Scaffolding
+
+Phase 11D adds safe local scaffold helpers for developers who want starter
+files for plugin metadata and documentation. Scaffolding is local template
+generation only.
+
+Available scaffold commands:
+
+```bash
+procore-sdk plugins scaffold sample-plan
+procore-sdk plugins scaffold dry-run --name example_local_plugin --output-dir ./tmp-plugin
+procore-sdk plugins scaffold create --name example_local_plugin --output-dir ./tmp-plugin
+procore-sdk plugins scaffold extension-pack --name example_local_plugin --output-dir ./tmp-pack
+procore-sdk plugins scaffold config --name example_local_plugin --output-dir ./tmp-config
+procore-sdk plugins scaffold hook-pack --name example_local_plugin --output-dir ./tmp-hooks
+```
+
+`sample-plan` prints a safe example plan. `dry-run` renders the plan in memory
+and writes nothing. `create` writes static files under the selected output
+directory.
+
+Generated full-pack files include:
+
+- `README.md`
+- `CHANGELOG.md`
+- `plugin_manifest.json`
+- `plugin_config.json`
+- `extension_pack_manifest.json`
+- `hook_manifest.json`
+- `docs/plugin-pack.md`
+- `examples/plugin_usage.py`
+- `tests/test_plugin_manifest.py`
+
+The Python files are static templates. PyProcore does not execute them during
+scaffolding and does not auto-load them later.
+
+### Output Path Safety
+
+Scaffold requests reject remote-looking paths and path traversal. Template file
+names must stay relative, and write mode verifies each target is inside the
+selected output directory before writing.
+
+### Overwrite Controls
+
+Scaffolding skips existing files by default:
+
+```bash
+procore-sdk plugins scaffold create --name example_local_plugin --output-dir ./tmp-plugin
+```
+
+Use `--overwrite` only when you intentionally want to replace existing template
+files:
+
+```bash
+procore-sdk plugins scaffold create --name example_local_plugin --output-dir ./tmp-plugin --overwrite
+```
+
+### What Phase 11D Does Not Do
+
+- It does not install plugin packages.
+- It does not fetch remote plugin resources.
+- It does not auto-load plugins from arbitrary file paths.
+- It does not dynamically import generated modules.
+- It does not execute generated files.
+- It does not execute hooks from configuration files.
+- It does not call Procore or external AI/model APIs.
+- It does not add Procore write, upload, approval, submission, or payment actions.
+- It does not enable agent tool execution.
+- MCP remains discovery-only.
+
 ## What Phase 11B Does Not Do
 
 - It does not enable remote plugin installation.
@@ -278,5 +353,5 @@ install packages, fetch remote resources, or call Procore.
 
 ## Future Work
 
-Future phases may add stricter signed or trusted plugin loading, but Phase 11B
-and Phase 11C stay local, explicit, and metadata-first.
+Future phases may add stricter signed or trusted plugin packaging, but Phase
+11B, Phase 11C, and Phase 11D stay local, explicit, and metadata-first.

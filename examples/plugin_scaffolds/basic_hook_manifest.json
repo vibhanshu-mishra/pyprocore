@@ -1,0 +1,25 @@
+{
+  "hooks": [
+    {
+      "description": "Sample metadata for validating local records.",
+      "hook_name": "example_local_plugin_validate_records",
+      "hook_type": "validator",
+      "input_kind": "records",
+      "notes": [
+        "Metadata only. This does not register or execute a callable."
+      ],
+      "output_kind": "json",
+      "plugin_name": "example_local_plugin",
+      "read_only": true,
+      "safe_by_default": true,
+      "supports_async": false,
+      "supports_sync": true
+    }
+  ],
+  "mode": "metadata_only",
+  "notes": [
+    "Hook metadata is descriptive only."
+  ],
+  "plugin_name": "example_local_plugin",
+  "schema_version": "1"
+}

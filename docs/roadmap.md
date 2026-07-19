@@ -250,6 +250,28 @@ registry fetching, arbitrary plugin imports, config-driven execution,
 extension-pack execution, Procore mutations, live Procore calls, external
 AI/model calls, agent execution, or MCP execution are added.
 
+### Phase 11D — Plugin Developer Templates and Pack Scaffolding
+
+Implemented in the current branch and not yet published:
+
+- Local scaffold request, plan, file, finding, and result models
+- Static template rendering for plugin manifests, plugin configs, hook
+  manifests, extension-pack manifests, README files, docs, examples, and tests
+- Dry-run planning that writes no files
+- Create mode that writes only under the selected output directory
+- Path traversal and remote-looking path rejection
+- Existing-file skip behavior by default, with explicit overwrite support
+- CLI commands for `plugins scaffold sample-plan`, `plugins scaffold dry-run`,
+  `plugins scaffold create`, `plugins scaffold extension-pack`,
+  `plugins scaffold config`, and `plugins scaffold hook-pack`
+- Placeholder/local examples 201–208 and sample scaffold metadata files
+
+Focus: safe local template scaffolding only. No plugin installation, remote
+fetching, arbitrary plugin loading, dynamic imports, config-driven execution,
+extension-pack execution, generated-code execution, Procore mutations, live
+Procore calls, external AI/model calls, agent execution, or MCP execution are
+added.
+
 ### Phase 8A — Expanded Procore API Coverage
 
 Implemented in the current branch and not yet published:

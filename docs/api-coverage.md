@@ -245,6 +245,15 @@ they do not install plugins, fetch remote resources, import modules, register
 callables, execute hooks, call Procore, call external AI/model APIs, add write
 actions, or enable agent/MCP execution.
 
+## Phase 11D Plugin Scaffold Notes
+
+Phase 11D does not add new Procore endpoint coverage. It adds local developer
+scaffolding for plugin manifests, plugin configs, hook metadata,
+extension-pack manifests, README files, docs, examples, and test templates.
+Scaffolding creates static files only and does not call Procore, install
+plugins, fetch remote resources, load generated code, execute hooks, add write
+actions, or enable agent/MCP execution.
+
 ## Live Verification Notes
 
 Procore access varies by environment, company, project, app connection, and user

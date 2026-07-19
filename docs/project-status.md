@@ -17,7 +17,7 @@
   Phase 10E async financial/contract/billing/project-management read coverage,
   plus Phase 11A metadata-only plugin architecture foundation, Phase 11B safe
   local plugin extension hooks, and Phase 11C plugin configuration/local
-  extension-pack manifests.
+  extension-pack manifests, plus Phase 11D plugin developer scaffolding.
   The package remains `2.2.0`; this branch work is unpublished.
 
 ## Current Stable Release: 2.2.0
@@ -118,6 +118,13 @@ preferences, hook preferences, and extension-pack metadata. They do not install
 plugins, fetch remote resources, import modules, register callables, execute
 hooks, call Procore, call external AI/model APIs, add write actions, or enable
 agent/MCP execution.
+
+Phase 11D adds safe local plugin developer scaffolding for manifests, configs,
+hook metadata, extension-pack manifests, README files, docs, examples, and test
+templates. Generated files are templates only. Scaffolding does not install
+plugins, fetch remote resources, auto-load modules, execute generated files,
+execute hooks, call Procore, call external AI/model APIs, add write actions, or
+enable agent/MCP execution.
 
 Phase 8A adds read-only SDK coverage for Observations, Punch Items, Generic
 Tools, and Generic Tool correspondence items. It includes service helpers,

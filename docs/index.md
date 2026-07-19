@@ -45,6 +45,8 @@ assistant integrations. Tool execution remains disabled.
   Phase 10B async export/download patterns, and Phase 10C async batch helpers
 - [Agent API](agent-api.md)
 - [Plugin Architecture](plugins.md)
+  includes metadata-only manifests, local hooks, JSON configs, extension packs,
+  and unreleased local plugin developer scaffolding.
 - Safe local plugin hooks are documented in the plugin architecture guide.
 - Plugin configuration and local extension-pack metadata are documented in the
   plugin architecture guide.

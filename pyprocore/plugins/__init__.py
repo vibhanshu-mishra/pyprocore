@@ -100,6 +100,43 @@ from pyprocore.plugins.registry import (
     register_plugin_manifest,
     unregister_plugin,
 )
+from pyprocore.plugins.scaffolding import (
+    SCAFFOLD_SCHEMA_VERSION,
+    PluginScaffoldFile,
+    PluginScaffoldFinding,
+    PluginScaffoldPlan,
+    PluginScaffoldRequest,
+    PluginScaffoldResult,
+    build_plugin_scaffold_plan,
+    export_plugin_scaffold_sample_plan,
+)
+from pyprocore.plugins.scaffolding import (
+    render_extension_pack_template as render_scaffold_extension_pack_template,
+)
+from pyprocore.plugins.scaffolding import (
+    render_hook_manifest_template as render_scaffold_hook_manifest_template,
+)
+from pyprocore.plugins.scaffolding import (
+    render_plugin_config_template as render_scaffold_plugin_config_template,
+)
+from pyprocore.plugins.scaffolding import (
+    scaffold_extension_pack,
+    scaffold_hook_pack,
+    scaffold_plugin_config,
+    scaffold_plugin_pack,
+    scaffold_result_to_jsonable,
+    validate_plugin_scaffold_request,
+    write_scaffold_plan,
+)
+from pyprocore.plugins.templates import (
+    PluginTemplateKind,
+    render_plugin_changelog_template,
+    render_plugin_docs_template,
+    render_plugin_example_template,
+    render_plugin_readme_template,
+    render_plugin_template,
+    render_template,
+)
 from pyprocore.plugins.validation import (
     load_plugin_manifest_from_dict,
     validate_plugin_manifest,
@@ -109,6 +146,7 @@ from pyprocore.plugins.validation import (
 __all__ = [
     "PLUGIN_SCHEMA_VERSION",
     "PLUGIN_CONFIG_SCHEMA_VERSION",
+    "SCAFFOLD_SCHEMA_VERSION",
     "PluginCapabilityPreference",
     "PluginCapability",
     "PluginConfig",
@@ -129,7 +167,14 @@ __all__ = [
     "PluginRegistry",
     "PluginRegistryManifest",
     "PluginSafetyLevel",
+    "PluginScaffoldFile",
+    "PluginScaffoldFinding",
+    "PluginScaffoldPlan",
+    "PluginScaffoldRequest",
+    "PluginScaffoldResult",
+    "PluginTemplateKind",
     "PluginValidationResult",
+    "build_plugin_scaffold_plan",
     "builtin_plugin_manifests",
     "discover_builtin_plugins",
     "discover_installed_plugin_metadata",
@@ -140,6 +185,7 @@ __all__ = [
     "export_plugin_config_summary",
     "export_plugin_config_template",
     "export_plugin_registry_manifest",
+    "export_plugin_scaffold_sample_plan",
     "find_plugins_by_capability",
     "get_plugin",
     "list_plugins",
@@ -150,7 +196,21 @@ __all__ = [
     "load_plugin_config_from_file",
     "load_plugin_manifest_from_dict",
     "merge_plugin_config_with_registry_metadata",
+    "render_plugin_changelog_template",
+    "render_plugin_docs_template",
+    "render_plugin_example_template",
+    "render_plugin_readme_template",
+    "render_plugin_template",
+    "render_scaffold_extension_pack_template",
+    "render_scaffold_hook_manifest_template",
+    "render_scaffold_plugin_config_template",
+    "render_template",
     "register_plugin_manifest",
+    "scaffold_extension_pack",
+    "scaffold_hook_pack",
+    "scaffold_plugin_config",
+    "scaffold_plugin_pack",
+    "scaffold_result_to_jsonable",
     "unregister_plugin",
     "summarize_extension_pack_with_registry_metadata",
     "validate_extension_pack_manifest",
@@ -159,6 +219,8 @@ __all__ = [
     "validate_plugin_config_data",
     "validate_plugin_manifest",
     "validate_plugin_manifest_data",
+    "validate_plugin_scaffold_request",
+    "write_scaffold_plan",
     "PluginHookCallable",
     "PluginHookContext",
     "PluginHookMetadata",

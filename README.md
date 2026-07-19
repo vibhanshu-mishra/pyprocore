@@ -23,9 +23,10 @@ Current repository status:
   export/download patterns, Phase 10C async multi-project batch helpers, and
   Phase 10D async field, operations, correspondence, and directory coverage,
   plus Phase 10E async financial, contract, billing, and project-management
-  read coverage, plus Phase 11A metadata-only plugin architecture foundation
-  and Phase 11B safe local plugin extension hooks, plus Phase 11C plugin
-  configuration and local extension-pack manifests
+  read coverage, plus Phase 11A metadata-only plugin architecture foundation,
+  Phase 11B safe local plugin extension hooks, Phase 11C plugin configuration
+  and local extension-pack manifests, and Phase 11D plugin developer
+  scaffolding/templates
 - Procore tool execution remains disabled
 
 ```bash
@@ -58,6 +59,8 @@ PyProcore turns Procore REST API responses into typed Python objects and gives y
   unreleased Phase 11B hook registry.
 - Validate JSON-only plugin configuration and extension-pack metadata through
   the unreleased Phase 11C helpers.
+- Generate safe local plugin developer templates through the unreleased Phase
+  11D scaffolding helpers.
 - Use CLI diagnostics and automation commands without hardcoding credentials.
 - Expose local agent metadata, OpenAPI/JSON Schema, run logs, replay, MCP discovery, and deterministic evals for future assistant integrations.
 
@@ -319,6 +322,28 @@ Prepared in the current unreleased branch:
 Phase 11C config files and extension packs are metadata only. They do not
 install plugins, fetch remote resources, import modules, register executable
 callables, execute hooks, call Procore, call external AI/model APIs, add write
+actions, or enable agent/MCP execution. See
+[Plugin Architecture](docs/plugins.md).
+
+### Phase 11D Plugin Developer Scaffolding
+
+Prepared in the current unreleased branch:
+
+- local scaffold request, plan, file, finding, and result models
+- dry-run scaffold planning
+- safe writes under a selected output directory
+- overwrite controls that skip existing files by default
+- static JSON, Markdown, docs, example, and test templates
+- `procore-sdk plugins scaffold sample-plan`
+- `procore-sdk plugins scaffold dry-run --name NAME --output-dir PATH`
+- `procore-sdk plugins scaffold create --name NAME --output-dir PATH`
+- `procore-sdk plugins scaffold extension-pack --name NAME --output-dir PATH`
+- `procore-sdk plugins scaffold config --name NAME --output-dir PATH`
+- `procore-sdk plugins scaffold hook-pack --name NAME --output-dir PATH`
+
+Phase 11D scaffolding creates templates only. It does not install plugins,
+fetch remote resources, auto-load modules, execute generated files, execute
+hooks from config, call Procore, call external AI/model APIs, add write
 actions, or enable agent/MCP execution. See
 [Plugin Architecture](docs/plugins.md).
 

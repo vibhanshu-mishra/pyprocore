@@ -88,6 +88,11 @@ Examples `193` through `200` cover unreleased Phase 11C plugin configuration
 and local extension-pack manifests. They read JSON metadata only and do not
 install plugins, fetch remote resources, load plugin code, execute hooks, call
 Procore, call external AI/model APIs, or enable agent/MCP execution.
+Examples `201` through `208` cover unreleased Phase 11D plugin developer
+scaffolding. They render local templates or write to temporary folders only and
+do not install plugins, fetch remote resources, load generated code, execute
+hooks, call Procore, call external AI/model APIs, or enable agent/MCP
+execution.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -454,6 +459,14 @@ The current example set runs from `01_list_companies.py` through
 | `198_plugin_config_hook_preferences.py` | Inspect hook preferences without executing hooks |
 | `199_plugin_config_safety_boundaries.py` | Summarize Phase 11C config safety boundaries |
 | `200_phase11c_plugin_config_summary.py` | Summarize Phase 11C plugin config support |
+| `201_plugin_scaffold_quickstart.py` | Preview a safe local plugin scaffold plan |
+| `202_plugin_scaffold_dry_run.py` | Run a scaffold dry-run without writing files |
+| `203_plugin_scaffold_create.py` | Create a full scaffold in a temporary directory |
+| `204_extension_pack_scaffold.py` | Create an extension-pack scaffold |
+| `205_hook_pack_scaffold.py` | Create hook metadata scaffold files |
+| `206_plugin_scaffold_overwrite_safety.py` | Demonstrate skip and overwrite behavior |
+| `207_plugin_scaffold_path_safety.py` | Demonstrate path traversal rejection |
+| `208_phase11d_plugin_scaffolding_summary.py` | Summarize Phase 11D scaffold safety boundaries |
 
 Sample scheduled export configs live in `examples/configs/`:
 
@@ -470,6 +483,15 @@ Sample scheduled export configs live in `examples/configs/`:
 | `plugin_config_enterprise.json` | Enterprise-style plugin metadata preferences |
 | `plugin_extension_pack_sample.json` | Starter extension-pack manifest metadata |
 | `plugin_extension_pack_ai_workflows.json` | AI workflow extension-pack metadata |
+
+Sample plugin scaffolds live in `examples/plugin_scaffolds/`:
+
+| File | Demonstrates |
+| ---- | ------------ |
+| `basic_plugin_manifest.json` | Placeholder metadata-only plugin manifest |
+| `basic_plugin_config.json` | Placeholder plugin configuration metadata |
+| `basic_extension_pack.json` | Placeholder extension-pack metadata |
+| `basic_hook_manifest.json` | Placeholder hook metadata |
 
 Sample workflow plans live in `examples/workflow_plans/`:
 
@@ -565,4 +587,8 @@ Sample webhook payloads live in `examples/webhooks/`:
   examples. They read JSON metadata only, do not install plugins, do not fetch
   remote resources, do not load arbitrary plugin code, do not execute hooks,
   do not call Procore, and keep agent/MCP execution disabled.
+- Examples `201` through `208` are local plugin scaffold examples. They create
+  templates only, do not install plugins, do not fetch remote resources, do not
+  load generated code, do not execute hooks, do not call Procore, and keep
+  agent/MCP execution disabled.
 - Keep secrets out of code, screenshots, logs, and issue reports.

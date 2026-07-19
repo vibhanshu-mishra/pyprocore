@@ -1,0 +1,23 @@
+{
+  "capability_preferences": [],
+  "config_version": "1",
+  "disabled_capabilities": [],
+  "disabled_plugins": [],
+  "enabled_capabilities": [
+    "exporter"
+  ],
+  "enabled_plugins": [
+    "example_local_plugin"
+  ],
+  "extension_packs": [
+    "example_local_plugin_pack"
+  ],
+  "hook_preferences": [],
+  "notes": [
+    "Sample only. This file stores preferences and does not execute hooks."
+  ],
+  "safety_policy": "metadata_only",
+  "tags": [
+    "sample"
+  ]
+}

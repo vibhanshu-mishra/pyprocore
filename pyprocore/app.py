@@ -92,15 +92,23 @@ from pyprocore.plugins import (
     PluginManifest,
     PluginRegistry,
     PluginRegistryManifest,
+    PluginScaffoldPlan,
+    PluginScaffoldResult,
+    PluginTemplateKind,
     PluginValidationResult,
     builtin_hook_registry,
     discover_plugins,
     export_extension_pack_template,
     export_plugin_config_template,
+    export_plugin_scaffold_sample_plan,
     load_extension_pack_manifest_from_file,
     load_local_plugin_manifest_file,
     load_plugin_config_from_file,
     merge_plugin_config_with_registry_metadata,
+    scaffold_extension_pack,
+    scaffold_hook_pack,
+    scaffold_plugin_config,
+    scaffold_plugin_pack,
     validate_extension_pack_manifest,
     validate_plugin_config,
     validate_plugin_manifest,
@@ -983,6 +991,49 @@ def build_parser() -> argparse.ArgumentParser:
     plugins_pack_summary_parser.add_argument("extension_pack_path", type=Path)
     plugins_pack_summary_parser.add_argument("--json", dest="json_output", action="store_true")
     plugins_pack_summary_parser.add_argument("--pretty", action="store_true")
+    plugins_scaffold_parser = plugins_subcommands.add_parser(
+        "scaffold",
+        help="Create safe local plugin template scaffolds without executing code",
+    )
+    plugins_scaffold_subcommands = plugins_scaffold_parser.add_subparsers(
+        dest="plugins_scaffold_command",
+        required=True,
+    )
+    plugins_scaffold_sample_parser = plugins_scaffold_subcommands.add_parser(
+        "sample-plan",
+        help="Print a safe scaffold plan without writing files",
+    )
+    plugins_scaffold_sample_parser.add_argument(
+        "--json",
+        dest="json_output",
+        action="store_true",
+    )
+    plugins_scaffold_sample_parser.add_argument("--pretty", action="store_true")
+    plugins_scaffold_dry_run_parser = plugins_scaffold_subcommands.add_parser(
+        "dry-run",
+        help="Preview a plugin scaffold without writing files",
+    )
+    _add_plugin_scaffold_options(plugins_scaffold_dry_run_parser)
+    plugins_scaffold_create_parser = plugins_scaffold_subcommands.add_parser(
+        "create",
+        help="Write a plugin scaffold under the selected output directory",
+    )
+    _add_plugin_scaffold_options(plugins_scaffold_create_parser)
+    plugins_scaffold_extension_parser = plugins_scaffold_subcommands.add_parser(
+        "extension-pack",
+        help="Write an extension-pack manifest scaffold",
+    )
+    _add_plugin_scaffold_options(plugins_scaffold_extension_parser, include_kind=False)
+    plugins_scaffold_config_parser = plugins_scaffold_subcommands.add_parser(
+        "config",
+        help="Write a plugin config scaffold",
+    )
+    _add_plugin_scaffold_options(plugins_scaffold_config_parser, include_kind=False)
+    plugins_scaffold_hook_parser = plugins_scaffold_subcommands.add_parser(
+        "hook-pack",
+        help="Write a hook manifest scaffold",
+    )
+    _add_plugin_scaffold_options(plugins_scaffold_hook_parser, include_kind=False)
 
     subcommands.add_parser("companies", help="List companies")
 
@@ -3028,6 +3079,35 @@ def _add_package_options(parser: argparse.ArgumentParser) -> None:
     )
 
 
+def _add_plugin_scaffold_options(
+    parser: argparse.ArgumentParser,
+    *,
+    include_kind: bool = True,
+) -> None:
+    """Add safe local plugin scaffold options."""
+    parser.add_argument("--name", required=True, help="Safe lowercase plugin metadata name")
+    parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--description", default=None)
+    parser.add_argument("--overwrite", action="store_true")
+    parser.add_argument("--json", dest="json_output", action="store_true")
+    parser.add_argument("--pretty", action="store_true")
+    if include_kind:
+        parser.add_argument(
+            "--kind",
+            choices=[
+                PluginTemplateKind.FULL_PACK.value,
+                PluginTemplateKind.PLUGIN_MANIFEST.value,
+                PluginTemplateKind.PLUGIN_CONFIG.value,
+                PluginTemplateKind.EXTENSION_PACK.value,
+                PluginTemplateKind.HOOK_MANIFEST.value,
+                PluginTemplateKind.README.value,
+                PluginTemplateKind.TESTS.value,
+                PluginTemplateKind.DOCS.value,
+            ],
+            default=PluginTemplateKind.FULL_PACK.value,
+        )
+
+
 def _write_text_output(output_path: Path, content: str) -> Path:
     """Write CLI text output to a path and return the saved path."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -3398,6 +3478,42 @@ def run_command(args: argparse.Namespace) -> Any:
             raise ValueError(
                 "Unsupported plugins extension-pack command: "
                 f"{args.plugins_extension_pack_command}"
+            )
+        if args.plugins_command == "scaffold":
+            if args.plugins_scaffold_command == "sample-plan":
+                return export_plugin_scaffold_sample_plan()
+            if args.plugins_scaffold_command in {"dry-run", "create"}:
+                return scaffold_plugin_pack(
+                    args.name,
+                    args.output_dir,
+                    kind=args.kind,
+                    description=args.description,
+                    overwrite=args.overwrite,
+                    dry_run=args.plugins_scaffold_command == "dry-run",
+                )
+            if args.plugins_scaffold_command == "extension-pack":
+                return scaffold_extension_pack(
+                    args.name,
+                    args.output_dir,
+                    overwrite=args.overwrite,
+                    dry_run=False,
+                )
+            if args.plugins_scaffold_command == "config":
+                return scaffold_plugin_config(
+                    args.name,
+                    args.output_dir,
+                    overwrite=args.overwrite,
+                    dry_run=False,
+                )
+            if args.plugins_scaffold_command == "hook-pack":
+                return scaffold_hook_pack(
+                    args.name,
+                    args.output_dir,
+                    overwrite=args.overwrite,
+                    dry_run=False,
+                )
+            raise ValueError(
+                f"Unsupported plugins scaffold command: {args.plugins_scaffold_command}"
             )
         raise ValueError(f"Unsupported plugins command: {args.plugins_command}")
 
@@ -5692,6 +5808,52 @@ def format_extension_pack_validation(result: PluginExtensionPackValidationResult
     return "\n".join(lines)
 
 
+def format_plugin_scaffold_plan(plan: PluginScaffoldPlan) -> str:
+    """Return a human-readable plugin scaffold plan."""
+    lines = [
+        "PyProcore plugin scaffold plan.",
+        f"Name: {plan.request.name}",
+        f"Kind: {plan.request.kind.value}",
+        f"Output: {plan.request.output_dir}",
+        f"Files planned: {len(plan.files)}",
+        "Mode: dry-run only; no files were written or executed.",
+    ]
+    if plan.files:
+        lines.append("Files:")
+        lines.extend(f"- {file.path}" for file in plan.files)
+    if plan.findings:
+        lines.append("Findings:")
+        lines.extend(
+            f"- {finding.severity.upper()}: {finding.message}" for finding in plan.findings
+        )
+    return "\n".join(lines)
+
+
+def format_plugin_scaffold_result(result: PluginScaffoldResult) -> str:
+    """Return a human-readable plugin scaffold write result."""
+    mode = "dry-run" if result.dry_run else "create"
+    lines = [
+        "PyProcore plugin scaffold result.",
+        f"Name: {result.name}",
+        f"Output: {result.output_dir}",
+        f"Mode: {mode}; generated files are templates only.",
+        f"Files planned: {result.planned_count}",
+        f"Files written: {result.written_count}",
+        f"Files skipped: {result.skipped_count}",
+        f"Overwrite: {result.overwrite}",
+        "No generated files were loaded, imported, installed, or executed.",
+    ]
+    if result.files:
+        lines.append("Files:")
+        lines.extend(f"- {file.status}: {file.path}" for file in result.files)
+    if result.findings:
+        lines.append("Findings:")
+        lines.extend(
+            f"- {finding.severity.upper()}: {finding.message}" for finding in result.findings
+        )
+    return "\n".join(lines)
+
+
 def format_plugin_hooks(hooks: list[PluginHookMetadata]) -> str:
     """Return a human-readable plugin hook metadata list."""
     if not hooks:
@@ -6276,6 +6438,22 @@ def main() -> None:
             else:
                 print(format_extension_pack_validation(result))
             raise SystemExit(0 if result.valid else 1)
+        if isinstance(result, PluginScaffoldPlan):
+            if args.json_output or getattr(args, "pretty", False):
+                print(json.dumps(to_serializable(result), indent=2, default=str))
+            else:
+                print(format_plugin_scaffold_plan(result))
+            raise SystemExit(
+                0 if not any(finding.severity == "error" for finding in result.findings) else 1
+            )
+        if isinstance(result, PluginScaffoldResult):
+            if args.json_output or getattr(args, "pretty", False):
+                print(json.dumps(to_serializable(result), indent=2, default=str))
+            else:
+                print(format_plugin_scaffold_result(result))
+            raise SystemExit(
+                0 if not any(finding.severity == "error" for finding in result.findings) else 1
+            )
         if isinstance(result, PluginHookResult):
             if args.json_output or getattr(args, "pretty", False):
                 print(json.dumps(to_serializable(result), indent=2, default=str))
