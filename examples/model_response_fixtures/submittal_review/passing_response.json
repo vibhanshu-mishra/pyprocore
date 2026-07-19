@@ -1,0 +1,29 @@
+{
+  "schema_version": "1",
+  "fixture_name": "submittal_review_passing_response",
+  "fixture_type": "submittal_review_response",
+  "workflow_name": "submittal_review",
+  "input_context": {
+    "context_summary": "Placeholder submittal context for offline evals.",
+    "source_labels": ["SUB-001", "SPEC-033000"]
+  },
+  "expected_behavior": {
+    "expected_sections": ["Summary", "Sources", "Limitations"],
+    "required_phrases": ["provided context"],
+    "citations": {
+      "allowed_labels": ["SUB-001", "SPEC-033000"],
+      "required_labels": ["SUB-001"]
+    },
+    "grounding": {
+      "expected_sources": ["SUB-001"],
+      "required_statement": "provided context"
+    },
+    "safety_policy": {
+      "require_citations": true,
+      "require_grounding_statement": true,
+      "require_limitation_disclosure": true
+    }
+  },
+  "response_text": "Summary\nBased on the provided context, the sample submittal references concrete mix data. [SUB-001]\n\nSources\n- [SUB-001]\n- [SPEC-033000]\n\nLimitations\nThis is not a final approval and requires human review.",
+  "notes": "Static local fixture. No model or Procore calls are made."
+}

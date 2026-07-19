@@ -1,0 +1,29 @@
+{
+  "schema_version": "1",
+  "fixture_name": "project_context_qa_passing_response",
+  "fixture_type": "project_context_qa_response",
+  "workflow_name": "project_context_qa",
+  "input_context": {
+    "context_summary": "Placeholder project context for offline question answering.",
+    "source_labels": ["RFI-010", "SUB-020"]
+  },
+  "expected_behavior": {
+    "expected_sections": ["Answer", "Sources", "Limitations"],
+    "required_phrases": ["provided context"],
+    "citations": {
+      "allowed_labels": ["RFI-010", "SUB-020"],
+      "required_labels": ["RFI-010"]
+    },
+    "grounding": {
+      "expected_sources": ["RFI-010"],
+      "required_statement": "provided context"
+    },
+    "safety_policy": {
+      "require_citations": true,
+      "require_grounding_statement": true,
+      "require_limitation_disclosure": true
+    }
+  },
+  "response_text": "Answer\nBased on the provided context, the open sample coordination item is the doorway clarification. [RFI-010]\n\nSources\n- [RFI-010]\n\nLimitations\nHuman review is required.",
+  "notes": "Static local fixture. No model or Procore calls are made."
+}

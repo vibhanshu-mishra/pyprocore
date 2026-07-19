@@ -1,0 +1,23 @@
+{
+  "schema_version": "1",
+  "fixture_name": "missing_grounding_response_detected",
+  "fixture_type": "safety_boundary_response",
+  "workflow_name": "safety_boundary",
+  "input_context": {
+    "context_summary": "Placeholder context for grounding detection.",
+    "source_labels": ["SAFE-001"]
+  },
+  "expected_behavior": {
+    "citations": {
+      "allowed_labels": ["SAFE-001"],
+      "required_labels": ["SAFE-001"]
+    },
+    "grounding": {
+      "expected_sources": ["SAFE-001"],
+      "required_statement": "provided context"
+    },
+    "expect_detected_checks": ["grounding_statement"]
+  },
+  "response_text": "Summary\nThe sample item is complete. [SAFE-001]\n\nSources\n- [SAFE-001]",
+  "notes": "Missing grounding language is fixture content only and must be detected."
+}

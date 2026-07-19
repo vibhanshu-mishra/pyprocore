@@ -165,7 +165,9 @@ artifacts such as export rows, agent metadata, AI workflow packages, async
 batch plans, and plugin metadata. Phase 13B adds workflow-specific suites for
 RFI, submittal, async export, async batch, AI workflow, plugin metadata/config,
 and safety-boundary artifacts. Phase 13C adds local baselines, regression
-comparison, score thresholds, regression reports, and history snapshots:
+comparison, score thresholds, regression reports, and history snapshots. Phase
+13D adds offline model-response fixture evals for saved/sample AI-style
+responses:
 
 ```bash
 procore-sdk evals list
@@ -173,8 +175,14 @@ procore-sdk evals run
 procore-sdk evals run --suite golden_export_rows_basic
 procore-sdk evals run --suite rfi_workflow_golden
 procore-sdk evals run --suite safety_boundaries_golden
+procore-sdk evals run --suite model_fixture_rfi_review_golden
+procore-sdk evals run --suite model_fixture_safety_boundaries_golden
 procore-sdk evals validate-dataset examples/golden_datasets/golden_export_rows_basic.json
 procore-sdk evals report --format json
+procore-sdk evals model-fixture sample
+procore-sdk evals model-fixture validate examples/model_response_fixtures/rfi_review/passing_response.json
+procore-sdk evals model-fixture score examples/model_response_fixtures/rfi_review/passing_response.json
+procore-sdk evals model-fixture policy
 procore-sdk evals baseline sample
 procore-sdk evals baseline create --output local-eval-baseline.json
 procore-sdk evals baseline validate local-eval-baseline.json
@@ -189,9 +197,9 @@ procore-sdk evals sample-report
 ```
 
 These commands do not call Procore, call external AI/model APIs, execute
-plugins, execute MCP tools, execute Procore tools, fetch remote datasets, or
-upload reports. Baselines, reports, and history snapshots are local JSON or
-Markdown artifacts only.
+plugins, execute MCP tools, execute Procore tools, fetch remote datasets, use
+model-as-judge scoring, or upload reports. Baselines, reports, history
+snapshots, and fixture reports are local artifacts only.
 
 ## Scheduled Export Planning
 

@@ -256,16 +256,16 @@ actions, or enable agent/MCP execution.
 
 ## Phase 13 Golden Eval Notes
 
-Phase 13A, Phase 13B, and Phase 13C do not add new Procore endpoint coverage.
+Phase 13A, Phase 13B, Phase 13C, and Phase 13D do not add new Procore endpoint coverage.
 They add local golden dataset schemas, deterministic scoring helpers, built-in
 placeholder datasets, workflow-specific eval suites, baselines, regression
-reports, history snapshots, examples, and CLI commands for checking local
-artifacts.
+reports, history snapshots, offline model-response fixture evals, examples,
+and CLI commands for checking local artifacts.
 
 Golden evals inspect local JSON-like structures only. They do not call Procore,
-call external AI/model APIs, execute tools, execute plugins, fetch remote
-datasets, fetch remote baselines, upload reports, add write actions, or enable
-MCP execution.
+call external AI/model APIs, use model-as-judge scoring, execute tools, execute
+plugins, fetch remote datasets, fetch remote baselines, upload reports, add
+write actions, or enable MCP execution.
 
 ## Live Verification Notes
 

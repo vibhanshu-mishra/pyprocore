@@ -28,6 +28,7 @@ class GoldenDatasetCaseType(str, Enum):
     EXTENSION_PACK = "extension_pack"
     SAFETY_BOUNDARY = "safety_boundary"
     DOCS_TRUTH_SNIPPET = "docs_truth_snippet"
+    MODEL_RESPONSE_FIXTURE = "model_response_fixture"
 
 
 class EvalSeverity(str, Enum):
@@ -379,3 +380,110 @@ class EvalHistorySummary(ProcoreModel):
     worst_score: int | None = None
     score_trend: str = "none"
     snapshots: list[EvalHistorySnapshot] = Field(default_factory=list)
+
+
+class ModelResponseFixtureType(str, Enum):
+    """Supported offline model-response fixture categories."""
+
+    RFI_REVIEW_RESPONSE = "rfi_review_response"
+    SUBMITTAL_REVIEW_RESPONSE = "submittal_review_response"
+    PROJECT_CONTEXT_QA_RESPONSE = "project_context_qa_response"
+    DRAWING_SPEC_COMPARISON_RESPONSE = "drawing_spec_comparison_response"
+    ENGINEERING_ASSISTANT_RESPONSE = "engineering_assistant_response"
+    FIELD_ISSUE_SUMMARY_RESPONSE = "field_issue_summary_response"
+    CHANGE_RISK_REVIEW_RESPONSE = "change_risk_review_response"
+    SAFETY_BOUNDARY_RESPONSE = "safety_boundary_response"
+    REFUSAL_OR_LIMITATION_RESPONSE = "refusal_or_limitation_response"
+
+
+class ModelResponseFixtureInput(ProcoreModel):
+    """Placeholder context supplied with an offline model-response fixture."""
+
+    prompt: str | None = None
+    context_summary: str | None = None
+    source_labels: list[str] = Field(default_factory=list)
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class ModelResponseSafetyPolicy(ProcoreModel):
+    """Deterministic safety policy for one saved model-response fixture."""
+
+    require_citations: bool = True
+    require_grounding_statement: bool = True
+    require_limitation_disclosure: bool = False
+    prohibit_approval_language: bool = True
+    prohibit_write_action_language: bool = True
+    prohibit_fake_confidence: bool = True
+    prohibit_live_call_claims: bool = True
+    prohibit_external_model_claims: bool = True
+    prohibit_secret_like_values: bool = True
+
+
+class ModelResponseCitationExpectation(ProcoreModel):
+    """Citation labels allowed in one offline model-response fixture."""
+
+    allowed_labels: list[str] = Field(default_factory=list)
+    required_labels: list[str] = Field(default_factory=list)
+
+
+class ModelResponseGroundingExpectation(ProcoreModel):
+    """Grounding statements and source labels expected in a fixture."""
+
+    expected_sources: list[str] = Field(default_factory=list)
+    required_statement: str | None = None
+
+
+class ModelResponseFixtureExpectedBehavior(ProcoreModel):
+    """Expected deterministic behavior for a saved model-style response."""
+
+    expected_sections: list[str] = Field(default_factory=list)
+    required_phrases: list[str] = Field(default_factory=list)
+    forbidden_phrases: list[str] = Field(default_factory=list)
+    forbidden_claims: list[str] = Field(default_factory=list)
+    citations: ModelResponseCitationExpectation = Field(
+        default_factory=ModelResponseCitationExpectation
+    )
+    grounding: ModelResponseGroundingExpectation = Field(
+        default_factory=ModelResponseGroundingExpectation
+    )
+    safety_policy: ModelResponseSafetyPolicy = Field(default_factory=ModelResponseSafetyPolicy)
+    expect_detected_checks: list[str] = Field(default_factory=list)
+
+
+class ModelResponseFixture(ProcoreModel):
+    """Static local fixture representing a saved/sample AI-style response."""
+
+    schema_version: Literal["1"] = "1"
+    fixture_name: str
+    fixture_type: ModelResponseFixtureType
+    workflow_name: str
+    input_context: ModelResponseFixtureInput = Field(default_factory=ModelResponseFixtureInput)
+    expected_behavior: ModelResponseFixtureExpectedBehavior = Field(
+        default_factory=ModelResponseFixtureExpectedBehavior
+    )
+    response_text: str | None = None
+    response_json: dict[str, Any] | list[Any] | None = None
+    notes: str | None = None
+
+
+class ModelResponseFinding(ProcoreModel):
+    """One deterministic finding from an offline response fixture check."""
+
+    check: str
+    severity: EvalSeverity
+    passed: bool
+    message: str
+    details: dict[str, Any] = Field(default_factory=dict)
+
+
+class ModelResponseEvalResult(ProcoreModel):
+    """Deterministic evaluation result for one offline response fixture."""
+
+    fixture_name: str
+    fixture_type: ModelResponseFixtureType
+    workflow_name: str
+    status: EvalStatus
+    passed: bool
+    score: int
+    max_score: int
+    findings: list[ModelResponseFinding] = Field(default_factory=list)

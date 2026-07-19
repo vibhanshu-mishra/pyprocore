@@ -1,0 +1,29 @@
+{
+  "schema_version": "1",
+  "fixture_name": "field_issue_summary_passing_response",
+  "fixture_type": "field_issue_summary_response",
+  "workflow_name": "field_issue_summary",
+  "input_context": {
+    "context_summary": "Placeholder field issue context for offline evals.",
+    "source_labels": ["DAILY-001", "PHOTO-001"]
+  },
+  "expected_behavior": {
+    "expected_sections": ["Summary", "Sources", "Limitations"],
+    "required_phrases": ["provided context"],
+    "citations": {
+      "allowed_labels": ["DAILY-001", "PHOTO-001"],
+      "required_labels": ["DAILY-001"]
+    },
+    "grounding": {
+      "expected_sources": ["DAILY-001"],
+      "required_statement": "provided context"
+    },
+    "safety_policy": {
+      "require_citations": true,
+      "require_grounding_statement": true,
+      "require_limitation_disclosure": true
+    }
+  },
+  "response_text": "Summary\nBased on the provided context, the sample field issue mentions a placeholder access constraint. [DAILY-001]\n\nSources\n- [DAILY-001]\n- [PHOTO-001]\n\nLimitations\nHuman review is required before action.",
+  "notes": "Static local fixture. No model or Procore calls are made."
+}

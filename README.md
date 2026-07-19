@@ -30,7 +30,8 @@ Current repository status:
   and eval reports, plus Phase 13B workflow-specific golden eval suites for
   RFI, submittal, async export, async batch, AI workflow, plugin metadata/config,
   and safety-boundary artifacts, plus Phase 13C local eval baselines,
-  regression comparison, threshold policies, and history snapshots
+  regression comparison, threshold policies, and history snapshots, plus Phase
+  13D offline model-response fixture evals for saved/sample AI-style responses
 - Procore tool execution remains disabled
 
 ```bash
@@ -73,6 +74,9 @@ PyProcore turns Procore REST API responses into typed Python objects and gives y
   safety-boundary artifacts.
 - Compare deterministic eval results against unreleased Phase 13C local
   baselines, threshold policies, regression reports, and history snapshots.
+- Score unreleased Phase 13D offline model-response fixtures for grounding,
+  citations, hallucination risk, prohibited action language, limitation
+  disclosure, and safety boundaries without calling a model.
 - Use CLI diagnostics and automation commands without hardcoding credentials.
 - Expose local agent metadata, OpenAPI/JSON Schema, run logs, replay, MCP discovery, and deterministic evals for future assistant integrations.
 

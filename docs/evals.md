@@ -4,16 +4,17 @@ Phase 13A adds the local deterministic golden dataset foundation. Phase 13B
 adds workflow-specific golden eval suites for RFI, submittal, async export,
 async batch, AI workflow, plugin metadata/config, and safety-boundary artifacts.
 Phase 13C adds local baseline files, regression comparison, threshold policies,
-and history snapshots for those deterministic eval suites.
+and history snapshots for those deterministic eval suites. Phase 13D adds
+offline model-response fixture evals for saved/sample AI-style responses.
 
-Current stable release: `2.2.0`. Phase 13A, Phase 13B, and Phase 13C are
-unreleased branch work unless included in a later published release.
+Current stable release: `2.2.0`. Phase 13A, Phase 13B, Phase 13C, and Phase
+13D are unreleased branch work unless included in a later published release.
 
 ## What This Does
 
 Golden evals check local JSON-like artifacts such as export rows, agent
 manifest metadata, AI workflow package metadata, async batch plans, plugin
-metadata, and safety-boundary snippets.
+metadata, safety-boundary snippets, and saved offline model-response fixtures.
 
 They are useful when you want a repeatable check that an export, manifest,
 workflow package, or prompt package still has the expected structure before it
@@ -25,6 +26,7 @@ Golden evals are local deterministic checks only.
 
 - They do not call Procore.
 - They do not call external AI/model APIs.
+- They do not use model-as-judge scoring.
 - They do not execute Procore tools.
 - They do not execute MCP.
 - They do not execute plugins.
@@ -53,6 +55,17 @@ Run one suite:
 ```bash
 PYTHONPATH=. procore-sdk evals run --suite rfi_workflow_golden
 PYTHONPATH=. procore-sdk evals run --suite safety_boundaries_golden
+PYTHONPATH=. procore-sdk evals run --suite model_fixture_rfi_review_golden
+PYTHONPATH=. procore-sdk evals run --suite model_fixture_safety_boundaries_golden
+```
+
+Work with one offline model-response fixture:
+
+```bash
+PYTHONPATH=. procore-sdk evals model-fixture sample
+PYTHONPATH=. procore-sdk evals model-fixture validate examples/model_response_fixtures/rfi_review/passing_response.json
+PYTHONPATH=. procore-sdk evals model-fixture score examples/model_response_fixtures/rfi_review/passing_response.json
+PYTHONPATH=. procore-sdk evals model-fixture policy
 ```
 
 Validate a local JSON dataset:
@@ -133,6 +146,7 @@ print(f"{report.passed_cases}/{report.total_cases} cases passed")
 - `extension_pack`
 - `safety_boundary`
 - `docs_truth_snippet`
+- `model_response_fixture`
 
 ## Workflow-Specific Suites
 
@@ -148,6 +162,47 @@ Phase 13B adds these built-in suites:
 | `plugin_metadata_golden` | Metadata-only plugin manifests, allowed capabilities, hook metadata types |
 | `plugin_config_golden` | JSON-only plugin preferences and extension-pack metadata |
 | `safety_boundaries_golden` | Disabled tool/MCP/plugin/model/remote dataset execution boundaries |
+
+## Offline Model-Response Fixture Evals
+
+Phase 13D evaluates static local text/JSON fixtures that represent saved or
+sample AI-style responses. It does not generate responses, call OpenAI,
+Anthropic, Gemini, local model servers, Procore, plugins, MCP, or tools.
+
+Fixture checks are deterministic and include:
+
+- required sections and required phrases
+- forbidden phrases and forbidden claims
+- allowed citation/source-label checks
+- fake citation and hallucinated source-label detection
+- grounding statement checks
+- prohibited approval/write-action language checks
+- fake confidence checks
+- limitation/refusal disclosure checks
+- secret-like value checks
+- external model/API call claim checks
+- live Procore verification claim checks
+
+PyProcore does not use model-as-judge scoring. Unsafe demonstration fixtures can
+still pass a suite when the expected result is that unsafe text was correctly
+detected.
+
+Built-in Phase 13D suites:
+
+| Suite | Checks |
+| --- | --- |
+| `model_fixture_rfi_review_golden` | Saved RFI review responses and unsafe write/approval wording |
+| `model_fixture_submittal_review_golden` | Saved submittal review responses and approval boundaries |
+| `model_fixture_project_context_qa_golden` | Project-context Q&A source labels and grounding |
+| `model_fixture_drawing_spec_comparison_golden` | Drawing/spec comparison citations and limitations |
+| `model_fixture_engineering_assistant_golden` | Advisory engineering assistant response boundaries |
+| `model_fixture_field_issue_summary_golden` | Field issue summary grounding and limitations |
+| `model_fixture_change_risk_review_golden` | Change-risk review caution and source use |
+| `model_fixture_safety_boundaries_golden` | Fake citation, live-call, and external-model claim detection |
+
+Sample fixtures live in `examples/model_response_fixtures/`. They use
+placeholder labels only and contain no real Procore IDs, tokens, users,
+companies, projects, emails, Authorization headers, or API keys.
 
 ## RFI Workflow Evals
 
@@ -300,6 +355,9 @@ For a local release-readiness pattern:
 Phase 13C does not modify GitHub Actions. Teams can wire the commands into CI
 later if they choose.
 
+Phase 13D also leaves GitHub Actions unchanged. It adds local fixture suites and
+CLI helpers only.
+
 ## What Phase 13C Does Not Do
 
 Phase 13C does not evaluate live Procore responses, live model responses,
@@ -307,3 +365,8 @@ remote datasets, plugin runtime behavior, or MCP tool execution. It does not
 fetch remote baselines, upload reports, execute plugins, call external models,
 call Procore, or enable tool execution. It compares local deterministic eval
 results only.
+
+Phase 13D does not call model providers, use model-as-judge grading, fetch
+remote fixture data, upload reports, execute plugins, execute MCP, execute
+Procore tools, or verify anything against live Procore. It scores saved local
+fixtures only.

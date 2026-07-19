@@ -64,6 +64,10 @@ and this project follows semantic versioning.
 - Phase 13C local eval baselines, deterministic regression comparison, threshold policies, JSON/Markdown regression reports, and history snapshots.
 - `procore-sdk evals baseline`, `procore-sdk evals compare`, `procore-sdk evals regression-report`, and `procore-sdk evals history` local-only CLI commands.
 - Examples 229–238 and sample local eval baseline, regression report, and history files.
+- Phase 13D offline model-response fixture evals for saved/sample AI-style responses, including grounding, citation/source-label, hallucination-risk, prohibited action language, limitation disclosure, and safety-boundary checks.
+- `procore-sdk evals model-fixture` local-only CLI commands for sample, validate, score, and policy inspection.
+- Built-in Phase 13D model fixture suites for RFI review, submittal review, project context Q&A, drawing/spec comparison, engineering assistant, field issue summary, change-risk review, and safety boundaries.
+- Examples 239–248 and local model-response fixture JSON files.
 
 - Phase 8A read-only API coverage for Observations, Punch Items, and Generic Tool correspondence items.
 - Typed flexible models for `Observation`, `PunchItem`, `GenericTool`, and `Correspondence`.
@@ -114,6 +118,7 @@ and this project follows semantic versioning.
 - Phase 13A golden evals are local deterministic artifact checks only; they do not call Procore, call external AI/model APIs, fetch or upload datasets, execute plugins, load arbitrary code, add Procore write actions, or enable agent/MCP execution.
 - Phase 13B workflow-specific golden evals remain local deterministic artifact checks only; they do not call Procore, call external AI/model APIs, fetch remote datasets, execute plugins, load arbitrary code, add Procore write actions, or enable agent/MCP execution.
 - Phase 13C baseline/regression helpers compare local deterministic eval artifacts only; they do not call Procore, call external AI/model APIs, fetch remote baselines, upload reports, execute plugins, load arbitrary code, add Procore write actions, or enable agent/MCP execution.
+- Phase 13D model-response fixture evals are local deterministic checks only; they do not call Procore, call external AI/model APIs, use model-as-judge scoring, fetch remote fixtures, upload reports, execute plugins, load arbitrary code, add Procore write actions, or enable agent/MCP execution.
 
 - Phase 8A remains read-only and does not add create/update/delete Procore actions.
 - Agent tool execution remains disabled; new Phase 8A agent entries are metadata only.

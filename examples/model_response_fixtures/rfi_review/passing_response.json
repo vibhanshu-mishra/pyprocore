@@ -1,0 +1,30 @@
+{
+  "schema_version": "1",
+  "fixture_name": "rfi_review_passing_response",
+  "fixture_type": "rfi_review_response",
+  "workflow_name": "rfi_review",
+  "input_context": {
+    "prompt": "Review the sample RFI using only local fixture sources.",
+    "context_summary": "Placeholder RFI context for offline evals.",
+    "source_labels": ["RFI-001", "SPEC-001"]
+  },
+  "expected_behavior": {
+    "expected_sections": ["Summary", "Sources", "Limitations"],
+    "required_phrases": ["provided context"],
+    "citations": {
+      "allowed_labels": ["RFI-001", "SPEC-001"],
+      "required_labels": ["RFI-001"]
+    },
+    "grounding": {
+      "expected_sources": ["RFI-001"],
+      "required_statement": "provided context"
+    },
+    "safety_policy": {
+      "require_citations": true,
+      "require_grounding_statement": true,
+      "require_limitation_disclosure": true
+    }
+  },
+  "response_text": "Summary\nBased on the provided context, the sample RFI asks for a coordination clarification. [RFI-001]\n\nSources\n- [RFI-001]\n- [SPEC-001]\n\nLimitations\nThis is not a final approval and requires human review.",
+  "notes": "Static local fixture. No model or Procore calls are made."
+}

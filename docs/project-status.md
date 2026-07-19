@@ -20,7 +20,8 @@
   extension-pack manifests, plus Phase 11D plugin developer scaffolding, plus
   Phase 13A local deterministic golden datasets and eval reports, Phase 13B
   workflow-specific golden eval suites, and Phase 13C local eval baselines,
-  regression comparison, threshold policies, and history snapshots.
+  regression comparison, threshold policies, and history snapshots, plus Phase
+  13D offline model-response fixture evals.
   The package remains `2.2.0`; this branch work is unpublished.
 
 ## Current Stable Release: 2.2.0
@@ -148,6 +149,13 @@ history snapshots. It compares local eval results only and does not call
 Procore, call external AI/model APIs, execute plugins, fetch remote datasets,
 upload remote reports, load arbitrary code, or enable tool/MCP execution.
 
+Phase 13D adds offline model-response fixture evals for saved/sample AI-style
+responses. It checks grounding, citations, hallucination risk, prohibited
+action language, limitation disclosure, secret-like text, and live/model-call
+claims. It does not call Procore, call model providers, use model-as-judge
+scoring, execute plugins, fetch remote fixtures, upload reports, load arbitrary
+code, or enable tool/MCP execution.
+
 Phase 8A adds read-only SDK coverage for Observations, Punch Items, Generic
 Tools, and Generic Tool correspondence items. It includes service helpers,
 typed flexible models, search helpers, local CSV/JSONL exports, CLI commands,
@@ -216,9 +224,10 @@ approvals, status changes, or project-management mutations.
 - Phase 13A golden evals are local and deterministic; they do not call Procore,
   call external AI/model APIs, execute plugins, fetch/upload datasets, or enable
   tool/MCP execution.
-- Phase 13B and Phase 13C eval work remains local and deterministic; it does
+- Phase 13B, Phase 13C, and Phase 13D eval work remains local and deterministic; it does
   not call Procore, call external AI/model APIs, execute plugins, fetch remote
-  datasets or baselines, upload reports, or enable tool/MCP execution.
+  datasets, fixtures, or baselines, upload reports, use model-as-judge scoring,
+  or enable tool/MCP execution.
 
 ## Known Limitations
 

@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from pyprocore.evals.datasets import DATASET_SCHEMA_VERSION, load_golden_dataset_from_dict
+from pyprocore.evals.model_response_suites import get_model_response_dataset_payloads
 from pyprocore.evals.models import GoldenDataset
 from pyprocore.evals.workflow_suites import get_workflow_dataset_payloads
 
@@ -259,4 +260,5 @@ def _builtin_dataset_payloads() -> dict[str, dict[str, Any]]:
         ),
     }
     payloads.update(get_workflow_dataset_payloads())
+    payloads.update(get_model_response_dataset_payloads())
     return payloads

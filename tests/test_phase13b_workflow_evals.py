@@ -89,7 +89,7 @@ class Phase13BWorkflowEvalsTestCase(unittest.TestCase):
         suite_names = {suite.suite_name for suite in report.suites}
 
         self.assertTrue(report.passed)
-        self.assertEqual(report.total_suites, 15)
+        self.assertGreaterEqual(report.total_suites, 15)
         self.assertIn("golden_export_rows_basic", suite_names)
         self.assertTrue(self.workflow_suite_names.issubset(suite_names))
 

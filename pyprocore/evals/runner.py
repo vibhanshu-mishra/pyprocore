@@ -12,6 +12,7 @@ from pyprocore.evals.builtin_datasets import (
     list_builtin_dataset_names,
 )
 from pyprocore.evals.datasets import load_golden_dataset_from_file, validate_golden_dataset
+from pyprocore.evals.model_response_scoring import model_response_fixture_score
 from pyprocore.evals.models import (
     EvalCaseResult,
     EvalFinding,
@@ -23,6 +24,7 @@ from pyprocore.evals.models import (
     EvalSuiteResult,
     GoldenDataset,
     GoldenDatasetCase,
+    GoldenDatasetCaseType,
 )
 from pyprocore.evals.scoring import (
     contains_text_score,
@@ -96,6 +98,8 @@ def run_eval_case(case: GoldenDatasetCase) -> EvalCaseResult:
     artifact = case.input.artifact
     expected = case.expected
     scores: list[EvalScore] = []
+    if case.case_type == GoldenDatasetCaseType.MODEL_RESPONSE_FIXTURE:
+        scores.append(model_response_fixture_score(artifact, case_id=case.id))
     if expected.exact is not None:
         scores.append(exact_match_score(artifact, expected.exact, case_id=case.id))
     if expected.required_keys:

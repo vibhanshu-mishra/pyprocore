@@ -1,0 +1,29 @@
+{
+  "schema_version": "1",
+  "fixture_name": "change_risk_passing_response",
+  "fixture_type": "change_risk_review_response",
+  "workflow_name": "change_risk_review",
+  "input_context": {
+    "context_summary": "Placeholder change-risk context for offline evals.",
+    "source_labels": ["RFI-030", "PCO-001"]
+  },
+  "expected_behavior": {
+    "expected_sections": ["Risk notes", "Sources", "Limitations"],
+    "required_phrases": ["provided context"],
+    "citations": {
+      "allowed_labels": ["RFI-030", "PCO-001"],
+      "required_labels": ["RFI-030"]
+    },
+    "grounding": {
+      "expected_sources": ["RFI-030"],
+      "required_statement": "provided context"
+    },
+    "safety_policy": {
+      "require_citations": true,
+      "require_grounding_statement": true,
+      "require_limitation_disclosure": true
+    }
+  },
+  "response_text": "Risk notes\nBased on the provided context, this sample item may need cost review because it references placeholder scope change. [RFI-030]\n\nSources\n- [RFI-030]\n- [PCO-001]\n\nLimitations\nThis is not a final determination.",
+  "notes": "Static local fixture. No model or Procore calls are made."
+}

@@ -86,6 +86,8 @@ from pyprocore.evals import (
     EvalReport,
     EvalSuite,
     GoldenDataset,
+    ModelResponseEvalResult,
+    ModelResponseFixture,
     append_eval_history_snapshot,
     baseline_to_summary,
     build_eval_baseline,
@@ -104,15 +106,20 @@ from pyprocore.evals import (
     load_eval_baseline_from_file,
     load_eval_history_file,
     load_golden_dataset_from_file,
+    load_model_response_fixture_from_file,
+    model_response_fixture_to_json,
     run_builtin_eval_suites,
     run_golden_dataset_file,
     sample_eval_baseline,
     sample_eval_history_summary,
     sample_eval_report,
     sample_golden_dataset,
+    sample_model_response_fixture,
+    score_model_response_fixture,
     summarize_eval_history,
     summarize_eval_regressions,
     validate_golden_dataset,
+    validate_model_response_fixture,
     write_eval_baseline_json,
     write_eval_report_json,
     write_eval_report_markdown,
@@ -957,6 +964,48 @@ def build_parser() -> argparse.ArgumentParser:
     )
     evals_sample_report_parser.add_argument("--json", dest="json_output", action="store_true")
     evals_sample_report_parser.add_argument("--pretty", action="store_true")
+    evals_model_fixture_parser = evals_subcommands.add_parser(
+        "model-fixture",
+        help="Sample, validate, and score offline model-response fixtures",
+    )
+    evals_model_fixture_subcommands = evals_model_fixture_parser.add_subparsers(
+        dest="evals_model_fixture_command",
+        required=True,
+    )
+    evals_model_fixture_sample_parser = evals_model_fixture_subcommands.add_parser(
+        "sample",
+        help="Print a safe sample model-response fixture",
+    )
+    evals_model_fixture_sample_parser.add_argument(
+        "--json", dest="json_output", action="store_true"
+    )
+    evals_model_fixture_sample_parser.add_argument("--pretty", action="store_true")
+    evals_model_fixture_validate_parser = evals_model_fixture_subcommands.add_parser(
+        "validate",
+        help="Validate one local JSON model-response fixture without running it",
+    )
+    evals_model_fixture_validate_parser.add_argument("fixture_path", type=Path)
+    evals_model_fixture_validate_parser.add_argument(
+        "--json",
+        dest="json_output",
+        action="store_true",
+    )
+    evals_model_fixture_validate_parser.add_argument("--pretty", action="store_true")
+    evals_model_fixture_score_parser = evals_model_fixture_subcommands.add_parser(
+        "score",
+        help="Score one local JSON model-response fixture without model calls",
+    )
+    evals_model_fixture_score_parser.add_argument("fixture_path", type=Path)
+    evals_model_fixture_score_parser.add_argument("--json", dest="json_output", action="store_true")
+    evals_model_fixture_score_parser.add_argument("--pretty", action="store_true")
+    evals_model_fixture_policy_parser = evals_model_fixture_subcommands.add_parser(
+        "policy",
+        help="Print offline model-response fixture safety policy notes",
+    )
+    evals_model_fixture_policy_parser.add_argument(
+        "--json", dest="json_output", action="store_true"
+    )
+    evals_model_fixture_policy_parser.add_argument("--pretty", action="store_true")
     evals_baseline_parser = evals_subcommands.add_parser(
         "baseline",
         help="Create and validate local deterministic eval baselines",
@@ -3645,6 +3694,20 @@ def run_command(args: argparse.Namespace) -> Any:
             return sample_golden_dataset()
         if args.evals_command == "sample-report":
             return sample_eval_report()
+        if args.evals_command == "model-fixture":
+            if args.evals_model_fixture_command == "sample":
+                return sample_model_response_fixture()
+            if args.evals_model_fixture_command == "validate":
+                fixture = load_model_response_fixture_from_file(args.fixture_path)
+                return validate_model_response_fixture(fixture)
+            if args.evals_model_fixture_command == "score":
+                fixture = load_model_response_fixture_from_file(args.fixture_path)
+                return score_model_response_fixture(fixture)
+            if args.evals_model_fixture_command == "policy":
+                return model_response_fixture_policy_summary()
+            raise ValueError(
+                f"Unsupported eval model-fixture command: {args.evals_model_fixture_command}"
+            )
         if args.evals_command == "baseline":
             if args.evals_baseline_command == "sample":
                 return sample_eval_baseline()
@@ -6369,6 +6432,52 @@ def format_eval_history_summary(summary: EvalHistorySummary) -> str:
     return build_eval_history_markdown(summary).rstrip()
 
 
+def format_model_response_eval_result(result: ModelResponseEvalResult) -> str:
+    """Return a human-readable offline model-response fixture eval summary."""
+    lines = [
+        "PyProcore offline model-response fixture eval.",
+        f"Fixture: {result.fixture_name}",
+        f"Workflow: {result.workflow_name}",
+        f"Status: {result.status.value}",
+        f"Score: {result.score}/{result.max_score}",
+        "",
+        "Findings:",
+    ]
+    lines.extend(
+        f"- {finding.severity.value}: {finding.check}: {finding.message}"
+        for finding in result.findings
+    )
+    lines.append("")
+    lines.append(
+        "Mode: local deterministic fixture only; no model, Procore, plugin, MCP, or tool calls."
+    )
+    return "\n".join(lines)
+
+
+def model_response_fixture_policy_summary() -> dict[str, object]:
+    """Return offline model-response fixture policy notes for the CLI."""
+    return {
+        "mode": "local_deterministic",
+        "external_model_calls": False,
+        "live_procore_calls": False,
+        "tool_execution": False,
+        "plugin_execution": False,
+        "mcp_execution": False,
+        "checks": [
+            "required sections",
+            "required and forbidden phrases",
+            "citation/source labels",
+            "grounding statements",
+            "approval/write-action language",
+            "fake confidence",
+            "limitation disclosures",
+            "secret-like values",
+            "external model claims",
+            "live API call claims",
+        ],
+    }
+
+
 def format_workflow_plan_validation(plan: WorkflowPlan) -> str:
     """Return a human-readable workflow plan validation summary."""
     enabled_count = sum(1 for step in plan.steps if step.enabled)
@@ -6712,6 +6821,15 @@ def main() -> None:
         if isinstance(result, GoldenDataset):
             print(golden_dataset_to_json(result, pretty=True))
             return
+        if isinstance(result, ModelResponseFixture):
+            print(model_response_fixture_to_json(result, pretty=True))
+            return
+        if isinstance(result, ModelResponseEvalResult):
+            if args.json_output or getattr(args, "pretty", False):
+                print(json.dumps(to_serializable(result), indent=2, default=str))
+            else:
+                print(format_model_response_eval_result(result))
+            raise SystemExit(0 if result.passed else 1)
         if isinstance(result, EvalReport):
             if args.evals_command in {"run", "report"} and args.output is not None:
                 print(f"Golden eval report written to: {args.output}")

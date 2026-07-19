@@ -334,6 +334,28 @@ external AI/model calls, plugin execution, MCP execution, remote dataset or
 baseline fetching, remote report upload, arbitrary code loading, Procore tool
 execution, or Procore writes are added.
 
+### Phase 13D — Offline Model Response Fixture Evals
+
+Implemented in the current branch and not yet published:
+
+- Typed offline model-response fixture models and validation helpers.
+- Deterministic scoring for required sections, citations/source labels,
+  grounding statements, hallucination risk, prohibited approval/write-action
+  language, fake confidence, limitations, secret-like text, and live/model-call
+  claims.
+- Built-in fixture suites for RFI review, submittal review, project context
+  Q&A, drawing/spec comparison, engineering assistant, field issue summary,
+  change-risk review, and safety boundaries.
+- Local JSON fixture files under `examples/model_response_fixtures/`.
+- CLI commands for `evals model-fixture sample`, `validate`, `score`, and
+  `policy`.
+- Examples 239–248.
+
+Focus: saved local model-response fixtures only. No live Procore calls,
+external AI/model calls, model-as-judge scoring, plugin execution, MCP
+execution, remote fixture fetching, remote report upload, arbitrary code
+loading, Procore tool execution, or Procore writes are added.
+
 ### Phase 8A — Expanded Procore API Coverage
 
 Implemented in the current branch and not yet published:

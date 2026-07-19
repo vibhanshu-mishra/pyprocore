@@ -108,6 +108,12 @@ regression comparison, threshold policies, JSON/Markdown regression reports,
 and history snapshots. They use placeholder fixtures or temporary folders only
 and do not call Procore, call external AI/model APIs, execute plugins, fetch or
 upload remote reports, load arbitrary code, or enable tool/MCP execution.
+Examples `239` through `248` cover unreleased Phase 13D offline model-response
+fixture evals. They score saved/sample text or JSON responses for grounding,
+citations, hallucination risk, prohibited action language, and safety
+boundaries. They do not call Procore, call external AI/model APIs, use
+model-as-judge scoring, execute plugins, fetch remote fixtures, upload reports,
+load arbitrary code, or enable tool/MCP execution.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -218,6 +224,9 @@ python3 examples/225_eval_safety_boundary_suite.py
 python3 examples/229_eval_baseline_quickstart.py
 python3 examples/231_eval_compare_to_baseline.py
 python3 examples/235_eval_history_snapshot.py
+python3 examples/239_model_fixture_quickstart.py
+python3 examples/243_eval_fake_citation_detection.py
+python3 examples/248_phase13d_model_fixture_summary.py
 ```
 
 Documents use Procore's Project Folders and Files endpoints internally. Before a
@@ -275,7 +284,7 @@ make examples-check
 ## Example Index
 
 The current example set runs from `01_list_companies.py` through
-`238_phase13c_baseline_regression_summary.py`.
+`248_phase13d_model_fixture_summary.py`.
 
 | File | Demonstrates |
 | ---- | ------------ |
@@ -517,6 +526,16 @@ The current example set runs from `01_list_companies.py` through
 | `236_eval_history_summary.py` | Summarize local eval history snapshots |
 | `237_eval_release_readiness_pattern.py` | Demonstrate a strict local release-readiness eval pattern |
 | `238_phase13c_baseline_regression_summary.py` | Summarize Phase 13C baseline and regression support |
+| `239_model_fixture_quickstart.py` | Run a built-in offline model-response fixture eval suite |
+| `240_eval_rfi_model_response_fixture.py` | Score a saved RFI review model-response fixture |
+| `241_eval_submittal_model_response_fixture.py` | Score a saved submittal review model-response fixture |
+| `242_eval_engineering_assistant_fixture.py` | Score a saved engineering assistant response fixture |
+| `243_eval_fake_citation_detection.py` | Demonstrate fake citation/source-label detection |
+| `244_eval_no_write_action_language.py` | Demonstrate prohibited write-action language detection |
+| `245_eval_model_fixture_safety_policy.py` | Print offline model-response fixture policy notes |
+| `246_eval_model_fixture_report.py` | Run all built-in offline model-response fixture suites |
+| `247_eval_model_fixture_baseline_pattern.py` | Compare a model fixture suite to a local baseline |
+| `248_phase13d_model_fixture_summary.py` | Summarize Phase 13D model-response fixture evals |
 
 Sample golden datasets live in `examples/golden_datasets/`:
 
@@ -547,6 +566,19 @@ Sample eval baselines and reports live in `examples/eval_baselines/` and
 | `eval_reports/sample_regression_report.json` | Placeholder JSON regression report |
 | `eval_reports/sample_regression_report.md` | Placeholder Markdown regression report |
 | `eval_reports/sample_eval_history.json` | Placeholder local eval history snapshot file |
+
+Sample offline model-response fixtures live in `examples/model_response_fixtures/`:
+
+| Folder | Demonstrates |
+| ---- | ------------ |
+| `rfi_review/` | Passing and unsafe-detected RFI review response fixtures |
+| `submittal_review/` | Submittal review response fixture checks |
+| `project_context_qa/` | Project context Q&A response fixture checks |
+| `drawing_spec_comparison/` | Drawing/spec comparison response fixture checks |
+| `engineering_assistant/` | Engineering assistant response fixture checks |
+| `field_issue_summary/` | Field issue summary response fixture checks |
+| `change_risk_review/` | Change-risk review response fixture checks |
+| `safety_boundaries/` | Fake citation and missing grounding detection fixtures |
 
 Sample scheduled export configs live in `examples/configs/`:
 
@@ -683,4 +715,9 @@ Sample webhook payloads live in `examples/webhooks/`:
   They use placeholder fixtures or temporary folders only and do not call
   Procore, call external AI/model APIs, execute plugins, fetch remote datasets,
   upload remote reports, load arbitrary code, or enable tool/MCP execution.
+- Examples `239` through `248` are offline model-response fixture eval
+  examples. They score saved local text/JSON only and do not call Procore,
+  call external AI/model APIs, use model-as-judge scoring, execute plugins,
+  fetch remote fixtures, upload reports, load arbitrary code, or enable
+  tool/MCP execution.
 - Keep secrets out of code, screenshots, logs, and issue reports.
