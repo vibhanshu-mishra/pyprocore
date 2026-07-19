@@ -49,6 +49,28 @@ Focus: discovery metadata only. No MCP execution, Procore tool execution,
 plugin execution, live Procore calls, external AI/model calls, remote resource
 fetching, uploads, or write actions are enabled.
 
+### Phase 15B — MCP Metadata Deepening
+
+Implemented in the current branch and not yet published:
+
+- Deeper eval resources for suites, per-suite metadata, baseline templates,
+  regression templates, history templates, model fixtures, and safety
+  boundaries
+- Plugin metadata resources for manifests, hooks, configs, extension packs,
+  scaffolds, capabilities, and safety boundaries
+- Async metadata resources for capabilities, resources, exports, batch plans,
+  download patterns, safety, and read-only coverage
+- AI workflow metadata resources for review packages, vector export patterns,
+  model-fixture eval links, and safety boundaries
+- Artifact review prompts for evals, plugins, async plans, AI workflow
+  packages, MCP safety, and release readiness
+- Resource and prompt kind filters for MCP discovery commands
+- Placeholder-only examples 259–268
+
+Focus: metadata only. No MCP execution, Procore tool execution, plugin
+execution, live Procore calls, external AI/model calls, remote fetching,
+uploads, or write actions are enabled.
+
 ### Phase 9A — Enterprise Authentication Hardening
 
 - Backward-compatible Authorization Code and Client Credentials strategy handling

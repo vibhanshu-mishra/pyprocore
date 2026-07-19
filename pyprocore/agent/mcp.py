@@ -46,26 +46,35 @@ def build_mcp_tool_definitions(
     return build_typed_mcp_tool_definitions(registry)
 
 
-def build_mcp_resource_definitions() -> list[JsonObject]:
+def build_mcp_resource_definitions(kind: str | None = None) -> list[JsonObject]:
     """Build static MCP-style resource definitions for local metadata exports.
+
+    Args:
+        kind: Optional resource kind filter.
 
     Returns:
         JSON-serializable resource definition list.
     """
     return [
         _mcp_resource_to_wire(resource.model_dump(mode="json", by_alias=True))
-        for resource in list_mcp_resources()
+        for resource in list_mcp_resources(kind=kind)
     ]
 
 
-def build_mcp_prompt_definitions() -> list[JsonObject]:
+def build_mcp_prompt_definitions(kind: str | None = None) -> list[JsonObject]:
     """Build discovery-only MCP prompt definitions.
+
+    Args:
+        kind: Optional prompt kind filter.
 
     Returns:
         JSON-serializable prompt definitions. These are templates only and do
         not execute PyProcore workflows.
     """
-    return [_mcp_prompt_to_wire(prompt.model_dump(mode="json")) for prompt in list_mcp_prompts()]
+    return [
+        _mcp_prompt_to_wire(prompt.model_dump(mode="json"))
+        for prompt in list_mcp_prompts(kind=kind)
+    ]
 
 
 def build_mcp_server_info(
@@ -82,7 +91,7 @@ def build_mcp_server_info(
     server = build_typed_mcp_server_info(registry).model_dump(mode="json")
     server["protocolVersion"] = server.pop("protocol_version")
     server["safety"]["tool_execution_enabled"] = server["safety"]["procore_tool_execution_enabled"]
-    server["safety"]["phase"] = "15A"
+    server["safety"]["phase"] = "15B"
     return server
 
 
@@ -122,7 +131,7 @@ def build_mcp_tool_execution_disabled_response(tool_name: str) -> JsonObject:
             "discovery_only": True,
             "calls_live_api": False,
             "mcp_execution_enabled": False,
-            "phase": "15A",
+            "phase": "15B",
         },
     }
 
@@ -144,28 +153,30 @@ def export_mcp_tools_json(
     return _json_dumps(build_mcp_tool_definitions(registry=registry), pretty=pretty)
 
 
-def export_mcp_resources_json(*, pretty: bool = False) -> str:
+def export_mcp_resources_json(*, pretty: bool = False, kind: str | None = None) -> str:
     """Return MCP-style resource definitions as deterministic JSON.
 
     Args:
         pretty: Whether to format JSON with two-space indentation.
+        kind: Optional resource kind filter.
 
     Returns:
         JSON string.
     """
-    return _json_dumps(build_mcp_resource_definitions(), pretty=pretty)
+    return _json_dumps(build_mcp_resource_definitions(kind=kind), pretty=pretty)
 
 
-def export_mcp_prompts_json(*, pretty: bool = False) -> str:
+def export_mcp_prompts_json(*, pretty: bool = False, kind: str | None = None) -> str:
     """Return MCP-style prompt definitions as deterministic JSON.
 
     Args:
         pretty: Whether to format JSON with two-space indentation.
+        kind: Optional prompt kind filter.
 
     Returns:
         JSON string.
     """
-    return _json_dumps(build_mcp_prompt_definitions(), pretty=pretty)
+    return _json_dumps(build_mcp_prompt_definitions(kind=kind), pretty=pretty)
 
 
 def export_mcp_capabilities_json(*, pretty: bool = False) -> str:

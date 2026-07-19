@@ -81,6 +81,18 @@ and this project follows semantic versioning.
   reads, prompts, prompt reads, capabilities, safety, and stdio discovery.
 - Examples 249–258 for local MCP resources, prompts, capabilities, safety
   boundaries, plugin/eval/async/AI workflow resources, and stdio discovery.
+- Phase 15B deeper discovery-only MCP metadata for eval suites, baselines,
+  regressions, history templates, model-response fixtures, plugin templates,
+  async resources/exports/batch patterns, AI workflow review templates, and
+  safety boundaries.
+- MCP resource and prompt kind filters for local discovery commands, including
+  `procore-sdk mcp resources --kind eval_suite` and
+  `procore-sdk mcp prompts --kind eval_report_review`.
+- Additional MCP artifact review prompts for eval regressions, model fixtures,
+  plugin configs, extension packs, async batch plans, async export manifests,
+  AI workflow packages, MCP safety, and release readiness.
+- Examples 259–268 for Phase 15B local MCP eval, plugin, async, AI workflow,
+  model-fixture, prompt, kind-filtering, and stdio discovery metadata.
 
 - Phase 8A read-only API coverage for Observations, Punch Items, and Generic Tool correspondence items.
 - Typed flexible models for `Observation`, `PunchItem`, `GenericTool`, and `Correspondence`.
@@ -136,6 +148,10 @@ and this project follows semantic versioning.
   execution, Procore tool execution, plugin execution, live Procore calls,
   external AI/model calls, remote resource fetching, uploads, write actions,
   or arbitrary code loading.
+- Phase 15B MCP metadata remains discovery-only; it does not enable MCP
+  execution, Procore tool execution, plugin execution, live Procore calls,
+  external AI/model calls, remote resource fetching, uploads, write actions,
+  remote report uploads, or arbitrary code loading.
 
 - Phase 8A remains read-only and does not add create/update/delete Procore actions.
 - Agent tool execution remains disabled; new Phase 8A agent entries are metadata only.

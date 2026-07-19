@@ -119,6 +119,11 @@ resources, prompt templates, capability summaries, stdio-friendly discovery
 payloads, and safety boundaries. They do not call Procore, call external
 AI/model APIs, execute plugins, fetch remote resources, upload reports, load
 arbitrary code, or enable MCP/tool execution.
+Examples `259` through `268` cover unreleased Phase 15B MCP eval, plugin,
+async, AI workflow, model-fixture, artifact-review prompt, kind-filtering, and
+stdio discovery metadata. They are local metadata examples only and do not call
+Procore, call external AI/model APIs, execute plugins, fetch remote resources,
+upload reports, load arbitrary code, or enable MCP/tool execution.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -555,6 +560,16 @@ The current example set runs from `01_list_companies.py` through
 | `256_mcp_safety_boundaries.py` | Print MCP discovery safety boundaries |
 | `257_mcp_stdio_discovery_pattern.py` | Build a local stdio-friendly MCP discovery payload |
 | `258_phase15a_mcp_discovery_summary.py` | Summarize Phase 15A MCP discovery additions |
+| `259_mcp_eval_metadata_resources.py` | List Phase 15B eval metadata resources |
+| `260_mcp_plugin_metadata_resources.py` | List Phase 15B plugin metadata resources |
+| `261_mcp_async_metadata_resources.py` | List Phase 15B async metadata resources |
+| `262_mcp_ai_workflow_metadata_resources.py` | List Phase 15B AI workflow metadata resources |
+| `263_mcp_model_fixture_resources.py` | Inspect local model fixture suite resources |
+| `264_mcp_artifact_review_prompts.py` | List MCP artifact review prompt templates |
+| `265_mcp_resource_kind_filtering.py` | Filter MCP resources by kind |
+| `266_mcp_prompt_kind_filtering.py` | Filter MCP prompts by kind |
+| `267_mcp_richer_stdio_discovery.py` | Print richer stdio discovery kind summaries |
+| `268_phase15b_mcp_metadata_summary.py` | Summarize Phase 15B MCP metadata additions |
 
 Sample golden datasets live in `examples/golden_datasets/`:
 
@@ -743,4 +758,9 @@ Sample webhook payloads live in `examples/webhooks/`:
   local metadata only and do not call Procore, call external AI/model APIs,
   execute plugins, fetch remote resources, upload reports, load arbitrary code,
   or enable MCP/tool execution.
+- Examples `259` through `268` deepen MCP metadata discovery for eval,
+  plugin, async, AI workflow, model fixture, artifact prompt, and kind-filter
+  surfaces. They inspect local metadata only and do not call Procore, call
+  external AI/model APIs, execute plugins, fetch remote resources, upload
+  reports, load arbitrary code, or enable MCP/tool execution.
 - Keep secrets out of code, screenshots, logs, and issue reports.

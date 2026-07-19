@@ -854,6 +854,7 @@ def build_parser() -> argparse.ArgumentParser:
     agent_mcp_resources_parser.add_argument("--json", dest="json_output", action="store_true")
     agent_mcp_resources_parser.add_argument("--pretty", action="store_true")
     agent_mcp_resources_parser.add_argument("--output", type=Path, default=None)
+    agent_mcp_resources_parser.add_argument("--kind", default=None)
 
     agent_mcp_prompts_parser = agent_mcp_subcommands.add_parser(
         "prompts",
@@ -862,6 +863,7 @@ def build_parser() -> argparse.ArgumentParser:
     agent_mcp_prompts_parser.add_argument("--json", dest="json_output", action="store_true")
     agent_mcp_prompts_parser.add_argument("--pretty", action="store_true")
     agent_mcp_prompts_parser.add_argument("--output", type=Path, default=None)
+    agent_mcp_prompts_parser.add_argument("--kind", default=None)
 
     agent_mcp_manifest_parser = agent_mcp_subcommands.add_parser(
         "manifest",
@@ -897,6 +899,7 @@ def build_parser() -> argparse.ArgumentParser:
     mcp_resources_parser.add_argument("--json", dest="json_output", action="store_true")
     mcp_resources_parser.add_argument("--pretty", action="store_true")
     mcp_resources_parser.add_argument("--output", type=Path, default=None)
+    mcp_resources_parser.add_argument("--kind", default=None)
 
     mcp_resource_parser = mcp_subcommands.add_parser(
         "resource",
@@ -913,6 +916,7 @@ def build_parser() -> argparse.ArgumentParser:
     mcp_prompts_parser.add_argument("--json", dest="json_output", action="store_true")
     mcp_prompts_parser.add_argument("--pretty", action="store_true")
     mcp_prompts_parser.add_argument("--output", type=Path, default=None)
+    mcp_prompts_parser.add_argument("--kind", default=None)
 
     mcp_prompt_parser = mcp_subcommands.add_parser(
         "prompt",
@@ -3683,12 +3687,12 @@ def run_command(args: argparse.Namespace) -> Any:
                 )
             if args.agent_mcp_command == "resources":
                 return _write_optional_output(
-                    export_mcp_resources_json(pretty=args.pretty),
+                    export_mcp_resources_json(pretty=args.pretty, kind=args.kind),
                     args.output,
                 )
             if args.agent_mcp_command == "prompts":
                 return _write_optional_output(
-                    export_mcp_prompts_json(pretty=args.pretty),
+                    export_mcp_prompts_json(pretty=args.pretty, kind=args.kind),
                     args.output,
                 )
             if args.agent_mcp_command == "manifest":
@@ -3743,14 +3747,14 @@ def run_command(args: argparse.Namespace) -> Any:
             )
         if args.mcp_command == "resources":
             return _write_optional_output(
-                export_mcp_resources_json(pretty=args.pretty),
+                export_mcp_resources_json(pretty=args.pretty, kind=args.kind),
                 args.output,
             )
         if args.mcp_command == "resource":
             return read_mcp_resource(args.uri)
         if args.mcp_command == "prompts":
             return _write_optional_output(
-                export_mcp_prompts_json(pretty=args.pretty),
+                export_mcp_prompts_json(pretty=args.pretty, kind=args.kind),
                 args.output,
             )
         if args.mcp_command == "prompt":

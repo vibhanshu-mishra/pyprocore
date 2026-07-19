@@ -75,13 +75,15 @@ external AI/model APIs, MCP execution, or Procore tool execution.
 
 ## MCP Discovery
 
-Phase 15A adds unreleased top-level MCP discovery commands:
+Phase 15A and Phase 15B add unreleased top-level MCP discovery commands:
 
 ```bash
 procore-sdk mcp manifest
 procore-sdk mcp resources
+procore-sdk mcp resources --kind eval_suite
 procore-sdk mcp resource pyprocore://agent/manifest
 procore-sdk mcp prompts
+procore-sdk mcp prompts --kind eval_report_review
 procore-sdk mcp prompt rfi_review_prompt
 procore-sdk mcp capabilities
 procore-sdk mcp safety

@@ -32,8 +32,9 @@ Current repository status:
   and safety-boundary artifacts, plus Phase 13C local eval baselines,
   regression comparison, threshold policies, and history snapshots, plus Phase
   13D offline model-response fixture evals for saved/sample AI-style responses,
-  plus Phase 15A richer discovery-only MCP resources, prompt templates,
-  capability summaries, stdio discovery payloads, and safety metadata
+  plus Phase 15A/15B richer discovery-only MCP resources, prompt templates,
+  kind filtering, capability summaries, stdio discovery payloads, and safety
+  metadata
 - Procore tool execution remains disabled
 
 ```bash
@@ -79,9 +80,10 @@ PyProcore turns Procore REST API responses into typed Python objects and gives y
 - Score unreleased Phase 13D offline model-response fixtures for grounding,
   citations, hallucination risk, prohibited action language, limitation
   disclosure, and safety boundaries without calling a model.
-- Inspect unreleased Phase 15A MCP resources, prompt templates, capabilities,
-  safety boundaries, and stdio discovery payloads without credentials,
-  Procore calls, model calls, plugin execution, or tool execution.
+- Inspect unreleased Phase 15A/15B MCP eval, plugin, async, AI workflow,
+  model-fixture, prompt, capability, safety, and stdio discovery metadata
+  without credentials, Procore calls, model calls, plugin execution, or tool
+  execution.
 - Use CLI diagnostics and automation commands without hardcoding credentials.
 - Expose local agent metadata, OpenAPI/JSON Schema, run logs, replay, MCP discovery, and deterministic evals for future assistant integrations.
 
@@ -418,6 +420,11 @@ Included in `v2.2.0`:
 
 The Phase 7 layer is local-first discovery/spec/eval/replay infrastructure. Tool execution remains disabled, MCP remains discovery-only, evals are local and deterministic, and metadata/schema/replay/MCP/eval commands do not call live Procore APIs.
 
+Unreleased Phase 15B deepens discovery-only MCP metadata for evals, plugins,
+async patterns, AI workflows, model-response fixtures, artifact review prompts,
+resource/prompt kind filters, and richer stdio discovery. MCP execution remains
+disabled.
+
 ### Unreleased Phase 8G Read Coverage
 
 The current branch adds read-only helpers for project-management extras:
@@ -724,6 +731,7 @@ make quality-check
 - OpenAPI / JSON Schema Export
 - Agent Run Logs + Replay
 - Discovery-only MCP Adapter
+- Phase 15A/15B discovery-only MCP metadata expansion
 - Agent Evaluation Harness
 
 ### Unreleased Branch Work

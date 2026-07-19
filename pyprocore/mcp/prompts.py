@@ -5,8 +5,15 @@ from __future__ import annotations
 from pyprocore.mcp.models import McpPrompt, McpPromptArgument, McpPromptKind, McpSafetyBoundary
 
 
-def list_mcp_prompts() -> list[McpPrompt]:
-    """Return built-in local MCP prompt templates sorted by name."""
+def list_mcp_prompts(kind: McpPromptKind | str | None = None) -> list[McpPrompt]:
+    """Return built-in local MCP prompt templates sorted by name.
+
+    Args:
+        kind: Optional prompt kind filter.
+
+    Returns:
+        Local discovery-only prompt templates.
+    """
     prompts = [
         _prompt(
             "pyprocore.discovery_summary",
@@ -152,6 +159,123 @@ def list_mcp_prompts() -> list[McpPrompt]:
             ["eval_report_json"],
         ),
         _prompt(
+            "eval_regression_review_prompt",
+            "Eval Regression Review Prompt",
+            "Review a local eval regression comparison.",
+            McpPromptKind.EVAL_REGRESSION_REVIEW,
+            [
+                "Use only the supplied local regression comparison.",
+                "Ground each concern in case identifiers and score deltas.",
+                "Separate blocking regressions from informational drift.",
+                "PyProcore MCP does not call Procore or models.",
+            ],
+            ["regression_report_json"],
+        ),
+        _prompt(
+            "model_fixture_review_prompt",
+            "Model Fixture Review Prompt",
+            "Review saved model-response fixtures for grounding and limits.",
+            McpPromptKind.MODEL_FIXTURE_REVIEW,
+            [
+                "Use only the supplied saved fixture response and expected behavior.",
+                "Cite source labels, missing labels, and unsupported claims.",
+                "Flag action language as unsafe for discovery-only review.",
+                "PyProcore MCP does not run model calls or Procore calls.",
+            ],
+            ["model_fixture_json"],
+        ),
+        _prompt(
+            "plugin_config_review_prompt",
+            "Plugin Config Review Prompt",
+            "Review metadata-only plugin configuration safely.",
+            McpPromptKind.PLUGIN_CONFIG_REVIEW,
+            [
+                "Use only the supplied plugin config metadata.",
+                "Ground findings in config keys and declared hook metadata.",
+                "Flag credential-like values and unclear permissions.",
+                "PyProcore MCP does not load or run plugins.",
+            ],
+            ["plugin_config_json"],
+        ),
+        _prompt(
+            "extension_pack_review_prompt",
+            "Extension Pack Review Prompt",
+            "Review a metadata-only plugin extension pack.",
+            McpPromptKind.EXTENSION_PACK_REVIEW,
+            [
+                "Use only the supplied extension pack metadata.",
+                "Cite manifest entries, declared hooks, and local docs labels.",
+                "Flag missing tests, unclear ownership, and credential-like values.",
+                "PyProcore MCP does not load or run extension pack code.",
+            ],
+            ["extension_pack_manifest_json"],
+        ),
+        _prompt(
+            "async_batch_plan_review_prompt",
+            "Async Batch Plan Review Prompt",
+            "Review a local async batch plan before it is run elsewhere.",
+            McpPromptKind.ASYNC_BATCH_PLAN_REVIEW,
+            [
+                "Use only the supplied async batch plan metadata.",
+                "Ground findings in resource names, limits, and output paths.",
+                "Flag risky scale, missing dry-run notes, and unclear local paths.",
+                "PyProcore MCP discovery itself performs no live calls.",
+            ],
+            ["async_batch_plan_json"],
+        ),
+        _prompt(
+            "async_export_manifest_review_prompt",
+            "Async Export Manifest Review Prompt",
+            "Review a local async export manifest.",
+            McpPromptKind.ASYNC_EXPORT_MANIFEST_REVIEW,
+            [
+                "Use only the supplied export manifest.",
+                "Ground findings in source labels, counts, local paths, and limits.",
+                "Flag missing provenance and credential-like values.",
+                "PyProcore MCP discovery itself performs no live calls.",
+            ],
+            ["async_export_manifest_json"],
+        ),
+        _prompt(
+            "ai_workflow_package_review_prompt",
+            "AI Workflow Package Review Prompt",
+            "Review a local AI-ready workflow package.",
+            McpPromptKind.AI_WORKFLOW_PACKAGE_REVIEW,
+            [
+                "Use only the supplied local workflow package.",
+                "Ground each answer in source labels and package manifest entries.",
+                "State evidence gaps and human-review limits clearly.",
+                "PyProcore MCP does not run model calls or Procore calls.",
+            ],
+            ["workflow_package_json", "review_question"],
+        ),
+        _prompt(
+            "mcp_safety_review_prompt",
+            "MCP Safety Review Prompt",
+            "Review an MCP discovery artifact against PyProcore safety boundaries.",
+            McpPromptKind.MCP_SAFETY_REVIEW,
+            [
+                "Use only the supplied MCP artifact and declared safety boundary metadata.",
+                "Ground findings in resource, prompt, or capability fields.",
+                "Flag execution claims, credential exposure, and unsupported action language.",
+                "PyProcore MCP is discovery-only.",
+            ],
+            ["mcp_artifact_json", "safety_boundary_json"],
+        ),
+        _prompt(
+            "release_readiness_review_prompt",
+            "Release Readiness Review Prompt",
+            "Review local release-readiness artifacts without publishing.",
+            McpPromptKind.RELEASE_READINESS_REVIEW,
+            [
+                "Use only the supplied local release artifacts and validation output.",
+                "Ground findings in file names, command results, and version labels.",
+                "Flag claims that exceed local evidence.",
+                "PyProcore MCP does not publish packages or create releases.",
+            ],
+            ["release_artifacts_json"],
+        ),
+        _prompt(
             "safety_boundary_review_prompt",
             "Safety Boundary Review Prompt",
             "Check saved output against PyProcore safety boundaries.",
@@ -165,7 +289,8 @@ def list_mcp_prompts() -> list[McpPrompt]:
             ["candidate_response", "safety_policy_json"],
         ),
     ]
-    return sorted(prompts, key=lambda prompt: prompt.name)
+    filtered_prompts = _filter_prompts(prompts, kind)
+    return sorted(filtered_prompts, key=lambda prompt: prompt.name)
 
 
 def get_mcp_prompt(name: str) -> McpPrompt:
@@ -219,9 +344,19 @@ def _prompt(
             )
             for argument_name in argument_names
         ],
-        tags=[kind.value, "phase15a", "discovery_only"],
+        tags=[kind.value, "phase15a", "phase15b", "discovery_only"],
         safety=_safety(),
     )
+
+
+def _filter_prompts(
+    prompts: list[McpPrompt],
+    kind: McpPromptKind | str | None,
+) -> list[McpPrompt]:
+    if kind is None:
+        return prompts
+    normalized = kind if isinstance(kind, McpPromptKind) else McpPromptKind(kind)
+    return [prompt for prompt in prompts if prompt.kind == normalized]
 
 
 def _safety() -> McpSafetyBoundary:

@@ -34,7 +34,7 @@ def build_mcp_server_info(registry: AgentToolRegistry | None = None) -> McpServe
         protocol_version="2024-11-05",
         description=(
             "Discovery-only MCP adapter for PyProcore metadata. Tool execution "
-            "and Procore live calls are disabled in Phase 15A."
+            "and Procore live calls are disabled."
         ),
         registry_version=active_registry.registry_version,
         tool_count=active_registry.tool_count,
@@ -73,7 +73,21 @@ def build_mcp_resource_templates() -> list[McpResourceTemplate]:
             description="Template for future local tool metadata lookup. Execution stays disabled.",
             kind=McpResourceKind.AGENT_TOOL_SCHEMA,
             arguments=["tool_name"],
-        )
+        ),
+        McpResourceTemplate(
+            uri_template="pyprocore://evals/suites/{suite_name}",
+            name="Eval Suite Metadata",
+            description="Template for local deterministic eval suite metadata.",
+            kind=McpResourceKind.EVAL_SUITE,
+            arguments=["suite_name"],
+        ),
+        McpResourceTemplate(
+            uri_template="pyprocore://evals/model-fixtures/{fixture_suite}",
+            name="Model Fixture Suite Metadata",
+            description="Template for local model-response fixture suite metadata.",
+            kind=McpResourceKind.MODEL_FIXTURE,
+            arguments=["fixture_suite"],
+        ),
     ]
 
 
@@ -101,12 +115,20 @@ def build_mcp_stdio_discovery_payload(
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "server": manifest.server.model_dump(mode="json", by_alias=True),
         "capabilities": manifest.capabilities.model_dump(mode="json", by_alias=True),
+        "resourceKindCounts": manifest.capabilities.mcp_resource_metadata.get(
+            "resource_kinds",
+            {},
+        ),
+        "promptKindCounts": manifest.capabilities.mcp_prompt_metadata.get("prompt_kinds", {}),
         "tools": manifest.tools,
         "resources": [item.model_dump(mode="json", by_alias=True) for item in manifest.resources],
         "resourceTemplates": [
             item.model_dump(mode="json", by_alias=True) for item in manifest.resource_templates
         ],
         "prompts": [item.model_dump(mode="json", by_alias=True) for item in manifest.prompts],
+        "disabledExecutionStatus": manifest.capabilities.disabled_execution_status,
+        "unsupportedActions": manifest.capabilities.unsupported_actions,
+        "safetyBoundaries": manifest.capabilities.safety_boundaries,
         "safety": manifest.capabilities.safety.model_dump(mode="json", by_alias=True),
     }
 

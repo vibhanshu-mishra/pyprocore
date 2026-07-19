@@ -19,10 +19,21 @@ class McpResourceKind(str, Enum):
     JSON_SCHEMA = "json_schema"
     EVAL_SUITE = "eval_suite"
     EVAL_REPORT = "eval_report"
+    EVAL_BASELINE = "eval_baseline"
+    EVAL_REGRESSION = "eval_regression"
+    EVAL_HISTORY = "eval_history"
+    MODEL_FIXTURE = "model_fixture"
     PLUGIN_MANIFEST = "plugin_manifest"
     PLUGIN_CONFIG = "plugin_config"
+    PLUGIN_EXTENSION_PACK = "plugin_extension_pack"
+    PLUGIN_SCAFFOLD = "plugin_scaffold"
     ASYNC_CAPABILITY = "async_capability"
+    ASYNC_RESOURCE = "async_resource"
+    ASYNC_EXPORT = "async_export"
+    ASYNC_BATCH = "async_batch"
+    ASYNC_DOWNLOAD_PATTERN = "async_download_pattern"
     AI_WORKFLOW_TEMPLATE = "ai_workflow_template"
+    AI_WORKFLOW_REVIEW = "ai_workflow_review"
     SAFETY_BOUNDARY = "safety_boundary"
     DOCS_REFERENCE = "docs_reference"
 
@@ -40,6 +51,15 @@ class McpPromptKind(str, Enum):
     ASYNC_EXPORT_PLANNING = "async_export_planning"
     PLUGIN_DEVELOPER = "plugin_developer"
     EVAL_REPORT_REVIEW = "eval_report_review"
+    EVAL_REGRESSION_REVIEW = "eval_regression_review"
+    MODEL_FIXTURE_REVIEW = "model_fixture_review"
+    PLUGIN_CONFIG_REVIEW = "plugin_config_review"
+    EXTENSION_PACK_REVIEW = "extension_pack_review"
+    ASYNC_BATCH_PLAN_REVIEW = "async_batch_plan_review"
+    ASYNC_EXPORT_MANIFEST_REVIEW = "async_export_manifest_review"
+    AI_WORKFLOW_PACKAGE_REVIEW = "ai_workflow_package_review"
+    MCP_SAFETY_REVIEW = "mcp_safety_review"
+    RELEASE_READINESS_REVIEW = "release_readiness_review"
     SAFETY_BOUNDARY_REVIEW = "safety_boundary_review"
 
 
@@ -129,6 +149,17 @@ class McpCapabilitySummary(ProcoreModel):
     plugin_metadata: list[str]
     eval_metadata: list[str]
     ai_workflow_templates: list[str]
+    agent_metadata: dict[str, Any] = Field(default_factory=dict)
+    mcp_resource_metadata: dict[str, Any] = Field(default_factory=dict)
+    mcp_prompt_metadata: dict[str, Any] = Field(default_factory=dict)
+    disabled_execution_status: dict[str, Any] = Field(default_factory=dict)
+    baseline_regression_metadata: list[str] = Field(default_factory=list)
+    model_fixture_metadata: list[str] = Field(default_factory=list)
+    plugin_scaffold_metadata: list[str] = Field(default_factory=list)
+    async_metadata: list[str] = Field(default_factory=list)
+    ai_workflow_metadata: list[str] = Field(default_factory=list)
+    safety_boundaries: list[str] = Field(default_factory=list)
+    unsupported_actions: list[str] = Field(default_factory=list)
     safety: McpSafetyBoundary
 
 
