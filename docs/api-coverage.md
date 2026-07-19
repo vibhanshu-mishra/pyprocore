@@ -225,6 +225,16 @@ metadata. Plugin manifests are validated locally and do not install plugins,
 fetch remote registries, import arbitrary modules, execute plugin code, call
 Procore, call external AI/model APIs, or enable agent/MCP execution.
 
+## Phase 11B Plugin Hook Notes
+
+Phase 11B does not add new Procore endpoint coverage. It adds safe local
+extension hook interfaces for explicitly registered trusted in-process
+validators, exporters, formatters, reports, workflow helpers, and record
+transformers. Hook metadata remains descriptive until application code
+explicitly registers a callable. No remote plugin installs, plugin fetching,
+arbitrary imports, Procore writes, live API calls, external AI/model calls,
+agent execution, or MCP execution are added.
+
 ## Live Verification Notes
 
 Procore access varies by environment, company, project, app connection, and user

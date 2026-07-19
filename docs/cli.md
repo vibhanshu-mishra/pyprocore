@@ -112,6 +112,21 @@ These commands inspect or validate plugin manifests only. They do not install
 plugins, fetch remote registries, import plugin modules, execute plugin code,
 call Procore, call external AI/model APIs, or enable agent/MCP execution.
 
+Phase 11B adds safe local hook inspection and built-in sample commands:
+
+```bash
+procore-sdk plugins hooks
+procore-sdk plugins hooks --type validator
+procore-sdk plugins hook-manifest --json
+procore-sdk plugins sample-hook-manifest --json
+procore-sdk plugins run-sample-validator
+procore-sdk plugins run-sample-formatter
+```
+
+Hook commands do not install plugins, fetch remote registries, import arbitrary
+modules, call Procore, or enable agent/MCP execution. The sample run commands
+use only built-in deterministic sample data and built-in hooks.
+
 ## Scheduled Export Planning
 
 Phase 9B adds local-only scheduled export planning commands for enterprise

@@ -79,10 +79,16 @@ from pyprocore.core.exceptions import (
 )
 from pyprocore.plugins import (
     PluginCapability,
+    PluginHookMetadata,
+    PluginHookRegistry,
+    PluginHookRegistryManifest,
+    PluginHookResult,
+    PluginHookType,
     PluginManifest,
     PluginRegistry,
     PluginRegistryManifest,
     PluginValidationResult,
+    builtin_hook_registry,
     discover_plugins,
     load_local_plugin_manifest_file,
     validate_plugin_manifest,
@@ -871,6 +877,37 @@ def build_parser() -> argparse.ArgumentParser:
     plugins_validate_parser.add_argument("manifest_path", type=Path)
     plugins_validate_parser.add_argument("--json", dest="json_output", action="store_true")
     plugins_validate_parser.add_argument("--pretty", action="store_true")
+    plugins_hooks_parser = plugins_subcommands.add_parser(
+        "hooks",
+        help="List explicitly registered built-in safe local plugin hooks",
+    )
+    plugins_hooks_parser.add_argument("--type", dest="hook_type", default=None)
+    plugins_hooks_parser.add_argument("--json", dest="json_output", action="store_true")
+    plugins_hooks_parser.add_argument("--pretty", action="store_true")
+    plugins_hook_manifest_parser = plugins_subcommands.add_parser(
+        "hook-manifest",
+        help="Export the safe local hook registry manifest",
+    )
+    plugins_hook_manifest_parser.add_argument("--json", dest="json_output", action="store_true")
+    plugins_hook_manifest_parser.add_argument("--pretty", action="store_true")
+    plugins_sample_hook_parser = plugins_subcommands.add_parser(
+        "sample-hook-manifest",
+        help="Print a placeholder plugin manifest with hook metadata",
+    )
+    plugins_sample_hook_parser.add_argument("--json", dest="json_output", action="store_true")
+    plugins_sample_hook_parser.add_argument("--pretty", action="store_true")
+    plugins_sample_validator_parser = plugins_subcommands.add_parser(
+        "run-sample-validator",
+        help="Run a built-in validator hook against deterministic sample data",
+    )
+    plugins_sample_validator_parser.add_argument("--json", dest="json_output", action="store_true")
+    plugins_sample_validator_parser.add_argument("--pretty", action="store_true")
+    plugins_sample_formatter_parser = plugins_subcommands.add_parser(
+        "run-sample-formatter",
+        help="Run a built-in formatter hook against deterministic sample data",
+    )
+    plugins_sample_formatter_parser.add_argument("--json", dest="json_output", action="store_true")
+    plugins_sample_formatter_parser.add_argument("--pretty", action="store_true")
 
     subcommands.add_parser("companies", help="List companies")
 
@@ -3241,6 +3278,26 @@ def run_command(args: argparse.Namespace) -> Any:
         if args.plugins_command == "validate":
             plugin_manifest = load_local_plugin_manifest_file(args.manifest_path)
             return validate_plugin_manifest(plugin_manifest)
+        if args.plugins_command == "hooks":
+            hook_registry = build_default_hook_registry()
+            if args.hook_type:
+                return hook_registry.find_hooks_by_type(args.hook_type)
+            return hook_registry.list_hooks()
+        if args.plugins_command == "hook-manifest":
+            return build_default_hook_registry().export_hook_registry_manifest()
+        if args.plugins_command == "sample-hook-manifest":
+            return sample_hook_manifest()
+        if args.plugins_command == "run-sample-validator":
+            return build_default_hook_registry().run_validator_hook(
+                "validate_required_fields",
+                sample_hook_records(),
+                options={"required_fields": ["id", "name"]},
+            )
+        if args.plugins_command == "run-sample-formatter":
+            return build_default_hook_registry().run_formatter_hook(
+                "format_records_as_summary",
+                sample_hook_records(),
+            )
         raise ValueError(f"Unsupported plugins command: {args.plugins_command}")
 
     if args.command == "workflow-plan":
@@ -4983,6 +5040,11 @@ def build_default_plugin_registry() -> PluginRegistry:
     return registry
 
 
+def build_default_hook_registry() -> PluginHookRegistry:
+    """Build a registry containing safe built-in local plugin hooks."""
+    return builtin_hook_registry()
+
+
 def sample_plugin_manifest() -> PluginManifest:
     """Return a placeholder plugin manifest for local experimentation."""
     return PluginManifest(
@@ -5005,6 +5067,56 @@ def sample_plugin_manifest() -> PluginManifest:
             "No plugin code is installed, imported, or executed.",
         ],
     )
+
+
+def sample_hook_manifest() -> PluginManifest:
+    """Return a placeholder plugin manifest with hook metadata."""
+    hook_metadata = [
+        PluginHookMetadata(
+            hook_name="example_quality_validator",
+            plugin_name="example_hook_plugin",
+            hook_type=PluginHookType.VALIDATOR,
+            description="Example metadata for a local validator hook.",
+            input_kind="records",
+            output_kind="validation_report",
+            notes=[
+                "Metadata only. This does not register or execute a callable.",
+                "Trusted application code must explicitly register hook callables in-process.",
+            ],
+        ),
+        PluginHookMetadata(
+            hook_name="example_summary_formatter",
+            plugin_name="example_hook_plugin",
+            hook_type=PluginHookType.FORMATTER,
+            description="Example metadata for a local formatter hook.",
+            input_kind="records",
+            output_kind="text",
+        ),
+    ]
+    return PluginManifest(
+        name="example_hook_plugin",
+        version="1.0.0",
+        description="Placeholder metadata for safe local extension hooks.",
+        author="Your Name",
+        capabilities=[PluginCapability.VALIDATOR, PluginCapability.FORMATTER],
+        requires_pyprocore=">=2.2.0",
+        tags=["example", "hooks", "metadata-only"],
+        supports_sync=True,
+        supports_cli=True,
+        hooks=hook_metadata,
+        notes=[
+            "Phase 11B hook metadata is descriptive only.",
+            "No remote loading, installation, imports, or Procore calls are performed.",
+        ],
+    )
+
+
+def sample_hook_records() -> list[dict[str, object]]:
+    """Return deterministic local sample records for safe built-in hook demos."""
+    return [
+        {"id": 1, "name": "Sample RFI", "status": "open"},
+        {"id": 2, "name": "Sample Submittal", "status": "closed"},
+    ]
 
 
 def _webhook_filters_from_args(args: argparse.Namespace) -> dict[str, str | None]:
@@ -5341,6 +5453,13 @@ def format_plugin(plugin: PluginManifest) -> str:
     if plugin.notes:
         lines.append("Notes:")
         lines.extend(f"- {note}" for note in plugin.notes)
+    if plugin.hooks:
+        lines.append("Hook metadata:")
+        lines.extend(
+            f"- {hook.hook_name} ({hook.hook_type.value}): {hook.description}"
+            for hook in plugin.hooks
+        )
+        lines.append("Hook metadata does not execute code.")
     return "\n".join(lines)
 
 
@@ -5372,6 +5491,58 @@ def format_plugin_validation(result: PluginValidationResult) -> str:
         lines.extend(f"- {warning}" for warning in result.warnings)
     if result.manifest is not None:
         lines.append(f"Plugin: {result.manifest.name} {result.manifest.version}")
+    return "\n".join(lines)
+
+
+def format_plugin_hooks(hooks: list[PluginHookMetadata]) -> str:
+    """Return a human-readable plugin hook metadata list."""
+    if not hooks:
+        return "No plugin hooks are registered."
+    lines = [f"Registered plugin hooks: {len(hooks)}"]
+    lines.extend(
+        f"- {hook.hook_name} ({hook.hook_type.value}): {hook.description}" for hook in hooks
+    )
+    lines.append(
+        "Mode: explicit local hooks only; no plugin code is discovered, imported, or installed."
+    )
+    return "\n".join(lines)
+
+
+def format_plugin_hook_manifest(manifest: PluginHookRegistryManifest) -> str:
+    """Return a human-readable plugin hook registry manifest summary."""
+    return "\n".join(
+        [
+            "PyProcore plugin hook registry manifest.",
+            f"Schema version: {manifest.schema_version}",
+            f"Hooks: {manifest.hook_count}",
+            f"Mode: {manifest.mode}",
+            (
+                "Hook metadata is safe to inspect; callables run only after "
+                "explicit local registration."
+            ),
+        ]
+    )
+
+
+def format_plugin_hook_result(result: PluginHookResult) -> str:
+    """Return a human-readable plugin hook run result."""
+    lines = [
+        "Plugin hook run complete.",
+        f"Hook: {result.hook_name}",
+        f"Plugin: {result.plugin_name}",
+        f"Type: {result.hook_type.value}",
+        f"Success: {result.success}",
+        "Mode: built-in deterministic sample only; no Procore or external calls were made.",
+    ]
+    if result.errors:
+        lines.append("Errors:")
+        lines.extend(f"- {error}" for error in result.errors)
+    if result.warnings:
+        lines.append("Warnings:")
+        lines.extend(f"- {warning}" for warning in result.warnings)
+    if result.output is not None:
+        lines.append("Output:")
+        lines.append(json.dumps(to_serializable(result.output), indent=2, default=str))
     return "\n".join(lines)
 
 
@@ -5846,6 +6017,10 @@ def main() -> None:
         if isinstance(result, list):
             if args.json_output or getattr(args, "pretty", False):
                 print(json.dumps(to_serializable(result), indent=2, default=str))
+            elif result and isinstance(result[0], PluginHookMetadata):
+                print(format_plugin_hooks(result))
+            elif not result and args.plugins_command == "hooks":
+                print(format_plugin_hooks(result))
             else:
                 print(format_plugins(result))
             return
@@ -5861,12 +6036,24 @@ def main() -> None:
             else:
                 print(format_plugin_registry_manifest(result))
             return
+        if isinstance(result, PluginHookRegistryManifest):
+            if args.json_output or getattr(args, "pretty", False):
+                print(json.dumps(to_serializable(result), indent=2, default=str))
+            else:
+                print(format_plugin_hook_manifest(result))
+            return
         if isinstance(result, PluginValidationResult):
             if args.json_output or getattr(args, "pretty", False):
                 print(json.dumps(to_serializable(result), indent=2, default=str))
             else:
                 print(format_plugin_validation(result))
             raise SystemExit(0 if result.valid else 1)
+        if isinstance(result, PluginHookResult):
+            if args.json_output or getattr(args, "pretty", False):
+                print(json.dumps(to_serializable(result), indent=2, default=str))
+            else:
+                print(format_plugin_hook_result(result))
+            raise SystemExit(0 if result.success else 1)
 
     if args.command == "workflow-plan" and args.workflow_plan_command == "list":
         if args.json_output:

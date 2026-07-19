@@ -24,6 +24,7 @@ Current repository status:
   Phase 10D async field, operations, correspondence, and directory coverage,
   plus Phase 10E async financial, contract, billing, and project-management
   read coverage, plus Phase 11A metadata-only plugin architecture foundation
+  and Phase 11B safe local plugin extension hooks
 - Procore tool execution remains disabled
 
 ```bash
@@ -52,6 +53,8 @@ PyProcore turns Procore REST API responses into typed Python objects and gives y
   the unreleased async client.
 - Inspect metadata-only plugin manifests through the unreleased Phase 11A
   plugin architecture foundation.
+- Register trusted local plugin hooks explicitly in-process through the
+  unreleased Phase 11B hook registry.
 - Use CLI diagnostics and automation commands without hardcoding credentials.
 - Expose local agent metadata, OpenAPI/JSON Schema, run logs, replay, MCP discovery, and deterministic evals for future assistant integrations.
 
@@ -273,6 +276,25 @@ Prepared in the current unreleased branch:
 Phase 11A does not install plugins, fetch remote registries, import arbitrary
 plugin modules, execute plugin code, call Procore, call external AI/model APIs,
 or enable agent/MCP execution. See [Plugin Architecture](docs/plugins.md).
+
+### Phase 11B Safe Local Plugin Extension Hooks
+
+Prepared in the current unreleased branch:
+
+- typed hook metadata for validators, exporters, formatters, reports, workflow
+  helpers, and record transformers
+- explicit in-process hook registration for trusted local callables
+- built-in deterministic local hooks for validation, summaries, field selection,
+  JSONL payloads, and quality reports
+- `procore-sdk plugins hooks`
+- `procore-sdk plugins hook-manifest`
+- `procore-sdk plugins sample-hook-manifest`
+- built-in sample hook demo commands
+
+Phase 11B does not install plugins, fetch remote registries, import arbitrary
+modules, run manifest metadata as code, call Procore, call external AI/model
+APIs, add write actions, or enable agent/MCP execution. See
+[Plugin Architecture](docs/plugins.md).
 
 ### Phase 7 Agent Layer
 

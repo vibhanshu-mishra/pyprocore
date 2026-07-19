@@ -46,6 +46,9 @@ and this project follows semantic versioning.
 - Phase 11A metadata-only plugin architecture foundation with typed plugin manifests, a safe local registry, local validation, and built-in example manifests.
 - `procore-sdk plugins list`, `procore-sdk plugins show`, `procore-sdk plugins manifest`, `procore-sdk plugins sample-manifest`, and `procore-sdk plugins validate`.
 - Examples 177–184 for local-only plugin manifest, registry, validation, capability discovery, CLI pattern, and safety-boundary examples.
+- Phase 11B safe local plugin extension hooks with typed hook metadata, sanitized hook contexts/results, explicit in-process hook registration, and built-in deterministic local hooks.
+- `procore-sdk plugins hooks`, `procore-sdk plugins hook-manifest`, `procore-sdk plugins sample-hook-manifest`, `procore-sdk plugins run-sample-validator`, and `procore-sdk plugins run-sample-formatter`.
+- Examples 185–192 for local-only plugin hook quickstarts, validators, formatters, transformers, hook manifests, and safety boundaries.
 
 - Phase 8A read-only API coverage for Observations, Punch Items, and Generic Tool correspondence items.
 - Typed flexible models for `Observation`, `PunchItem`, `GenericTool`, and `Correspondence`.
@@ -90,6 +93,7 @@ and this project follows semantic versioning.
 - Phase 10D async field, operations, correspondence, and directory helpers are read-only, mocked/local in tests/examples, do not add Procore mutation actions, keep agent tool execution disabled, and keep MCP discovery-only.
 - Phase 10E async financial, contract, billing, and project-management helpers are read-only, mocked/local in tests/examples, do not add approvals, submissions, status changes, payment actions, budget edits, contract edits, schedule imports, form submissions, action-plan completions, or Procore mutation actions, keep agent tool execution disabled, and keep MCP discovery-only.
 - Phase 11A plugin architecture is metadata-only, local-first, does not install plugins, does not fetch remote registries, does not import arbitrary plugin modules, does not execute plugin code, does not call Procore or external AI/model APIs, does not add Procore write actions, and keeps agent/MCP execution disabled.
+- Phase 11B plugin hooks are explicit local callables only, do not install plugins, do not fetch remote registries, do not import arbitrary plugin modules, do not execute manifest metadata, do not call Procore or external AI/model APIs, do not add Procore write actions, and keep agent/MCP execution disabled.
 
 - Phase 8A remains read-only and does not add create/update/delete Procore actions.
 - Agent tool execution remains disabled; new Phase 8A agent entries are metadata only.

@@ -80,6 +80,10 @@ Examples `177` through `184` cover unreleased Phase 11A plugin architecture
 metadata, registry, validation, CLI patterns, and safety boundaries. They do
 not install plugins, execute plugin code, call Procore, or call external
 AI/model APIs.
+Examples `185` through `192` cover unreleased Phase 11B safe local plugin
+extension hooks. They use explicit in-process registration or built-in
+deterministic hooks only and do not install plugins, fetch remote registries,
+call Procore, call external AI/model APIs, or enable agent/MCP execution.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -430,6 +434,14 @@ The current example set runs from `01_list_companies.py` through
 | `182_plugin_safety_boundaries.py` | Summarize Phase 11A plugin safety boundaries |
 | `183_plugin_export_manifest.py` | Export the plugin registry manifest to a temporary file |
 | `184_phase11a_plugin_architecture_summary.py` | Summarize Phase 11A plugin architecture foundation |
+| `185_plugin_hook_quickstart.py` | Register and run a trusted local hook callable |
+| `186_validator_hook_example.py` | Run the built-in required-fields validator hook |
+| `187_formatter_hook_example.py` | Run the built-in record summary formatter hook |
+| `188_record_transformer_hook_example.py` | Run the built-in select-fields transformer hook |
+| `189_builtin_hook_registry.py` | List built-in safe local hook metadata |
+| `190_hook_manifest_export.py` | Export the hook registry manifest as JSON |
+| `191_plugin_hook_safety_boundaries.py` | Summarize Phase 11B hook safety boundaries |
+| `192_phase11b_plugin_hooks_summary.py` | Summarize Phase 11B safe local hook support |
 
 Sample scheduled export configs live in `examples/configs/`:
 
@@ -528,4 +540,8 @@ Sample webhook payloads live in `examples/webhooks/`:
   install plugins, fetch remote registries, import arbitrary plugin modules,
   execute plugin code, call Procore, call external AI/model APIs, or enable
   agent/MCP execution.
+- Examples `185` through `192` are local plugin hook examples. They do not
+  install plugins, fetch remote registries, import arbitrary plugin modules,
+  execute manifest metadata, call Procore, call external AI/model APIs, or
+  enable agent/MCP execution.
 - Keep secrets out of code, screenshots, logs, and issue reports.

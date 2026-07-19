@@ -103,6 +103,13 @@ remote registries, import arbitrary plugin modules, execute plugin code, call
 Procore, call external AI/model APIs, enable agent execution, or change
 discovery-only MCP behavior.
 
+Phase 11B adds safe local plugin extension hooks for trusted callables that are
+explicitly registered in-process. It adds built-in deterministic validators,
+formatters, transformers, exporters, and reports for local data only. Manifest
+hook metadata does not execute code, and no remote loading, plugin installation,
+Procore writes, live API calls, external AI/model calls, agent execution, or MCP
+execution are added.
+
 Phase 8A adds read-only SDK coverage for Observations, Punch Items, Generic
 Tools, and Generic Tool correspondence items. It includes service helpers,
 typed flexible models, search helpers, local CSV/JSONL exports, CLI commands,

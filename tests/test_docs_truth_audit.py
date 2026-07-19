@@ -105,12 +105,15 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         self.assertIn("Phase 11A", unreleased_section)
         self.assertIn("Plugin Architecture Foundation", unreleased_section)
         self.assertIn("Metadata-only plugin manifest", unreleased_section)
+        self.assertIn("Phase 11B", unreleased_section)
+        self.assertIn("Safe Local Plugin Extension Hooks", unreleased_section)
+        self.assertIn("explicit in-process registration", unreleased_section.lower())
         self.assertNotIn("Async exports", future_section)
         self.assertNotIn("Async downloads", future_section)
         self.assertNotIn("Richer async batch orchestration", future_section)
 
         for phrase in (
-            "controlled plugin",
+            "trusted plugin",
             "golden datasets",
             "richer MCP integration",
         ):
@@ -145,6 +148,7 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         self.assertIn("Examples `147` through `152`", examples)
         self.assertIn("Examples `153` through `160`", examples)
         self.assertIn("Examples `177` through `184`", examples)
+        self.assertIn("Examples `185` through `192`", examples)
         self.assertIn("cover the `v2.2.0` Phase 7", examples)
         self.assertIn("do not require Procore credentials or execute tools", examples)
         self.assertIn("client credentials auth", examples)

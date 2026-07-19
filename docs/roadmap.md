@@ -213,6 +213,23 @@ registry fetching, arbitrary plugin imports, plugin code execution, Procore
 mutations, live Procore calls, external AI/model calls, agent execution, or MCP
 execution are added.
 
+### Phase 11B — Safe Local Plugin Extension Hooks
+
+Implemented in the current branch and not yet published:
+
+- Typed hook metadata, contexts, results, and registry manifests
+- Explicit in-process registration for trusted local hook callables
+- Built-in deterministic local hooks for validators, formatters, transformers,
+  JSONL payloads, and quality reports
+- CLI commands for `plugins hooks`, `plugins hook-manifest`,
+  `plugins sample-hook-manifest`, and built-in sample hook demos
+- Placeholder/local examples 185–192
+
+Focus: safe local extension hooks only. No plugin installation, remote registry
+fetching, arbitrary plugin imports, manifest-driven execution, Procore
+mutations, live Procore calls, external AI/model calls, agent execution, or MCP
+execution are added.
+
 ### Phase 8A — Expanded Procore API Coverage
 
 Implemented in the current branch and not yet published:
@@ -352,13 +369,13 @@ Planned features:
 - Async attachment extraction helpers across more Procore payload shapes
 - Large-project performance improvements
 
-### Future Controlled Plugin Hooks
+### Future Trusted Plugin Loading
 
 Planned features:
 
-- Explicit extension hook execution design
+- Signed or otherwise trusted plugin loading research
 - Custom tool metadata registration
-- Custom exporters
+- Remote registry evaluation with strict review gates
 - Custom package builders
 - Custom workflow steps
 - Third-party integration hooks

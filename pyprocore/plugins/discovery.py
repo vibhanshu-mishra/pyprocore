@@ -12,6 +12,8 @@ from collections.abc import Iterable, Mapping
 from pathlib import Path
 from typing import Any
 
+from pyprocore.plugins.builtin_hooks import builtin_hook_metadata
+from pyprocore.plugins.hooks import PluginHookType
 from pyprocore.plugins.models import (
     PluginCapability,
     PluginDiscoveryResult,
@@ -23,6 +25,14 @@ from pyprocore.plugins.validation import load_plugin_manifest_from_dict, validat
 
 def builtin_plugin_manifests() -> list[PluginManifest]:
     """Return built-in metadata-only plugin manifests."""
+    hook_metadata = builtin_hook_metadata()
+    exporter_hooks = [hook for hook in hook_metadata if hook.hook_type == PluginHookType.EXPORTER]
+    formatter_hooks = [hook for hook in hook_metadata if hook.hook_type == PluginHookType.FORMATTER]
+    validator_hooks = [hook for hook in hook_metadata if hook.hook_type == PluginHookType.VALIDATOR]
+    report_hooks = [hook for hook in hook_metadata if hook.hook_type == PluginHookType.REPORT]
+    transformer_hooks = [
+        hook for hook in hook_metadata if hook.hook_type == PluginHookType.RECORD_TRANSFORMER
+    ]
     return [
         PluginManifest(
             name="csv_exporter_plugin",
@@ -36,6 +46,7 @@ def builtin_plugin_manifests() -> list[PluginManifest]:
             safety_level=PluginSafetyLevel.METADATA_ONLY,
             supports_sync=True,
             supports_cli=True,
+            hooks=exporter_hooks + formatter_hooks,
             notes=["Metadata only. Uses existing core SDK exports today."],
         ),
         PluginManifest(
@@ -51,6 +62,7 @@ def builtin_plugin_manifests() -> list[PluginManifest]:
             supports_sync=True,
             supports_async=True,
             supports_cli=True,
+            hooks=exporter_hooks + formatter_hooks + transformer_hooks,
             notes=["Metadata only. No plugin code is executed."],
         ),
         PluginManifest(
@@ -65,6 +77,7 @@ def builtin_plugin_manifests() -> list[PluginManifest]:
             safety_level=PluginSafetyLevel.METADATA_ONLY,
             supports_async=True,
             supports_cli=True,
+            hooks=report_hooks,
             notes=["Read-only batch planning metadata for future extension points."],
         ),
         PluginManifest(
@@ -79,6 +92,7 @@ def builtin_plugin_manifests() -> list[PluginManifest]:
             safety_level=PluginSafetyLevel.METADATA_ONLY,
             supports_sync=True,
             supports_agent_metadata=True,
+            hooks=report_hooks,
             notes=["No model calls are made. Prompt-pack metadata remains local."],
         ),
         PluginManifest(
@@ -92,6 +106,7 @@ def builtin_plugin_manifests() -> list[PluginManifest]:
             tags=["enterprise", "readiness", "validation"],
             safety_level=PluginSafetyLevel.METADATA_ONLY,
             supports_cli=True,
+            hooks=validator_hooks + report_hooks,
             notes=["Local metadata only. Does not inspect secrets or call Procore."],
         ),
     ]

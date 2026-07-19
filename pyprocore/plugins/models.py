@@ -13,6 +13,7 @@ from typing import Any
 from pydantic import Field, field_validator
 
 from pyprocore.models.base import ProcoreModel
+from pyprocore.plugins.hooks import PluginHookMetadata
 
 PLUGIN_SCHEMA_VERSION = "1"
 
@@ -70,6 +71,7 @@ class PluginManifest(ProcoreModel):
         supports_async: Whether future async hooks may be supported.
         supports_agent_metadata: Whether the plugin can describe agent metadata.
         supports_cli: Whether future CLI metadata may be supported.
+        hooks: Optional hook metadata. Metadata alone is not executable.
         notes: Additional safety or usage notes.
     """
 
@@ -89,6 +91,7 @@ class PluginManifest(ProcoreModel):
     supports_async: bool = False
     supports_agent_metadata: bool = False
     supports_cli: bool = False
+    hooks: list[PluginHookMetadata] = Field(default_factory=list)
     notes: list[str] = Field(default_factory=list)
 
     @field_validator("capabilities", mode="after")
