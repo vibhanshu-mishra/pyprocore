@@ -1,0 +1,24 @@
+{
+  "jsonrpc": "2.0",
+  "id": 4,
+  "result": {
+    "prompts": [
+      {
+        "name": "rfi_review_prompt",
+        "title": "RFI Review Prompt",
+        "description": "Grounded local prompt template for reviewing an RFI package.",
+        "arguments": [
+          {
+            "name": "package_path",
+            "description": "Local package path.",
+            "required": true
+          }
+        ],
+        "metadata": {
+          "kind": "rfi_review",
+          "discovery_only": true
+        }
+      }
+    ]
+  }
+}

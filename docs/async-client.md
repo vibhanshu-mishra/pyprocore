@@ -421,6 +421,7 @@ of the CLI for this phase.
 - MCP remains discovery-only.
 - Agent evals remain local and deterministic.
 
-Phase 15A and Phase 15B MCP discovery include async capability, resource,
-export, batch, download-pattern, safety, and read-only coverage resources so MCP
-clients can inspect async coverage without credentials or live API calls.
+Phase 15A, Phase 15B, and Phase 15C MCP discovery include async capability,
+resource, export, batch, download-pattern, safety, read-only coverage,
+contract, and compatibility metadata so MCP clients can inspect async coverage
+without credentials or live API calls.

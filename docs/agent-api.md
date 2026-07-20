@@ -26,11 +26,12 @@ Phase 7E adds a discovery-only MCP adapter. It maps the same local agent
 registry into MCP-style tool, resource, prompt, and manifest documents. Tool
 execution remains disabled, and no Procore credentials are required.
 
-Phase 15A and Phase 15B expand MCP discovery with richer local resources,
-prompt templates, kind filters, capability summaries, stdio-friendly discovery
-payloads, and explicit safety boundaries. See [MCP Discovery](mcp.md). This
-remains metadata-only and does not execute tools, plugins, Procore calls, or
-model calls.
+Phase 15A, Phase 15B, and Phase 15C expand MCP discovery with richer local
+resources, prompt templates, kind filters, capability summaries,
+stdio-friendly discovery payloads, explicit safety boundaries, contract
+validation, local snapshots, compatibility reports, and static fixtures. See
+[MCP Discovery](mcp.md). This remains metadata-only and does not execute tools,
+plugins, Procore calls, or model calls.
 
 Phase 7F adds a local deterministic agent eval harness. The evals check
 registry safety, schema quality, OpenAPI completeness, MCP discovery, run-log

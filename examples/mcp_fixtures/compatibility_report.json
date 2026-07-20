@@ -1,0 +1,38 @@
+{
+  "schema_version": "mcp-compatibility-v1",
+  "generated_at": "2026-07-19T00:00:00+00:00",
+  "server_name": "pyprocore-agent-mcp",
+  "package_version": "2.2.0",
+  "status": "pass",
+  "discovery_only": true,
+  "resource_count_by_kind": {
+    "agent_manifest": 1
+  },
+  "prompt_count_by_kind": {
+    "rfi_review": 1
+  },
+  "supported_metadata_areas": [
+    "companies",
+    "projects",
+    "workflows"
+  ],
+  "unsupported_actions": [
+    "record changes",
+    "money actions"
+  ],
+  "safety_boundaries": [
+    "discovery-only MCP",
+    "no Procore writes",
+    "no external model calls"
+  ],
+  "contract_validation": {
+    "schema_version": "mcp-contract-v1",
+    "passed": true,
+    "finding_count": 0
+  },
+  "sample_requests": [],
+  "sample_responses": [],
+  "integrator_notes": [
+    "This fixture is static and local."
+  ]
+}

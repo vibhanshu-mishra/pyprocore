@@ -1,0 +1,20 @@
+{
+  "jsonrpc": "2.0",
+  "id": 5,
+  "result": {
+    "description": "Grounded local prompt template for reviewing an RFI package.",
+    "messages": [
+      {
+        "role": "user",
+        "content": {
+          "type": "text",
+          "text": "Ground every observation in the provided package and cite source labels."
+        }
+      }
+    ],
+    "metadata": {
+      "discovery_only": true,
+      "calls_live_api": false
+    }
+  }
+}

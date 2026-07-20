@@ -1,0 +1,15 @@
+{
+  "jsonrpc": "2.0",
+  "id": 8,
+  "result": {
+    "isError": true,
+    "error": "resource_not_found",
+    "message": "Unknown local MCP resource.",
+    "uri": "pyprocore://missing",
+    "safety": {
+      "discovery_only": true,
+      "mcp_execution_enabled": false,
+      "calls_live_procore_api": false
+    }
+  }
+}

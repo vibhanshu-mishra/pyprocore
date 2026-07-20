@@ -1,0 +1,18 @@
+{
+  "jsonrpc": "2.0",
+  "id": 2,
+  "result": {
+    "resources": [
+      {
+        "uri": "pyprocore://agent/manifest",
+        "name": "Agent Manifest",
+        "description": "Local PyProcore agent manifest metadata.",
+        "mimeType": "application/json",
+        "metadata": {
+          "kind": "agent_manifest",
+          "discovery_only": true
+        }
+      }
+    ]
+  }
+}

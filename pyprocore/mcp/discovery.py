@@ -9,6 +9,8 @@ from typing import Any
 from pyprocore.agent.models import AgentTool, AgentToolRegistry
 from pyprocore.agent.registry import get_agent_registry
 from pyprocore.mcp.capabilities import build_mcp_capability_summary
+from pyprocore.mcp.compatibility import COMPATIBILITY_SCHEMA_VERSION
+from pyprocore.mcp.contracts import CONTRACT_SCHEMA_VERSION, build_mcp_contract_report
 from pyprocore.mcp.models import (
     McpDiscoveryManifest,
     McpResourceKind,
@@ -16,8 +18,13 @@ from pyprocore.mcp.models import (
     McpSafetyBoundary,
     McpServerInfo,
 )
-from pyprocore.mcp.prompts import list_mcp_prompts
-from pyprocore.mcp.resources import list_mcp_resources
+from pyprocore.mcp.prompts import list_mcp_prompts, safe_mcp_prompt_not_found
+from pyprocore.mcp.resources import (
+    disabled_mcp_execution_response,
+    list_mcp_resources,
+    safe_mcp_resource_not_found,
+)
+from pyprocore.mcp.snapshots import SNAPSHOT_SCHEMA_VERSION
 
 JsonObject = dict[str, Any]
 
@@ -111,25 +118,46 @@ def build_mcp_stdio_discovery_payload(
 ) -> JsonObject:
     """Return stdio-friendly local discovery payload."""
     manifest = build_mcp_discovery_manifest(registry)
+    manifest_data = manifest.model_dump(mode="json", by_alias=True)
+    contract_report = build_mcp_contract_report(manifest_data)
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(),
-        "server": manifest.server.model_dump(mode="json", by_alias=True),
-        "capabilities": manifest.capabilities.model_dump(mode="json", by_alias=True),
+        "server": manifest_data["server"],
+        "capabilities": manifest_data["capabilities"],
         "resourceKindCounts": manifest.capabilities.mcp_resource_metadata.get(
             "resource_kinds",
             {},
         ),
         "promptKindCounts": manifest.capabilities.mcp_prompt_metadata.get("prompt_kinds", {}),
         "tools": manifest.tools,
-        "resources": [item.model_dump(mode="json", by_alias=True) for item in manifest.resources],
+        "resources": manifest_data["resources"],
         "resourceTemplates": [
             item.model_dump(mode="json", by_alias=True) for item in manifest.resource_templates
         ],
-        "prompts": [item.model_dump(mode="json", by_alias=True) for item in manifest.prompts],
+        "prompts": manifest_data["prompts"],
         "disabledExecutionStatus": manifest.capabilities.disabled_execution_status,
         "unsupportedActions": manifest.capabilities.unsupported_actions,
         "safetyBoundaries": manifest.capabilities.safety_boundaries,
         "safety": manifest.capabilities.safety.model_dump(mode="json", by_alias=True),
+        "contract": {
+            "schemaVersion": CONTRACT_SCHEMA_VERSION,
+            "passed": contract_report["passed"],
+            "findingCount": contract_report["finding_count"],
+        },
+        "snapshot": {"schemaVersion": SNAPSHOT_SCHEMA_VERSION},
+        "compatibility": {
+            "schemaVersion": COMPATIBILITY_SCHEMA_VERSION,
+            "discoveryOnly": True,
+            "executionEnabled": False,
+        },
+        "disabledExecutionResponseShape": disabled_mcp_execution_response("procore.example"),
+        "unknownResourceResponseShape": safe_mcp_resource_not_found("pyprocore://missing"),
+        "unknownPromptResponseShape": safe_mcp_prompt_not_found("missing_prompt"),
+        "compatibilityNotes": [
+            "Static local metadata only.",
+            "Tool calls return disabled responses.",
+            "No credentials or live Procore data are exported.",
+        ],
     }
 
 

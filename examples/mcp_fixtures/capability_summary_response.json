@@ -1,0 +1,27 @@
+{
+  "jsonrpc": "2.0",
+  "id": 6,
+  "result": {
+    "server_name": "pyprocore-agent-mcp",
+    "package_version": "2.2.0",
+    "discovery_capabilities": [
+      "tools/list",
+      "resources/list",
+      "resources/read",
+      "prompts/list",
+      "prompts/get"
+    ],
+    "disabled_execution_status": {
+      "mcp_tool_calls": false,
+      "procore_tool_calls": false,
+      "plugin_hooks": false,
+      "external_model_calls": false,
+      "remote_fetches": false,
+      "remote_report_uploads": false
+    },
+    "safety": {
+      "discovery_only": true,
+      "mcp_execution_enabled": false
+    }
+  }
+}

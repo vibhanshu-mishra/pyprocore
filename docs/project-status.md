@@ -23,7 +23,8 @@
   regression comparison, threshold policies, and history snapshots, plus Phase
   13D offline model-response fixture evals, plus Phase 15A/15B richer
   discovery-only MCP resources, prompts, kind filters, capabilities, and safety
-  metadata.
+  metadata, plus Phase 15C MCP contract validation, snapshots, compatibility
+  reports, and static fixtures.
   The package remains `2.2.0`; this branch work is unpublished.
 
 ## Current Stable Release: 2.2.0
@@ -170,6 +171,13 @@ review metadata; additional artifact review prompts; kind filters; and richer
 stdio discovery summaries. It does not enable MCP execution, Procore tool
 execution, plugin execution, live Procore calls, external model calls, remote
 resource fetching, remote report uploads, or write actions.
+
+Phase 15C adds discovery-only MCP contract validation, local discovery
+snapshots, JSON/Markdown compatibility reports, static client fixtures, and
+safe CLI commands for disabled and unknown-response shapes. It does not enable
+MCP execution, Procore tool execution, plugin execution, live Procore calls,
+external model calls, remote resource fetching, remote report uploads, or write
+actions.
 
 Phase 8A adds read-only SDK coverage for Observations, Punch Items, Generic
 Tools, and Generic Tool correspondence items. It includes service helpers,

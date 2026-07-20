@@ -1,0 +1,17 @@
+{
+  "jsonrpc": "2.0",
+  "id": 3,
+  "result": {
+    "contents": [
+      {
+        "uri": "pyprocore://agent/manifest",
+        "mimeType": "application/json",
+        "text": "{\"payload\":{\"name\":\"pyprocore-agent\",\"discovery_only\":true,\"execution_enabled\":false}}"
+      }
+    ],
+    "metadata": {
+      "discoveryOnly": true,
+      "liveProcoreCall": false
+    }
+  }
+}

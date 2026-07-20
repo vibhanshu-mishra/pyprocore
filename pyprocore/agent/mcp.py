@@ -91,7 +91,7 @@ def build_mcp_server_info(
     server = build_typed_mcp_server_info(registry).model_dump(mode="json")
     server["protocolVersion"] = server.pop("protocol_version")
     server["safety"]["tool_execution_enabled"] = server["safety"]["procore_tool_execution_enabled"]
-    server["safety"]["phase"] = "15B"
+    server["safety"]["phase"] = "15C"
     return server
 
 
@@ -131,7 +131,7 @@ def build_mcp_tool_execution_disabled_response(tool_name: str) -> JsonObject:
             "discovery_only": True,
             "calls_live_api": False,
             "mcp_execution_enabled": False,
-            "phase": "15B",
+            "phase": "15C",
         },
     }
 

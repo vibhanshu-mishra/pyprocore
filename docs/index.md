@@ -15,10 +15,12 @@ PyProcore `2.2.0` includes the completed Phase 7 Agent Layer: local discovery,
 schema, replay, MCP discovery, and deterministic eval infrastructure for future
 assistant integrations. Tool execution remains disabled.
 
-Unreleased Phase 15A/15B branch work adds richer discovery-only MCP resources,
-prompt templates, kind filtering, capability summaries, and stdio-friendly
-discovery metadata. It does not enable MCP execution, Procore tool execution,
-plugin execution, live Procore calls, or external model calls.
+Unreleased Phase 15A/15B/15C branch work adds richer discovery-only MCP
+resources, prompt templates, kind filtering, capability summaries,
+stdio-friendly discovery metadata, contract validation, snapshots,
+compatibility reports, and static fixtures. It does not enable MCP execution,
+Procore tool execution, plugin execution, live Procore calls, or external model
+calls.
 
 ## What PyProcore Can Do
 

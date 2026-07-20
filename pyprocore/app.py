@@ -131,6 +131,19 @@ from pyprocore.evals import (
     write_regression_report_json,
     write_regression_report_markdown,
 )
+from pyprocore.mcp import (
+    build_mcp_compatibility_report,
+    build_mcp_contract_report,
+    build_mcp_discovery_snapshot,
+    mcp_compatibility_report_to_json,
+    mcp_compatibility_report_to_markdown,
+    mcp_snapshot_to_json,
+    safe_mcp_prompt_not_found,
+    safe_mcp_resource_not_found,
+    write_mcp_compatibility_report,
+    write_mcp_discovery_snapshot,
+)
+from pyprocore.mcp.resources import disabled_mcp_execution_response
 from pyprocore.plugins import (
     PluginCapability,
     PluginConfig,
@@ -949,6 +962,63 @@ def build_parser() -> argparse.ArgumentParser:
     mcp_stdio_parser.add_argument("--json", dest="json_output", action="store_true")
     mcp_stdio_parser.add_argument("--pretty", action="store_true")
     mcp_stdio_parser.add_argument("--output", type=Path, default=None)
+
+    mcp_validate_parser = mcp_subcommands.add_parser(
+        "validate",
+        help="Validate local MCP discovery contracts",
+    )
+    mcp_validate_parser.add_argument("--json", dest="json_output", action="store_true")
+    mcp_validate_parser.add_argument("--pretty", action="store_true")
+    mcp_validate_parser.add_argument("--output", type=Path, default=None)
+
+    mcp_snapshot_parser = mcp_subcommands.add_parser(
+        "snapshot",
+        help="Build a local MCP discovery snapshot",
+    )
+    mcp_snapshot_parser.add_argument("--json", dest="json_output", action="store_true")
+    mcp_snapshot_parser.add_argument("--pretty", action="store_true")
+    mcp_snapshot_parser.add_argument("--output", type=Path, default=None)
+
+    mcp_report_parser = mcp_subcommands.add_parser(
+        "compatibility-report",
+        help="Build a local MCP compatibility report",
+    )
+    mcp_report_parser.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="json",
+    )
+    mcp_report_parser.add_argument("--pretty", action="store_true")
+    mcp_report_parser.add_argument("--output", type=Path, default=None)
+
+    mcp_subcommands.add_parser(
+        "sample-fixtures",
+        help="List static MCP sample fixture files",
+    )
+
+    mcp_disabled_parser = mcp_subcommands.add_parser(
+        "disabled-response",
+        help="Show the response shape for disabled MCP tool calls",
+    )
+    mcp_disabled_parser.add_argument("--tool-name", default="procore.example")
+    mcp_disabled_parser.add_argument("--json", dest="json_output", action="store_true")
+    mcp_disabled_parser.add_argument("--pretty", action="store_true")
+
+    mcp_unknown_resource_parser = mcp_subcommands.add_parser(
+        "unknown-resource-response",
+        help="Show the response shape for unknown MCP resources",
+    )
+    mcp_unknown_resource_parser.add_argument("--uri", default="pyprocore://missing")
+    mcp_unknown_resource_parser.add_argument("--json", dest="json_output", action="store_true")
+    mcp_unknown_resource_parser.add_argument("--pretty", action="store_true")
+
+    mcp_unknown_prompt_parser = mcp_subcommands.add_parser(
+        "unknown-prompt-response",
+        help="Show the response shape for unknown MCP prompts",
+    )
+    mcp_unknown_prompt_parser.add_argument("--name", default="missing_prompt")
+    mcp_unknown_prompt_parser.add_argument("--json", dest="json_output", action="store_true")
+    mcp_unknown_prompt_parser.add_argument("--pretty", action="store_true")
 
     agent_evals_parser = agent_subcommands.add_parser(
         "evals",
@@ -3776,6 +3846,64 @@ def run_command(args: argparse.Namespace) -> Any:
                 sort_keys=True,
             )
             return _write_optional_output(discovery_text, args.output)
+        if args.mcp_command == "validate":
+            report_text = json.dumps(
+                build_mcp_contract_report(),
+                indent=2 if args.pretty else None,
+                sort_keys=True,
+            )
+            return _write_optional_output(report_text, args.output)
+        if args.mcp_command == "snapshot":
+            mcp_snapshot = build_mcp_discovery_snapshot()
+            if args.output is not None:
+                return write_mcp_discovery_snapshot(
+                    args.output,
+                    mcp_snapshot,
+                    pretty=bool(args.pretty or args.json_output),
+                )
+            return mcp_snapshot_to_json(
+                mcp_snapshot,
+                pretty=bool(args.pretty or args.json_output),
+            )
+        if args.mcp_command == "compatibility-report":
+            mcp_report = build_mcp_compatibility_report()
+            if args.output is not None:
+                return write_mcp_compatibility_report(
+                    args.output,
+                    format=args.format,
+                    report=mcp_report,
+                )
+            if args.format == "markdown":
+                return mcp_compatibility_report_to_markdown(mcp_report)
+            return mcp_compatibility_report_to_json(
+                mcp_report,
+                pretty=bool(args.pretty or args.format == "json"),
+            )
+        if args.mcp_command == "sample-fixtures":
+            fixtures_dir = Path(__file__).resolve().parents[1] / "examples" / "mcp_fixtures"
+            fixtures = sorted(path.name for path in fixtures_dir.glob("*.json"))
+            return {
+                "directory": str(fixtures_dir),
+                "fixture_count": len(fixtures),
+                "fixtures": fixtures,
+                "discovery_only": True,
+                "execution_enabled": False,
+            }
+        if args.mcp_command == "disabled-response":
+            response = disabled_mcp_execution_response(args.tool_name)
+            if args.json_output or args.pretty:
+                return json.dumps(response, indent=2 if args.pretty else None, sort_keys=True)
+            return response
+        if args.mcp_command == "unknown-resource-response":
+            response = safe_mcp_resource_not_found(args.uri)
+            if args.json_output or args.pretty:
+                return json.dumps(response, indent=2 if args.pretty else None, sort_keys=True)
+            return response
+        if args.mcp_command == "unknown-prompt-response":
+            response = safe_mcp_prompt_not_found(args.name)
+            if args.json_output or args.pretty:
+                return json.dumps(response, indent=2 if args.pretty else None, sort_keys=True)
+            return response
         raise ValueError(f"Unsupported MCP command: {args.mcp_command}")
 
     if args.command == "evals":

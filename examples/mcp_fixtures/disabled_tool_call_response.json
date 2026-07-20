@@ -1,0 +1,20 @@
+{
+  "jsonrpc": "2.0",
+  "id": 7,
+  "result": {
+    "isError": true,
+    "content": [
+      {
+        "type": "text",
+        "text": "MCP tool execution is disabled for PyProcore discovery metadata."
+      }
+    ],
+    "metadata": {
+      "tool_name": "procore.example",
+      "execution_enabled": false,
+      "discovery_only": true,
+      "calls_live_api": false,
+      "mcp_execution_enabled": false
+    }
+  }
+}

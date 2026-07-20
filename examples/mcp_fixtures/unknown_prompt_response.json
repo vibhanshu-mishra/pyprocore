@@ -1,0 +1,15 @@
+{
+  "jsonrpc": "2.0",
+  "id": 9,
+  "result": {
+    "isError": true,
+    "error": "prompt_not_found",
+    "message": "Unknown local MCP prompt.",
+    "name": "missing_prompt",
+    "safety": {
+      "discovery_only": true,
+      "mcp_execution_enabled": false,
+      "calls_live_procore_api": false
+    }
+  }
+}

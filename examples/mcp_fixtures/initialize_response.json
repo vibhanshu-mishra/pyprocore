@@ -1,0 +1,29 @@
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "protocolVersion": "2024-11-05",
+    "serverInfo": {
+      "name": "pyprocore-agent-mcp",
+      "version": "2.2.0"
+    },
+    "capabilities": {
+      "tools": {
+        "listChanged": false
+      },
+      "resources": {
+        "subscribe": false,
+        "listChanged": false
+      },
+      "prompts": {
+        "listChanged": false
+      }
+    },
+    "metadata": {
+      "discoveryOnly": true,
+      "executionEnabled": false,
+      "contractSchemaVersion": "mcp-contract-v1",
+      "snapshotSchemaVersion": "mcp-snapshot-v1"
+    }
+  }
+}

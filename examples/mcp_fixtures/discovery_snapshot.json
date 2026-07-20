@@ -1,0 +1,52 @@
+{
+  "metadata": {
+    "schema_version": "mcp-snapshot-v1",
+    "generated_at": "2026-07-19T00:00:00+00:00",
+    "package_version": "2.2.0",
+    "server_name": "pyprocore-agent-mcp",
+    "resource_count": 1,
+    "prompt_count": 1,
+    "contract_passed": true
+  },
+  "server": {
+    "name": "pyprocore-agent-mcp",
+    "version": "2.2.0"
+  },
+  "capabilities": {
+    "unsupported_actions": [
+      "record changes"
+    ],
+    "safety": {
+      "discovery_only": true,
+      "mcp_execution_enabled": false
+    }
+  },
+  "resources": [
+    {
+      "uri": "pyprocore://agent/manifest",
+      "name": "Agent Manifest"
+    }
+  ],
+  "resource_templates": [],
+  "prompts": [
+    {
+      "name": "rfi_review_prompt",
+      "kind": "rfi_review"
+    }
+  ],
+  "disabled_execution_response": {
+    "isError": true,
+    "metadata": {
+      "execution_enabled": false
+    }
+  },
+  "contract_report": {
+    "schema_version": "mcp-contract-v1",
+    "passed": true,
+    "finding_count": 0
+  },
+  "safety": {
+    "discovery_only": true,
+    "mcp_execution_enabled": false
+  }
+}

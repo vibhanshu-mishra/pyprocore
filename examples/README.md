@@ -124,6 +124,12 @@ async, AI workflow, model-fixture, artifact-review prompt, kind-filtering, and
 stdio discovery metadata. They are local metadata examples only and do not call
 Procore, call external AI/model APIs, execute plugins, fetch remote resources,
 upload reports, load arbitrary code, or enable MCP/tool execution.
+Examples `269` through `278` cover unreleased Phase 15C MCP contract
+validation, local discovery snapshots, compatibility reports, static fixtures,
+disabled-response shapes, unknown-response shapes, and integration notes. They
+are local metadata examples only and do not call Procore, call external
+AI/model APIs, execute plugins, fetch remote resources, upload reports, load
+arbitrary code, or enable MCP/tool execution.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -570,6 +576,16 @@ The current example set runs from `01_list_companies.py` through
 | `266_mcp_prompt_kind_filtering.py` | Filter MCP prompts by kind |
 | `267_mcp_richer_stdio_discovery.py` | Print richer stdio discovery kind summaries |
 | `268_phase15b_mcp_metadata_summary.py` | Summarize Phase 15B MCP metadata additions |
+| `269_mcp_contract_validation.py` | Validate the local MCP discovery contract |
+| `270_mcp_discovery_snapshot.py` | Build a local MCP discovery snapshot summary |
+| `271_mcp_compatibility_report.py` | Build a local JSON compatibility report summary |
+| `272_mcp_sample_fixtures.py` | List static MCP sample fixtures |
+| `273_mcp_disabled_execution_response.py` | Show the disabled MCP tool-call response shape |
+| `274_mcp_unknown_resource_response.py` | Show the unknown-resource response shape |
+| `275_mcp_snapshot_comparison.py` | Compare local MCP discovery snapshots |
+| `276_mcp_client_integration_notes.py` | Print MCP client integration notes |
+| `277_mcp_compatibility_markdown_report.py` | Render a Markdown compatibility report |
+| `278_phase15c_mcp_compatibility_summary.py` | Summarize Phase 15C MCP compatibility additions |
 
 Sample golden datasets live in `examples/golden_datasets/`:
 
@@ -762,5 +778,9 @@ Sample webhook payloads live in `examples/webhooks/`:
   plugin, async, AI workflow, model fixture, artifact prompt, and kind-filter
   surfaces. They inspect local metadata only and do not call Procore, call
   external AI/model APIs, execute plugins, fetch remote resources, upload
+  reports, load arbitrary code, or enable MCP/tool execution.
+- Examples `269` through `278` add MCP compatibility and contract examples.
+  They inspect local metadata and static fixtures only and do not call Procore,
+  call external AI/model APIs, execute plugins, fetch remote resources, upload
   reports, load arbitrary code, or enable MCP/tool execution.
 - Keep secrets out of code, screenshots, logs, and issue reports.

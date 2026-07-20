@@ -43,10 +43,10 @@ not execute plugin code or call models.
 - Agent tool execution remains disabled.
 - MCP remains discovery-only.
 
-Phase 15A and Phase 15B MCP discovery expose plugin manifest, hook,
-config-template, extension-pack, scaffold, capability, and safety resources as
-metadata only. MCP discovery does not execute plugins, fetch remote registries,
-or load plugin code.
+Phase 15A, Phase 15B, and Phase 15C MCP discovery expose plugin manifest, hook,
+config-template, extension-pack, scaffold, capability, safety, compatibility,
+and contract metadata only. MCP discovery does not execute plugins, fetch
+remote registries, or load plugin code.
 
 ## CLI Commands
 

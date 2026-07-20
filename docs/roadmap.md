@@ -71,6 +71,25 @@ Focus: metadata only. No MCP execution, Procore tool execution, plugin
 execution, live Procore calls, external AI/model calls, remote fetching,
 uploads, or write actions are enabled.
 
+### Phase 15C — MCP Compatibility, Contracts, And Discovery Polish
+
+Implemented in the current branch and not yet published:
+
+- Discovery-only MCP contract validation helpers
+- Local MCP discovery snapshots and snapshot comparison helpers
+- JSON and Markdown MCP compatibility reports for client integrators
+- Static MCP sample fixtures for initialize, resources, prompts, capability,
+  disabled-response, unknown-response, snapshot, and compatibility report
+  shapes
+- `procore-sdk mcp validate`, `snapshot`, `compatibility-report`,
+  `sample-fixtures`, `disabled-response`, `unknown-resource-response`, and
+  `unknown-prompt-response`
+- Placeholder-only examples 269–278
+
+Focus: compatibility metadata only. No MCP execution, Procore tool execution,
+plugin execution, live Procore calls, external AI/model calls, remote fetching,
+uploads, or write actions are enabled.
+
 ### Phase 9A — Enterprise Authentication Hardening
 
 - Backward-compatible Authorization Code and Client Credentials strategy handling

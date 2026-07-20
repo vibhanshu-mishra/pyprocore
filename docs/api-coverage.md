@@ -60,9 +60,10 @@ start a server.
 
 See [Agent API](agent-api.md) for the CLI and Python usage.
 
-Phase 15A and Phase 15B MCP resources, prompts, kind filters, and capability
-summaries add no new Procore endpoint coverage. They are local metadata only
-and do not call Procore.
+Phase 15A, Phase 15B, and Phase 15C MCP resources, prompts, kind filters,
+capability summaries, contract validation, snapshots, compatibility reports,
+and fixtures add no new Procore endpoint coverage. They are local metadata
+only and do not call Procore.
 
 ## Phase 8A Endpoint Notes
 

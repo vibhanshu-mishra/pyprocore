@@ -93,6 +93,16 @@ and this project follows semantic versioning.
   AI workflow packages, MCP safety, and release readiness.
 - Examples 259–268 for Phase 15B local MCP eval, plugin, async, AI workflow,
   model-fixture, prompt, kind-filtering, and stdio discovery metadata.
+- Phase 15C MCP compatibility polish with discovery contract validation, local
+  discovery snapshots, snapshot comparisons, JSON/Markdown compatibility
+  reports, static client fixtures, and disabled/unknown-response shapes.
+- `procore-sdk mcp validate`, `procore-sdk mcp snapshot`,
+  `procore-sdk mcp compatibility-report`, `procore-sdk mcp sample-fixtures`,
+  `procore-sdk mcp disabled-response`,
+  `procore-sdk mcp unknown-resource-response`, and
+  `procore-sdk mcp unknown-prompt-response`.
+- Examples 269–278 and `examples/mcp_fixtures/` for Phase 15C local MCP
+  contract, snapshot, compatibility, fixture, and integration-note examples.
 
 - Phase 8A read-only API coverage for Observations, Punch Items, and Generic Tool correspondence items.
 - Typed flexible models for `Observation`, `PunchItem`, `GenericTool`, and `Correspondence`.
@@ -152,6 +162,10 @@ and this project follows semantic versioning.
   execution, Procore tool execution, plugin execution, live Procore calls,
   external AI/model calls, remote resource fetching, uploads, write actions,
   remote report uploads, or arbitrary code loading.
+- Phase 15C MCP compatibility tooling remains discovery-only; it does not
+  enable MCP execution, Procore tool execution, plugin execution, live Procore
+  calls, external AI/model calls, remote resource fetching, uploads, write
+  actions, remote report uploads, or arbitrary code loading.
 
 - Phase 8A remains read-only and does not add create/update/delete Procore actions.
 - Agent tool execution remains disabled; new Phase 8A agent entries are metadata only.

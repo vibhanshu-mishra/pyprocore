@@ -75,7 +75,8 @@ external AI/model APIs, MCP execution, or Procore tool execution.
 
 ## MCP Discovery
 
-Phase 15A and Phase 15B add unreleased top-level MCP discovery commands:
+Phase 15A, Phase 15B, and Phase 15C add unreleased top-level MCP discovery,
+contract, snapshot, and compatibility commands:
 
 ```bash
 procore-sdk mcp manifest
@@ -88,6 +89,14 @@ procore-sdk mcp prompt rfi_review_prompt
 procore-sdk mcp capabilities
 procore-sdk mcp safety
 procore-sdk mcp stdio-discovery
+procore-sdk mcp validate
+procore-sdk mcp snapshot
+procore-sdk mcp compatibility-report
+procore-sdk mcp compatibility-report --format markdown
+procore-sdk mcp sample-fixtures
+procore-sdk mcp disabled-response
+procore-sdk mcp unknown-resource-response
+procore-sdk mcp unknown-prompt-response
 ```
 
 These commands print local metadata only. They do not require credentials, call
