@@ -5,17 +5,17 @@ local by default; they do not publish to PyPI and do not create GitHub releases.
 
 ## Current Release
 
-PyProcore `2.2.0` has been published to PyPI, verified from a clean install,
-tagged as `v2.2.0`, and released on GitHub.
+PyProcore `2.3.0` has been published to PyPI, verified from a clean install,
+tagged as `v2.3.0`, and released on GitHub.
 
-PyProcore `2.1.0` is the previous stable release.
+PyProcore `2.2.0` is the previous stable release.
 
-## Verify 2.2.0
+## Verify 2.3.0
 
 To verify the published package in a clean environment:
 
 ```bash
-python3 -m pip install pyprocore==2.2.0
+python3 -m pip install pyprocore==2.3.0
 procore-sdk --version
 procore-sdk agent tools
 procore-sdk agent evals run
@@ -24,7 +24,7 @@ procore-sdk agent evals run
 Expected version output:
 
 ```text
-pyprocore 2.2.0
+pyprocore 2.3.0
 ```
 
 The agent commands above inspect local metadata and deterministic evals. They do
@@ -131,10 +131,10 @@ For future releases, use this order:
 Do not upload real `.env` files, OAuth token stores, logs, downloads, workflow
 runs, webhook event stores, or generated AI/export folders.
 
-## 2.2.0 Release Completed
+## 2.3.0 Release Completed
 
-The `2.2.0` release has already been completed. Do not publish it again and do
-not create another `v2.2.0` GitHub release.
+The `2.3.0` release has already been completed. Do not publish it again and do
+not create another `v2.3.0` GitHub release.
 
 Completed release steps:
 
@@ -143,7 +143,8 @@ Completed release steps:
 - Clean install verification completed.
 - CLI version check completed.
 - Phase 7 local agent metadata/eval commands verified.
-- Git tag `v2.2.0` created.
+- Phase 8-15 additive local/read-only/discovery features verified.
+- Git tag `v2.3.0` created.
 - GitHub release created.
 - Post-release documentation cleanup completed.
 

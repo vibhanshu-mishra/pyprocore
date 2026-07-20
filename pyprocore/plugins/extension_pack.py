@@ -49,7 +49,7 @@ class PluginExtensionPack(ProcoreModel):
     tags: list[str] = Field(default_factory=list)
     notes: list[str] = Field(default_factory=list)
     safety_level: PluginSafetyLevel = PluginSafetyLevel.METADATA_ONLY
-    requires_pyprocore: str | None = ">=2.2.0"
+    requires_pyprocore: str | None = ">=2.3.0"
 
 
 class PluginExtensionPackManifest(ProcoreModel):

@@ -10,36 +10,25 @@
 
 PyProcore helps developers, consultants, and construction teams build safe Procore integrations without rebuilding OAuth, token refresh, pagination, retries, typed response parsing, file downloads, exports, and local automation plumbing from scratch.
 
-It is model-agnostic, local-first, and safety-first. The current stable release, `2.2.0`, includes the Phase 7 Agent Layer: local discovery/spec/eval/replay infrastructure for future assistant workflows. Procore tool execution remains disabled, the MCP adapter is discovery-only, and Phase 7 commands do not call external AI/model APIs.
+It is model-agnostic, local-first, and safety-first. The current stable release,
+`2.3.0`, includes expanded read coverage, enterprise auth/deployment hardening,
+async helpers, metadata-only plugin infrastructure, local AI workflow examples,
+deterministic evals, and discovery-only MCP compatibility tooling. Procore tool
+execution remains disabled, the MCP adapter is discovery-only, and PyProcore
+does not call external AI/model APIs by default.
 
 Current repository status:
 
-- Published stable release: `2.2.0`
-- Unreleased branch work: Phase 8A–8G API/auth additions, Phase 9A
-  enterprise authentication hardening, Phase 9B scheduled export planning,
-  Phase 9C token-store/credential-rotation hardening, and Phase 9D private
-  deployment/runbook guidance, plus Phase 12 model-agnostic AI workflow
-  examples, plus Phase 10A async client foundation, Phase 10B async
-  export/download patterns, Phase 10C async multi-project batch helpers, and
-  Phase 10D async field, operations, correspondence, and directory coverage,
-  plus Phase 10E async financial, contract, billing, and project-management
-  read coverage, plus Phase 11A metadata-only plugin architecture foundation,
-  Phase 11B safe local plugin extension hooks, Phase 11C plugin configuration
-  and local extension-pack manifests, and Phase 11D plugin developer
-  scaffolding/templates, plus Phase 13A local deterministic golden datasets
-  and eval reports, plus Phase 13B workflow-specific golden eval suites for
-  RFI, submittal, async export, async batch, AI workflow, plugin metadata/config,
-  and safety-boundary artifacts, plus Phase 13C local eval baselines,
-  regression comparison, threshold policies, and history snapshots, plus Phase
-  13D offline model-response fixture evals for saved/sample AI-style responses,
-  plus Phase 15A/15B richer discovery-only MCP resources, prompt templates,
-  kind filtering, capability summaries, stdio discovery payloads, and safety
-  metadata, plus Phase 15C MCP contract validation, local snapshots,
-  compatibility reports, and static fixtures
+- Published stable release: `2.3.0`
+- Previous stable release: `2.2.0`
+- Included in `2.3.0`: Phase 8 expanded read coverage, Phase 9 enterprise
+  auth/deployment hardening, Phase 10 async helpers, Phase 11 metadata-only
+  plugin architecture, Phase 12 AI workflow examples, Phase 13 deterministic
+  evals, and Phase 15 discovery-only MCP metadata/compatibility tooling
 - Procore tool execution remains disabled
 
 ```bash
-python3 -m pip install pyprocore==2.2.0
+python3 -m pip install pyprocore==2.3.0
 ```
 
 ---
@@ -56,32 +45,32 @@ PyProcore turns Procore REST API responses into typed Python objects and gives y
 - Inspect token-store safety and print credential rotation checklists locally.
 - Check private deployment readiness and review production runbook guidance locally.
 - Build model-agnostic local AI workflow prompts, checklists, and vector export manifests.
-- Use the unreleased async client foundation for read-oriented workflows with optional async HTTP support.
-- Use unreleased async export and local download patterns with manifests and conservative concurrency controls.
+- Use the async client foundation for read-oriented workflows with optional async HTTP support.
+- Use async export and local download patterns with manifests and conservative concurrency controls.
 - Plan read-only async multi-project batches with local dry-run manifests.
-- Read additional field, operations, correspondence, and directory resources through the unreleased async client.
+- Read additional field, operations, correspondence, and directory resources through the async client.
 - Read financial, contract, billing, and project-management resources through
-  the unreleased async client.
-- Inspect metadata-only plugin manifests through the unreleased Phase 11A
+  the async client.
+- Inspect metadata-only plugin manifests through the Phase 11A
   plugin architecture foundation.
 - Register trusted local plugin hooks explicitly in-process through the
-  unreleased Phase 11B hook registry.
+  Phase 11B hook registry.
 - Validate JSON-only plugin configuration and extension-pack metadata through
-  the unreleased Phase 11C helpers.
-- Generate safe local plugin developer templates through the unreleased Phase
+  the Phase 11C helpers.
+- Generate safe local plugin developer templates through the Phase
   11D scaffolding helpers.
-- Run unreleased Phase 13A local deterministic golden evals for exports,
+- Run Phase 13A local deterministic golden evals for exports,
   manifests, workflow packages, async batch plans, plugin metadata, and safety
   boundaries.
-- Run unreleased Phase 13B workflow-specific golden evals for RFI, submittal,
+- Run Phase 13B workflow-specific golden evals for RFI, submittal,
   async export, async batch, AI workflow package, plugin metadata/config, and
   safety-boundary artifacts.
-- Compare deterministic eval results against unreleased Phase 13C local
+- Compare deterministic eval results against Phase 13C local
   baselines, threshold policies, regression reports, and history snapshots.
-- Score unreleased Phase 13D offline model-response fixtures for grounding,
+- Score Phase 13D offline model-response fixtures for grounding,
   citations, hallucination risk, prohibited action language, limitation
   disclosure, and safety boundaries without calling a model.
-- Inspect unreleased Phase 15A/15B/15C MCP eval, plugin, async, AI workflow,
+- Inspect Phase 15A/15B/15C MCP eval, plugin, async, AI workflow,
   model-fixture, prompt, capability, safety, and stdio discovery metadata
   plus contract validation, local snapshots, compatibility reports, and static
   fixtures without credentials, Procore calls, model calls, plugin execution,
@@ -96,7 +85,7 @@ PyProcore turns Procore REST API responses into typed Python objects and gives y
 Install the current stable release:
 
 ```bash
-python3 -m pip install pyprocore==2.2.0
+python3 -m pip install pyprocore==2.3.0
 ```
 
 Create a `.env` file:
@@ -135,7 +124,7 @@ PyProcore loads `.env` from the current working directory and does not override 
 ### Core SDK
 
 - OAuth 2.0 authorization-code flow
-- Optional client-credentials flow for Data Connection Apps in the current unreleased branch
+- Optional client-credentials flow for Data Connection Apps in the current stable release
 - Automatic token refresh
 - Typed Pydantic models
 - `requests.Session` transport
@@ -161,7 +150,7 @@ PyProcore is mostly read-oriented and built for safe automation. Current support
 - Specifications
 - Photos
 - Daily Logs
-- Observations, Punch Items, Generic Tool correspondence items, Meetings, Inspections, Incidents, Directory users, Vendors, Departments, Distribution Groups, Locations, contracts, invoices, payments, schedules, tasks, calendar items, coordination issues, forms, and action plans in the current unreleased branch
+- Observations, Punch Items, Generic Tool correspondence items, Meetings, Inspections, Incidents, Directory users, Vendors, Departments, Distribution Groups, Locations, contracts, invoices, payments, schedules, tasks, calendar items, coordination issues, forms, and action plans in the current stable release
 - Attachments and files when Procore returns usable URLs
 
 See [API Coverage](docs/api-coverage.md) for endpoint notes, live-verification limitations, and Procore permission context.
@@ -175,7 +164,7 @@ See [API Coverage](docs/api-coverage.md) for endpoint notes, live-verification l
 - Project sync
 - Incremental sync state
 - Workflow plans
-- Scheduled export plan validation and dry-run manifests in the current unreleased branch
+- Scheduled export plan validation and dry-run manifests in the current stable release
 - Scheduled sync examples
 - Local webhook helpers
 - Docker and CI examples
@@ -195,7 +184,7 @@ AI-ready package builders write local files only. They do not call external AI/m
 
 ### Phase 12 AI Workflow Examples
 
-Prepared in the current unreleased branch:
+Included in v2.3.0:
 
 - RFI review assistant prompt packages
 - Submittal review assistant prompt packages
@@ -213,7 +202,7 @@ tools, and does not enable Procore tool execution. See
 
 ### Phase 10A Async Client Foundation
 
-Prepared in the current unreleased branch:
+Included in v2.3.0:
 
 - `AsyncProcore` async entry point
 - async transport abstraction and local `MockAsyncTransport`
@@ -229,7 +218,7 @@ enable agent execution, and keeps MCP discovery-only. See
 
 ### Phase 10B Async Exports And Download Patterns
 
-Prepared in the current unreleased branch:
+Included in v2.3.0:
 
 - async CSV and JSONL export helpers for common read resources
 - async local download helpers for records that include direct download URLs
@@ -244,7 +233,7 @@ APIs, does not enable agent execution, and keeps MCP discovery-only. See
 
 ### Phase 10C Async Multi-Project Batch Helpers
 
-Prepared in the current unreleased branch:
+Included in v2.3.0:
 
 - async batch plans, manifests, project/resource results, and findings
 - local-only validation and dry-run planning for multi-project async exports
@@ -261,7 +250,7 @@ agent execution, or MCP execution behavior is added.
 
 ### Phase 10D Async Coverage Expansion
 
-Prepared in the current unreleased branch:
+Included in v2.3.0:
 
 - async read coverage for photo albums, photos, Daily Logs, observations, punch items, Generic Tools, correspondence, meetings, inspections, incidents, and directory resources
 - async find helpers for observations, punch items, correspondence, meetings, inspections, incidents, users, vendors, departments, distribution groups, and locations
@@ -275,7 +264,7 @@ execution.
 
 ### Phase 10E Async Financial, Contract, And Project Management Coverage
 
-Prepared in the current unreleased branch:
+Included in v2.3.0:
 
 - async read coverage for change events, change orders, direct costs, budget views/details, cost codes, WBS codes, and commitments
 - async read coverage for prime contracts, owner invoices, subcontractor invoices, contract payments, billing periods, cost types, and tax codes
@@ -291,7 +280,7 @@ execution, or MCP execution.
 
 ### Phase 11A Plugin Architecture Foundation
 
-Prepared in the current unreleased branch:
+Included in v2.3.0:
 
 - metadata-only plugin manifests
 - safe local plugin registry
@@ -310,7 +299,7 @@ or enable agent/MCP execution. See [Plugin Architecture](docs/plugins.md).
 
 ### Phase 11B Safe Local Plugin Extension Hooks
 
-Prepared in the current unreleased branch:
+Included in v2.3.0:
 
 - typed hook metadata for validators, exporters, formatters, reports, workflow
   helpers, and record transformers
@@ -329,7 +318,7 @@ APIs, add write actions, or enable agent/MCP execution. See
 
 ### Phase 11C Plugin Configuration and Local Extension Packs
 
-Prepared in the current unreleased branch:
+Included in v2.3.0:
 
 - JSON-only plugin configuration models
 - hook preference metadata
@@ -352,7 +341,7 @@ actions, or enable agent/MCP execution. See
 
 ### Phase 11D Plugin Developer Scaffolding
 
-Prepared in the current unreleased branch:
+Included in v2.3.0:
 
 - local scaffold request, plan, file, finding, and result models
 - dry-run scaffold planning
@@ -374,7 +363,7 @@ actions, or enable agent/MCP execution. See
 
 ### Phase 13 Golden Dataset Evals
 
-Prepared in the current unreleased branch:
+Included in v2.3.0:
 
 - typed golden dataset, case, expected-output, finding, score, suite, and
   report models
@@ -411,10 +400,10 @@ or load arbitrary code. See [Golden Evals](docs/evals.md).
 
 ### Phase 7 Agent Layer
 
-Included in `v2.2.0`:
+Included in `v2.3.0`:
 
 - Agent Tool Registry
-- Local agent API server
+- Local Agent API Server
 - OpenAPI / JSON Schema Export
 - Agent Run Logs + Replay
 - Discovery-only MCP Adapter
@@ -422,11 +411,11 @@ Included in `v2.2.0`:
 
 The Phase 7 layer is local-first discovery/spec/eval/replay infrastructure. Tool execution remains disabled, MCP remains discovery-only, evals are local and deterministic, and metadata/schema/replay/MCP/eval commands do not call live Procore APIs.
 
-Unreleased Phase 15C adds MCP contract validation, discovery snapshots,
+Phase 15C adds MCP contract validation, discovery snapshots,
 compatibility reports, disabled/unknown-response samples, and static client
 fixtures. MCP execution remains disabled.
 
-### Unreleased Phase 8G Read Coverage
+### Phase 8G Read Coverage
 
 The current branch adds read-only helpers for project-management extras:
 
@@ -582,7 +571,7 @@ and [CI Automation](docs/automation/ci.md). Example Docker assets live under
 
 ## Enterprise Scheduled Exports
 
-Unreleased Phase 9B adds local scheduled export plan validation and dry-run
+Phase 9B adds local scheduled export plan validation and dry-run
 manifests for enterprise Data Connection App deployment patterns:
 
 ```bash
@@ -601,7 +590,7 @@ See [Enterprise Scheduled Exports](docs/enterprise-scheduled-exports.md).
 
 ## Token Store And Credential Rotation
 
-Unreleased Phase 9C adds local token-store backend diagnostics and credential
+Phase 9C adds local token-store backend diagnostics and credential
 rotation guidance:
 
 ```bash
@@ -621,7 +610,7 @@ See [Token Store and Rotation](docs/token-store-and-rotation.md).
 
 ## Private Deployment And Production Runbooks
 
-Unreleased Phase 9D adds local-only private deployment readiness checks,
+Phase 9D adds local-only private deployment readiness checks,
 production runbooks, and placeholder deployment templates for internal teams.
 PyProcore does not host infrastructure, does not automatically schedule jobs,
 does not call external AI/model APIs by default, and does not enable tool
@@ -724,67 +713,28 @@ make quality-check
 
 ## Roadmap
 
-### Released in 2.2.0
+### Released in 2.3.0
 
-- Phase 7 Agent Layer
-- Agent Tool Registry
-- Local Agent API Server
-- OpenAPI / JSON Schema Export
-- Agent Run Logs + Replay
-- Discovery-only MCP Adapter
-- Phase 15A/15B discovery-only MCP metadata expansion
-- Agent Evaluation Harness
+- Phase 8A–8G expanded read-oriented Procore coverage, including observations,
+  punch items, correspondence, meetings, inspections, incidents, directory,
+  financial, contract, billing, schedule, task, form, and action-plan resources.
+- Phase 9A–9D enterprise authentication, token-store, scheduled export, private
+  deployment, and production runbook hardening.
+- Phase 10A–10E async client, async exports/downloads, async batch helpers, and
+  expanded async read coverage.
+- Phase 11A–11D metadata-only plugin manifests, safe explicit local hooks,
+  JSON config/extension-pack metadata, and local scaffolding templates.
+- Phase 12 model-agnostic local AI workflow examples and prompt packages.
+- Phase 13A–13D deterministic golden datasets, workflow evals, baselines,
+  regression tracking, and offline model-response fixture evals.
+- Phase 15A–15C discovery-only MCP resources, prompts, metadata, contract
+  validation, local snapshots, compatibility reports, and static fixtures.
 
-### Unreleased Branch Work
+### Previously Released
 
-- Phase 15C adds MCP compatibility polish: contract validation, local discovery
-  snapshots, Markdown/JSON compatibility reports, sample fixtures, and safe CLI
-  commands while keeping MCP execution disabled.
-- Phase 9A hardens Authorization Code OAuth and Client Credentials/Data
-  Connection App workflows with strict mode validation, safer token-store errors,
-  and local permission diagnostics.
-- Phase 9B adds local scheduled export plan models, validation, dry-run
-  manifests, safe sample configs, examples, scripts, and enterprise deployment
-  guidance. Version `2.2.0` remains the published stable release; this work is
-  unreleased.
-- Phase 9C adds token-store backend architecture, safe token-store inspection,
-  memory backends for tests/examples, credential rotation checklists, and
-  enterprise deployment readiness guidance. It is unreleased branch work.
-- Phase 9D completes Phase 9 on main with private deployment patterns,
-  production runbooks, enterprise readiness checks, safe templates, examples,
-  and scripts. It is unreleased branch work.
-- Phase 12 adds model-agnostic AI workflow examples, local prompt/checklist
-  helpers, vector export manifest samples, templates, and safety checks. It is
-  unreleased branch work and does not call external AI/model APIs.
-- Phase 10A adds an async client foundation, mock async transport, optional
-  async HTTP transport, async pagination/retry/error handling, and initial
-  read-only async coverage for core resources. It is unreleased branch work.
-- Phase 10C adds async multi-project batch planning, validation, dry-run
-  manifests, read-only exports, in-memory collection helpers, and conservative
-  concurrency controls. It is unreleased branch work.
-- Phase 10D expands async read coverage to field, operations, correspondence,
-  and directory resources, with local exports and selected async batch
-  resources. It is unreleased branch work.
-- Phase 10E expands async read coverage to financial, contract, billing, and
-  project-management resources, with local exports and selected async batch
-  resources. It is unreleased branch work.
-
-- Phase 8A read-only coverage for Observations, Punch Items, and Generic Tool correspondence
-- Phase 8B client-credentials auth support
-- Phase 8C read-only coverage for Meetings, Inspections, and Incidents
-- Phase 8D read-only coverage for Directory users, Vendors, Departments, Distribution Groups, and Locations
-- Phase 8E read-only coverage for financial and change-management resources:
-  Change Events, Prime Change Orders, Commitment Change Orders, Change Order
-  Packages, Direct Costs, Budget Views/Details, Cost Codes, WBS Codes, and
-  Commitments
-- Phase 8F read-only coverage for contracts, invoices, payments, and billing:
-  Prime Contracts, Commitment/Purchase Order/Work Order Contracts, Owner
-  Invoices, Subcontractor Invoices, Contract Payments, Billing Periods, Cost
-  Types, and Tax Codes. No contract, invoice, payment, approval, submission,
-  status-change, PDF-generation, SOV, or line-item mutation behavior is included.
-- Phase 8G read-only coverage for schedules, tasks, calendar items,
-  coordination issues, forms, and action plans. No project-management write,
-  upload, submission, approval, status-change, or completion behavior is included.
+- Phase 7 Agent Layer in `2.2.0`
+- Phase 3–6 SDK, workflow, docs, automation, release, and security foundation
+  in `2.1.0`
 
 ### Future
 

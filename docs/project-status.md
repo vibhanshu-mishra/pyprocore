@@ -2,34 +2,18 @@
 
 ## Current Versions
 
-- Current stable release: `2.2.0`
-- Previous stable release: `2.1.0`
-- `v2.2.0` is published on PyPI and released on GitHub.
-- Current unreleased branch work: Phase 8A, Phase 8C, Phase 8D, Phase 8E, Phase 8F, and Phase 8G read-only
-  API coverage, plus Phase 8B client-credentials auth support for Data
-  Connection Apps, Phase 9A enterprise auth hardening and permission
-  diagnostics, Phase 9B scheduled export planning and deployment patterns,
-  Phase 9C token-store backend and credential rotation hardening, and Phase 9D
-  private deployment/runbook guidance, Phase 12 model-agnostic AI workflow
-  examples, Phase 10A async client foundation, Phase 10B async
-  export/download patterns, Phase 10C async multi-project batch helpers, and
-  Phase 10D async field/operations/correspondence/directory coverage, plus
-  Phase 10E async financial/contract/billing/project-management read coverage,
-  plus Phase 11A metadata-only plugin architecture foundation, Phase 11B safe
-  local plugin extension hooks, and Phase 11C plugin configuration/local
-  extension-pack manifests, plus Phase 11D plugin developer scaffolding, plus
-  Phase 13A local deterministic golden datasets and eval reports, Phase 13B
-  workflow-specific golden eval suites, and Phase 13C local eval baselines,
-  regression comparison, threshold policies, and history snapshots, plus Phase
-  13D offline model-response fixture evals, plus Phase 15A/15B richer
-  discovery-only MCP resources, prompts, kind filters, capabilities, and safety
-  metadata, plus Phase 15C MCP contract validation, snapshots, compatibility
-  reports, and static fixtures.
-  The package remains `2.2.0`; this branch work is unpublished.
+- Current stable release: `2.3.0`
+- Previous stable release: `2.2.0`
+- `v2.3.0` is published on PyPI and released on GitHub.
+- `2.3.0` includes the additive work completed after `2.2.0`: Phase 8 expanded
+  read coverage, Phase 9 enterprise hardening, Phase 10 async support, Phase 11
+  plugin metadata/hooks/scaffolding, Phase 12 AI workflow examples, Phase 13
+  deterministic evals, and Phase 15 discovery-only MCP compatibility tooling.
 
-## Current Stable Release: 2.2.0
+## Current Stable Release: 2.3.0
 
-PyProcore `2.2.0` includes the Phase 7 Agent Layer:
+PyProcore `2.3.0` includes the Phase 7 Agent Layer plus substantial additive
+SDK, automation, async, plugin, eval, and MCP discovery improvements:
 
 - Agent Tool Registry
 - Local Agent API Server
@@ -37,17 +21,63 @@ PyProcore `2.2.0` includes the Phase 7 Agent Layer:
 - Agent Run Logs + Replay
 - Discovery-only MCP Adapter
 - Agent Evaluation Harness
+- Expanded read-oriented API coverage across field, financial, contract,
+  billing, schedule, task, form, action-plan, directory, and related resources
+- Enterprise auth, token-store, scheduled export, private deployment, and
+  production runbook hardening
+- Async client, async export/download helpers, and async batch planning
+- Metadata-only plugin manifests, explicit local hooks, JSON config,
+  extension-pack metadata, and local scaffolding
+- Model-agnostic AI workflow examples and deterministic eval tooling
+- Discovery-only MCP resources, prompts, contracts, snapshots, reports, and
+  fixtures
 
-The `2.2.0` release has been published to PyPI, verified from a clean install,
-tagged as `v2.2.0`, and released on GitHub.
+The `2.3.0` release has been published to PyPI, verified from a clean install,
+tagged as `v2.3.0`, and released on GitHub.
 
-## Previous Stable Release: 2.1.0
+## What Changed Since 2.2.0
+
+Upgrade to `2.3.0` if you want broader read coverage, safer enterprise
+deployment patterns, async read/export helpers, metadata-only plugin extension
+points, local AI workflow examples, deterministic eval infrastructure, or
+discovery-only MCP compatibility artifacts.
+
+CLI smoke commands:
+
+```bash
+procore-sdk --version
+procore-sdk doctor
+procore-sdk agent tools
+procore-sdk evals run
+procore-sdk mcp validate
+```
+
+Local validation commands:
+
+```bash
+python3 scripts/audit_docs_truth.py
+python3 scripts/check_release_ready.py
+python3 scripts/check_secrets.py
+make examples-check
+make test
+make coverage
+make lint
+make typecheck
+make docs-build
+```
+
+## Previous Stable Release: 2.2.0
+
+PyProcore `2.2.0` delivered the completed Phase 7 Agent Layer: local
+discovery/spec/eval/replay infrastructure for future assistant integrations.
+
+## Earlier Stable Release: 2.1.0
 
 PyProcore `2.1.0` delivered expanded API coverage, AI-ready local exports,
 workflow automation foundations, documentation, security hardening, release
 tooling, and package metadata.
 
-## Current Unreleased Branch Work
+## Current Released in 2.3.0
 
 Phase 9A hardens the two existing auth strategies, token-store resilience,
 config/doctor output, and local-only permission explanations. It does not call
@@ -68,7 +98,7 @@ behavior.
 
 Phase 9D adds private deployment patterns, production runbooks, enterprise
 readiness checks, safe templates, examples, and local scripts. It completes the
-Phase 9 enterprise hardening work on main as unreleased branch work.
+Phase 9 enterprise hardening work included in `v2.3.0`.
 
 Phase 12 adds model-agnostic AI workflow examples, local prompt/checklist
 helpers, vector export manifests, templates, examples, and safety checks. It

@@ -7,6 +7,19 @@ and this project follows semantic versioning.
 
 ## [Unreleased]
 
+- Nothing yet.
+
+## [2.3.0] - 2026-07-19
+
+PyProcore 2.3.0 is an additive, backward-compatible release that expands
+read-oriented Procore API coverage, enterprise authentication and deployment
+hardening, async workflows, local plugin metadata/hooks/scaffolding, AI workflow
+examples, deterministic evals, and discovery-only MCP compatibility tooling.
+
+Safety boundaries remain closed: this release does not enable Procore tool
+execution, MCP execution, plugin-driven remote execution, external AI/model
+calls, live calls in tests/examples, or Procore write actions.
+
 ### Added
 
 - Phase 9A enterprise auth hardening: explicit auth strategy normalization, safe local 401/403, app-connection, and environment-mismatch explanations, plus examples 111–114.

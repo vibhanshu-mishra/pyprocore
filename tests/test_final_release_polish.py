@@ -26,12 +26,12 @@ class FinalReleasePolishTestCase(unittest.TestCase):
         report = self.read_text("docs/project-status.md")
         for phrase in (
             "Current Versions",
-            "Current Stable Release: 2.2.0",
-            "Previous Stable Release: 2.1.0",
+            "Current Stable Release: 2.3.0",
+            "Previous Stable Release: 2.2.0",
             "Safety Status",
             "Known Limitations",
-            "Current stable release: `2.2.0`",
-            "Previous stable release: `2.1.0`",
+            "Current stable release: `2.3.0`",
+            "Previous stable release: `2.2.0`",
             "Tool execution remains disabled",
             "MCP adapter remains discovery-only",
             "Future Roadmap",
@@ -110,8 +110,8 @@ class FinalReleasePolishTestCase(unittest.TestCase):
         self.assertIn("79_agent_registry_phase8c.py", examples)
         self.assertIn("runs from `01_list_companies.py` through", examples)
 
-    def test_docs_claim_2_2_0_release_is_complete(self) -> None:
-        """Release docs should describe the completed 2.2.0 release."""
+    def test_docs_claim_2_3_0_release_is_complete(self) -> None:
+        """Release docs should describe the completed 2.3.0 release."""
         checked_docs = "\n".join(
             self.read_text(path)
             for path in (
@@ -121,9 +121,9 @@ class FinalReleasePolishTestCase(unittest.TestCase):
             )
         )
 
-        self.assertIn("PyProcore `2.2.0` has been published to PyPI", checked_docs)
+        self.assertIn("PyProcore `2.3.0` has been published to PyPI", checked_docs)
         self.assertIn("released on GitHub", checked_docs)
-        self.assertNotIn("2.2.0 has not been published", checked_docs)
+        self.assertNotIn("2.3.0 has not been published", checked_docs)
 
     def test_live_verification_claims_are_limited(self) -> None:
         """Docs should describe live verification as manual and environment-specific."""

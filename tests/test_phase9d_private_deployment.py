@@ -240,13 +240,13 @@ class Phase9DPrivateDeploymentTests(unittest.TestCase):
                 "docs/roadmap.md",
             )
         )
-        self.assertIn("unreleased branch work", docs)
+        self.assertIn("included in `v2.3.0`", docs)
         self.assertIn("Tool execution remains disabled", docs)
         self.assertIn("MCP remains discovery-only", docs)
 
     def test_safety_boundaries_remain_unchanged(self) -> None:
         """Phase 9D should not change release or execution boundaries."""
-        self.assertEqual(__version__, "2.2.0")
+        self.assertEqual(__version__, "2.3.0")
         workflows = subprocess.run(
             ["git", "status", "--short", ".github/workflows"],
             cwd=self.root,

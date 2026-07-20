@@ -648,7 +648,7 @@ class Phase10AsyncSafetyTestCase(unittest.TestCase):
 
     def test_async_exports_are_available_without_replacing_sync_client(self) -> None:
         """AsyncProcore should be additive and the sync Procore client should remain."""
-        self.assertEqual(pyprocore.__version__, "2.2.0")
+        self.assertEqual(pyprocore.__version__, "2.3.0")
         self.assertIs(pyprocore.AsyncProcore, AsyncProcore)
         self.assertIs(pyprocore.Procore, Procore)
 

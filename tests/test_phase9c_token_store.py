@@ -405,7 +405,7 @@ class Phase9CTokenStoreTests(unittest.TestCase):
 
     def test_no_phase9c_safety_boundary_regressions(self) -> None:
         """Phase 9C should not alter release or execution boundaries."""
-        self.assertEqual(__version__, "2.2.0")
+        self.assertEqual(__version__, "2.3.0")
         tracked = subprocess.run(
             ["git", "ls-files", "token_store.json", "pyprocore/auth/token_store.json"],
             check=True,

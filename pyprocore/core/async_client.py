@@ -208,7 +208,7 @@ class AsyncProcoreClient:
         self._last_retry_count = 0
         request_headers = {
             "Accept": "application/json",
-            "User-Agent": "pyprocore-async/2.2.0",
+            "User-Agent": "pyprocore-async/2.3.0",
             "Authorization": f"Bearer {access_token}",
             **dict(headers or {}),
         }

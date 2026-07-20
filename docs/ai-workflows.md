@@ -5,9 +5,8 @@ AI workflows, but it does not call external AI/model APIs by default. Users
 choose their own model stack, review the data they want to share, and keep human
 review in the loop.
 
-The current published stable release remains `2.2.0`. Phase 8A through 8G,
-Phase 9A through 9D, Phase 12, Phase 13A, Phase 13B, Phase 13C, and Phase 13D are
-unreleased branch work unless a later release publishes them.
+The current published stable release is `2.3.0`. Phase 12 AI workflow examples
+and Phase 13 deterministic evals are included in this release.
 
 ## What This Does
 

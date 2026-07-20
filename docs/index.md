@@ -9,18 +9,12 @@ PyProcore focuses on safe, read-oriented automation. It is designed for listing,
 retrieving, downloading, exporting, packaging, and reviewing project information
 locally. The current workflow examples do not mutate Procore data.
 
-Current stable release: `2.2.0`.
+Current stable release: `2.3.0`.
 
-PyProcore `2.2.0` includes the completed Phase 7 Agent Layer: local discovery,
-schema, replay, MCP discovery, and deterministic eval infrastructure for future
-assistant integrations. Tool execution remains disabled.
-
-Unreleased Phase 15A/15B/15C branch work adds richer discovery-only MCP
-resources, prompt templates, kind filtering, capability summaries,
-stdio-friendly discovery metadata, contract validation, snapshots,
-compatibility reports, and static fixtures. It does not enable MCP execution,
-Procore tool execution, plugin execution, live Procore calls, or external model
-calls.
+PyProcore `2.3.0` includes the completed Phase 7 Agent Layer plus expanded read
+coverage, enterprise hardening, async helpers, plugin metadata/hooks, AI
+workflow examples, deterministic evals, and discovery-only MCP compatibility
+tooling. Tool execution remains disabled.
 
 ## What PyProcore Can Do
 
@@ -32,8 +26,8 @@ calls.
 - Return typed Pydantic models.
 - Build local project context packages for review workflows.
 - Prepare model-agnostic local AI workflow prompts, checklists, and vector manifests.
-- Use the unreleased async client foundation for read-oriented workflows.
-- Inspect unreleased metadata-only plugin manifests for future extension packs.
+- Use the async client foundation for read-oriented workflows.
+- Inspect metadata-only plugin manifests for future extension packs.
 - Export CSV, JSONL, Markdown, and manifest files.
 - Run repeatable workflow plans from local JSON files.
 - Inspect a local agent tool registry, local HTTP discovery API, OpenAPI export, JSON Schema export, MCP-style discovery metadata, opt-in run logs, and deterministic agent evals for future assistant integrations.
@@ -48,14 +42,14 @@ calls.
 - [Workflows](workflows.md)
 - [AI Review](ai-review.md)
 - [AI Workflows](ai-workflows.md)
-- [Async Client](async-client.md), including unreleased Phase 10A async reads,
+- [Async Client](async-client.md), including Phase 10A async reads,
   Phase 10B async export/download patterns, and Phase 10C async batch helpers
 - [Agent API](agent-api.md)
 - [MCP Discovery](mcp.md)
 - [Plugin Architecture](plugins.md)
   includes metadata-only manifests, local hooks, JSON configs, extension packs,
-  and unreleased local plugin developer scaffolding.
-- [Golden Evals](evals.md), including unreleased Phase 13A local deterministic
+  and local plugin developer scaffolding.
+- [Golden Evals](evals.md), including Phase 13A local deterministic
   datasets, Phase 13B workflow-specific eval suites, Phase 13C local
   baselines/regression tracking, and Phase 13D offline model-response fixture
   evals.

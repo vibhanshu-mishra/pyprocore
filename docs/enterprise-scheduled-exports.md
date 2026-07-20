@@ -2,9 +2,8 @@
 
 Phase 9B adds local planning patterns for enterprise scheduled exports and Data
 Connection App deployments. Phase 9D adds private deployment and production
-runbook guidance around those patterns. This is unreleased branch work unless a
-later PyPI release includes it. The current published stable release remains
-`2.2.0`.
+runbook guidance around those patterns. These helpers are included in the
+current published stable release, `2.3.0`.
 
 These helpers validate and explain local plan files only. They do not call Procore,
 do not run external AI/model APIs, do not enable Procore tool execution, and

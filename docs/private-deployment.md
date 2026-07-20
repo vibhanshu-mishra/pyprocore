@@ -1,14 +1,15 @@
 # Private Deployment
 
-PyProcore `v2.2.0` remains the current published stable release. Phase 8A
-through 8G and Phase 9A through 9D are unreleased branch work unless they are
-published in a later release.
+PyProcore `v2.3.0` is the current published stable release and includes Phase
+8A through 8G plus Phase 9A through 9D.
+
+Private deployment guidance is included in `v2.3.0`.
 
 Phase 9D completes the enterprise authentication and data-access hardening work
 on main by documenting private deployment patterns and adding local readiness
 checks. PyProcore does not host infrastructure, does not automatically schedule
 jobs, does not call external AI/model APIs by default, and does not enable tool
-execution. MCP remains discovery-only.
+execution. Tool execution remains disabled. MCP remains discovery-only.
 
 ## What This Is For
 

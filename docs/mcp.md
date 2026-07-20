@@ -2,8 +2,7 @@
 
 Phase 15A, Phase 15B, and Phase 15C add richer MCP discovery metadata,
 contract validation, local snapshots, compatibility reports, and static sample
-fixtures for PyProcore. This is unreleased branch work after the published
-`2.2.0` release.
+fixtures for PyProcore. These discovery-only helpers are included in `2.3.0`.
 
 MCP support remains discovery-only. It does not call Procore, call external
 AI/model APIs, execute plugins, execute tools, fetch remote MCP resources, or

@@ -4,7 +4,7 @@ PyProcore includes a local agent tool registry for developers who want to build
 AI assistants, workflow planners, or orchestration layers on top of existing
 SDK capabilities.
 
-The agent layer is included in the current stable `2.2.0` release.
+The agent layer is included in the current stable `2.3.0` release.
 
 The registry is metadata only. It does not execute tools, read `.env`, load
 tokens, or call Procore. It describes the safe operations PyProcore can perform
@@ -38,7 +38,7 @@ registry safety, schema quality, OpenAPI completeness, MCP discovery, run-log
 replay, redaction, and disabled-execution guarantees without calling Procore or
 any AI/model APIs.
 
-The current unreleased branch adds Phase 8A, Phase 8C, Phase 8D, Phase 8E,
+The current stable release adds Phase 8A, Phase 8C, Phase 8D, Phase 8E,
 Phase 8F, and Phase 8G registry metadata for
 read-only Observations, Punch Items, Generic Tools, correspondence items,
 Meetings, checklist-backed Inspections, Incidents, Directory users, Vendors,
@@ -76,7 +76,7 @@ execution or call model providers.
 - MCP-style tool, resource, prompt, and manifest exports.
 - An experimental local stdio adapter for MCP discovery.
 - Local deterministic eval suites for agent metadata and safety checks.
-- Unreleased Phase 8A, Phase 8C, Phase 8D, Phase 8E, Phase 8F, and Phase 8G metadata for Observations, Punch
+- Phase 8A, Phase 8C, Phase 8D, Phase 8E, Phase 8F, and Phase 8G metadata for Observations, Punch
   Items, Generic Tool correspondence, Meetings, Inspections, Incidents,
   Directory users, Vendors, Departments, Distribution Groups, Locations,
   financial/change-management resources, contracts, invoices, payments, and

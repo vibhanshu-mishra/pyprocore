@@ -46,7 +46,7 @@ def render_plugin_template(name: str, *, description: str | None = None) -> str:
         description=description or "Metadata-only local PyProcore plugin template.",
         author="Your Name",
         capabilities=[PluginCapability.EXPORTER, PluginCapability.FORMATTER],
-        requires_pyprocore=">=2.2.0",
+        requires_pyprocore=">=2.3.0",
         tags=["template", "metadata-only"],
         safety_level=PluginSafetyLevel.METADATA_ONLY,
         enabled_by_default=False,

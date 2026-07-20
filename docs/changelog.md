@@ -14,9 +14,11 @@ The canonical changelog lives in the GitHub repository:
 
 Current release status:
 
-- `2.2.0` is the current stable PyPI release.
-- `2.2.0` includes the completed Phase 7 Agent Layer.
-- `2.1.0` is the previous stable release.
+- `2.3.0` is the current stable PyPI release.
+- `2.3.0` includes expanded read coverage, enterprise hardening, async helpers,
+  metadata-only plugins, AI workflow examples, deterministic evals, and
+  discovery-only MCP compatibility tooling.
+- `2.2.0` is the previous stable release.
 
 Before cutting a release, update the changelog with concise user-facing notes and
 run the local release checks described in the [Release Guide](release.md).

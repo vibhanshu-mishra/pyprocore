@@ -1,8 +1,8 @@
 # Production Runbook
 
-PyProcore `v2.2.0` is the current published stable release. Phase 8A through
-8G and Phase 9A through 9D are unreleased branch work unless later published.
-This runbook is for private/internal deployments only.
+PyProcore `v2.3.0` is the current published stable release and includes Phase
+8A through 8G plus Phase 9A through 9D. This runbook is for private/internal
+deployments only.
 
 PyProcore does not host scheduled jobs, does not automatically run background
 jobs, does not call external AI/model APIs by default, and does not enable tool

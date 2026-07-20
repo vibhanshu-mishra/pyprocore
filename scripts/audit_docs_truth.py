@@ -45,6 +45,10 @@ FAIL_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
         "`2.2.0` is already released, not a release candidate.",
     ),
     (
+        re.compile(r"2\.3\.0 release candidate", re.IGNORECASE),
+        "`2.3.0` is already released, not a release candidate.",
+    ),
+    (
         re.compile(
             r"2\.2\.0[^.\n]*(not published|not been published|has not been published)",
             re.IGNORECASE,
@@ -53,14 +57,31 @@ FAIL_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
     ),
     (
         re.compile(
+            r"2\.3\.0[^.\n]*(not published|not been published|has not been published)",
+            re.IGNORECASE,
+        ),
+        "`2.3.0` has already been published.",
+    ),
+    (
+        re.compile(
             r"(prepared next release|prepared for `?2\.2\.0`?|prepared.*2\.2\.0|2\.2\.0.*prepared)",
             re.IGNORECASE,
         ),
-        "`2.2.0` is the current stable release, not a prepared release.",
+        "`2.2.0` is already released, not a prepared release.",
     ),
     (
-        re.compile(r"(current stable[^.\n]*2\.1\.0|2\.1\.0[^.\n]*current stable)", re.IGNORECASE),
-        "`2.2.0` is the current stable release; `2.1.0` is historical.",
+        re.compile(
+            r"(prepared for `?2\.3\.0`?|prepared.*2\.3\.0|2\.3\.0.*prepared)",
+            re.IGNORECASE,
+        ),
+        "`2.3.0` is the current stable release, not a prepared release.",
+    ),
+    (
+        re.compile(
+            r"(current stable[^.\n]*2\.[12]\.0|2\.[12]\.0[^.\n]*current stable)",
+            re.IGNORECASE,
+        ),
+        "`2.3.0` is the current stable release; earlier versions are historical.",
     ),
     (
         re.compile(r"GitHub release not yet created[^.\n]*2\.2\.0", re.IGNORECASE),
@@ -69,6 +90,10 @@ FAIL_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
     (
         re.compile(r"publish 2\.2\.0 later", re.IGNORECASE),
         "`2.2.0` has already been published.",
+    ),
+    (
+        re.compile(r"publish 2\.3\.0 later", re.IGNORECASE),
+        "`2.3.0` has already been published.",
     ),
     (
         re.compile(r"2\.1\.0 includes Phase 7", re.IGNORECASE),

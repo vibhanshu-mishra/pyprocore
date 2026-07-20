@@ -327,13 +327,13 @@ class AgentMCPTestCase(unittest.TestCase):
 
     def test_version_remains_210(self) -> None:
         """Phase 7E should use the released package version."""
-        self.assertEqual(__version__, "2.2.0")
+        self.assertEqual(__version__, "2.3.0")
 
     def test_mcp_server_info_is_discovery_only(self) -> None:
         """Server info should state discovery-only safety."""
         info = build_mcp_server_info()
 
-        self.assertEqual(info["version"], "2.2.0")
+        self.assertEqual(info["version"], "2.3.0")
         self.assertFalse(info["safety"]["tool_execution_enabled"])
         self.assertFalse(info["safety"]["calls_live_procore_api"])
         self.assertFalse(info["safety"]["requires_credentials"])

@@ -116,7 +116,7 @@ class AgentAPIServerTestCase(unittest.TestCase):
         self.assertIsInstance(payload, dict)
         self.assertEqual(payload["status"], "ok")
         self.assertEqual(payload["service"], AGENT_API_SERVICE_NAME)
-        self.assertEqual(payload["version"], "2.2.0")
+        self.assertEqual(payload["version"], "2.3.0")
 
     def test_manifest_tools_and_tool_lookup_work(self) -> None:
         """The server should expose manifest, tools, and dotted tool lookup."""
@@ -127,7 +127,7 @@ class AgentAPIServerTestCase(unittest.TestCase):
         self.assertEqual(manifest_status, 200)
         self.assertIsInstance(manifest, dict)
         self.assertEqual(manifest["package_name"], "pyprocore")
-        self.assertEqual(manifest["package_version"], "2.2.0")
+        self.assertEqual(manifest["package_version"], "2.3.0")
 
         self.assertEqual(tools_status, 200)
         self.assertIsInstance(tools, list)

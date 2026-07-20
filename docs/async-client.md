@@ -1,14 +1,13 @@
 # Async Client
 
-Phase 10A adds an async client foundation in the current unreleased branch.
+Phase 10A adds an async client foundation in the current stable release.
 Phase 10B builds on that foundation with async export helpers, local download
 patterns, manifests, and simple concurrency controls. Phase 10C adds async
 multi-project batch planning, collection, and export helpers. Phase 10D expands
 async read coverage across field, operations, correspondence, and directory
 resources. Phase 10E expands async read coverage to financial, contract,
-billing, and project-management resources. The published stable release remains
-`2.2.0`; Phase 10A through Phase 10E remain branch-only until a future release
-is cut.
+billing, and project-management resources. The published stable release is
+`2.3.0`; Phase 10A through Phase 10E are included in this release.
 
 Phase 11A plugin manifests may describe future async extension categories, but
 they are metadata-only and do not execute async plugin code. See

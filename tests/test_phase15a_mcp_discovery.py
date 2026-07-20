@@ -72,7 +72,7 @@ class Phase15AMCPDiscoveryTestCase(unittest.TestCase):
         """Capability summaries should mark execution as disabled."""
         summary = build_mcp_capability_summary()
 
-        self.assertEqual(summary.package_version, "2.2.0")
+        self.assertEqual(summary.package_version, "2.3.0")
         self.assertGreater(summary.resource_count, 10)
         self.assertGreater(summary.prompt_count, 5)
         self.assertFalse(summary.safety.mcp_execution_enabled)
@@ -299,7 +299,7 @@ class Phase15AMCPDiscoveryTestCase(unittest.TestCase):
         """Typed discovery manifest should include all Phase 15A sections."""
         manifest = build_mcp_discovery_manifest()
 
-        self.assertEqual(manifest.server.version, "2.2.0")
+        self.assertEqual(manifest.server.version, "2.3.0")
         self.assertGreater(len(manifest.tools), 0)
         self.assertGreater(len(manifest.resources), 10)
         self.assertGreater(len(manifest.prompts), 5)

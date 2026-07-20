@@ -15,37 +15,37 @@ Procore environment.
 | Specifications | Supported | List sets, list sections, get revisions, download revisions | V2 endpoints are used where appropriate. |
 | Photos | Supported | List albums, list photos, get, find, download | SDK names map to Procore image category/image API terms. |
 | Daily Logs | Supported | Counts, headers, type-specific listing, date summaries | Read-only helpers for common log workflows. |
-| Observations | Unreleased Phase 8A | List, get, find, CSV/JSONL export | Read-only helpers use project context and typed flexible models. |
-| Punch Items | Unreleased Phase 8A | List, get, find, CSV/JSONL export | Read-only helpers use project context and typed flexible models. |
-| Generic Tools / Correspondence | Unreleased Phase 8A | List Generic Tools, list/get/find correspondence items, CSV/JSONL export | Correspondence-like items are modeled through Procore Generic Tools. |
-| Meetings | Unreleased Phase 8C | List, get, find, CSV/JSONL export | Read-only helpers use project context and typed flexible models. |
-| Inspections | Unreleased Phase 8C | List, get, find, CSV/JSONL export | Modeled through checklist-style read endpoints where Procore exposes inspection data. |
-| Incidents | Unreleased Phase 8C | List, get, find, incident configuration, CSV/JSONL export | Read-only helpers include project incident configuration metadata. |
-| Directory Users | Unreleased Phase 8D | List company/project users, get, find, CSV/JSONL export | Read-only company and project directory helpers. |
-| Vendors | Unreleased Phase 8D | List, get, find, CSV/JSONL export | Uses conservative company context and optional project filtering. |
-| Departments | Unreleased Phase 8D | List, get, find, CSV/JSONL export | Company-scoped read-only department helpers. |
-| Distribution Groups | Unreleased Phase 8D | List, get, find, CSV/JSONL export | Project-scoped distribution group helpers. |
-| Locations | Unreleased Phase 8D | List, get, find, CSV/JSONL export | Project-scoped location helpers. |
-| Change Events | Unreleased Phase 8E | List, get, find, statuses, types, settings, CSV/JSONL export | Read-only change-management helpers. No comments, writes, approvals, or status changes. |
-| Prime Change Orders | Unreleased Phase 8E | List, get, find, CSV/JSONL export | Read-only helpers only. No create/update/delete or approval behavior. |
-| Commitment Change Orders | Unreleased Phase 8E | List, get, CSV/JSONL export | Read-only helpers only. |
-| Change Order Packages | Unreleased Phase 8E | List, get, CSV/JSONL export | Read-only helpers only. |
-| Direct Costs | Unreleased Phase 8E | List, get, find, CSV/JSONL export | Read-only helpers only. No direct cost writes. |
-| Budget Views and Details | Unreleased Phase 8E | List views, columns, detail rows, summary rows, CSV/JSONL export | Read-only budget reporting helpers. No budget modification or forecast writes. |
-| Cost Codes / WBS Codes | Unreleased Phase 8E | List company cost codes, standard cost codes, project WBS codes, CSV/JSONL export | Read-only coding helpers. No WBS or cost code writes. |
-| Commitments | Unreleased Phase 8E | List, get, find, CSV/JSONL export | Read-only commitment helpers. No commitment, invoice, line-item, or compliance-document writes. |
-| Prime Contracts | Unreleased Phase 8F | List, get, find, line items, summary, CSV/JSONL export | Read-only contract helpers. No contract writes, SOV updates, PDF generation, approvals, or status changes. |
-| Commitment / Purchase Order / Work Order Contracts | Unreleased Phase 8F | List, get, find, CSV/JSONL export | Read-only contract helpers only. |
-| Owner Invoices / Payment Applications | Unreleased Phase 8F | List, get, find, line items, CSV/JSONL export | Read-only invoice helpers. No submission, approval, rejection, status change, or line-item mutation behavior. |
-| Subcontractor Invoices / Requisitions | Unreleased Phase 8F | List, get, find, requisition item lists, CSV/JSONL export | Read-only invoice helpers. No invoice submission, approval, rejection, package creation, or PDF compiler behavior. |
-| Contract Payments | Unreleased Phase 8F | List, get, find, CSV/JSONL export | Read-only payment helpers. No payment submission, approval, status change, or mutation behavior. |
-| Billing Periods / Cost Types / Tax Codes | Unreleased Phase 8F | List/get billing periods, list cost types, list tax codes, CSV/JSONL export | Read-only reference helpers only. |
-| Schedule | Unreleased Phase 8G | Get schedule metadata, settings, type, integration, import status; list/get resource assignments; CSV/JSONL export for assignments | Read-only helpers only. No schedule uploads or import creation. |
-| Tasks | Unreleased Phase 8G | List, get, find, requested changes, CSV/JSONL export | Read-only helpers only. No task or requested-change mutations. |
-| Calendar Items | Unreleased Phase 8G | List, get, find, CSV/JSONL export | Read-only project calendar item helpers. |
-| Coordination Issues | Unreleased Phase 8G | List, get, find, change history, activity feed, filter options, CSV/JSONL export | Read-only helpers only. No coordination issue mutations, associations, or status transitions. |
-| Forms | Unreleased Phase 8G | List, get, find, templates, CSV/JSONL export | Read-only helpers only. No form creation, edits, submissions, or response mutations. |
-| Action Plans | Unreleased Phase 8G | List, get, find, change history events, CSV/JSONL export | Read-only helpers only. No completion, signature, request/response, closeout, approval, or status mutation behavior. |
+| Observations | Phase 8A | List, get, find, CSV/JSONL export | Read-only helpers use project context and typed flexible models. |
+| Punch Items | Phase 8A | List, get, find, CSV/JSONL export | Read-only helpers use project context and typed flexible models. |
+| Generic Tools / Correspondence | Phase 8A | List Generic Tools, list/get/find correspondence items, CSV/JSONL export | Correspondence-like items are modeled through Procore Generic Tools. |
+| Meetings | Phase 8C | List, get, find, CSV/JSONL export | Read-only helpers use project context and typed flexible models. |
+| Inspections | Phase 8C | List, get, find, CSV/JSONL export | Modeled through checklist-style read endpoints where Procore exposes inspection data. |
+| Incidents | Phase 8C | List, get, find, incident configuration, CSV/JSONL export | Read-only helpers include project incident configuration metadata. |
+| Directory Users | Phase 8D | List company/project users, get, find, CSV/JSONL export | Read-only company and project directory helpers. |
+| Vendors | Phase 8D | List, get, find, CSV/JSONL export | Uses conservative company context and optional project filtering. |
+| Departments | Phase 8D | List, get, find, CSV/JSONL export | Company-scoped read-only department helpers. |
+| Distribution Groups | Phase 8D | List, get, find, CSV/JSONL export | Project-scoped distribution group helpers. |
+| Locations | Phase 8D | List, get, find, CSV/JSONL export | Project-scoped location helpers. |
+| Change Events | Phase 8E | List, get, find, statuses, types, settings, CSV/JSONL export | Read-only change-management helpers. No comments, writes, approvals, or status changes. |
+| Prime Change Orders | Phase 8E | List, get, find, CSV/JSONL export | Read-only helpers only. No create/update/delete or approval behavior. |
+| Commitment Change Orders | Phase 8E | List, get, CSV/JSONL export | Read-only helpers only. |
+| Change Order Packages | Phase 8E | List, get, CSV/JSONL export | Read-only helpers only. |
+| Direct Costs | Phase 8E | List, get, find, CSV/JSONL export | Read-only helpers only. No direct cost writes. |
+| Budget Views and Details | Phase 8E | List views, columns, detail rows, summary rows, CSV/JSONL export | Read-only budget reporting helpers. No budget modification or forecast writes. |
+| Cost Codes / WBS Codes | Phase 8E | List company cost codes, standard cost codes, project WBS codes, CSV/JSONL export | Read-only coding helpers. No WBS or cost code writes. |
+| Commitments | Phase 8E | List, get, find, CSV/JSONL export | Read-only commitment helpers. No commitment, invoice, line-item, or compliance-document writes. |
+| Prime Contracts | Phase 8F | List, get, find, line items, summary, CSV/JSONL export | Read-only contract helpers. No contract writes, SOV updates, PDF generation, approvals, or status changes. |
+| Commitment / Purchase Order / Work Order Contracts | Phase 8F | List, get, find, CSV/JSONL export | Read-only contract helpers only. |
+| Owner Invoices / Payment Applications | Phase 8F | List, get, find, line items, CSV/JSONL export | Read-only invoice helpers. No submission, approval, rejection, status change, or line-item mutation behavior. |
+| Subcontractor Invoices / Requisitions | Phase 8F | List, get, find, requisition item lists, CSV/JSONL export | Read-only invoice helpers. No invoice submission, approval, rejection, package creation, or PDF compiler behavior. |
+| Contract Payments | Phase 8F | List, get, find, CSV/JSONL export | Read-only payment helpers. No payment submission, approval, status change, or mutation behavior. |
+| Billing Periods / Cost Types / Tax Codes | Phase 8F | List/get billing periods, list cost types, list tax codes, CSV/JSONL export | Read-only reference helpers only. |
+| Schedule | Phase 8G | Get schedule metadata, settings, type, integration, import status; list/get resource assignments; CSV/JSONL export for assignments | Read-only helpers only. No schedule uploads or import creation. |
+| Tasks | Phase 8G | List, get, find, requested changes, CSV/JSONL export | Read-only helpers only. No task or requested-change mutations. |
+| Calendar Items | Phase 8G | List, get, find, CSV/JSONL export | Read-only project calendar item helpers. |
+| Coordination Issues | Phase 8G | List, get, find, change history, activity feed, filter options, CSV/JSONL export | Read-only helpers only. No coordination issue mutations, associations, or status transitions. |
+| Forms | Phase 8G | List, get, find, templates, CSV/JSONL export | Read-only helpers only. No form creation, edits, submissions, or response mutations. |
+| Action Plans | Phase 8G | List, get, find, change history events, CSV/JSONL export | Read-only helpers only. No completion, signature, request/response, closeout, approval, or status mutation behavior. |
 | Attachments/downloads | Supported | Streaming downloads, skip existing files, overwrite option | Downloads are local file operations only. |
 | Workflows | Supported | CSV, JSONL, folder sync, project context, AI-ready packages | Workflows create local files and do not mutate Procore data. |
 | Webhooks | Local helpers | Validate, redact, save, list, dry-run dispatch | No hosted webhook server is included. |
@@ -188,27 +188,27 @@ writes, enable agent tool execution, or enable MCP execution.
 
 ## Phase 10A Through 10E Async Coverage Notes
 
-Phase 10A adds an unreleased async client foundation for read-oriented
+Phase 10A adds an async client foundation for read-oriented
 workflows. Initial async coverage includes companies, projects, RFIs,
 submittals, documents, drawing areas/drawings, and specification sections.
 
-Phase 10B adds unreleased async CSV/JSONL export helpers, local download
+Phase 10B adds async CSV/JSONL export helpers, local download
 patterns, manifests, and conservative concurrency controls for that initial
 async read set. Download helpers work only when Procore payloads include direct
 download URLs.
 
-Phase 10C adds unreleased async multi-project batch helpers over the same
+Phase 10C adds async multi-project batch helpers over the same
 read-oriented async resource set. Batch exports and collection helpers support
 RFIs, submittals, documents, drawings, specification sections, observations,
 punch items, meetings, inspections, incidents, locations, project users, and
 vendors. Local validation and dry-runs do not call Procore.
 
-Phase 10D adds unreleased async read coverage for photo albums/photos, Daily
+Phase 10D adds async read coverage for photo albums/photos, Daily
 Logs, observations, punch items, Generic Tools/correspondence, meetings,
 inspections, incidents, incident configuration, and directory resources. It also
 adds local async export helpers for those resource families.
 
-Phase 10E adds unreleased async read coverage for selected financial,
+Phase 10E adds async read coverage for selected financial,
 change-management, contract, billing, and project-management resources. It
 includes async helpers for change events, change orders, direct costs, budget
 views/details, cost codes, WBS codes, commitments, contracts, invoices,

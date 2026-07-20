@@ -7,8 +7,8 @@ Phase 13C adds local baseline files, regression comparison, threshold policies,
 and history snapshots for those deterministic eval suites. Phase 13D adds
 offline model-response fixture evals for saved/sample AI-style responses.
 
-Current stable release: `2.2.0`. Phase 13A, Phase 13B, Phase 13C, and Phase
-13D are unreleased branch work unless included in a later published release.
+Current stable release: `2.3.0`. Phase 13A, Phase 13B, Phase 13C, and Phase
+13D are included in this release.
 
 ## What This Does
 

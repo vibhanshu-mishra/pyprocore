@@ -418,7 +418,7 @@ class Phase13AGoldenEvalsTestCase(unittest.TestCase):
         self.assertIn("procore-sdk evals run", docs)
         self.assertIn("Golden Evals", (PROJECT_ROOT / "mkdocs.yml").read_text(encoding="utf-8"))
         self.assertTrue(callable(pyprocore.run_builtin_eval_suites))
-        self.assertEqual(pyprocore.__version__, "2.2.0")
+        self.assertEqual(pyprocore.__version__, "2.3.0")
 
     def test_phase13a_safety_boundaries_remain_closed(self) -> None:
         """Eval implementation should not add unsafe execution or workflow changes."""

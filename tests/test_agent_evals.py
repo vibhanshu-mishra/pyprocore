@@ -333,7 +333,7 @@ class AgentEvalsTestCase(unittest.TestCase):
 
     def test_version_remains_210(self) -> None:
         """Phase 7F should use the released package version."""
-        self.assertEqual(__version__, "2.2.0")
+        self.assertEqual(__version__, "2.3.0")
 
 
 if __name__ == "__main__":

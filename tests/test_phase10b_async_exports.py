@@ -316,7 +316,7 @@ class Phase10BAsyncSafetyTestCase(unittest.TestCase):
         self.assertIs(pyprocore.AsyncExportResult, AsyncExportResult)
         self.assertIs(pyprocore.AsyncDownloadManifest, AsyncDownloadManifest)
         self.assertIs(pyprocore.async_export_projects, async_export_projects)
-        self.assertEqual(pyprocore.__version__, "2.2.0")
+        self.assertEqual(pyprocore.__version__, "2.3.0")
 
     def test_phase10b_does_not_add_write_upload_helpers(self) -> None:
         """Async export module should remain read/download only."""

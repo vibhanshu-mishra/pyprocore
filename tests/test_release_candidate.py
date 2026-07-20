@@ -41,13 +41,13 @@ class ReleaseCandidateTestCase(unittest.TestCase):
         self.assertIn("clean temporary virtual environment", release_doc)
         self.assertIn("does not publish anything", release_doc)
 
-    def test_project_status_mentions_completed_2_2_0_release(self) -> None:
-        """Project status page should reflect the completed 2.2.0 release."""
+    def test_project_status_mentions_completed_2_3_0_release(self) -> None:
+        """Project status page should reflect the completed 2.3.0 release."""
         report = self.read_text("docs/project-status.md")
 
-        self.assertIn("Current stable release: `2.2.0`", report)
-        self.assertIn("Previous stable release: `2.1.0`", report)
-        self.assertIn("`v2.2.0` is published on PyPI and released on GitHub.", report)
+        self.assertIn("Current stable release: `2.3.0`", report)
+        self.assertIn("Previous stable release: `2.2.0`", report)
+        self.assertIn("`v2.3.0` is published on PyPI and released on GitHub.", report)
 
     def test_gitignore_excludes_release_artifacts(self) -> None:
         """Release build artifacts and temporary release envs should be ignored."""

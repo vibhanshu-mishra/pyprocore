@@ -75,7 +75,7 @@ external AI/model APIs, MCP execution, or Procore tool execution.
 
 ## MCP Discovery
 
-Phase 15A, Phase 15B, and Phase 15C add unreleased top-level MCP discovery,
+Phase 15A, Phase 15B, and Phase 15C add top-level MCP discovery,
 contract, snapshot, and compatibility commands:
 
 ```bash
@@ -105,7 +105,7 @@ perform uploads, writes, approvals, submissions, status changes, or payments.
 
 ## Async Client
 
-Phase 10A through Phase 10D add the unreleased `AsyncProcore` Python client
+Phase 10A through Phase 10E add the `AsyncProcore` Python client
 foundation, async export/download helper patterns, local mock async examples,
 async field/operations/correspondence/directory read coverage, manifests,
 conservative concurrency controls, and optional async HTTP transport support
@@ -190,7 +190,7 @@ code, execute hooks, call Procore, or enable agent/MCP execution.
 
 ## Golden Dataset Evals
 
-Phase 13A adds unreleased local deterministic eval commands for safe JSON-like
+Phase 13A adds local deterministic eval commands for safe JSON-like
 artifacts such as export rows, agent metadata, AI workflow packages, async
 batch plans, and plugin metadata. Phase 13B adds workflow-specific suites for
 RFI, submittal, async export, async batch, AI workflow, plugin metadata/config,
@@ -285,7 +285,7 @@ procore-sdk daily-logs counts --project 352338
 ## Observations, Punch Items, And Correspondence
 
 Phase 8A adds read-only commands for observations, punch items, and Generic
-Tool correspondence items in the current unreleased branch:
+Tool correspondence items in the current stable release:
 
 ```bash
 procore-sdk observations --project 352338 --company-id 123456
@@ -311,7 +311,7 @@ procore-sdk export-correspondences --project 352338 --company-id 123456 --generi
 ## Meetings, Inspections, And Incidents
 
 Phase 8C adds read-only commands for meetings, checklist-backed inspections,
-incidents, and project incident configuration in the current unreleased branch:
+incidents, and project incident configuration in the current stable release:
 
 ```bash
 procore-sdk meetings --project 352338 --company-id 123456
@@ -338,7 +338,7 @@ procore-sdk export-incidents --project 352338 --company-id 123456 --output expor
 
 Phase 8D adds read-only commands for company/project users, vendors,
 departments, project distribution groups, and project locations in the current
-unreleased branch:
+current stable release:
 
 ```bash
 procore-sdk company-users --company-id 123456
@@ -375,7 +375,7 @@ procore-sdk export-locations --project 352338 --company-id 123456 --output expor
 ## Financial And Change Management Read Commands
 
 Phase 8E adds read-oriented commands for financial and change-management
-resources in the current unreleased branch. These commands do not create,
+resources in the current stable release. These commands do not create,
 update, delete, approve, change statuses, modify budgets, create commitments,
 create invoices, or mutate payments.
 
@@ -410,7 +410,7 @@ procore-sdk export-commitments --project 352338 --company-id 123456 --output exp
 ## Contracts, Invoices, Payments, And Billing Read Commands
 
 Phase 8F adds read-oriented commands for contracts, invoices, payments, and
-billing resources in the current unreleased branch. These commands do not
+billing resources in the current stable release. These commands do not
 create, update, delete, submit, approve, reject, change statuses, generate PDFs,
 update SOV values, mutate line items, or submit payments.
 
@@ -434,7 +434,7 @@ procore-sdk export-contract-payments --project 352338 --company-id 123456 --outp
 ## Project Management Extras Read Commands
 
 Phase 8G adds read-oriented commands for schedules, tasks, calendar items,
-coordination issues, forms, and action plans in the current unreleased branch.
+coordination issues, forms, and action plans in the current stable release.
 These commands do not upload schedules, create schedule imports, mutate tasks,
 submit forms, complete action plans, approve, change statuses, or perform other
 project-management writes.

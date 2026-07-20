@@ -230,8 +230,8 @@ class Phase12AiWorkflowsTestCase(unittest.TestCase):
         self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
         self.assertIn("PASS", completed.stdout)
 
-    def test_docs_and_readme_describe_phase12_as_unreleased(self) -> None:
-        """Docs should be clear that Phase 12 is branch work, not published."""
+    def test_docs_and_readme_describe_phase12_as_released(self) -> None:
+        """Docs should describe Phase 12 as included in the current release."""
         docs = "\n".join(
             self.read_text(path)
             for path in (
@@ -244,7 +244,7 @@ class Phase12AiWorkflowsTestCase(unittest.TestCase):
         )
 
         self.assertIn("Phase 12", docs)
-        self.assertIn("unreleased branch work", docs)
+        self.assertIn("Included in v2.3.0", docs)
         self.assertIn("does not call external AI/model APIs", docs)
         self.assertNotIn("Phase 12 is published", docs)
 
@@ -254,7 +254,7 @@ class Phase12AiWorkflowsTestCase(unittest.TestCase):
 
         self.assertFalse(response["metadata"]["execution_enabled"])
         self.assertTrue(response["metadata"]["discovery_only"])
-        self.assertEqual(pyprocore.__version__, "2.2.0")
+        self.assertEqual(pyprocore.__version__, "2.3.0")
 
 
 if __name__ == "__main__":

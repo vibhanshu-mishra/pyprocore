@@ -1,9 +1,8 @@
 # Plugin Architecture
 
-Phase 11A added safe plugin architecture foundations in the current stable
-`v2.2.0` release. Phase 11B, Phase 11C, and Phase 11D extend that foundation
-as unreleased branch work with safe local hooks, JSON configuration,
-extension-pack manifests, and plugin developer scaffolding.
+Phase 11A through Phase 11D provide safe plugin architecture foundations in the
+current stable `v2.3.0` release: metadata-only manifests, explicit local hooks,
+JSON configuration, extension-pack manifests, and plugin developer scaffolding.
 
 ## What This Does
 
@@ -82,7 +81,7 @@ code.
   "author": "Your Name",
   "homepage": "https://example.com/pyprocore-plugin",
   "capabilities": ["exporter", "formatter"],
-  "requires_pyprocore": ">=2.2.0",
+  "requires_pyprocore": ">=2.3.0",
   "entry_points": {
     "exporter": "example_package.exporters"
   },
@@ -191,7 +190,7 @@ procore-sdk plugins hook-manifest --json
 
 ## Plugin Configuration Files
 
-Phase 11C adds safe JSON plugin configuration files as unreleased branch work.
+Phase 11C adds safe JSON plugin configuration files in `v2.3.0`.
 These files store preferences only:
 
 - enabled and disabled plugin metadata names

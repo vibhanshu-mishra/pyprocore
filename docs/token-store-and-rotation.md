@@ -1,8 +1,7 @@
 # Token Store and Credential Rotation
 
-PyProcore `v2.2.0` remains the current published stable release. Phase 8A
-through 8G and Phase 9A through 9D are unreleased branch work unless they are
-published in a later release.
+PyProcore `v2.3.0` is the current published stable release and includes Phase
+8A through 8G plus Phase 9A through 9D.
 
 Phase 9C adds local token-store safety helpers, backend architecture, and
 credential rotation guidance. It does not call Procore, does not call external
