@@ -1,6 +1,6 @@
 # PyProcore
 
-> open-source Python SDK and automation toolkit for safe, read-oriented Procore integrations.
+> Open-source Python SDK and automation toolkit for safe, read-oriented Procore integrations.
 
 [![PyPI](https://img.shields.io/pypi/v/pyprocore.svg)](https://pypi.org/project/pyprocore/)
 ![Python](https://img.shields.io/badge/python-3.12%2B-blue.svg)
