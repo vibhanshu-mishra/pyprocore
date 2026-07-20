@@ -77,6 +77,7 @@ from pyprocore.models import (
     PrimeContractSummary,
     Project,
     ProjectSchedule,
+    ProjectTool,
     ProjectUser,
     PunchItem,
     PurchaseOrderContract,
@@ -138,6 +139,7 @@ from pyprocore.services import (
     find_project,
     find_project_contains,
     find_project_distribution_group,
+    find_project_tool,
     find_project_user,
     find_punch_item,
     find_purchase_order_contract,
@@ -188,6 +190,7 @@ from pyprocore.services import (
     get_project_distribution_group,
     get_project_incident_configuration,
     get_project_schedule,
+    get_project_tool,
     get_project_user,
     get_punch_item,
     get_purchase_order_contract,
@@ -267,6 +270,7 @@ from pyprocore.services import (
     list_prime_contracts,
     list_productivity_logs,
     list_project_distribution_groups,
+    list_project_tools,
     list_project_users,
     list_project_vendors,
     list_projects,
@@ -1695,6 +1699,44 @@ class ProjectUsersClient:
     ) -> ProjectUser:
         """Find one project directory user by name, email, or text."""
         return find_project_user(company_id, project_id, name=name, email=email, query=query)
+
+
+class ProjectToolsClient:
+    """Convenience methods for read-only Project Tool metadata."""
+
+    def list(
+        self,
+        project_id: int,
+        company_id: int | None = None,
+        *,
+        active: bool | None = None,
+        mobile: bool | None = None,
+        configurable: bool | None = None,
+        **filters: Any,
+    ) -> list[ProjectTool]:
+        """List Project Tools for a Procore project."""
+        return list_project_tools(
+            project_id,
+            company_id=company_id,
+            active=active,
+            mobile=mobile,
+            configurable=configurable,
+            **filters,
+        )
+
+    def get(self, project_id: int, tool_id: int, company_id: int | None = None) -> ProjectTool:
+        """Get one Project Tool metadata resource."""
+        return get_project_tool(project_id, tool_id, company_id=company_id)
+
+    def find(
+        self,
+        project_id: int,
+        name: str,
+        company_id: int | None = None,
+        **filters: Any,
+    ) -> ProjectTool:
+        """Find one Project Tool by name, title, label, or slug."""
+        return find_project_tool(project_id, name, company_id=company_id, **filters)
 
 
 class VendorsClient:
@@ -3597,6 +3639,7 @@ class Procore:
         self.daily_logs = DailyLogsClient()
         self.company_users = CompanyUsersClient()
         self.project_users = ProjectUsersClient()
+        self.project_tools = ProjectToolsClient()
         self.vendors = VendorsClient()
         self.departments = DepartmentsClient()
         self.distribution_groups = DistributionGroupsClient()
@@ -3663,6 +3706,7 @@ __all__ = [
     "ObservationsClient",
     "Procore",
     "ProjectsClient",
+    "ProjectToolsClient",
     "ProjectUsersClient",
     "PhotosClient",
     "PrimeChangeOrdersClient",

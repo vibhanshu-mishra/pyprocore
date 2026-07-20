@@ -145,7 +145,7 @@ PyProcore supports read-oriented access across these resource families:
 
 - Companies and Projects
 - RFIs and Submittals
-- Documents, Drawings, Specifications, Photos, and Daily Logs
+- Project Tools, Documents, Drawings, Specifications, Photos, and Daily Logs
 - Observations, Punch Items, Correspondence, Meetings, Inspections, and Incidents
 - Directory, Vendors, Departments, Distribution Groups, and Locations
 - Read-only financial, contract, billing, schedule, task, form, coordination

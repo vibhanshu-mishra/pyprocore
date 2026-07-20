@@ -54,6 +54,22 @@ class Project(ProcoreModel):
     company: Company | None = None
 
 
+class ProjectTool(ProcoreModel):
+    """Flexible read-only Project Tool metadata resource."""
+
+    id: int | None = None
+    name: str | None = None
+    title: str | None = None
+    label: str | None = None
+    slug: str | None = None
+    active: bool | None = None
+    enabled: bool | None = None
+    configurable: bool | None = None
+    mobile: bool | None = None
+    tool_type: str | None = None
+    type: str | None = None
+
+
 class RFIQuestion(ProcoreModel):
     """Question nested under a Procore RFI."""
 

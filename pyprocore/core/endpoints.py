@@ -87,6 +87,8 @@ COMPANY_USERS = f"{API_V1}/companies/{{company_id}}/users"
 COMPANY_USER = f"{API_V1}/companies/{{company_id}}/users/{{user_id}}"
 PROJECT_USERS = f"{API_V1}/projects/{{project_id}}/users"
 PROJECT_USER = f"{API_V1}/projects/{{project_id}}/users/{{user_id}}"
+PROJECT_TOOLS = f"{API_V1}/projects/{{project_id}}/tools"
+PROJECT_TOOL = f"{API_V1}/projects/{{project_id}}/tools/{{tool_id}}"
 VENDORS = f"{API_V1}/vendors"
 VENDOR = f"{API_V1}/vendors/{{vendor_id}}"
 DEPARTMENTS = f"{API_V1}/companies/{{company_id}}/departments"
@@ -518,6 +520,16 @@ def project_users(project_id: int) -> str:
 def project_user(project_id: int, user_id: int) -> str:
     """Return the endpoint for one project user."""
     return PROJECT_USER.format(project_id=project_id, user_id=user_id)
+
+
+def project_tools(project_id: int) -> str:
+    """Return the project tools collection endpoint."""
+    return PROJECT_TOOLS.format(project_id=project_id)
+
+
+def project_tool(project_id: int, tool_id: int) -> str:
+    """Return the endpoint for one project tool."""
+    return PROJECT_TOOL.format(project_id=project_id, tool_id=tool_id)
 
 
 def vendors(company_id: int) -> str:
@@ -1048,6 +1060,8 @@ class Endpoints:
     COMPANY_USER = COMPANY_USER
     PROJECT_USERS = PROJECT_USERS
     PROJECT_USER = PROJECT_USER
+    PROJECT_TOOLS = PROJECT_TOOLS
+    PROJECT_TOOL = PROJECT_TOOL
     VENDORS = VENDORS
     VENDOR = VENDOR
     DEPARTMENTS = DEPARTMENTS

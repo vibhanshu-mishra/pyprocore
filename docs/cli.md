@@ -272,6 +272,8 @@ procore-sdk find-submittal --project 352338 --number 27
 ## Documents, Drawings, Specifications, Photos, And Daily Logs
 
 ```bash
+procore-sdk project-tools --project 352338 --company-id 123456
+procore-sdk project-tool --project 352338 --company-id 123456 --id 7
 procore-sdk documents --project 352338
 procore-sdk download-document --project 352338 --id 456 --output-dir ./downloads
 procore-sdk drawing-areas 352338
@@ -281,6 +283,10 @@ procore-sdk specifications sections --project 352338
 procore-sdk photos --project 352338
 procore-sdk daily-logs counts --project 352338
 ```
+
+`project-tools` and `project-tool` are read-only metadata commands. They list
+or retrieve project tool availability/configuration metadata only; they do not
+execute Procore tools or change project tool settings.
 
 ## Observations, Punch Items, And Correspondence
 

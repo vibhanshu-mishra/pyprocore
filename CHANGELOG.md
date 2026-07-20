@@ -7,7 +7,17 @@ and this project follows semantic versioning.
 
 ## [Unreleased]
 
-- Nothing yet.
+### Added
+
+- Phase 16A read-only Project Tools metadata coverage with list/get/find
+  helpers, typed flexible `ProjectTool` models, CLI commands, local examples,
+  and mocked tests.
+
+### Deferred
+
+- Weather logs, equipment logs, additional waste-log variants, transmittals,
+  project emails, and workforce/resource request coverage remain deferred until
+  safe, unambiguous GET/list endpoint shapes are confirmed.
 
 ## [2.3.0] - 2026-07-19
 

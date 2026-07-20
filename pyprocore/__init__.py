@@ -523,6 +523,11 @@ from pyprocore.services.project_management import (  # noqa: F401
     list_task_requested_changes,
     list_tasks,
 )
+from pyprocore.services.project_tools import (
+    find_project_tool,
+    get_project_tool,
+    list_project_tools,
+)
 from pyprocore.services.punch_items import get_punch_item, list_punch_items
 from pyprocore.services.search import (  # noqa: F401
     find_action_plan,
@@ -1161,6 +1166,7 @@ __all__ = [
     "find_project",
     "find_project_contains",
     "find_project_distribution_group",
+    "find_project_tool",
     "find_project_user",
     "find_prime_change_order",
     "find_punch_item",
@@ -1188,6 +1194,7 @@ __all__ = [
     "get_photo",
     "get_photo_album",
     "get_project_distribution_group",
+    "get_project_tool",
     "get_project_user",
     "get_prime_change_order",
     "get_punch_item",
@@ -1229,6 +1236,7 @@ __all__ = [
     "list_plan_revision_logs",
     "list_productivity_logs",
     "list_project_distribution_groups",
+    "list_project_tools",
     "list_project_users",
     "list_project_vendors",
     "list_prime_change_orders",

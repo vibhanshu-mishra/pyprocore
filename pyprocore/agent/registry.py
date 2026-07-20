@@ -502,6 +502,17 @@ def _build_tools() -> list[AgentTool]:
             examples=["tools = list_generic_tools(company_id, project_id)"],
         ),
         _resource_tool(
+            name="procore.list_project_tools",
+            title="List Project Tools",
+            description="List read-only Project Tool metadata for a project.",
+            input_schema=_project_company_schema(),
+            output_schema=_array_output("ProjectTool"),
+            service_path="pyprocore.services.project_tools",
+            operation_path="pyprocore.services.project_tools.list_project_tools",
+            cli_command="procore-sdk project-tools --project PROJECT_ID --company-id COMPANY_ID",
+            examples=["tools = list_project_tools(project_id, company_id=company_id)"],
+        ),
+        _resource_tool(
             name="procore.list_correspondences",
             title="List Correspondences",
             description="List correspondence items for a Generic Tool.",

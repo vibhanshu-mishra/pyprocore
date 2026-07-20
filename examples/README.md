@@ -130,6 +130,9 @@ disabled-response shapes, unknown-response shapes, and integration notes. They
 are local metadata examples only and do not call Procore, call external
 AI/model APIs, execute plugins, fetch remote resources, upload reports, load
 arbitrary code, or enable MCP/tool execution.
+Examples `279` and `280` cover Phase 16A Project Tools metadata and Daily Logs
+readiness notes. They use mock/local data only and do not call Procore, execute
+tools, mutate Procore, call external AI/model APIs, or enable MCP execution.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -586,6 +589,8 @@ The current example set runs from `01_list_companies.py` through
 | `276_mcp_client_integration_notes.py` | Print MCP client integration notes |
 | `277_mcp_compatibility_markdown_report.py` | Render a Markdown compatibility report |
 | `278_phase15c_mcp_compatibility_summary.py` | Summarize Phase 15C MCP compatibility additions |
+| `279_list_project_tools_mock.py` | List Project Tools with local mock data |
+| `280_daily_log_phase16a_readiness.py` | Show Daily Logs helper coverage and deferred ambiguous log types |
 
 Sample golden datasets live in `examples/golden_datasets/`:
 
@@ -783,4 +788,7 @@ Sample webhook payloads live in `examples/webhooks/`:
   They inspect local metadata and static fixtures only and do not call Procore,
   call external AI/model APIs, execute plugins, fetch remote resources, upload
   reports, load arbitrary code, or enable MCP/tool execution.
+- Examples `279` and `280` add Phase 16A local examples for Project Tools
+  metadata and Daily Logs readiness notes. They do not call Procore, execute
+  tools, mutate Procore, call external AI/model APIs, or enable MCP execution.
 - Keep secrets out of code, screenshots, logs, and issue reports.

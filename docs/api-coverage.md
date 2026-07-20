@@ -8,6 +8,7 @@ Procore environment.
 | --- | --- | --- | --- |
 | Companies | Supported | List | Used to discover companies available to the token. |
 | Projects | Supported | List, get | Project listing is company-scoped. |
+| Project Tools | Unreleased Phase 16A | List, get, find | Read-only project tool metadata. No tool execution or configuration mutation. |
 | RFIs | Supported | List, get, download attachments | Attachments are read from RFI questions when Procore includes signed URLs. |
 | Submittals | Supported | List, get, download attachments | Attachments are downloaded from Procore-provided URLs. |
 | Documents | Supported | List folders, list files, get, download, sync | Uses Procore folder/file endpoints behind user-friendly service names. |
@@ -64,6 +65,25 @@ Phase 15A, Phase 15B, and Phase 15C MCP resources, prompts, kind filters,
 capability summaries, contract validation, snapshots, compatibility reports,
 and fixtures add no new Procore endpoint coverage. They are local metadata
 only and do not call Procore.
+
+## Unreleased Phase 16A Endpoint Notes
+
+Phase 16A adds read-only SDK coverage for Project Tools metadata:
+
+- Project Tools: `/rest/v1.0/projects/{project_id}/tools`.
+- Project Tool: `/rest/v1.0/projects/{project_id}/tools/{tool_id}`.
+
+The helpers support optional read filters such as `active`, `mobile`, and
+`configurable` through the existing query-parameter pattern. They do not
+execute tools, configure tools, enable/disable tools, upload data, or mutate
+Procore.
+
+Daily Logs already includes clear read-only helpers for counts, headers,
+manpower, notes, daily construction report, delay, delivery, call, accident,
+dumpster, visitor, productivity, and plan revision logs. Weather, equipment,
+additional waste variants, transmittals, project emails, and workforce/resource
+request coverage remain deferred until safe, unambiguous GET/list endpoint
+shapes are documented and modeled.
 
 ## Phase 8A Endpoint Notes
 

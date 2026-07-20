@@ -173,6 +173,12 @@ from pyprocore.services.project_management import (  # noqa: F401
     list_task_requested_changes,
     list_tasks,
 )
+from pyprocore.services.project_tools import (
+    ProjectToolsService,
+    find_project_tool,
+    get_project_tool,
+    list_project_tools,
+)
 from pyprocore.services.projects import ProjectsService, get_project, list_projects
 from pyprocore.services.punch_items import PunchItemsService, get_punch_item, list_punch_items
 from pyprocore.services.rfis import RFIsService, download_rfi_attachments, get_rfi, list_rfis
@@ -247,6 +253,7 @@ __all__ = [
     "ObservationsService",
     "OperationsService",
     "PhotosService",
+    "ProjectToolsService",
     "PunchItemsService",
     "ProjectsService",
     "RFIsService",
@@ -285,6 +292,7 @@ __all__ = [
     "find_project",
     "find_project_contains",
     "find_project_distribution_group",
+    "find_project_tool",
     "find_project_user",
     "find_prime_change_order",
     "find_prime_contract",
@@ -331,6 +339,7 @@ __all__ = [
     "get_project",
     "get_project_distribution_group",
     "get_project_incident_configuration",
+    "get_project_tool",
     "get_project_user",
     "get_purchase_order_contract",
     "get_punch_item",
@@ -394,6 +403,7 @@ __all__ = [
     "list_productivity_logs",
     "list_projects",
     "list_project_distribution_groups",
+    "list_project_tools",
     "list_project_users",
     "list_project_vendors",
     "list_purchase_order_contracts",

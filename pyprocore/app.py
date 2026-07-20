@@ -263,6 +263,7 @@ from pyprocore.services import (
     get_project_distribution_group,
     get_project_incident_configuration,
     get_project_schedule,
+    get_project_tool,
     get_project_user,
     get_punch_item,
     get_purchase_order_contract,
@@ -342,6 +343,7 @@ from pyprocore.services import (
     list_prime_contracts,
     list_productivity_logs,
     list_project_distribution_groups,
+    list_project_tools,
     list_project_users,
     list_project_vendors,
     list_projects,
@@ -1554,6 +1556,22 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_project_company_options(find_punch_item_parser)
     _add_number_title_query_options(find_punch_item_parser)
+
+    project_tools_parser = subcommands.add_parser(
+        "project-tools",
+        help="List read-only Project Tool metadata for a project",
+    )
+    _add_project_company_options(project_tools_parser)
+    project_tools_parser.add_argument("--active", action="store_true")
+    project_tools_parser.add_argument("--mobile", action="store_true")
+    project_tools_parser.add_argument("--configurable", action="store_true")
+
+    project_tool_parser = subcommands.add_parser(
+        "project-tool",
+        help="Get one read-only Project Tool metadata resource",
+    )
+    _add_project_company_options(project_tool_parser)
+    project_tool_parser.add_argument("--id", "--tool-id", dest="tool_id", type=int, required=True)
 
     generic_tools_parser = subcommands.add_parser(
         "generic-tools",
@@ -4284,6 +4302,18 @@ def run_command(args: argparse.Namespace) -> Any:
             title=args.title,
             query=args.query,
         )
+
+    if args.command == "project-tools":
+        return list_project_tools(
+            args.project_id,
+            company_id=args.company_id,
+            active=True if args.active else None,
+            mobile=True if args.mobile else None,
+            configurable=True if args.configurable else None,
+        )
+
+    if args.command == "project-tool":
+        return get_project_tool(args.project_id, args.tool_id, company_id=args.company_id)
 
     if args.command == "generic-tools":
         return list_generic_tools(args.company_id, args.project_id)
