@@ -64,10 +64,10 @@ class ReleaseReadinessTestCase(unittest.TestCase):
 
         for heading in [
             "## Quick Start",
-            "## Feature Overview",
-            "## Python Examples",
+            "## What You Can Build",
+            "## Supported Resource Families",
             "## CLI Overview",
-            "## Security And Safety",
+            "## Safety Model",
             "## Documentation",
         ]:
             self.assertIn(heading, readme)

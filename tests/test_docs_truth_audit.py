@@ -43,20 +43,22 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         self.assertEqual(completed.returncode, 0, completed.stderr)
         self.assertIn("pyprocore 2.3.0", completed.stdout)
 
-    def test_readme_positions_sdk_automation_and_agent_layer(self) -> None:
-        """README should explain the SDK, automation toolkit, and agent layer."""
+    def test_readme_positions_public_sdk_capabilities(self) -> None:
+        """README should explain public SDK capabilities and safety boundaries."""
         readme = self.read_text("README.md")
 
-        self.assertIn("open-source Python SDK, automation toolkit, and agent-ready", readme)
+        self.assertIn("open-source Python SDK and automation toolkit", readme)
+        self.assertIn("The current stable release is `2.3.0`", readme)
         self.assertIn("python3 -m pip install pyprocore==2.3.0", readme)
-        self.assertIn("Phase 7 Agent Layer", readme)
         for phrase in (
-            "Agent Tool Registry",
-            "Local Agent API Server",
-            "OpenAPI / JSON Schema Export",
-            "Agent Run Logs + Replay",
-            "Discovery-only MCP Adapter",
-            "Agent Evaluation Harness",
+            "Typed Procore API Access",
+            "AI-Ready Local Context Packages",
+            "Async Read Workflows",
+            "Deterministic Evals And Regression Checks",
+            "MCP is discovery-only",
+            "Procore tool execution is disabled",
+            "No external AI/model APIs are called by default",
+            "No Procore create, update, delete, upload, approve, submit, payment",
         ):
             self.assertIn(phrase, readme)
 

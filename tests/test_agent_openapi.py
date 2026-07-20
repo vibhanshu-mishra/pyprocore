@@ -244,7 +244,7 @@ class AgentOpenAPITestCase(unittest.TestCase):
         self.assertIn("export-agent-openapi.md", mkdocs)
         self.assertIn("OpenAPI", docs)
         self.assertIn("JSON Schema", docs)
-        self.assertIn("agent openapi", readme)
+        self.assertIn("agent openapi", readme.lower())
 
     def test_openapi_source_does_not_enable_execution_or_live_calls(self) -> None:
         """The OpenAPI module should not execute tools or call Procore."""

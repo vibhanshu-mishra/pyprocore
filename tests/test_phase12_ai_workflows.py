@@ -244,7 +244,7 @@ class Phase12AiWorkflowsTestCase(unittest.TestCase):
         )
 
         self.assertIn("Phase 12", docs)
-        self.assertIn("Included in v2.3.0", docs)
+        self.assertIn("current published stable release is `2.3.0`", docs)
         self.assertIn("does not call external AI/model APIs", docs)
         self.assertNotIn("Phase 12 is published", docs)
 

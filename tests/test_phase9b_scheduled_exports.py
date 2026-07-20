@@ -507,10 +507,9 @@ class Phase9BScheduledExportTests(unittest.TestCase):
 
     def test_docs_and_examples_state_safety_boundaries(self) -> None:
         """Docs should keep Phase 9B released and local-only."""
-        readme = (self.root / "README.md").read_text(encoding="utf-8")
         docs_page = (self.root / "docs/enterprise-scheduled-exports.md").read_text(encoding="utf-8")
         examples_readme = (self.root / "examples/README.md").read_text(encoding="utf-8")
-        self.assertIn("Phase 9B", readme)
+        self.assertIn("Phase 9B", docs_page)
         self.assertIn("current published stable release", docs_page.casefold())
         self.assertIn("do not call Procore", docs_page)
         self.assertIn("Examples `115` through `120`", examples_readme)

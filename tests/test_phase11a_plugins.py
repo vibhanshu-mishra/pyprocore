@@ -474,11 +474,11 @@ class Phase11APluginTests(unittest.TestCase):
         self.assertTrue((PROJECT_ROOT / "docs" / "plugins.md").exists())
 
         examples = (PROJECT_ROOT / "examples" / "README.md").read_text(encoding="utf-8")
-        readme = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
+        plugin_docs = (PROJECT_ROOT / "docs" / "plugins.md").read_text(encoding="utf-8")
         mkdocs = (PROJECT_ROOT / "mkdocs.yml").read_text(encoding="utf-8")
 
         self.assertIn("Examples `177` through `184`", examples)
-        self.assertIn("Phase 11A Plugin Architecture Foundation", readme)
+        self.assertIn("Phase 11A", plugin_docs)
         self.assertIn("plugins.md", mkdocs)
 
         for index in range(177, 185):

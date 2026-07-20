@@ -44,15 +44,13 @@ class FinalReleasePolishTestCase(unittest.TestCase):
 
         for phrase in (
             "project-context",
-            "enhanced-rfi-package",
-            "enhanced-submittal-package",
-            "ai-review-export",
-            "ai-prompt-pack",
-            "workflow-plan",
-            "webhook",
-            "make secret-check",
+            "scheduled-export dry-run",
+            "procore-sdk evals run",
+            "procore-sdk mcp validate",
+            "AI-Ready Local Context Packages",
+            "Plugin Metadata And Local Extension Scaffolding",
             "Project Status",
-            "Phase 7 Agent Layer",
+            "Procore tool execution is disabled",
         ):
             self.assertIn(phrase, readme)
 

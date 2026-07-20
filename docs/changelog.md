@@ -3,7 +3,7 @@
 PyProcore follows semantic versioning and keeps release notes in a root-level
 changelog. The changelog is the best place to review:
 
-- unreleased changes planned for the next release
+- changes collected for the next release
 - published version history
 - added, changed, fixed, docs, and test updates
 - release-readiness notes
