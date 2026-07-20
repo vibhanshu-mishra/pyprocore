@@ -46,8 +46,10 @@ class DocsTruthAuditTestCase(unittest.TestCase):
     def test_readme_positions_public_sdk_capabilities(self) -> None:
         """README should explain public SDK capabilities and safety boundaries."""
         readme = self.read_text("README.md")
+        readme_lower = readme.lower()
 
-        self.assertIn("open-source Python SDK and automation toolkit", readme)
+        self.assertIn("open-source python sdk and automation toolkit", readme_lower)
+        self.assertIn("read-oriented procore integrations", readme_lower)
         self.assertIn("The current stable release is `2.3.0`", readme)
         self.assertIn("python3 -m pip install pyprocore==2.3.0", readme)
         for phrase in (
