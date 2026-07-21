@@ -133,6 +133,11 @@ arbitrary code, or enable MCP/tool execution.
 Examples `279` and `280` cover Phase 16A Project Tools metadata and Daily Logs
 readiness notes. They use mock/local data only and do not call Procore, execute
 tools, mutate Procore, call external AI/model APIs, or enable MCP execution.
+Examples `281` through `283` cover Phase 16B trusted plugin metadata policy
+and report validation. They use local JSON files only and do not install
+plugins, fetch remote registries, import plugin modules, execute plugin code,
+call Procore, call external AI/model APIs, enable MCP execution, or enable
+Procore tool execution.
 
 Agent examples do not require Procore credentials or execute tools.
 

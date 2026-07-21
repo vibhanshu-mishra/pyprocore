@@ -1,0 +1,28 @@
+{
+  "schema_version": "1",
+  "name": "trusted_exporter_plugin",
+  "version": "1.0.0",
+  "description": "Trusted metadata-only exporter plugin example.",
+  "author": "PyProcore",
+  "publisher": "PyProcore",
+  "capabilities": ["exporter", "formatter"],
+  "allowed_capability_categories": ["exporter", "formatter"],
+  "safety_level": "metadata_only",
+  "requires_pyprocore": ">=2.3.0",
+  "min_pyprocore_version": "2.3.0",
+  "enabled_by_default": false,
+  "supports_sync": true,
+  "supports_async": false,
+  "supports_agent_metadata": false,
+  "supports_cli": true,
+  "checksum_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "safety_boundaries": [
+    "Metadata validation only.",
+    "No plugin code is installed, imported, or executed.",
+    "No Procore write or mutation actions are declared."
+  ],
+  "notes": [
+    "This file is safe for local trust-policy examples.",
+    "Checksum metadata is syntactic in this phase and is not verified against a remote artifact."
+  ]
+}

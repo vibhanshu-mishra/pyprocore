@@ -188,6 +188,24 @@ Scaffold commands generate local template files only. They do not require
 Procore credentials, install plugins, fetch remote resources, load generated
 code, execute hooks, call Procore, or enable agent/MCP execution.
 
+Phase 16B adds local trust-policy validation commands:
+
+```bash
+procore-sdk plugins trust sample-policy --json
+procore-sdk plugins trust validate-manifest examples/plugin_scaffolds/trusted_plugin_manifest.json \
+  --policy examples/configs/plugin_trust_policy.json
+procore-sdk plugins trust validate-extension-pack examples/plugin_scaffolds/basic_extension_pack.json \
+  --policy examples/configs/plugin_trust_policy.json
+procore-sdk plugins trust report examples/plugin_scaffolds/trusted_plugin_manifest.json \
+  --policy examples/configs/plugin_trust_policy.json \
+  --format markdown
+```
+
+Trust commands validate local JSON metadata only. They do not install plugins,
+fetch remote registries, import plugin modules, execute plugin code, call
+Procore, call external AI/model APIs, enable MCP execution, or enable Procore
+tool execution.
+
 ## Golden Dataset Evals
 
 Phase 13A adds local deterministic eval commands for safe JSON-like

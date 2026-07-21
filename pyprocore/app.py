@@ -162,21 +162,30 @@ from pyprocore.plugins import (
     PluginScaffoldPlan,
     PluginScaffoldResult,
     PluginTemplateKind,
+    PluginTrustPolicy,
+    PluginTrustReport,
     PluginValidationResult,
+    build_trust_report_for_path,
     builtin_hook_registry,
     discover_plugins,
     export_extension_pack_template,
     export_plugin_config_template,
     export_plugin_scaffold_sample_plan,
+    export_trust_policy_template,
     load_extension_pack_manifest_from_file,
     load_local_plugin_manifest_file,
     load_plugin_config_from_file,
+    load_trust_policy_from_file,
     merge_plugin_config_with_registry_metadata,
+    render_trust_report_markdown,
     scaffold_extension_pack,
     scaffold_hook_pack,
     scaffold_plugin_config,
     scaffold_plugin_pack,
+    trust_report_to_json,
     validate_extension_pack_manifest,
+    validate_extension_pack_trust,
+    validate_manifest_trust,
     validate_plugin_config,
     validate_plugin_manifest,
 )
@@ -1425,6 +1434,49 @@ def build_parser() -> argparse.ArgumentParser:
         help="Write a hook manifest scaffold",
     )
     _add_plugin_scaffold_options(plugins_scaffold_hook_parser, include_kind=False)
+    plugins_trust_parser = plugins_subcommands.add_parser(
+        "trust",
+        help="Validate local plugin trust policy metadata without executing code",
+    )
+    plugins_trust_subcommands = plugins_trust_parser.add_subparsers(
+        dest="plugins_trust_command",
+        required=True,
+    )
+    plugins_trust_sample_parser = plugins_trust_subcommands.add_parser(
+        "sample-policy",
+        help="Print a conservative local JSON trust policy template",
+    )
+    plugins_trust_sample_parser.add_argument("--json", dest="json_output", action="store_true")
+    plugins_trust_sample_parser.add_argument("--pretty", action="store_true")
+    plugins_trust_manifest_parser = plugins_trust_subcommands.add_parser(
+        "validate-manifest",
+        help="Validate a local plugin manifest against a local trust policy",
+    )
+    plugins_trust_manifest_parser.add_argument("manifest_path", type=Path)
+    plugins_trust_manifest_parser.add_argument("--policy", required=True, type=Path)
+    plugins_trust_manifest_parser.add_argument("--json", dest="json_output", action="store_true")
+    plugins_trust_manifest_parser.add_argument("--pretty", action="store_true")
+    plugins_trust_pack_parser = plugins_trust_subcommands.add_parser(
+        "validate-extension-pack",
+        help="Validate a local extension-pack manifest against a local trust policy",
+    )
+    plugins_trust_pack_parser.add_argument("extension_pack_path", type=Path)
+    plugins_trust_pack_parser.add_argument("--policy", required=True, type=Path)
+    plugins_trust_pack_parser.add_argument("--json", dest="json_output", action="store_true")
+    plugins_trust_pack_parser.add_argument("--pretty", action="store_true")
+    plugins_trust_report_parser = plugins_trust_subcommands.add_parser(
+        "report",
+        help="Build a local JSON or Markdown plugin trust report",
+    )
+    plugins_trust_report_parser.add_argument("target_path", type=Path)
+    plugins_trust_report_parser.add_argument("--policy", required=True, type=Path)
+    plugins_trust_report_parser.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="markdown",
+    )
+    plugins_trust_report_parser.add_argument("--json", dest="json_output", action="store_true")
+    plugins_trust_report_parser.add_argument("--pretty", action="store_true")
 
     subcommands.add_parser("companies", help="List companies")
 
@@ -4078,6 +4130,19 @@ def run_command(args: argparse.Namespace) -> Any:
                 "Unsupported plugins extension-pack command: "
                 f"{args.plugins_extension_pack_command}"
             )
+        if args.plugins_command == "trust":
+            if args.plugins_trust_command == "sample-policy":
+                return export_trust_policy_template()
+            policy = load_trust_policy_from_file(args.policy)
+            if args.plugins_trust_command == "validate-manifest":
+                plugin_manifest = load_local_plugin_manifest_file(args.manifest_path)
+                return validate_manifest_trust(plugin_manifest, policy)
+            if args.plugins_trust_command == "validate-extension-pack":
+                extension_pack = load_extension_pack_manifest_from_file(args.extension_pack_path)
+                return validate_extension_pack_trust(extension_pack, policy)
+            if args.plugins_trust_command == "report":
+                return build_trust_report_for_path(args.target_path, policy)
+            raise ValueError(f"Unsupported plugins trust command: {args.plugins_trust_command}")
         if args.plugins_command == "scaffold":
             if args.plugins_scaffold_command == "sample-plan":
                 return export_plugin_scaffold_sample_plan()
@@ -6419,6 +6484,48 @@ def format_extension_pack_validation(result: PluginExtensionPackValidationResult
     return "\n".join(lines)
 
 
+def format_plugin_trust_policy(policy: PluginTrustPolicy) -> str:
+    """Return a human-readable plugin trust policy summary."""
+    lines = [
+        "PyProcore plugin trust policy.",
+        f"Schema version: {policy.schema_version}",
+        f"Allowed publishers: {len(policy.allowed_publishers)}",
+        f"Allowed plugin names: {len(policy.allowed_plugin_names)}",
+        (
+            "Allowed capabilities: "
+            f"{', '.join(item.value for item in policy.allowed_capabilities) or 'none'}"
+        ),
+        f"Deny remote install: {policy.deny_remote_install}",
+        f"Deny execution: {policy.deny_execution}",
+        f"Deny arbitrary import: {policy.deny_arbitrary_import}",
+        "Mode: local JSON metadata policy only; no plugin code is executed.",
+    ]
+    if policy.notes:
+        lines.append("Notes:")
+        lines.extend(f"- {note}" for note in policy.notes)
+    return "\n".join(lines)
+
+
+def format_plugin_trust_report(report: PluginTrustReport) -> str:
+    """Return a human-readable plugin trust report."""
+    lines = [
+        "Plugin trust validation complete.",
+        f"Target: {report.target_name}",
+        f"Type: {report.target_type}",
+        f"Trusted: {report.trusted}",
+        f"Valid: {report.valid}",
+        f"Findings: {report.finding_count}",
+        "Mode: metadata only; no plugin code was installed, imported, or executed.",
+    ]
+    if report.findings:
+        lines.append("Findings:")
+        lines.extend(
+            f"- {finding.severity.upper()} {finding.code}: {finding.message}"
+            for finding in report.findings
+        )
+    return "\n".join(lines)
+
+
 def format_plugin_scaffold_plan(plan: PluginScaffoldPlan) -> str:
     """Return a human-readable plugin scaffold plan."""
     lines = [
@@ -7247,6 +7354,20 @@ def main() -> None:
             else:
                 print(format_extension_pack_validation(result))
             raise SystemExit(0 if result.valid else 1)
+        if isinstance(result, PluginTrustPolicy):
+            if args.json_output or getattr(args, "pretty", False):
+                print(json.dumps(to_serializable(result), indent=2, default=str))
+            else:
+                print(format_plugin_trust_policy(result))
+            return
+        if isinstance(result, PluginTrustReport):
+            if args.json_output or getattr(args, "format", None) == "json":
+                print(trust_report_to_json(result, pretty=True))
+            elif getattr(args, "format", None) == "markdown":
+                print(render_trust_report_markdown(result).rstrip())
+            else:
+                print(format_plugin_trust_report(result))
+            raise SystemExit(0 if result.trusted else 1)
         if isinstance(result, PluginScaffoldPlan):
             if args.json_output or getattr(args, "pretty", False):
                 print(json.dumps(to_serializable(result), indent=2, default=str))

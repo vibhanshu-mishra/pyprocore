@@ -64,6 +64,10 @@ Safety status for `v2.3.0`:
 - Phase 16A adds read-only Project Tools metadata helpers for listing, getting,
   and finding project tool metadata. It does not execute tools, configure
   tools, mutate Procore, enable MCP execution, or call external AI/model APIs.
+- Phase 16B adds a trusted plugin ecosystem foundation with JSON-only local
+  trust policies, publisher/capability/safety metadata, and local trust
+  reports. It does not install plugins, fetch registries, import plugin modules,
+  execute plugin code, enable MCP execution, or enable Procore tool execution.
 - Additional Daily Log types with ambiguous or environment-specific endpoint
   shapes remain deferred until safe documented GET/list paths are confirmed.
 

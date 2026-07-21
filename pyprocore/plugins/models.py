@@ -60,6 +60,15 @@ class PluginManifest(ProcoreModel):
         version: Plugin version string.
         description: Human-readable plugin purpose.
         author: Optional author or organization name.
+        publisher: Optional trusted publisher identifier.
+        publisher_url: Optional publisher homepage.
+        signature: Optional signature metadata. PyProcore does not verify it.
+        checksum_sha256: Optional local checksum metadata. PyProcore does not
+            fetch remote plugin artifacts.
+        min_pyprocore_version: Optional minimum supported PyProcore version.
+        max_pyprocore_version: Optional maximum supported PyProcore version.
+        allowed_capability_categories: Optional declared capability boundary.
+        safety_boundaries: Optional safety declarations from the publisher.
         homepage: Optional public project page.
         capabilities: Metadata-only capability categories.
         requires_pyprocore: Optional PyProcore version requirement.
@@ -80,6 +89,14 @@ class PluginManifest(ProcoreModel):
     version: str
     description: str
     author: str | None = None
+    publisher: str | None = None
+    publisher_url: str | None = None
+    signature: str | None = None
+    checksum_sha256: str | None = None
+    min_pyprocore_version: str | None = None
+    max_pyprocore_version: str | None = None
+    allowed_capability_categories: list[PluginCapability] = Field(default_factory=list)
+    safety_boundaries: list[str] = Field(default_factory=list)
     homepage: str | None = None
     capabilities: list[PluginCapability] = Field(default_factory=list)
     requires_pyprocore: str | None = None

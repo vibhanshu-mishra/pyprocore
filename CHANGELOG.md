@@ -12,6 +12,10 @@ and this project follows semantic versioning.
 - Phase 16A read-only Project Tools metadata coverage with list/get/find
   helpers, typed flexible `ProjectTool` models, CLI commands, local examples,
   and mocked tests.
+- Phase 16B trusted plugin ecosystem foundation with JSON-only local trust
+  policies, optional publisher/signature/checksum/compatibility metadata,
+  metadata-only trust reports, CLI validation commands, local examples, and
+  mocked tests.
 
 ### Deferred
 

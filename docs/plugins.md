@@ -335,6 +335,66 @@ procore-sdk plugins scaffold create --name example_local_plugin --output-dir ./t
 - It does not enable agent tool execution.
 - MCP remains discovery-only.
 
+## Phase 16B Trusted Plugin Metadata Foundation
+
+Phase 16B adds a local trust-policy layer for plugin metadata. It is designed
+for future trusted plugin ecosystems while keeping the current SDK safe:
+
+- Trust policies are JSON-only local files.
+- Trust reports validate metadata only.
+- Publisher, compatibility, signature, checksum, capability, and safety-boundary
+  declarations are modeled as metadata.
+- Signature and checksum fields are checked syntactically only; PyProcore does
+  not claim cryptographic verification in this phase.
+- No plugin code is installed, imported, loaded, or executed.
+- No remote plugin registries are fetched.
+- Procore tool execution remains disabled.
+- MCP remains discovery-only.
+
+Sample policy:
+
+```bash
+procore-sdk plugins trust sample-policy --json
+```
+
+Validate local metadata against a local policy:
+
+```bash
+procore-sdk plugins trust validate-manifest examples/plugin_scaffolds/trusted_plugin_manifest.json \
+  --policy examples/configs/plugin_trust_policy.json
+
+procore-sdk plugins trust validate-extension-pack examples/plugin_scaffolds/basic_extension_pack.json \
+  --policy examples/configs/plugin_trust_policy.json
+```
+
+Build a local trust report:
+
+```bash
+procore-sdk plugins trust report examples/plugin_scaffolds/trusted_plugin_manifest.json \
+  --policy examples/configs/plugin_trust_policy.json \
+  --format markdown
+```
+
+### Trust Policy Shape
+
+```json
+{
+  "schema_version": "1",
+  "allowed_publishers": ["PyProcore", "Your Organization"],
+  "allowed_plugin_names": ["trusted_exporter_plugin"],
+  "allowed_capabilities": ["exporter", "formatter", "validator", "report"],
+  "allowed_safety_levels": ["metadata_only"],
+  "deny_remote_install": true,
+  "deny_execution": true,
+  "deny_arbitrary_import": true,
+  "require_trusted_publisher": true,
+  "allow_unsigned": true
+}
+```
+
+The deny flags are intentionally fail-closed. If a policy disables them,
+PyProcore reports blocking findings.
+
 ## What Phase 11B Does Not Do
 
 - It does not enable remote plugin installation.
@@ -364,4 +424,5 @@ procore-sdk plugins scaffold create --name example_local_plugin --output-dir ./t
 ## Future Work
 
 Future phases may add stricter signed or trusted plugin packaging, but Phase
-11B, Phase 11C, and Phase 11D stay local, explicit, and metadata-first.
+11B, Phase 11C, Phase 11D, and Phase 16B stay local, explicit, and
+metadata-first.

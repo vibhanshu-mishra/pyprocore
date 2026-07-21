@@ -124,6 +124,8 @@ environment variables that are already set.
 - Register trusted in-process hooks only from local application code.
 - Generate local plugin developer templates without fetching or installing
   remote plugins.
+- Validate local plugin trust policies and metadata-only trust reports without
+  installing, importing, or executing plugin code.
 
 ### Deterministic Evals And Regression Checks
 

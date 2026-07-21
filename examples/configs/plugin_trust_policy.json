@@ -1,0 +1,23 @@
+{
+  "schema_version": "1",
+  "allowed_publishers": ["PyProcore", "Your Organization"],
+  "allowed_plugin_names": [
+    "trusted_exporter_plugin",
+    "starter_export_pack",
+    "csv_exporter_plugin",
+    "jsonl_exporter_plugin"
+  ],
+  "allowed_capabilities": ["exporter", "formatter", "validator", "report"],
+  "allowed_safety_levels": ["metadata_only"],
+  "deny_remote_install": true,
+  "deny_execution": true,
+  "deny_arbitrary_import": true,
+  "require_trusted_publisher": true,
+  "require_checksum_or_signature": false,
+  "allow_unsigned": true,
+  "min_pyprocore_version": ">=2.3.0",
+  "notes": [
+    "Sample local trust policy for metadata-only plugin validation.",
+    "This policy does not install, import, or execute plugin code."
+  ]
+}

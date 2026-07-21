@@ -43,6 +43,14 @@ class PluginExtensionPack(ProcoreModel):
     version: str
     description: str
     author: str | None = None
+    publisher: str | None = None
+    publisher_url: str | None = None
+    signature: str | None = None
+    checksum_sha256: str | None = None
+    min_pyprocore_version: str | None = None
+    max_pyprocore_version: str | None = None
+    allowed_capability_categories: list[PluginCapability] = Field(default_factory=list)
+    safety_boundaries: list[str] = Field(default_factory=list)
     included_plugins: list[PluginExtensionPackItem] = Field(default_factory=list)
     included_hooks: list[PluginHookMetadata] = Field(default_factory=list)
     capabilities: list[PluginCapability] = Field(default_factory=list)

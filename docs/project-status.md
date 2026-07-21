@@ -10,8 +10,9 @@
   plugin metadata/hooks/scaffolding, Phase 12 AI workflow examples, Phase 13
   deterministic evals, and Phase 15 discovery-only MCP compatibility tooling.
 - Post-release development for the next unreleased version includes Phase 16A
-  read-only Project Tools metadata helpers. This work is not part of the
-  published `2.3.0` package until a future release is cut.
+  read-only Project Tools metadata helpers and Phase 16B trusted plugin
+  metadata policy/report foundations. This work is not part of the published
+  `2.3.0` package until a future release is cut.
 
 ## Current Stable Release: 2.3.0
 
