@@ -22,7 +22,8 @@ The examples require valid Procore credentials and access to the company,
 project, RFI, or submittal you are trying to read.
 
 Examples `01` through `52` cover core SDK, workflow automation, and AI-ready
-export functionality. Examples `53` through `63` cover the `v2.3.0` Phase 7
+export functionality. 
+Examples `53` through `63` cover the `v2.3.0` Phase 7
 Agent Layer. Those agent examples are local metadata, schema, replay, MCP
 discovery, or eval examples and do not require Procore credentials or execute
 tools unless an individual example explicitly says otherwise.
