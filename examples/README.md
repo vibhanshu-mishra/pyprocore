@@ -23,6 +23,7 @@ project, RFI, or submittal you are trying to read.
 
 Examples `01` through `52` cover core SDK, workflow automation, and AI-ready
 export functionality. 
+
 Examples `53` through `63` cover the `v2.3.0` Phase 7
 Agent Layer. Those agent examples are local metadata, schema, replay, MCP
 discovery, or eval examples and do not require Procore credentials or execute
@@ -30,110 +31,139 @@ tools unless an individual example explicitly says otherwise.
 
 Examples `64` through `69` cover Phase 8A read-only Observations,
 Punch Items, Generic Tool correspondence, and agent registry metadata examples.
+
 Examples `70` through `73` cover Phase 8B client credentials auth
 patterns for Procore Data Connection Apps.
+
 Examples `74` through `79` cover Phase 8C read-only Meetings,
 Inspections, Incidents, and agent registry metadata examples.
+
 Examples `80` through `87` cover Phase 8D read-only Directory users,
 Vendors, Departments, Distribution Groups, Locations, and agent registry
 metadata examples.
+
 Examples `88` through `95` cover Phase 8E financial and
 change-management read coverage.
+
 Examples `96` through `102` cover Phase 8F contracts, invoices,
 payments, and billing read coverage.
+
 Examples `103` through `110` cover Phase 8G schedules, tasks,
 calendar items, coordination issues, forms, action plans, and agent registry
 metadata examples.
+
 Examples `111` through `114` cover Phase 9A scheduled Client
 Credentials patterns, enterprise diagnostics, token-store safety, and local
 permission explanations. They make no live calls.
+
 Examples `115` through `120` cover Phase 9B scheduled export plan
 validation, dry-run manifests, Data Connection App deployment patterns,
 multi-project planning, and private deployment reminders. They make no live
 calls.
+
 Examples `121` through `125` cover Phase 9C token-store backends,
 safe diagnostics, credential rotation checklists, safe clearance, and
 sandbox/production separation. They make no live calls.
+
 Examples `126` through `130` cover Phase 9D private deployment
 readiness checks, folder layouts, production runbook summaries, deployment
 pattern comparisons, and enterprise safety boundaries. They make no live calls.
+
 Examples `131` through `140` cover Phase 12 model-agnostic AI
 workflow patterns, prompt packages, vector export manifests, engineering
 context bundles, field issue summaries, change-risk reviews, and safety
 checklists. They make no live Procore calls and no external AI/model calls.
+
 Examples `141` through `146` cover Phase 10A async client patterns,
 mock async transport, async pagination, and async safety notes. They use local
 mock responses and make no live Procore calls.
+
 Examples `147` through `152` cover Phase 10B async export and
 download patterns, local manifests, and concurrency limits. They use local mock
 responses, temporary folders, and make no live Procore calls.
+
 Examples `153` through `160` cover Phase 10C async batch planning,
 dry-runs, multi-project exports, partial failures, concurrency, and simple
 resume patterns. They use mock clients or local dry-runs and make no live
 Procore calls.
+
 Examples `161` through `168` cover Phase 10D async field,
 operations, correspondence, and directory coverage. They use local mock
 responses or local dry-runs and make no live Procore calls.
+
 Examples `169` through `176` cover Phase 10E async financial,
 contract, billing, and project-management read coverage. They use local mock
 responses or local dry-runs and make no live Procore calls.
+
 Examples `177` through `184` cover Phase 11A plugin architecture
 metadata, registry, validation, CLI patterns, and safety boundaries. They do
 not install plugins, execute plugin code, call Procore, or call external
 AI/model APIs.
+
 Examples `185` through `192` cover Phase 11B safe local plugin
 extension hooks. They use explicit in-process registration or built-in
 deterministic hooks only and do not install plugins, fetch remote registries,
 call Procore, call external AI/model APIs, or enable agent/MCP execution.
+
 Examples `193` through `200` cover Phase 11C plugin configuration
 and local extension-pack manifests. They read JSON metadata only and do not
 install plugins, fetch remote resources, load plugin code, execute hooks, call
 Procore, call external AI/model APIs, or enable agent/MCP execution.
+
 Examples `201` through `208` cover Phase 11D plugin developer
 scaffolding. They render local templates or write to temporary folders only and
 do not install plugins, fetch remote resources, load generated code, execute
 hooks, call Procore, call external AI/model APIs, or enable agent/MCP
 execution.
+
 Examples `209` through `218` cover Phase 13A local deterministic
 golden datasets and eval reports. They validate local artifacts only and do not
 call Procore, call external AI/model APIs, execute plugins, fetch remote
 datasets, or enable tool/MCP execution.
+
 Examples `219` through `228` cover Phase 13B workflow-specific
 golden eval suites for RFI, submittal, async export, async batch, AI workflow,
 plugin metadata/config, and safety-boundary artifacts. They use placeholder
 fixtures only and do not call Procore, call external AI/model APIs, execute
 plugins, fetch remote datasets, load arbitrary code, or enable tool/MCP
 execution.
+
 Examples `229` through `238` cover Phase 13C local eval baselines,
 regression comparison, threshold policies, JSON/Markdown regression reports,
 and history snapshots. They use placeholder fixtures or temporary folders only
 and do not call Procore, call external AI/model APIs, execute plugins, fetch or
 upload remote reports, load arbitrary code, or enable tool/MCP execution.
+
 Examples `239` through `248` cover Phase 13D offline model-response
 fixture evals. They score saved/sample text or JSON responses for grounding,
 citations, hallucination risk, prohibited action language, and safety
 boundaries. They do not call Procore, call external AI/model APIs, use
 model-as-judge scoring, execute plugins, fetch remote fixtures, upload reports,
 load arbitrary code, or enable tool/MCP execution.
+
 Examples `249` through `258` cover Phase 15A richer MCP discovery,
 resources, prompt templates, capability summaries, stdio-friendly discovery
 payloads, and safety boundaries. They do not call Procore, call external
 AI/model APIs, execute plugins, fetch remote resources, upload reports, load
 arbitrary code, or enable MCP/tool execution.
+
 Examples `259` through `268` cover Phase 15B MCP eval, plugin,
 async, AI workflow, model-fixture, artifact-review prompt, kind-filtering, and
 stdio discovery metadata. They are local metadata examples only and do not call
 Procore, call external AI/model APIs, execute plugins, fetch remote resources,
 upload reports, load arbitrary code, or enable MCP/tool execution.
+
 Examples `269` through `278` cover Phase 15C MCP contract
 validation, local discovery snapshots, compatibility reports, static fixtures,
 disabled-response shapes, unknown-response shapes, and integration notes. They
 are local metadata examples only and do not call Procore, call external
 AI/model APIs, execute plugins, fetch remote resources, upload reports, load
 arbitrary code, or enable MCP/tool execution.
+
 Examples `279` and `280` cover Phase 16A Project Tools metadata and Daily Logs
 readiness notes. They use mock/local data only and do not call Procore, execute
 tools, mutate Procore, call external AI/model APIs, or enable MCP execution.
+
 Examples `281` through `283` cover Phase 16B trusted plugin metadata policy
 and report validation. They use local JSON files only and do not install
 plugins, fetch remote registries, import plugin modules, execute plugin code,
