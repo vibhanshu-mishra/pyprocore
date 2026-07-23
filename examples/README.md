@@ -169,6 +169,7 @@ and report validation. They use local JSON files only and do not install
 plugins, fetch remote registries, import plugin modules, execute plugin code,
 call Procore, call external AI/model APIs, enable MCP execution, or enable
 Procore tool execution.
+
 Examples `284` through `286` cover Phase 17A local OAS catalog intelligence.
 They read a tiny fake local OpenAPI/OAS JSON fixture and do not fetch remote
 catalogs, generate executable clients, call Procore, call external AI/model
@@ -180,6 +181,12 @@ They search local PyProcore capability metadata and a tiny fake OAS fixture.
 They do not execute SDK functions, call Procore, call external AI/model APIs,
 fetch remote OAS files, enable MCP execution, enable Procore tool execution,
 generate executable tools, or enable write actions.
+
+Examples `291` through `295` cover Phase 17C local integration blueprints.
+They inspect templates, readiness reports, local sync-run records, and webhook
+fixtures only. They do not host apps, add database dependencies, schedule jobs
+automatically, call Procore, call external AI/model APIs, enable MCP/tool
+execution, fetch remote resources, or enable write actions.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -305,6 +312,11 @@ python3 examples/287_discovery_search_capabilities.py
 python3 examples/288_discovery_route_project_question.py
 python3 examples/289_discovery_report_markdown.py
 python3 examples/290_discovery_search_fake_oas.py
+python3 examples/291_integration_blueprint_inventory.py
+python3 examples/292_integration_readiness_report.py
+python3 examples/293_local_sync_run_log.py
+python3 examples/294_webhook_signature_fixture.py
+python3 examples/295_dashboard_data_bridge_blueprint.py
 ```
 
 Documents use Procore's Project Folders and Files endpoints internally. Before a
@@ -656,6 +668,11 @@ The current example set runs from `01_list_companies.py` through
 | `288_discovery_route_project_question.py` | Suggest metadata-only route candidates for a project question |
 | `289_discovery_report_markdown.py` | Render a local discovery safety report |
 | `290_discovery_search_fake_oas.py` | Search local discovery metadata plus the fake OAS fixture |
+| `291_integration_blueprint_inventory.py` | List local integration blueprint templates |
+| `292_integration_readiness_report.py` | Build a local integration readiness report |
+| `293_local_sync_run_log.py` | Write a local sync-run record and redacted log |
+| `294_webhook_signature_fixture.py` | Build and verify a local webhook signature fixture |
+| `295_dashboard_data_bridge_blueprint.py` | Inspect the dashboard data bridge blueprint |
 
 Sample golden datasets live in `examples/golden_datasets/`:
 
@@ -869,4 +886,9 @@ Sample webhook payloads live in `examples/webhooks/`:
   Procore, call external AI/model APIs, fetch remote OAS files, enable MCP
   execution, enable Procore tool execution, generate executable tools, or
   enable write actions.
+- Examples `291` through `295` add Phase 17C local integration blueprint
+  examples. They inspect templates, readiness reports, local sync-run records,
+  and webhook fixtures only. They do not host apps, add database dependencies,
+  schedule jobs automatically, call Procore, call external AI/model APIs,
+  enable MCP/tool execution, fetch remote resources, or enable write actions.
 - Keep secrets out of code, screenshots, logs, and issue reports.

@@ -11,8 +11,9 @@
   deterministic evals, and Phase 15 discovery-only MCP compatibility tooling.
 - Post-release development for the next unreleased version includes Phase 16A
   read-only Project Tools metadata helpers, Phase 16B trusted plugin metadata
-  policy/report foundations, Phase 17A local OAS catalog intelligence, and
-  Phase 17B local discovery router metadata.
+  policy/report foundations, Phase 17A local OAS catalog intelligence, Phase
+  17B local discovery router metadata, and Phase 17C local integration
+  blueprints.
   This work is not part of the published `2.3.0` package until a future
   release is cut.
 
@@ -227,7 +228,9 @@ Phase 16A adds read-only Project Tools metadata helpers. Phase 16B adds local
 trusted plugin policy and report metadata. Phase 17A adds local OAS-backed
 endpoint catalog intelligence for user-provided JSON OpenAPI/OAS files. Phase
 17B adds local discovery router metadata for searching PyProcore capabilities by
-intent.
+intent. Phase 17C adds local integration blueprints for sync workers, webhook
+receivers, read-only API templates, dashboard data bridges, scheduled export
+workers, and project health feeds.
 
 Phase 17A is metadata/reporting only. It does not fetch remote OAS files,
 generate executable clients, register executable tools, call Procore, call
@@ -238,6 +241,11 @@ Phase 17B is metadata/reporting only. It does not execute SDK functions, fetch
 remote OAS files, generate executable clients or tools, call Procore, call
 external AI/model APIs, enable MCP execution, enable Procore tool execution, or
 enable write actions.
+
+Phase 17C is template/report oriented only. It does not host infrastructure,
+schedule jobs automatically, add database dependencies, call Procore, call
+external AI/model APIs, enable MCP execution, enable Procore tool execution,
+fetch remote resources, or enable write actions.
 
 Phase 8B adds `PROCORE_AUTH_MODE=client_credentials` support for Procore Data
 Connection Apps. Authorization-code OAuth remains the default. Client

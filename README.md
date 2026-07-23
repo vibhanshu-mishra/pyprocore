@@ -143,6 +143,16 @@ environment variables that are already set.
 - Keep discovery metadata-only: no SDK execution, no Procore calls, no MCP
   execution, no external AI/model calls, no remote OAS fetch, and no writes.
 
+### Local Integration Blueprints
+
+- Inspect safe templates for sync workers, webhook receivers, read-only APIs,
+  dashboard data bridges, scheduled exports, and project health feeds.
+- Create local sync-run JSON/JSONL records and sanitized webhook fixtures.
+- Run local readiness checks for output paths, env vars, token-store placement,
+  webhook secrets, and no-secrets guidance.
+- Keep blueprints local-only: no hosted app, no database dependency, no automatic
+  scheduler, no Procore calls, no MCP/tool execution, and no write actions.
+
 ### Deterministic Evals And Regression Checks
 
 - Run local golden eval suites for workflow packages and manifests.

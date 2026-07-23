@@ -21,6 +21,7 @@ nav:
   - Agent API: agent-api.md
   - MCP Discovery: mcp.md
   - Plugins: plugins.md
+  - Integration Blueprints: integration-blueprints.md
   - Golden Evals: evals.md
   - Project Status: project-status.md
   - Security: security.md

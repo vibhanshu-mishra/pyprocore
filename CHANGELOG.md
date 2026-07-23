@@ -23,6 +23,9 @@ and this project follows semantic versioning.
 - Phase 17B local discovery router metadata layer for searching PyProcore
   capabilities by intent, route suggestion reports, optional local OAS-backed
   discovery candidates, CLI commands, local examples, and mocked/local tests.
+- Phase 17C local integration blueprint metadata layer with blueprint
+  inventory, readiness reports, local sync-run records, webhook fixture
+  helpers, CLI commands, docs, examples, and mocked/local tests.
 
 ### Deferred
 

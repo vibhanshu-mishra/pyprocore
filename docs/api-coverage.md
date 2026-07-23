@@ -53,6 +53,7 @@ Procore environment.
 | Agent registry | Metadata only | Manifest, tool list, tool lookup | No tool execution, server, credentials, or live Procore calls. |
 | OAS Catalog | Unreleased Phase 17A | Local endpoint summaries, safety reports, coverage reports | Metadata-only inspection of user-provided local OAS JSON files. No remote fetch, generated executable tools, Procore calls, MCP execution, or write actions. |
 | Discovery Router | Unreleased Phase 17B | Local capability search, route suggestions, inventory and safety reports | Metadata-only discovery over PyProcore capabilities and optional local OAS catalog candidates. No execution, Procore calls, MCP execution, external AI/model calls, remote OAS fetch, generated tools, or write actions. |
+| Integration Blueprints | Unreleased Phase 17C | Local blueprints, readiness reports, sync-run records, webhook fixtures | Template/report-oriented integration guidance only. No hosted app, database dependency, automatic scheduler, Procore calls, MCP/tool execution, remote calls, or write actions. |
 
 ## Agent Tool Registry
 
@@ -117,6 +118,20 @@ This layer does not execute SDK functions, call Procore, call external
 AI/model APIs, fetch remote OAS files, generate executable clients or tools,
 enable MCP execution, enable Procore tool execution, or enable create, update,
 delete, upload, approve, submit, payment, import, send, or other write actions.
+
+## Unreleased Phase 17C Integration Blueprint Notes
+
+Phase 17C adds local integration blueprint metadata for teams designing their
+own PyProcore sync workers, webhook receivers, read-only internal APIs,
+dashboard data bridges, scheduled export workers, and project health feeds.
+
+The blueprint layer includes local JSON/Markdown reports, readiness findings,
+local sync-run JSON/JSONL records, and generic webhook HMAC fixture helpers.
+It does not host infrastructure, schedule jobs automatically, store secrets in
+a database, call Procore, call external AI/model APIs, enable MCP execution,
+enable Procore tool execution, fetch remote resources, or enable create,
+update, delete, upload, approve, submit, payment, import, send, or other write
+actions.
 
 ## Phase 8A Endpoint Notes
 

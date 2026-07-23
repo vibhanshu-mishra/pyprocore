@@ -78,6 +78,12 @@ Safety status for `v2.3.0`:
   candidates. It does not execute SDK functions, call Procore, fetch remote OAS
   files, generate executable tools, call external AI/model APIs, enable MCP
   execution, or enable write actions.
+- Phase 17C adds local integration blueprints for sync workers, webhook
+  receivers, read-only internal API templates, dashboard data bridges,
+  scheduled export workers, and project health feeds. It does not host
+  infrastructure, schedule jobs automatically, add database dependencies, call
+  Procore, call external AI/model APIs, enable MCP/tool execution, fetch remote
+  resources, or enable write actions.
 - Additional Daily Log types with ambiguous or environment-specific endpoint
   shapes remain deferred until safe documented GET/list paths are confirmed.
 

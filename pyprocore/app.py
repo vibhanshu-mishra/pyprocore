@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from ipaddress import ip_address
 from pathlib import Path
 from typing import Any, Literal
@@ -165,6 +166,29 @@ from pyprocore.evals import (
     write_eval_report_markdown,
     write_regression_report_json,
     write_regression_report_markdown,
+)
+from pyprocore.integrations import (
+    IntegrationBlueprint,
+    IntegrationReadinessReport,
+    build_integration_readiness_report,
+    build_sample_webhook_event,
+    complete_sync_run,
+    create_sync_run,
+    get_integration_blueprint,
+    integration_blueprint_to_json,
+    integration_blueprint_to_markdown,
+    integration_blueprints_to_json,
+    integration_blueprints_to_markdown,
+    integration_readiness_report_to_json,
+    integration_readiness_report_to_markdown,
+    list_integration_blueprints,
+)
+from pyprocore.integrations import normalize_webhook_event as normalize_integration_webhook_event
+from pyprocore.integrations import (
+    summarize_sync_runs,
+    sync_run_summary_to_json,
+    sync_run_summary_to_markdown,
+    verify_webhook_signature,
 )
 from pyprocore.mcp import (
     build_mcp_compatibility_report,
@@ -1623,6 +1647,119 @@ def build_parser() -> argparse.ArgumentParser:
     )
     discovery_search_oas_parser.add_argument("--json", dest="json_output", action="store_true")
     discovery_search_oas_parser.add_argument("--pretty", action="store_true")
+
+    integrations_parser = subcommands.add_parser(
+        "integrations",
+        help="Inspect local integration blueprints and fixtures without calling Procore",
+    )
+    integrations_subcommands = integrations_parser.add_subparsers(
+        dest="integrations_command",
+        required=True,
+    )
+    integrations_blueprints_parser = integrations_subcommands.add_parser(
+        "blueprints",
+        help="List local integration blueprint templates",
+    )
+    integrations_blueprints_parser.add_argument("--json", dest="json_output", action="store_true")
+    integrations_blueprints_parser.add_argument("--pretty", action="store_true")
+    integrations_blueprint_parser = integrations_subcommands.add_parser(
+        "blueprint",
+        help="Describe one local integration blueprint template",
+    )
+    integrations_blueprint_parser.add_argument("name")
+    integrations_blueprint_parser.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="markdown",
+    )
+    integrations_blueprint_parser.add_argument("--json", dest="json_output", action="store_true")
+    integrations_blueprint_parser.add_argument("--pretty", action="store_true")
+    integrations_readiness_parser = integrations_subcommands.add_parser(
+        "readiness",
+        help="Run local readiness checks for an integration blueprint",
+    )
+    integrations_readiness_parser.add_argument("name")
+    integrations_readiness_parser.add_argument("--output-dir", required=True, type=Path)
+    integrations_readiness_parser.add_argument("--token-store-path", type=Path, default=None)
+    integrations_readiness_parser.add_argument("--sync-log-dir", type=Path, default=None)
+    integrations_readiness_parser.add_argument(
+        "--webhook-secret-env",
+        default="PROCORE_WEBHOOK_SECRET",
+    )
+    integrations_readiness_parser.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="markdown",
+    )
+    integrations_readiness_parser.add_argument("--json", dest="json_output", action="store_true")
+    integrations_readiness_parser.add_argument("--pretty", action="store_true")
+    integrations_sync_run_parser = integrations_subcommands.add_parser(
+        "sync-run",
+        help="Create or summarize local sync run records",
+    )
+    integrations_sync_run_subcommands = integrations_sync_run_parser.add_subparsers(
+        dest="integrations_sync_run_command",
+        required=True,
+    )
+    integrations_sync_sample_parser = integrations_sync_run_subcommands.add_parser(
+        "sample",
+        help="Write a local sample sync run record",
+    )
+    integrations_sync_sample_parser.add_argument("--output-dir", required=True, type=Path)
+    integrations_sync_sample_parser.add_argument(
+        "--blueprint",
+        default="procore_to_csv_sync_worker",
+    )
+    integrations_sync_sample_parser.add_argument("--json", dest="json_output", action="store_true")
+    integrations_sync_sample_parser.add_argument("--pretty", action="store_true")
+    integrations_sync_summary_parser = integrations_sync_run_subcommands.add_parser(
+        "summarize",
+        help="Summarize local sync run JSON files",
+    )
+    integrations_sync_summary_parser.add_argument("path", type=Path)
+    integrations_sync_summary_parser.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="markdown",
+    )
+    integrations_sync_summary_parser.add_argument("--json", dest="json_output", action="store_true")
+    integrations_sync_summary_parser.add_argument("--pretty", action="store_true")
+    integrations_webhook_parser = integrations_subcommands.add_parser(
+        "webhook",
+        help="Build and verify local webhook signature fixtures",
+    )
+    integrations_webhook_subcommands = integrations_webhook_parser.add_subparsers(
+        dest="integrations_webhook_command",
+        required=True,
+    )
+    integrations_webhook_sample_parser = integrations_webhook_subcommands.add_parser(
+        "sample-event",
+        help="Write a local sanitized webhook fixture event",
+    )
+    integrations_webhook_sample_parser.add_argument("--output", required=True, type=Path)
+    integrations_webhook_sample_parser.add_argument(
+        "--json", dest="json_output", action="store_true"
+    )
+    integrations_webhook_sample_parser.add_argument("--pretty", action="store_true")
+    integrations_webhook_verify_parser = integrations_webhook_subcommands.add_parser(
+        "verify",
+        help="Verify a local webhook fixture signature using an env var or direct test secret",
+    )
+    integrations_webhook_verify_parser.add_argument("--event", required=True, type=Path)
+    integrations_webhook_verify_parser.add_argument(
+        "--secret",
+        required=True,
+        help="Environment variable name containing the secret, or a direct local test secret",
+    )
+    integrations_webhook_verify_parser.add_argument(
+        "--secret-is-value",
+        action="store_true",
+        help="Treat --secret as a direct test secret value instead of an environment variable name",
+    )
+    integrations_webhook_verify_parser.add_argument(
+        "--json", dest="json_output", action="store_true"
+    )
+    integrations_webhook_verify_parser.add_argument("--pretty", action="store_true")
 
     subcommands.add_parser("companies", help="List companies")
 
@@ -4355,6 +4492,74 @@ def run_command(args: argparse.Namespace) -> Any:
                 limit=args.limit,
             )
         raise ValueError(f"Unsupported discovery command: {args.discovery_command}")
+
+    if args.command == "integrations":
+        if args.integrations_command == "blueprints":
+            return list_integration_blueprints()
+        if args.integrations_command == "blueprint":
+            return get_integration_blueprint(args.name)
+        if args.integrations_command == "readiness":
+            return build_integration_readiness_report(
+                args.name,
+                args.output_dir,
+                token_store_path=args.token_store_path,
+                sync_log_dir=args.sync_log_dir,
+                webhook_secret_env=args.webhook_secret_env,
+            )
+        if args.integrations_command == "sync-run":
+            if args.integrations_sync_run_command == "sample":
+                run = create_sync_run(
+                    args.blueprint,
+                    args.output_dir,
+                    run_id="sample_sync_run",
+                    summary={"example": True, "access_token": "redacted-by-helper"},
+                )
+                return complete_sync_run(
+                    run,
+                    summary={"records": 0, "note": "Local sample only; no Procore calls."},
+                )
+            if args.integrations_sync_run_command == "summarize":
+                return summarize_sync_runs(args.path)
+            raise ValueError(
+                f"Unsupported integrations sync-run command: "
+                f"{args.integrations_sync_run_command}"
+            )
+        if args.integrations_command == "webhook":
+            if args.integrations_webhook_command == "sample-event":
+                return build_sample_webhook_event(args.output)
+            if args.integrations_webhook_command == "verify":
+                event_payload = json.loads(args.event.read_text(encoding="utf-8"))
+                body = event_payload.get("body", {})
+                headers = {
+                    str(key): str(value) for key, value in event_payload.get("headers", {}).items()
+                }
+                signature_header = event_payload.get("signature_header")
+                signature = headers.get(signature_header or "")
+                secret = args.secret if args.secret_is_value else os.environ.get(args.secret, "")
+                verified = bool(
+                    signature and secret and verify_webhook_signature(body, signature, secret)
+                )
+                integration_event = normalize_integration_webhook_event(
+                    headers,
+                    body,
+                    signature_header=signature_header,
+                    secret=secret if secret else None,
+                    event_id=event_payload.get("event_id"),
+                )
+                return {
+                    "verified": verified,
+                    "event_id": integration_event.event_id,
+                    "signature_header": signature_header,
+                    "secret_source": "direct_value" if args.secret_is_value else "environment",
+                    "mode": "local_webhook_fixture_verification_only",
+                    "procore_api_call_required": False,
+                    "secret_echoed": False,
+                    "event": integration_event.model_dump(mode="json"),
+                }
+            raise ValueError(
+                f"Unsupported integrations webhook command: " f"{args.integrations_webhook_command}"
+            )
+        raise ValueError(f"Unsupported integrations command: {args.integrations_command}")
 
     if args.command == "workflow-plan":
         if args.workflow_plan_command == "list":
@@ -7610,6 +7815,40 @@ def main() -> None:
                 print(discovery_report_to_json(result, pretty=True))
             else:
                 print(discovery_report_to_markdown(result).rstrip())
+            return
+
+    if args.command == "integrations":
+        if (
+            isinstance(result, list)
+            and result
+            and all(isinstance(item, IntegrationBlueprint) for item in result)
+        ):
+            blueprints = list(result)
+            if args.json_output or getattr(args, "pretty", False):
+                print(integration_blueprints_to_json(blueprints, pretty=True))
+            else:
+                print(integration_blueprints_to_markdown(blueprints).rstrip())
+            return
+        if isinstance(result, IntegrationBlueprint):
+            if args.json_output or getattr(args, "format", None) == "json":
+                print(integration_blueprint_to_json(result, pretty=True))
+            else:
+                print(integration_blueprint_to_markdown(result).rstrip())
+            return
+        if isinstance(result, IntegrationReadinessReport):
+            if args.json_output or getattr(args, "format", None) == "json":
+                print(integration_readiness_report_to_json(result, pretty=True))
+            else:
+                print(integration_readiness_report_to_markdown(result).rstrip())
+            return
+        if isinstance(result, dict) and getattr(args, "integrations_command", None) == "sync-run":
+            if args.json_output or getattr(args, "format", None) == "json":
+                print(sync_run_summary_to_json(result, pretty=True))
+            else:
+                print(sync_run_summary_to_markdown(result).rstrip())
+            return
+        if isinstance(result, dict) and getattr(args, "integrations_command", None) == "webhook":
+            print(json.dumps(result, indent=2 if args.json_output or args.pretty else None))
             return
 
     if args.command == "workflow-plan" and args.workflow_plan_command == "list":

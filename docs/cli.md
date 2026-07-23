@@ -223,6 +223,28 @@ generate executable clients, register executable tools, call Procore, call
 external AI/model APIs, enable MCP execution, enable Procore tool execution, or
 perform create/update/delete/upload/approve/submit/payment/write actions.
 
+## Local Integration Blueprints
+
+Phase 17C adds local integration blueprint commands:
+
+```bash
+procore-sdk integrations blueprints
+procore-sdk integrations blueprint procore_to_csv_sync_worker
+procore-sdk integrations blueprint procore_dashboard_data_bridge --format json
+procore-sdk integrations readiness procore_webhook_receiver --output-dir ./exports
+procore-sdk integrations sync-run sample --output-dir ./exports/sync-runs
+procore-sdk integrations sync-run summarize ./exports/sync-runs
+procore-sdk integrations webhook sample-event --output ./tmp/webhook-event.json
+procore-sdk integrations webhook verify --event ./tmp/webhook-event.json --secret PROCORE_WEBHOOK_SECRET
+```
+
+These commands inspect templates, write local sync-run records, or verify local
+webhook fixtures only. They do not host infrastructure, schedule jobs
+automatically, store secrets in a database, call Procore, call external
+AI/model APIs, enable MCP execution, enable Procore tool execution, or enable
+write actions. If a direct local test secret is passed with `--secret-is-value`,
+the CLI does not echo it.
+
 ## Local Discovery Router
 
 Phase 17B adds local discovery commands for searching PyProcore capability
