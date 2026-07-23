@@ -52,6 +52,7 @@ Procore environment.
 | Webhooks | Local helpers | Validate, redact, save, list, dry-run dispatch | No hosted webhook server is included. |
 | Agent registry | Metadata only | Manifest, tool list, tool lookup | No tool execution, server, credentials, or live Procore calls. |
 | OAS Catalog | Unreleased Phase 17A | Local endpoint summaries, safety reports, coverage reports | Metadata-only inspection of user-provided local OAS JSON files. No remote fetch, generated executable tools, Procore calls, MCP execution, or write actions. |
+| Discovery Router | Unreleased Phase 17B | Local capability search, route suggestions, inventory and safety reports | Metadata-only discovery over PyProcore capabilities and optional local OAS catalog candidates. No execution, Procore calls, MCP execution, external AI/model calls, remote OAS fetch, generated tools, or write actions. |
 
 ## Agent Tool Registry
 
@@ -99,6 +100,23 @@ remote registries, generate executable clients, register executable tools, call
 Procore, enable MCP execution, enable Procore tool execution, or enable create,
 update, delete, upload, approve, submit, payment, import, send, or other write
 actions.
+
+## Unreleased Phase 17B Discovery Router Notes
+
+Phase 17B adds a local discovery/router metadata layer for searching PyProcore
+capabilities by human intent. It can suggest candidate resource families and
+helper areas for phrases such as "overdue rfis" or "download drawings" using
+deterministic lexical scoring against local metadata.
+
+The discovery layer can optionally include candidates from a user-provided
+local OAS JSON file parsed by the Phase 17A catalog layer. Those OAS-backed
+candidates remain metadata only and preserve the local catalog safety
+classification.
+
+This layer does not execute SDK functions, call Procore, call external
+AI/model APIs, fetch remote OAS files, generate executable clients or tools,
+enable MCP execution, enable Procore tool execution, or enable create, update,
+delete, upload, approve, submit, payment, import, send, or other write actions.
 
 ## Phase 8A Endpoint Notes
 

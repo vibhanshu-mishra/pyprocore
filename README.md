@@ -135,6 +135,14 @@ environment variables that are already set.
 - Produce JSON or Markdown reports without fetching remote catalogs, generating
   executable tools, calling Procore, or enabling writes.
 
+### Local Discovery Router Metadata
+
+- Search PyProcore capability metadata by intent, such as `overdue rfis`.
+- Get ranked route suggestions with reasons and explicit safety boundaries.
+- Include local OAS catalog candidates when a local OAS JSON file is provided.
+- Keep discovery metadata-only: no SDK execution, no Procore calls, no MCP
+  execution, no external AI/model calls, no remote OAS fetch, and no writes.
+
 ### Deterministic Evals And Regression Checks
 
 - Run local golden eval suites for workflow packages and manifests.
@@ -179,6 +187,7 @@ procore-sdk scheduled-export dry-run examples/configs/scheduled_export_client_cr
 procore-sdk evals run
 procore-sdk mcp validate
 procore-sdk catalog summarize examples/catalog/fake_procore_oas.json
+procore-sdk discovery search "overdue rfis"
 ```
 
 See [CLI Usage](docs/cli.md) for the full command reference.

@@ -73,6 +73,11 @@ Safety status for `v2.3.0`:
   classification, and JSON/Markdown reports without fetching remote catalogs,
   generating executable tools, calling Procore, enabling MCP execution, or
   enabling Procore write actions.
+- Phase 17B adds a local discovery router metadata layer for searching
+  PyProcore capabilities by intent and suggesting metadata-only route
+  candidates. It does not execute SDK functions, call Procore, fetch remote OAS
+  files, generate executable tools, call external AI/model APIs, enable MCP
+  execution, or enable write actions.
 - Additional Daily Log types with ambiguous or environment-specific endpoint
   shapes remain deferred until safe documented GET/list paths are confirmed.
 

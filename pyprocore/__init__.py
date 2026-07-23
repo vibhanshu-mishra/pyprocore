@@ -139,6 +139,31 @@ from pyprocore.core.async_transport import (
     MockAsyncTransport,
 )
 from pyprocore.core.exceptions import DuplicateMatchError, MultipleResultsError, NotFoundError
+from pyprocore.discovery import (  # noqa: F401
+    DISCOVERY_MODE,
+    DISCOVERY_SCHEMA_VERSION,
+    DiscoveryBundle,
+    DiscoveryCapability,
+    DiscoveryQuery,
+    DiscoveryReport,
+    DiscoveryRouteCandidate,
+    DiscoveryRouteResult,
+    build_discovery_bundle,
+    build_discovery_report,
+    discovery_bundle_to_json,
+    discovery_bundle_to_markdown,
+    discovery_capability_to_json,
+    discovery_capability_to_markdown,
+    discovery_report_to_json,
+    discovery_report_to_markdown,
+    discovery_route_result_to_json,
+    discovery_route_result_to_markdown,
+    get_discovery_capability,
+    list_discovery_capabilities,
+    route_discovery_query,
+    search_discovery_capabilities,
+    search_oas_catalog_capabilities,
+)
 from pyprocore.evals import (  # noqa: F401
     BASELINE_SCHEMA_VERSION,
     DATASET_SCHEMA_VERSION,

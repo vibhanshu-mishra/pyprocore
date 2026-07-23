@@ -97,6 +97,26 @@ from pyprocore.core.exceptions import (
     ResourceNotFoundError,
     ValidationError,
 )
+from pyprocore.discovery import (
+    DiscoveryBundle,
+    DiscoveryCapability,
+    DiscoveryReport,
+    DiscoveryRouteResult,
+    build_discovery_bundle,
+    build_discovery_report,
+    discovery_bundle_to_json,
+    discovery_bundle_to_markdown,
+    discovery_capability_to_json,
+    discovery_capability_to_markdown,
+    discovery_report_to_json,
+    discovery_report_to_markdown,
+    discovery_route_result_to_json,
+    discovery_route_result_to_markdown,
+    get_discovery_capability,
+    route_discovery_query,
+    search_discovery_capabilities,
+    search_oas_catalog_capabilities,
+)
 from pyprocore.evals import (
     EvalBaseline,
     EvalFinding,
@@ -1540,6 +1560,69 @@ def build_parser() -> argparse.ArgumentParser:
     )
     catalog_safety_parser.add_argument("--json", dest="json_output", action="store_true")
     catalog_safety_parser.add_argument("--pretty", action="store_true")
+
+    discovery_parser = subcommands.add_parser(
+        "discovery",
+        help="Search local PyProcore capability metadata without execution",
+    )
+    discovery_subcommands = discovery_parser.add_subparsers(
+        dest="discovery_command",
+        required=True,
+    )
+    discovery_capabilities_parser = discovery_subcommands.add_parser(
+        "capabilities",
+        help="List metadata-only PyProcore discovery capabilities",
+    )
+    discovery_capabilities_parser.add_argument("--json", dest="json_output", action="store_true")
+    discovery_capabilities_parser.add_argument("--pretty", action="store_true")
+    discovery_search_parser = discovery_subcommands.add_parser(
+        "search",
+        help="Search local capability metadata by user intent",
+    )
+    discovery_search_parser.add_argument("query")
+    discovery_search_parser.add_argument("--limit", type=int, default=10)
+    discovery_search_parser.add_argument("--json", dest="json_output", action="store_true")
+    discovery_search_parser.add_argument("--pretty", action="store_true")
+    discovery_describe_parser = discovery_subcommands.add_parser(
+        "describe",
+        help="Describe one metadata-only discovery capability",
+    )
+    discovery_describe_parser.add_argument("name")
+    discovery_describe_parser.add_argument("--json", dest="json_output", action="store_true")
+    discovery_describe_parser.add_argument("--pretty", action="store_true")
+    discovery_route_parser = discovery_subcommands.add_parser(
+        "route",
+        help="Suggest local metadata route candidates for a user intent",
+    )
+    discovery_route_parser.add_argument("query")
+    discovery_route_parser.add_argument("--limit", type=int, default=5)
+    discovery_route_parser.add_argument("--json", dest="json_output", action="store_true")
+    discovery_route_parser.add_argument("--pretty", action="store_true")
+    discovery_report_parser = discovery_subcommands.add_parser(
+        "report",
+        help="Render a local discovery inventory and safety report",
+    )
+    discovery_report_parser.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="markdown",
+    )
+    discovery_report_parser.add_argument("--json", dest="json_output", action="store_true")
+    discovery_report_parser.add_argument("--pretty", action="store_true")
+    discovery_search_oas_parser = discovery_subcommands.add_parser(
+        "search-oas",
+        help="Search local capability metadata plus a local OAS JSON catalog",
+    )
+    discovery_search_oas_parser.add_argument("oas_path", type=Path)
+    discovery_search_oas_parser.add_argument("query")
+    discovery_search_oas_parser.add_argument("--limit", type=int, default=10)
+    discovery_search_oas_parser.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="markdown",
+    )
+    discovery_search_oas_parser.add_argument("--json", dest="json_output", action="store_true")
+    discovery_search_oas_parser.add_argument("--pretty", action="store_true")
 
     subcommands.add_parser("companies", help="List companies")
 
@@ -4253,6 +4336,25 @@ def run_command(args: argparse.Namespace) -> Any:
         if args.catalog_command in {"coverage-report", "safety-report"}:
             return compare_catalog_to_pyprocore_supported_coverage(catalog)
         raise ValueError(f"Unsupported catalog command: {args.catalog_command}")
+
+    if args.command == "discovery":
+        if args.discovery_command == "capabilities":
+            return build_discovery_bundle()
+        if args.discovery_command == "search":
+            return search_discovery_capabilities(args.query, limit=args.limit)
+        if args.discovery_command == "describe":
+            return get_discovery_capability(args.name)
+        if args.discovery_command == "route":
+            return route_discovery_query(args.query, limit=args.limit)
+        if args.discovery_command == "report":
+            return build_discovery_report()
+        if args.discovery_command == "search-oas":
+            return search_oas_catalog_capabilities(
+                args.oas_path,
+                args.query,
+                limit=args.limit,
+            )
+        raise ValueError(f"Unsupported discovery command: {args.discovery_command}")
 
     if args.command == "workflow-plan":
         if args.workflow_plan_command == "list":
@@ -7482,6 +7584,32 @@ def main() -> None:
                 print(coverage_report_to_json(result, pretty=True))
             else:
                 print(coverage_report_to_markdown(result).rstrip())
+            return
+
+    if args.command == "discovery":
+        if isinstance(result, DiscoveryBundle):
+            if args.json_output or getattr(args, "pretty", False):
+                print(discovery_bundle_to_json(result, pretty=True))
+            else:
+                print(discovery_bundle_to_markdown(result).rstrip())
+            return
+        if isinstance(result, DiscoveryCapability):
+            if args.json_output or getattr(args, "pretty", False):
+                print(discovery_capability_to_json(result, pretty=True))
+            else:
+                print(discovery_capability_to_markdown(result).rstrip())
+            return
+        if isinstance(result, DiscoveryRouteResult):
+            if args.json_output or getattr(args, "format", None) == "json":
+                print(discovery_route_result_to_json(result, pretty=True))
+            else:
+                print(discovery_route_result_to_markdown(result).rstrip())
+            return
+        if isinstance(result, DiscoveryReport):
+            if args.json_output or getattr(args, "format", None) == "json":
+                print(discovery_report_to_json(result, pretty=True))
+            else:
+                print(discovery_report_to_markdown(result).rstrip())
             return
 
     if args.command == "workflow-plan" and args.workflow_plan_command == "list":

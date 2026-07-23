@@ -97,3 +97,7 @@ requests still return disabled execution responses.
 
 Future phases may explore guarded execution, but Phase 15A, 15B, and 15C do
 not enable it.
+
+Phase 17B discovery router metadata does not change MCP behavior. It can point
+users toward MCP discovery metadata as a capability area, but it does not
+execute MCP tools, call Procore, or generate executable tools.

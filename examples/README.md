@@ -175,6 +175,12 @@ catalogs, generate executable clients, call Procore, call external AI/model
 APIs, enable MCP execution, enable Procore tool execution, or enable write
 actions.
 
+Examples `287` through `290` cover Phase 17B local discovery router metadata.
+They search local PyProcore capability metadata and a tiny fake OAS fixture.
+They do not execute SDK functions, call Procore, call external AI/model APIs,
+fetch remote OAS files, enable MCP execution, enable Procore tool execution,
+generate executable tools, or enable write actions.
+
 Agent examples do not require Procore credentials or execute tools.
 
 ## Environment Variables
@@ -295,6 +301,10 @@ python3 examples/258_phase15a_mcp_discovery_summary.py
 python3 examples/284_catalog_summarize_fake_oas.py
 python3 examples/285_catalog_safety_report_fake_oas.py
 python3 examples/286_catalog_coverage_report_fake_oas.py
+python3 examples/287_discovery_search_capabilities.py
+python3 examples/288_discovery_route_project_question.py
+python3 examples/289_discovery_report_markdown.py
+python3 examples/290_discovery_search_fake_oas.py
 ```
 
 Documents use Procore's Project Folders and Files endpoints internally. Before a
@@ -642,6 +652,10 @@ The current example set runs from `01_list_companies.py` through
 | `284_catalog_summarize_fake_oas.py` | Summarize a tiny local fake OAS endpoint catalog |
 | `285_catalog_safety_report_fake_oas.py` | Build a local fake-OAS endpoint safety report |
 | `286_catalog_coverage_report_fake_oas.py` | Build a local fake-OAS coverage report |
+| `287_discovery_search_capabilities.py` | Search local PyProcore capability metadata |
+| `288_discovery_route_project_question.py` | Suggest metadata-only route candidates for a project question |
+| `289_discovery_report_markdown.py` | Render a local discovery safety report |
+| `290_discovery_search_fake_oas.py` | Search local discovery metadata plus the fake OAS fixture |
 
 Sample golden datasets live in `examples/golden_datasets/`:
 
@@ -850,4 +864,9 @@ Sample webhook payloads live in `examples/webhooks/`:
   read local fake OAS JSON only and do not fetch remote catalogs, generate
   executable clients, call Procore, call external AI/model APIs, enable MCP
   execution, enable Procore tool execution, or enable write actions.
+- Examples `287` through `290` add Phase 17B local discovery router examples.
+  They search local metadata only and do not execute SDK functions, call
+  Procore, call external AI/model APIs, fetch remote OAS files, enable MCP
+  execution, enable Procore tool execution, generate executable tools, or
+  enable write actions.
 - Keep secrets out of code, screenshots, logs, and issue reports.

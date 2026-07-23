@@ -20,6 +20,9 @@ and this project follows semantic versioning.
   OpenAPI/OAS files, with typed endpoint metadata, safety classification,
   coverage comparison reports, CLI commands, local fake-OAS examples, and
   mocked/local tests.
+- Phase 17B local discovery router metadata layer for searching PyProcore
+  capabilities by intent, route suggestion reports, optional local OAS-backed
+  discovery candidates, CLI commands, local examples, and mocked/local tests.
 
 ### Deferred
 

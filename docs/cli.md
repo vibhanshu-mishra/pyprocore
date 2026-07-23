@@ -223,6 +223,25 @@ generate executable clients, register executable tools, call Procore, call
 external AI/model APIs, enable MCP execution, enable Procore tool execution, or
 perform create/update/delete/upload/approve/submit/payment/write actions.
 
+## Local Discovery Router
+
+Phase 17B adds local discovery commands for searching PyProcore capability
+metadata by intent:
+
+```bash
+procore-sdk discovery capabilities
+procore-sdk discovery search "overdue rfis"
+procore-sdk discovery describe rfis
+procore-sdk discovery route "download drawings"
+procore-sdk discovery report --format markdown
+procore-sdk discovery search-oas examples/catalog/fake_procore_oas.json "change orders" --format json
+```
+
+Discovery commands produce metadata and route suggestions only. They do not
+execute SDK functions, call Procore, fetch remote OAS files, generate
+executable clients or tools, call external AI/model APIs, enable MCP execution,
+enable Procore tool execution, or perform write actions.
+
 ## Golden Dataset Evals
 
 Phase 13A adds local deterministic eval commands for safe JSON-like
