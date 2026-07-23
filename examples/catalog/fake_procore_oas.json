@@ -1,0 +1,68 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Fake Procore OAS Catalog",
+    "version": "0.0.0-example"
+  },
+  "paths": {
+    "/rest/v1.0/companies": {
+      "get": {
+        "operationId": "listCompanies",
+        "summary": "List companies",
+        "tags": ["Companies"]
+      }
+    },
+    "/rest/v1.0/companies/{company_id}/projects": {
+      "parameters": [
+        {
+          "name": "company_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "listProjects",
+        "summary": "List projects",
+        "tags": ["Projects"]
+      }
+    },
+    "/rest/v1.1/projects/{project_id}/rfis": {
+      "get": {
+        "operationId": "listRfis",
+        "summary": "List RFIs",
+        "tags": ["RFIs"]
+      }
+    },
+    "/rest/v1.1/projects/{project_id}/rfis/{rfi_id}/approve": {
+      "post": {
+        "operationId": "approveRfi",
+        "summary": "Approve an RFI",
+        "tags": ["RFIs"]
+      }
+    },
+    "/rest/v1.0/projects/{project_id}/documents/upload": {
+      "post": {
+        "operationId": "uploadDocument",
+        "summary": "Upload a document",
+        "tags": ["Documents"]
+      }
+    },
+    "/rest/v1.0/projects/{project_id}/payment_applications": {
+      "get": {
+        "operationId": "listPaymentApplications",
+        "summary": "List payment applications",
+        "tags": ["Financials"]
+      }
+    },
+    "/rest/v1.0/projects/{project_id}/unknown_widgets": {
+      "trace": {
+        "operationId": "traceUnknownWidgets",
+        "summary": "Trace unknown widgets",
+        "tags": ["Unknown"]
+      }
+    }
+  }
+}

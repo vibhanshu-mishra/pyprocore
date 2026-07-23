@@ -127,6 +127,14 @@ environment variables that are already set.
 - Validate local plugin trust policies and metadata-only trust reports without
   installing, importing, or executing plugin code.
 
+### Local OAS Catalog Intelligence
+
+- Inspect a user-provided local OpenAPI/OAS JSON file.
+- Classify endpoints as read-only, risky/write, or unknown from metadata.
+- Compare endpoint areas to known PyProcore read coverage.
+- Produce JSON or Markdown reports without fetching remote catalogs, generating
+  executable tools, calling Procore, or enabling writes.
+
 ### Deterministic Evals And Regression Checks
 
 - Run local golden eval suites for workflow packages and manifests.
@@ -170,6 +178,7 @@ procore-sdk project-context --project 352338 --company 4286480
 procore-sdk scheduled-export dry-run examples/configs/scheduled_export_client_credentials.json
 procore-sdk evals run
 procore-sdk mcp validate
+procore-sdk catalog summarize examples/catalog/fake_procore_oas.json
 ```
 
 See [CLI Usage](docs/cli.md) for the full command reference.

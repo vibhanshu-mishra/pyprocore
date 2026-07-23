@@ -206,6 +206,23 @@ fetch remote registries, import plugin modules, execute plugin code, call
 Procore, call external AI/model APIs, enable MCP execution, or enable Procore
 tool execution.
 
+## Local OAS Catalog
+
+Phase 17A adds local OAS catalog commands for endpoint coverage intelligence:
+
+```bash
+procore-sdk catalog summarize examples/catalog/fake_procore_oas.json
+procore-sdk catalog endpoints examples/catalog/fake_procore_oas.json --method GET
+procore-sdk catalog coverage-report examples/catalog/fake_procore_oas.json --format json
+procore-sdk catalog safety-report examples/catalog/fake_procore_oas.json --format markdown
+```
+
+Catalog commands read a user-provided local OpenAPI/OAS JSON file and produce
+JSON or Markdown metadata reports. They do not download remote OAS files,
+generate executable clients, register executable tools, call Procore, call
+external AI/model APIs, enable MCP execution, enable Procore tool execution, or
+perform create/update/delete/upload/approve/submit/payment/write actions.
+
 ## Golden Dataset Evals
 
 Phase 13A adds local deterministic eval commands for safe JSON-like

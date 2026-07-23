@@ -10,9 +10,10 @@
   plugin metadata/hooks/scaffolding, Phase 12 AI workflow examples, Phase 13
   deterministic evals, and Phase 15 discovery-only MCP compatibility tooling.
 - Post-release development for the next unreleased version includes Phase 16A
-  read-only Project Tools metadata helpers and Phase 16B trusted plugin
-  metadata policy/report foundations. This work is not part of the published
-  `2.3.0` package until a future release is cut.
+  read-only Project Tools metadata helpers, Phase 16B trusted plugin metadata
+  policy/report foundations, and Phase 17A local OAS catalog intelligence.
+  This work is not part of the published `2.3.0` package until a future
+  release is cut.
 
 ## Current Stable Release: 2.3.0
 
@@ -218,6 +219,17 @@ Tools, and Generic Tool correspondence items. It includes service helpers,
 typed flexible models, search helpers, local CSV/JSONL exports, CLI commands,
 agent registry metadata, docs, examples, and mocked tests. It does not add
 create/update/delete actions and does not enable agent tool execution.
+
+## Prepared For The Next Unreleased Version
+
+Phase 16A adds read-only Project Tools metadata helpers. Phase 16B adds local
+trusted plugin policy and report metadata. Phase 17A adds local OAS-backed
+endpoint catalog intelligence for user-provided JSON OpenAPI/OAS files.
+
+Phase 17A is metadata/reporting only. It does not fetch remote OAS files,
+generate executable clients, register executable tools, call Procore, call
+external AI/model APIs, enable MCP execution, enable Procore tool execution,
+or enable create/update/delete/upload/approve/submit/payment/write actions.
 
 Phase 8B adds `PROCORE_AUTH_MODE=client_credentials` support for Procore Data
 Connection Apps. Authorization-code OAuth remains the default. Client

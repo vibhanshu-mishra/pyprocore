@@ -169,6 +169,11 @@ and report validation. They use local JSON files only and do not install
 plugins, fetch remote registries, import plugin modules, execute plugin code,
 call Procore, call external AI/model APIs, enable MCP execution, or enable
 Procore tool execution.
+Examples `284` through `286` cover Phase 17A local OAS catalog intelligence.
+They read a tiny fake local OpenAPI/OAS JSON fixture and do not fetch remote
+catalogs, generate executable clients, call Procore, call external AI/model
+APIs, enable MCP execution, enable Procore tool execution, or enable write
+actions.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -226,6 +231,7 @@ export PROCORE_TOKEN_STORE_PATH=~/.config/pyprocore/token_store.json
 export PYPROCORE_PRIVATE_ROOT=/opt/pyprocore
 export PYPROCORE_AI_WORKFLOW_OUTPUT=examples/generated/ai-workflow-sample
 export PYPROCORE_RUN_LIVE_EXAMPLE=0
+export PYPROCORE_OAS_PATH=examples/catalog/fake_procore_oas.json
 ```
 
 Use placeholder values while learning. Do not commit real IDs, tokens, secrets,
@@ -286,6 +292,9 @@ python3 examples/249_mcp_resources_quickstart.py
 python3 examples/250_mcp_prompt_templates.py
 python3 examples/251_mcp_capability_summary.py
 python3 examples/258_phase15a_mcp_discovery_summary.py
+python3 examples/284_catalog_summarize_fake_oas.py
+python3 examples/285_catalog_safety_report_fake_oas.py
+python3 examples/286_catalog_coverage_report_fake_oas.py
 ```
 
 Documents use Procore's Project Folders and Files endpoints internally. Before a
@@ -627,6 +636,12 @@ The current example set runs from `01_list_companies.py` through
 | `278_phase15c_mcp_compatibility_summary.py` | Summarize Phase 15C MCP compatibility additions |
 | `279_list_project_tools_mock.py` | List Project Tools with local mock data |
 | `280_daily_log_phase16a_readiness.py` | Show Daily Logs helper coverage and deferred ambiguous log types |
+| `281_plugin_trust_sample_policy.py` | Print a conservative local plugin trust policy |
+| `282_validate_plugin_trust_manifest.py` | Validate trusted plugin metadata against a local JSON policy |
+| `283_plugin_trust_safety_boundaries.py` | Summarize plugin trust safety boundaries |
+| `284_catalog_summarize_fake_oas.py` | Summarize a tiny local fake OAS endpoint catalog |
+| `285_catalog_safety_report_fake_oas.py` | Build a local fake-OAS endpoint safety report |
+| `286_catalog_coverage_report_fake_oas.py` | Build a local fake-OAS coverage report |
 
 Sample golden datasets live in `examples/golden_datasets/`:
 
@@ -827,4 +842,12 @@ Sample webhook payloads live in `examples/webhooks/`:
 - Examples `279` and `280` add Phase 16A local examples for Project Tools
   metadata and Daily Logs readiness notes. They do not call Procore, execute
   tools, mutate Procore, call external AI/model APIs, or enable MCP execution.
+- Examples `281` through `283` add Phase 16B trusted plugin metadata examples.
+  They do not install plugins, fetch registries, import plugin modules,
+  execute plugin code, call Procore, call external AI/model APIs, enable MCP
+  execution, or enable Procore tool execution.
+- Examples `284` through `286` add Phase 17A local OAS catalog examples. They
+  read local fake OAS JSON only and do not fetch remote catalogs, generate
+  executable clients, call Procore, call external AI/model APIs, enable MCP
+  execution, enable Procore tool execution, or enable write actions.
 - Keep secrets out of code, screenshots, logs, and issue reports.

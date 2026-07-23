@@ -51,6 +51,7 @@ Procore environment.
 | Workflows | Supported | CSV, JSONL, folder sync, project context, AI-ready packages | Workflows create local files and do not mutate Procore data. |
 | Webhooks | Local helpers | Validate, redact, save, list, dry-run dispatch | No hosted webhook server is included. |
 | Agent registry | Metadata only | Manifest, tool list, tool lookup | No tool execution, server, credentials, or live Procore calls. |
+| OAS Catalog | Unreleased Phase 17A | Local endpoint summaries, safety reports, coverage reports | Metadata-only inspection of user-provided local OAS JSON files. No remote fetch, generated executable tools, Procore calls, MCP execution, or write actions. |
 
 ## Agent Tool Registry
 
@@ -84,6 +85,20 @@ dumpster, visitor, productivity, and plan revision logs. Weather, equipment,
 additional waste variants, transmittals, project emails, and workforce/resource
 request coverage remain deferred until safe, unambiguous GET/list endpoint
 shapes are documented and modeled.
+
+## Unreleased Phase 17A OAS Catalog Notes
+
+Phase 17A adds a local OAS-backed endpoint catalog for coverage intelligence.
+Users provide a local OpenAPI/OAS JSON file; PyProcore parses endpoint metadata,
+summarizes methods and resource areas, classifies likely read-only endpoints,
+flags risky/write candidates, and compares areas to known PyProcore read
+coverage.
+
+This catalog layer is reporting-only. It does not download OAS files, fetch
+remote registries, generate executable clients, register executable tools, call
+Procore, enable MCP execution, enable Procore tool execution, or enable create,
+update, delete, upload, approve, submit, payment, import, send, or other write
+actions.
 
 ## Phase 8A Endpoint Notes
 

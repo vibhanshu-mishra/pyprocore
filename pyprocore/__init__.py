@@ -108,6 +108,27 @@ from pyprocore.automation import (
     build_submittal_package,
     build_workflow_package,
 )
+from pyprocore.catalog import (  # noqa: F401
+    CatalogEndpoint,
+    CatalogEndpointSafety,
+    CatalogParameter,
+    CatalogSummary,
+    CoverageFinding,
+    CoverageReport,
+    OASCatalog,
+    catalog_endpoints_to_json,
+    catalog_endpoints_to_markdown,
+    catalog_summary_to_json,
+    catalog_summary_to_markdown,
+    classify_endpoint_safety,
+    compare_catalog_to_pyprocore_supported_coverage,
+    coverage_report_to_json,
+    coverage_report_to_markdown,
+    list_endpoints,
+    load_oas_catalog,
+    summarize_by_method,
+    summarize_by_path_area,
+)
 from pyprocore.client import Procore
 from pyprocore.core.async_client import AsyncProcoreClient
 from pyprocore.core.async_transport import (

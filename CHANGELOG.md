@@ -16,6 +16,10 @@ and this project follows semantic versioning.
   policies, optional publisher/signature/checksum/compatibility metadata,
   metadata-only trust reports, CLI validation commands, local examples, and
   mocked tests.
+- Phase 17A local OAS-backed safe endpoint catalog for user-provided JSON
+  OpenAPI/OAS files, with typed endpoint metadata, safety classification,
+  coverage comparison reports, CLI commands, local fake-OAS examples, and
+  mocked/local tests.
 
 ### Deferred
 

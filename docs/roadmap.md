@@ -68,6 +68,11 @@ Safety status for `v2.3.0`:
   trust policies, publisher/capability/safety metadata, and local trust
   reports. It does not install plugins, fetch registries, import plugin modules,
   execute plugin code, enable MCP execution, or enable Procore tool execution.
+- Phase 17A adds a local OAS-backed safe endpoint catalog for user-provided
+  OpenAPI/OAS JSON files. It produces read-only coverage intelligence, safety
+  classification, and JSON/Markdown reports without fetching remote catalogs,
+  generating executable tools, calling Procore, enabling MCP execution, or
+  enabling Procore write actions.
 - Additional Daily Log types with ambiguous or environment-specific endpoint
   shapes remain deferred until safe documented GET/list paths are confirmed.
 

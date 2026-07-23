@@ -73,6 +73,21 @@ from pyprocore.auth.permissions import (
 )
 from pyprocore.auth.token_store import TokenStore, TokenStoreDiagnostic, inspect_token_store
 from pyprocore.automation import AutomationInput, build_workflow_package
+from pyprocore.catalog import (
+    CatalogSummary,
+    CoverageReport,
+    catalog_endpoints_to_json,
+    catalog_endpoints_to_markdown,
+    catalog_summary_to_json,
+    catalog_summary_to_markdown,
+    compare_catalog_to_pyprocore_supported_coverage,
+    coverage_report_to_json,
+    coverage_report_to_markdown,
+)
+from pyprocore.catalog import list_endpoints as list_catalog_endpoints
+from pyprocore.catalog import (
+    load_oas_catalog,
+)
 from pyprocore.core.config import get_settings
 from pyprocore.core.doctor import DoctorReport, format_doctor_report, run_doctor
 from pyprocore.core.exceptions import (
@@ -1477,6 +1492,54 @@ def build_parser() -> argparse.ArgumentParser:
     )
     plugins_trust_report_parser.add_argument("--json", dest="json_output", action="store_true")
     plugins_trust_report_parser.add_argument("--pretty", action="store_true")
+
+    catalog_parser = subcommands.add_parser(
+        "catalog",
+        help="Inspect local OpenAPI/OAS endpoint catalogs without calling Procore",
+    )
+    catalog_subcommands = catalog_parser.add_subparsers(
+        dest="catalog_command",
+        required=True,
+    )
+    catalog_summarize_parser = catalog_subcommands.add_parser(
+        "summarize",
+        help="Summarize a local OAS JSON endpoint catalog",
+    )
+    catalog_summarize_parser.add_argument("oas_path", type=Path)
+    catalog_summarize_parser.add_argument("--json", dest="json_output", action="store_true")
+    catalog_summarize_parser.add_argument("--pretty", action="store_true")
+    catalog_endpoints_parser = catalog_subcommands.add_parser(
+        "endpoints",
+        help="List endpoints from a local OAS JSON catalog",
+    )
+    catalog_endpoints_parser.add_argument("oas_path", type=Path)
+    catalog_endpoints_parser.add_argument("--method", default=None)
+    catalog_endpoints_parser.add_argument("--json", dest="json_output", action="store_true")
+    catalog_endpoints_parser.add_argument("--pretty", action="store_true")
+    catalog_coverage_parser = catalog_subcommands.add_parser(
+        "coverage-report",
+        help="Compare a local OAS catalog to PyProcore supported read coverage",
+    )
+    catalog_coverage_parser.add_argument("oas_path", type=Path)
+    catalog_coverage_parser.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="markdown",
+    )
+    catalog_coverage_parser.add_argument("--json", dest="json_output", action="store_true")
+    catalog_coverage_parser.add_argument("--pretty", action="store_true")
+    catalog_safety_parser = catalog_subcommands.add_parser(
+        "safety-report",
+        help="Classify local OAS endpoints as read-only, risky/write, or unknown",
+    )
+    catalog_safety_parser.add_argument("oas_path", type=Path)
+    catalog_safety_parser.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="markdown",
+    )
+    catalog_safety_parser.add_argument("--json", dest="json_output", action="store_true")
+    catalog_safety_parser.add_argument("--pretty", action="store_true")
 
     subcommands.add_parser("companies", help="List companies")
 
@@ -4180,6 +4243,16 @@ def run_command(args: argparse.Namespace) -> Any:
                 f"Unsupported plugins scaffold command: {args.plugins_scaffold_command}"
             )
         raise ValueError(f"Unsupported plugins command: {args.plugins_command}")
+
+    if args.command == "catalog":
+        catalog = load_oas_catalog(args.oas_path)
+        if args.catalog_command == "summarize":
+            return catalog.summary()
+        if args.catalog_command == "endpoints":
+            return list_catalog_endpoints(catalog, method=args.method)
+        if args.catalog_command in {"coverage-report", "safety-report"}:
+            return compare_catalog_to_pyprocore_supported_coverage(catalog)
+        raise ValueError(f"Unsupported catalog command: {args.catalog_command}")
 
     if args.command == "workflow-plan":
         if args.workflow_plan_command == "list":
@@ -7390,6 +7463,26 @@ def main() -> None:
             else:
                 print(format_plugin_hook_result(result))
             raise SystemExit(0 if result.success else 1)
+
+    if args.command == "catalog":
+        if isinstance(result, CatalogSummary):
+            if args.json_output or getattr(args, "pretty", False):
+                print(catalog_summary_to_json(result, pretty=True))
+            else:
+                print(catalog_summary_to_markdown(result).rstrip())
+            return
+        if isinstance(result, list) and getattr(args, "catalog_command", None) == "endpoints":
+            if args.json_output or getattr(args, "pretty", False):
+                print(catalog_endpoints_to_json(result, pretty=True))
+            else:
+                print(catalog_endpoints_to_markdown(result).rstrip())
+            return
+        if isinstance(result, CoverageReport):
+            if args.json_output or getattr(args, "format", None) == "json":
+                print(coverage_report_to_json(result, pretty=True))
+            else:
+                print(coverage_report_to_markdown(result).rstrip())
+            return
 
     if args.command == "workflow-plan" and args.workflow_plan_command == "list":
         if args.json_output:
