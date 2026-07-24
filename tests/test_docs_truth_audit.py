@@ -109,6 +109,7 @@ class DocsTruthAuditTestCase(unittest.TestCase):
             "Phase 17C",
             "Phase 17D",
             "Phase 17E",
+            "Phase 18A",
         ):
             self.assertIn(phrase, completed_section)
             self.assertNotIn(phrase, future_section)

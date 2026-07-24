@@ -1,0 +1,53 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Fake Procore OAS (new)",
+    "version": "2.0"
+  },
+  "paths": {
+    "/rest/v1.0/projects/{project_id}/safety_reviews": {
+      "get": {
+        "operationId": "findSafetyReviews",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ]
+      }
+    },
+    "/rest/v1.0/projects/{project_id}/readiness_checks": {
+      "get": {
+        "operationId": "listReadinessChecks",
+        "summary": "List fake readiness checks"
+      }
+    },
+    "/rest/v1.0/projects/{project_id}/review_queue": {
+      "post": {
+        "operationId": "createReviewQueueItem"
+      }
+    },
+    "/rest/v1.0/projects/{project_id}/document_uploads": {
+      "get": {
+        "operationId": "listDocumentUploads"
+      }
+    },
+    "/rest/v1.0/projects/{project_id}/payment_approvals": {
+      "post": {
+        "operationId": "approvePayment"
+      }
+    }
+  }
+}

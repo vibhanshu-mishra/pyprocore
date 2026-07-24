@@ -21,6 +21,8 @@ Current release status:
 - The root changelog also tracks completed post-`v2.3.0` unreleased work,
   including Phase 17 local OAS catalog, discovery router, integration
   blueprint, analytics recipe, and FastAPI starter-template helpers.
+- Phase 18A is tracked under Unreleased with local OAS drift, coverage-gap,
+  maintenance-plan, and draft read-only scaffold assistance.
 - `2.2.0` is the previous stable release.
 
 Before cutting a release, update the changelog with concise user-facing notes and

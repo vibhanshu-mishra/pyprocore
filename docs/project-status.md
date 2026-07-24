@@ -233,7 +233,9 @@ intent. Phase 17C adds local integration blueprints for sync workers, webhook
 receivers, read-only API templates, dashboard data bridges, scheduled export
 workers, and project health feeds. Phase 17D adds local project health
 analytics recipes for exported RFI, submittal, change, and Daily Log records.
-Phase 17E adds optional copied FastAPI read API starter templates.
+Phase 17E adds optional copied FastAPI read API starter templates. Phase 18A
+adds local OAS drift, coverage-gap, maintenance-plan, and draft read-only
+scaffold assistance for maintainers.
 
 Phase 17A is metadata/reporting only. It does not fetch remote OAS files,
 generate executable clients, register executable tools, call Procore, call
@@ -261,6 +263,12 @@ PyProcore package dependencies, host an app, install dependencies, run a
 server, store credentials, create a database layer, schedule jobs, call
 Procore, call external AI/model APIs, enable MCP/tool execution, fetch remote
 files, or enable write actions.
+
+Phase 18A is local maintainer assistance only. It does not fetch OAS files,
+call Procore or external AI/model APIs, generate executable tools, enable MCP
+or Procore tool execution, scaffold write/risky endpoints, stage or commit
+changes, open pull requests, publish packages, or enable write actions. Draft
+files require human review.
 
 Phase 8B adds `PROCORE_AUTH_MODE=client_credentials` support for Procore Data
 Connection Apps. Authorization-code OAuth remains the default. Client

@@ -25,8 +25,10 @@ metadata. PyProcore does not call external AI/model APIs by default.
 The current repository also includes completed post-`v2.3.0` unreleased work
 for local OAS catalog reports, discovery routing metadata, integration
 blueprints, local project-health analytics recipes, and an optional copied
-FastAPI read API starter template. These remain local, metadata/template/report
-features and do not enable Procore writes or tool execution.
+FastAPI read API starter template. Phase 18A also adds a local API maintenance
+assistant for OAS drift, coverage-gap, maintenance-plan, and draft scaffold
+reports. These remain local metadata/template/report features and do not enable
+Procore writes or tool execution.
 
 ## Installation
 
@@ -138,6 +140,8 @@ environment variables that are already set.
 - Inspect a user-provided local OpenAPI/OAS JSON file.
 - Classify endpoints as read-only, risky/write, or unknown from metadata.
 - Compare endpoint areas to known PyProcore read coverage.
+- Compare local specs and plan human-reviewed read-only coverage with the API
+  maintenance assistant.
 - Produce JSON or Markdown reports without fetching remote catalogs, generating
   executable tools, calling Procore, or enabling writes.
 

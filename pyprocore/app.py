@@ -201,6 +201,24 @@ from pyprocore.integrations import (
     sync_run_summary_to_markdown,
     verify_webhook_signature,
 )
+from pyprocore.maintenance import (
+    ApiCoverageGapReport,
+    ApiDriftReport,
+    ApiMaintenancePlan,
+    ApiScaffoldCopyResult,
+    ApiScaffoldPlan,
+    analyze_pyprocore_coverage_gaps,
+    build_api_maintenance_plan,
+    compare_oas_catalogs,
+    copy_read_only_endpoint_scaffold,
+    coverage_gap_report_to_markdown,
+    drift_report_to_markdown,
+    maintenance_plan_to_markdown,
+    maintenance_report_to_json,
+    plan_read_only_endpoint_scaffold,
+    scaffold_copy_result_to_markdown,
+    scaffold_plan_to_markdown,
+)
 from pyprocore.mcp import (
     build_mcp_compatibility_report,
     build_mcp_contract_report,
@@ -1608,6 +1626,53 @@ def build_parser() -> argparse.ArgumentParser:
     )
     catalog_safety_parser.add_argument("--json", dest="json_output", action="store_true")
     catalog_safety_parser.add_argument("--pretty", action="store_true")
+
+    maintenance_parser = subcommands.add_parser(
+        "maintenance",
+        help="Inspect local OAS drift and plan draft read-only coverage",
+    )
+    maintenance_subcommands = maintenance_parser.add_subparsers(
+        dest="maintenance_command",
+        required=True,
+    )
+    maintenance_drift_parser = maintenance_subcommands.add_parser(
+        "drift",
+        help="Compare two local OAS JSON files without network access",
+    )
+    maintenance_drift_parser.add_argument("old_oas_path", type=Path)
+    maintenance_drift_parser.add_argument("new_oas_path", type=Path)
+    _add_maintenance_report_options(maintenance_drift_parser)
+    maintenance_coverage_parser = maintenance_subcommands.add_parser(
+        "coverage-gaps",
+        help="Find local OAS coverage gaps and defer risky/write endpoints",
+    )
+    maintenance_coverage_parser.add_argument("oas_path", type=Path)
+    _add_maintenance_report_options(maintenance_coverage_parser)
+    maintenance_plan_parser = maintenance_subcommands.add_parser(
+        "plan",
+        help="Build a metadata-only API maintenance plan requiring human review",
+    )
+    maintenance_plan_parser.add_argument("oas_path", type=Path)
+    _add_maintenance_report_options(maintenance_plan_parser)
+    maintenance_scaffold_plan_parser = maintenance_subcommands.add_parser(
+        "scaffold-plan",
+        help="Plan draft files for one safe read-only endpoint",
+    )
+    maintenance_scaffold_plan_parser.add_argument("oas_path", type=Path)
+    maintenance_scaffold_plan_parser.add_argument("--path", dest="endpoint_path", required=True)
+    maintenance_scaffold_plan_parser.add_argument("--method", default="GET")
+    _add_maintenance_report_options(maintenance_scaffold_plan_parser)
+    maintenance_scaffold_copy_parser = maintenance_subcommands.add_parser(
+        "scaffold-read-endpoint",
+        help="Dry-run or copy draft read-only endpoint files to a local directory",
+    )
+    maintenance_scaffold_copy_parser.add_argument("oas_path", type=Path)
+    maintenance_scaffold_copy_parser.add_argument("--path", dest="endpoint_path", required=True)
+    maintenance_scaffold_copy_parser.add_argument("--method", default="GET")
+    maintenance_scaffold_copy_parser.add_argument("--output-dir", required=True, type=Path)
+    maintenance_scaffold_copy_parser.add_argument("--dry-run", action="store_true")
+    maintenance_scaffold_copy_parser.add_argument("--overwrite", action="store_true")
+    _add_maintenance_report_options(maintenance_scaffold_copy_parser)
 
     discovery_parser = subcommands.add_parser(
         "discovery",
@@ -4007,6 +4072,17 @@ def _add_plugin_scaffold_options(
         )
 
 
+def _add_maintenance_report_options(parser: argparse.ArgumentParser) -> None:
+    """Add common JSON/Markdown options for maintenance assistant reports."""
+    parser.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="markdown",
+    )
+    parser.add_argument("--json", dest="json_output", action="store_true")
+    parser.add_argument("--pretty", action="store_true")
+
+
 def _write_text_output(output_path: Path, content: str) -> Path:
     """Write CLI text output to a path and return the saved path."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -4630,6 +4706,33 @@ def run_command(args: argparse.Namespace) -> Any:
         if args.catalog_command in {"coverage-report", "safety-report"}:
             return compare_catalog_to_pyprocore_supported_coverage(catalog)
         raise ValueError(f"Unsupported catalog command: {args.catalog_command}")
+
+    if args.command == "maintenance":
+        if args.maintenance_command == "drift":
+            return compare_oas_catalogs(args.old_oas_path, args.new_oas_path)
+        if args.maintenance_command == "coverage-gaps":
+            return analyze_pyprocore_coverage_gaps(args.oas_path)
+        if args.maintenance_command == "plan":
+            return build_api_maintenance_plan(args.oas_path)
+        if args.maintenance_command == "scaffold-plan":
+            return plan_read_only_endpoint_scaffold(
+                args.oas_path,
+                args.endpoint_path,
+                method=args.method,
+            )
+        if args.maintenance_command == "scaffold-read-endpoint":
+            scaffold_plan = plan_read_only_endpoint_scaffold(
+                args.oas_path,
+                args.endpoint_path,
+                method=args.method,
+            )
+            return copy_read_only_endpoint_scaffold(
+                scaffold_plan,
+                args.output_dir,
+                dry_run=args.dry_run,
+                overwrite=args.overwrite,
+            )
+        raise ValueError(f"Unsupported maintenance command: {args.maintenance_command}")
 
     if args.command == "discovery":
         if args.discovery_command == "capabilities":
@@ -7994,6 +8097,26 @@ def main() -> None:
                 print(coverage_report_to_json(result, pretty=True))
             else:
                 print(coverage_report_to_markdown(result).rstrip())
+            return
+
+    if args.command == "maintenance":
+        if args.json_output or getattr(args, "format", None) == "json":
+            print(maintenance_report_to_json(result, pretty=True))
+            return
+        if isinstance(result, ApiDriftReport):
+            print(drift_report_to_markdown(result).rstrip())
+            return
+        if isinstance(result, ApiCoverageGapReport):
+            print(coverage_gap_report_to_markdown(result).rstrip())
+            return
+        if isinstance(result, ApiMaintenancePlan):
+            print(maintenance_plan_to_markdown(result).rstrip())
+            return
+        if isinstance(result, ApiScaffoldPlan):
+            print(scaffold_plan_to_markdown(result).rstrip())
+            return
+        if isinstance(result, ApiScaffoldCopyResult):
+            print(scaffold_copy_result_to_markdown(result).rstrip())
             return
 
     if args.command == "discovery":

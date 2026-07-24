@@ -19,8 +19,10 @@ tooling. Tool execution remains disabled.
 The current repository also documents completed post-`v2.3.0` unreleased
 additions: local OAS catalog reports, discovery router metadata, integration
 blueprints, local project health analytics recipes, and an optional copied
-FastAPI starter template. These additions remain local metadata, report, or
-template helpers and do not enable Procore writes or execution.
+FastAPI starter template, plus a local API maintenance assistant for OAS drift,
+coverage gaps, maintenance plans, and draft read-only scaffolds. These
+additions remain local metadata, report, or template helpers and do not enable
+Procore writes or execution.
 
 ## What PyProcore Can Do
 
@@ -47,6 +49,7 @@ template helpers and do not enable Procore writes or execution.
 - [Authentication](authentication.md)
 - [CLI Usage](cli.md)
 - [API Coverage](api-coverage.md)
+- [API Maintenance Assistant](api-maintenance.md)
 - [Workflows](workflows.md)
 - [AI Review](ai-review.md)
 - [AI Workflows](ai-workflows.md)

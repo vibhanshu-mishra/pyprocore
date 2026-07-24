@@ -41,6 +41,13 @@ Completed after `v2.3.0`; not yet published to PyPI.
   files, local template inventory/report/copy CLI commands, examples, docs, and
   mocked/local tests. FastAPI remains outside PyProcore package dependencies.
 
+#### Phase 18
+
+- Phase 18A local API maintenance assistant for comparing user-provided OAS
+  JSON files, detecting endpoint/method/parameter/operation-ID drift,
+  analyzing read-only coverage gaps, building human-review maintenance plans,
+  and planning or copying draft read-only scaffold files.
+
 ### Security
 
 - Phase 17A-17E remain local metadata, report, template, or exported-data
@@ -48,6 +55,10 @@ Completed after `v2.3.0`; not yet published to PyPI.
   call Procore, call external AI/model APIs, enable MCP execution, enable
   Procore tool execution, install dependencies, host apps, add database
   services, schedule jobs, or enable Procore write actions.
+- Phase 18A does not fetch remote specs, call Procore or external AI/model
+  APIs, generate executable tools, enable MCP/Procore tool execution, scaffold
+  write/risky endpoints, stage or commit changes, open pull requests, publish
+  packages, or enable write actions. Draft files require human review.
 
 ### Deferred
 

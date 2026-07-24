@@ -224,6 +224,25 @@ Catalog commands read a user-provided local OpenAPI/OAS JSON file and produce
 metadata reports only. They do not fetch remote catalogs, generate executable
 clients, call Procore, enable MCP/tool execution, or enable write actions.
 
+## API Maintenance Assistant
+
+Phase 18A adds local maintainer reports and draft-only scaffold planning:
+
+```bash
+procore-sdk maintenance drift OLD_OAS.json NEW_OAS.json --format markdown
+procore-sdk maintenance coverage-gaps OAS.json --format json
+procore-sdk maintenance plan OAS.json --format markdown
+procore-sdk maintenance scaffold-plan OAS.json --path '/rest/v1.0/projects/{project_id}/resource' --method GET
+procore-sdk maintenance scaffold-read-endpoint OAS.json --path '/rest/v1.0/projects/{project_id}/resource' --method GET --output-dir ./tmp/draft --dry-run
+```
+
+These commands require no Procore credentials. They use local JSON files only
+and do not fetch specs, call Procore or external AI/model APIs, generate
+executable tools, register MCP/tool execution, stage or commit changes, open
+pull requests, publish packages, or enable writes. Scaffold output is draft
+only, refuses risky/write endpoints, preserves existing files by default, and
+requires human review. See [API Maintenance Assistant](api-maintenance.md).
+
 ## Starter Templates
 
 Phase 17E adds optional starter template commands:

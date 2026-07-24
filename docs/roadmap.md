@@ -92,6 +92,12 @@ Safety status for `v2.3.0`:
   dependency, host an app, install dependencies, run a server, create a database
   layer, schedule jobs, call Procore, call external AI/model APIs, enable
   MCP/tool execution, fetch remote files, or enable write actions.
+- Phase 18A adds a local API coverage maintenance assistant for comparing
+  user-provided OAS JSON files, reporting API drift and coverage gaps, building
+  human-review maintenance plans, and planning or copying draft read-only
+  scaffolds. It does not fetch specs, call Procore, generate executable tools,
+  scaffold risky/write endpoints, stage or commit changes, open pull requests,
+  publish packages, or enable execution.
 - Additional Daily Log types with ambiguous or environment-specific endpoint
   shapes remain deferred until safe documented GET/list paths are confirmed.
 

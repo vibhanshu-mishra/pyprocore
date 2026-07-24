@@ -10,6 +10,7 @@ nav:
   - Authentication: authentication.md
   - CLI Usage: cli.md
   - API Coverage: api-coverage.md
+  - API Maintenance: api-maintenance.md
   - Workflows: workflows.md
   - Enterprise Scheduled Exports: enterprise-scheduled-exports.md
   - Token Store and Rotation: token-store-and-rotation.md

@@ -170,7 +170,7 @@ plugins, fetch remote registries, import plugin modules, execute plugin code,
 call Procore, call external AI/model APIs, enable MCP execution, or enable
 Procore tool execution.
 
-Examples `284` through `304` are completed post-`v2.3.0` unreleased examples.
+Examples `284` through `309` are completed post-`v2.3.0` unreleased examples.
 They are local metadata, report, exported-data, or template examples only.
 
 Examples `284` through `286` cover Phase 17A local OAS catalog intelligence.
@@ -202,6 +202,13 @@ templates. They inspect or copy static local template files only and do not
 install FastAPI, run a server, call Procore, call external AI/model APIs,
 enable MCP/tool execution, create a hosted app, add a database layer, schedule
 jobs, fetch remote files, or enable write actions.
+
+Examples `305` through `309` cover the Phase 18A local API maintenance
+assistant. They compare fake local OAS files, report drift and coverage gaps,
+build human-review maintenance plans, and preview draft read-only scaffolds.
+They do not fetch remote specs, call Procore or external AI/model APIs,
+generate executable tools, enable MCP/Procore tool execution, scaffold writes,
+commit changes, open pull requests, publish, or perform write actions.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -702,6 +709,11 @@ The current example set runs from `01_list_companies.py` through
 | `302_fastapi_template_report.py` | Render the FastAPI read API starter report |
 | `303_copy_fastapi_template_dry_run.py` | Preview copying the FastAPI starter to a temp folder |
 | `304_copy_fastapi_template.py` | Copy the FastAPI starter to a temporary folder |
+| `305_maintenance_drift_report.py` | Compare two fake local OAS files for API drift |
+| `306_maintenance_coverage_gaps.py` | Find safe and deferred coverage gaps in fake OAS metadata |
+| `307_maintenance_plan_report.py` | Build a local human-review API maintenance plan |
+| `308_maintenance_scaffold_plan.py` | Preview draft files for one safe fake GET endpoint |
+| `309_maintenance_scaffold_dry_run.py` | Dry-run draft scaffold destinations without writing |
 
 Sample golden datasets live in `examples/golden_datasets/`:
 
@@ -930,4 +942,8 @@ Sample webhook payloads live in `examples/webhooks/`:
   install FastAPI, run a server, call Procore, call external AI/model APIs,
   enable MCP/tool execution, create a hosted app, add a database layer,
   schedule jobs, fetch remote files, or enable write actions.
+- Examples `305` through `309` add Phase 18A local API maintenance reports and
+  draft-only read endpoint scaffold planning. They use fake local OAS fixtures,
+  require human review, and do not fetch specs, call Procore, enable execution,
+  commit changes, open pull requests, publish, or enable writes.
 - Keep secrets out of code, screenshots, logs, and issue reports.
