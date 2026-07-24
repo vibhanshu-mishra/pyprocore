@@ -319,7 +319,7 @@ or documentation changes.
 
 ## License
 
-PyProcore is released under the license described in [LICENSE](LICENSE).
+PyProcore is released under the [MIT license](LICENSE).
 
 ## Disclaimer
 
