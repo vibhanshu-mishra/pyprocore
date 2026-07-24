@@ -218,10 +218,28 @@ procore-sdk catalog safety-report examples/catalog/fake_procore_oas.json --forma
 ```
 
 Catalog commands read a user-provided local OpenAPI/OAS JSON file and produce
-JSON or Markdown metadata reports. They do not download remote OAS files,
-generate executable clients, register executable tools, call Procore, call
-external AI/model APIs, enable MCP execution, enable Procore tool execution, or
-perform create/update/delete/upload/approve/submit/payment/write actions.
+metadata reports only. They do not fetch remote catalogs, generate executable
+clients, call Procore, enable MCP/tool execution, or enable write actions.
+
+## Starter Templates
+
+Phase 17E adds optional starter template commands:
+
+```bash
+procore-sdk templates list
+procore-sdk templates show fastapi-read-api
+procore-sdk templates show fastapi-read-api --format json
+procore-sdk templates copy fastapi-read-api --output-dir ./tmp-fastapi-read-api --dry-run
+procore-sdk templates copy fastapi-read-api --output-dir ./tmp-fastapi-read-api
+```
+
+Template commands copy static local files only. They do not install FastAPI,
+run a server, call Procore, call external AI/model APIs, enable MCP execution,
+enable Procore tool execution, fetch remote files, store credentials, schedule
+jobs, create a database layer, or enable Procore writes.
+
+FastAPI and uvicorn are optional dependencies inside the copied template only;
+they are not PyProcore package dependencies.
 
 ## Local Integration Blueprints
 

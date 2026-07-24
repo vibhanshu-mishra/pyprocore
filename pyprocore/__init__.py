@@ -708,6 +708,26 @@ from pyprocore.services.specifications import (
     list_specification_sections,
     list_specification_sets,
 )
+from pyprocore.templates import (  # noqa: F401
+    FASTAPI_READ_API_TEMPLATE_NAME,
+    StarterTemplateFile,
+    StarterTemplateMetadata,
+    TemplateCopyFileResult,
+    TemplateCopyFinding,
+    TemplateCopyResult,
+    copy_starter_template,
+    get_starter_template,
+    iter_template_files,
+    list_starter_templates,
+    template_copy_result_to_json,
+    template_copy_result_to_jsonable,
+    template_copy_result_to_markdown,
+    template_metadata_to_json,
+    template_metadata_to_markdown,
+    template_to_summary_dict,
+    templates_to_json,
+    templates_to_markdown,
+)
 from pyprocore.webhooks import (
     WebhookDispatchResult,
     WebhookEvent,
@@ -1740,5 +1760,28 @@ __all__.extend(
         "read_mcp_resource_payload",
         "safe_mcp_prompt_not_found",
         "safe_mcp_resource_not_found",
+    ]
+)
+
+__all__.extend(
+    [
+        "FASTAPI_READ_API_TEMPLATE_NAME",
+        "StarterTemplateFile",
+        "StarterTemplateMetadata",
+        "TemplateCopyFileResult",
+        "TemplateCopyFinding",
+        "TemplateCopyResult",
+        "copy_starter_template",
+        "get_starter_template",
+        "iter_template_files",
+        "list_starter_templates",
+        "template_copy_result_to_json",
+        "template_copy_result_to_jsonable",
+        "template_copy_result_to_markdown",
+        "template_metadata_to_json",
+        "template_metadata_to_markdown",
+        "template_to_summary_dict",
+        "templates_to_json",
+        "templates_to_markdown",
     ]
 )

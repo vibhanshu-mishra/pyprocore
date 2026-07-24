@@ -23,6 +23,7 @@ nav:
   - Plugins: plugins.md
   - Integration Blueprints: integration-blueprints.md
   - Analytics Recipes: analytics-recipes.md
+  - FastAPI Starter: fastapi-starter.md
   - Golden Evals: evals.md
   - Project Status: project-status.md
   - Security: security.md

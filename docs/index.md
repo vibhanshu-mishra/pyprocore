@@ -52,6 +52,8 @@ tooling. Tool execution remains disabled.
   includes metadata-only manifests, local hooks, JSON configs, extension packs,
   and local plugin developer scaffolding.
 - [Local Project Health Analytics](analytics-recipes.md)
+- [FastAPI Read API Starter](fastapi-starter.md), an optional copied template.
+  FastAPI is not a PyProcore dependency.
 - [Golden Evals](evals.md), including Phase 13A local deterministic
   datasets, Phase 13B workflow-specific eval suites, Phase 13C local
   baselines/regression tracking, and Phase 13D offline model-response fixture

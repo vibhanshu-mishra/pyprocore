@@ -55,6 +55,7 @@ Procore environment.
 | Discovery Router | Unreleased Phase 17B | Local capability search, route suggestions, inventory and safety reports | Metadata-only discovery over PyProcore capabilities and optional local OAS catalog candidates. No execution, Procore calls, MCP execution, external AI/model calls, remote OAS fetch, generated tools, or write actions. |
 | Integration Blueprints | Unreleased Phase 17C | Local blueprints, readiness reports, sync-run records, webhook fixtures | Template/report-oriented integration guidance only. No hosted app, database dependency, automatic scheduler, Procore calls, MCP/tool execution, remote calls, or write actions. |
 | Analytics Recipes | Unreleased Phase 17D | Local RFI aging, submittal delay, change exposure, Daily Log completeness, project health reports | Local/exported data only. No Procore calls, AI/model calls, dashboard/database dependencies, MCP/tool execution, or write actions. |
+| FastAPI Starter Template | Unreleased Phase 17E | Local template inventory, report, dry-run copy, and copy helpers | Optional copied read-only backend example. FastAPI is not a PyProcore dependency. No hosted app, dependency install, database layer, scheduling, Procore calls, MCP/tool execution, external AI/model calls, remote fetch, or write actions. |
 
 ## Agent Tool Registry
 
@@ -151,6 +152,23 @@ execution, enable Procore tool execution, create a hosted dashboard, add
 database or external analytics dependencies, fetch remote resources, or enable
 create, update, delete, upload, approve, submit, payment, import, send, or other
 write actions.
+
+## Unreleased Phase 17E FastAPI Starter Notes
+
+Phase 17E adds optional copied starter templates for teams that want to
+experiment with a small read-only FastAPI backend powered by PyProcore.
+
+The template surface is static and local: it can list templates, render a
+metadata report, preview a copy operation, and copy files to a selected local
+folder. The copied example includes read-only routes for health, projects,
+RFIs, submittals, and a local project-health analytics example using fake data.
+
+FastAPI and uvicorn are not PyProcore package dependencies. The template does
+not host an app, install dependencies, run a server, store credentials, create
+a database layer, schedule jobs, call Procore, call external AI/model APIs,
+enable MCP execution, enable Procore tool execution, fetch remote files, or
+enable create, update, delete, upload, approve, submit, payment, import, send,
+or other write actions.
 
 ## Phase 8A Endpoint Notes
 

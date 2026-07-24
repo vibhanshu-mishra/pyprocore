@@ -30,6 +30,9 @@ and this project follows semantic versioning.
   submittal, change, and Daily Log records, with deterministic heuristic
   scoring, JSON/Markdown/CSV reports, CLI commands, local fake-data examples,
   and mocked/local tests.
+- Phase 17E optional FastAPI read API starter template with static copied
+  files, local template inventory/report/copy CLI commands, examples, docs, and
+  mocked/local tests. FastAPI remains outside PyProcore package dependencies.
 
 ### Deferred
 

@@ -89,6 +89,11 @@ Safety status for `v2.3.0`:
   in-memory dictionaries only and produces deterministic heuristic review
   reports without Procore calls, external AI/model calls, MCP/tool execution,
   dashboard/database dependencies, remote resources, or write actions.
+- Phase 17E adds an optional copied FastAPI read API starter template and local
+  `procore-sdk templates` commands. It does not add FastAPI as a PyProcore
+  dependency, host an app, install dependencies, run a server, create a database
+  layer, schedule jobs, call Procore, call external AI/model APIs, enable
+  MCP/tool execution, fetch remote files, or enable write actions.
 - Additional Daily Log types with ambiguous or environment-specific endpoint
   shapes remain deferred until safe documented GET/list paths are confirmed.
 

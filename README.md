@@ -161,6 +161,14 @@ environment variables that are already set.
 - Keep analytics local-only: no Procore calls, no external AI/model calls, no
   hosted dashboard, no database dependency, and no write actions.
 
+### Optional FastAPI Read API Starter
+
+- Inspect or copy a static FastAPI starter template for read-only backend
+  experiments.
+- Keep FastAPI and uvicorn outside PyProcore package dependencies.
+- Copy local template files only; no app is hosted, no dependencies are
+  installed, no Procore calls are made, and no write routes are enabled.
+
 ### Deterministic Evals And Regression Checks
 
 - Run local golden eval suites for workflow packages and manifests.
@@ -207,6 +215,8 @@ procore-sdk mcp validate
 procore-sdk catalog summarize examples/catalog/fake_procore_oas.json
 procore-sdk discovery search "overdue rfis"
 procore-sdk analytics project-health --rfis examples/analytics/fake_rfis.json --format markdown
+procore-sdk templates show fastapi-read-api
+procore-sdk templates copy fastapi-read-api --output-dir ./tmp-fastapi-read-api --dry-run
 ```
 
 See [CLI Usage](docs/cli.md) for the full command reference.
@@ -246,6 +256,7 @@ private project data.
 | MCP Discovery | [docs/mcp.md](docs/mcp.md) |
 | Plugins | [docs/plugins.md](docs/plugins.md) |
 | Analytics Recipes | [docs/analytics-recipes.md](docs/analytics-recipes.md) |
+| FastAPI Starter | [docs/fastapi-starter.md](docs/fastapi-starter.md) |
 | Golden Evals | [docs/evals.md](docs/evals.md) |
 | Release Guide | [docs/release.md](docs/release.md) |
 | Roadmap | [docs/roadmap.md](docs/roadmap.md) |

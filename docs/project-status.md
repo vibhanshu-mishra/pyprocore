@@ -13,7 +13,8 @@
   read-only Project Tools metadata helpers, Phase 16B trusted plugin metadata
   policy/report foundations, Phase 17A local OAS catalog intelligence, Phase
   17B local discovery router metadata, Phase 17C local integration blueprints,
-  and Phase 17D local project health analytics recipes.
+  Phase 17D local project health analytics recipes, and Phase 17E optional
+  FastAPI read API starter templates.
   This work is not part of the published `2.3.0` package until a future
   release is cut.
 
@@ -253,6 +254,12 @@ external AI/model APIs, enable MCP execution, enable Procore tool execution,
 create a hosted dashboard, add database or external analytics dependencies,
 fetch remote resources, or enable write actions. Scores are deterministic
 review heuristics, not predictions or guarantees.
+
+Phase 17E is copied-template only. It does not add FastAPI or uvicorn to
+PyProcore package dependencies, host an app, install dependencies, run a
+server, store credentials, create a database layer, schedule jobs, call
+Procore, call external AI/model APIs, enable MCP/tool execution, fetch remote
+files, or enable write actions.
 
 Phase 8B adds `PROCORE_AUTH_MODE=client_credentials` support for Procore Data
 Connection Apps. Authorization-code OAuth remains the default. Client

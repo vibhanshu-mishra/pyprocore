@@ -194,6 +194,12 @@ reports only. They do not call Procore, call external AI/model APIs, create a
 hosted dashboard, add database/external analytics dependencies, enable MCP/tool
 execution, or enable write actions.
 
+Examples `301` through `304` cover Phase 17E optional FastAPI read API starter
+templates. They inspect or copy static local template files only and do not
+install FastAPI, run a server, call Procore, call external AI/model APIs,
+enable MCP/tool execution, create a hosted app, add a database layer, schedule
+jobs, fetch remote files, or enable write actions.
+
 Agent examples do not require Procore credentials or execute tools.
 
 ## Environment Variables
@@ -689,6 +695,10 @@ The current example set runs from `01_list_companies.py` through
 | `298_submittal_delay_report.py` | Analyze submittal delay risk from fake local data |
 | `299_change_exposure_summary.py` | Summarize change exposure from fake local data |
 | `300_combined_project_health_report.py` | Build a combined local project health report |
+| `301_template_inventory.py` | List optional starter templates without running them |
+| `302_fastapi_template_report.py` | Render the FastAPI read API starter report |
+| `303_copy_fastapi_template_dry_run.py` | Preview copying the FastAPI starter to a temp folder |
+| `304_copy_fastapi_template.py` | Copy the FastAPI starter to a temporary folder |
 
 Sample golden datasets live in `examples/golden_datasets/`:
 
@@ -912,4 +922,9 @@ Sample webhook payloads live in `examples/webhooks/`:
   reports only. They do not call Procore, call external AI/model APIs, create a
   hosted dashboard, add database/external analytics dependencies, enable
   MCP/tool execution, or enable write actions.
+- Examples `301` through `304` add Phase 17E optional FastAPI read API starter
+  template examples. They inspect or copy static local files only and do not
+  install FastAPI, run a server, call Procore, call external AI/model APIs,
+  enable MCP/tool execution, create a hosted app, add a database layer,
+  schedule jobs, fetch remote files, or enable write actions.
 - Keep secrets out of code, screenshots, logs, and issue reports.

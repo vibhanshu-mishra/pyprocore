@@ -446,6 +446,19 @@ from pyprocore.services import (
     list_wbs_codes,
     list_work_order_contracts,
 )
+from pyprocore.templates import (
+    StarterTemplateMetadata,
+    TemplateCopyResult,
+    copy_starter_template,
+    get_starter_template,
+    list_starter_templates,
+    template_copy_result_to_json,
+    template_copy_result_to_markdown,
+    template_metadata_to_json,
+    template_metadata_to_markdown,
+    templates_to_json,
+    templates_to_markdown,
+)
 from pyprocore.webhooks import (
     WebhookDispatchResult,
     WebhookEvent,
@@ -1854,6 +1867,56 @@ def build_parser() -> argparse.ArgumentParser:
     analytics_sample_parser.add_argument("--output-dir", required=True, type=Path)
     analytics_sample_parser.add_argument("--json", dest="json_output", action="store_true")
     analytics_sample_parser.add_argument("--pretty", action="store_true")
+
+    templates_parser = subcommands.add_parser(
+        "templates",
+        help="Inspect and copy optional local starter templates without executing them",
+    )
+    templates_subcommands = templates_parser.add_subparsers(
+        dest="templates_command",
+        required=True,
+    )
+    templates_list_parser = templates_subcommands.add_parser(
+        "list",
+        help="List optional starter templates",
+    )
+    templates_list_parser.add_argument("--json", dest="json_output", action="store_true")
+    templates_list_parser.add_argument("--pretty", action="store_true")
+    templates_show_parser = templates_subcommands.add_parser(
+        "show",
+        help="Show one starter template report",
+    )
+    templates_show_parser.add_argument("name")
+    templates_show_parser.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="markdown",
+    )
+    templates_show_parser.add_argument("--json", dest="json_output", action="store_true")
+    templates_show_parser.add_argument("--pretty", action="store_true")
+    templates_copy_parser = templates_subcommands.add_parser(
+        "copy",
+        help="Copy a static starter template to a local output directory",
+    )
+    templates_copy_parser.add_argument("name")
+    templates_copy_parser.add_argument("--output-dir", required=True, type=Path)
+    templates_copy_parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Preview files without writing them",
+    )
+    templates_copy_parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Allow replacing existing template files",
+    )
+    templates_copy_parser.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="markdown",
+    )
+    templates_copy_parser.add_argument("--json", dest="json_output", action="store_true")
+    templates_copy_parser.add_argument("--pretty", action="store_true")
 
     subcommands.add_parser("companies", help="List companies")
 
@@ -4688,6 +4751,20 @@ def run_command(args: argparse.Namespace) -> Any:
                 "write_actions_enabled": False,
             }
         raise ValueError(f"Unsupported analytics command: {args.analytics_command}")
+
+    if args.command == "templates":
+        if args.templates_command == "list":
+            return list_starter_templates()
+        if args.templates_command == "show":
+            return get_starter_template(args.name)
+        if args.templates_command == "copy":
+            return copy_starter_template(
+                args.name,
+                args.output_dir,
+                overwrite=args.overwrite,
+                dry_run=args.dry_run,
+            )
+        raise ValueError(f"Unsupported templates command: {args.templates_command}")
 
     if args.command == "workflow-plan":
         if args.workflow_plan_command == "list":
@@ -7995,6 +8072,31 @@ def main() -> None:
                     print(f"- {path}")
                 print("No Procore API calls, external AI calls, or write actions were performed.")
             return
+
+    if args.command == "templates":
+        if isinstance(result, list) and all(
+            isinstance(item, StarterTemplateMetadata) for item in result
+        ):
+            templates = list(result)
+            if args.json_output or getattr(args, "pretty", False):
+                print(templates_to_json(templates, pretty=True))
+            else:
+                print(templates_to_markdown(templates).rstrip())
+            return
+        if isinstance(result, StarterTemplateMetadata):
+            if args.json_output or getattr(args, "format", None) == "json":
+                print(template_metadata_to_json(result, pretty=True))
+            else:
+                print(template_metadata_to_markdown(result).rstrip())
+            return
+        if isinstance(result, TemplateCopyResult):
+            if args.json_output or getattr(args, "format", None) == "json":
+                print(template_copy_result_to_json(result, pretty=True))
+            else:
+                print(template_copy_result_to_markdown(result).rstrip())
+            raise SystemExit(
+                0 if not any(finding.severity == "error" for finding in result.findings) else 1
+            )
 
     if args.command == "workflow-plan" and args.workflow_plan_command == "list":
         if args.json_output:
