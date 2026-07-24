@@ -47,6 +47,9 @@ Completed after `v2.3.0`; not yet published to PyPI.
   JSON files, detecting endpoint/method/parameter/operation-ID drift,
   analyzing read-only coverage gaps, building human-review maintenance plans,
   and planning or copying draft read-only scaffold files.
+- Phase 18B local customer-codebase impact scanner for conservative AST and
+  lexical PyProcore usage detection, capability mapping, optional local OAS
+  drift correlation, redacted snippets, and JSON/Markdown human-review reports.
 
 ### Security
 
@@ -59,6 +62,10 @@ Completed after `v2.3.0`; not yet published to PyPI.
   APIs, generate executable tools, enable MCP/Procore tool execution, scaffold
   write/risky endpoints, stage or commit changes, open pull requests, publish
   packages, or enable write actions. Draft files require human review.
+- Phase 18B scans user-selected local folders only. It does not clone or fetch
+  repositories or OAS files, execute or edit scanned files, generate patches,
+  commits, branches, or pull requests, call Procore or external AI/model APIs,
+  enable MCP/Procore tool execution, or enable write actions.
 
 ### Deferred
 

@@ -157,3 +157,170 @@ class ApiScaffoldCopyResult(ProcoreModel):
     written_files: list[str] = Field(default_factory=list)
     skipped_files: list[str] = Field(default_factory=list)
     findings: list[ApiMaintenanceFinding] = Field(default_factory=list)
+
+
+class CodebaseScanOptions(ProcoreModel):
+    """Options controlling a bounded local customer-codebase scan."""
+
+    extensions: list[str] = Field(
+        default_factory=lambda: [
+            ".py",
+            ".md",
+            ".rst",
+            ".txt",
+            ".sh",
+            ".bash",
+            ".zsh",
+            ".yml",
+            ".yaml",
+            ".toml",
+            ".json",
+            ".cfg",
+            ".conf",
+            ".ini",
+        ]
+    )
+    ignored_directories: list[str] = Field(
+        default_factory=lambda: [
+            ".git",
+            ".venv",
+            "venv",
+            "env",
+            "__pycache__",
+            "node_modules",
+            "dist",
+            "build",
+            "site",
+            ".mypy_cache",
+            ".pytest_cache",
+            ".ruff_cache",
+            "exports",
+            "downloads",
+            "secrets",
+            ".secrets",
+            "token_store",
+            "token_stores",
+        ]
+    )
+    ignored_filenames: list[str] = Field(
+        default_factory=lambda: [
+            ".env",
+            "token.json",
+            "tokens.json",
+            "credentials.json",
+        ]
+    )
+    max_file_size_bytes: int = 1_048_576
+    include_hidden_files: bool = False
+
+
+class CodebaseFileFinding(ProcoreModel):
+    """A scanned or skipped local file finding."""
+
+    path: str
+    status: str
+    reason: str | None = None
+    size_bytes: int | None = None
+
+
+class PyprocoreUsage(ProcoreModel):
+    """Normalized PyProcore usage found in a local text or Python file."""
+
+    usage_type: str
+    file_path: str
+    line_number: int | None = None
+    symbol: str
+    capability_family: str
+    snippet: str | None = None
+    confidence: str = "high"
+    dynamic: bool = False
+
+
+class PyprocoreCliUsage(PyprocoreUsage):
+    """A detected ``procore-sdk`` command usage."""
+
+    command: str
+
+
+class PyprocoreImportUsage(PyprocoreUsage):
+    """A detected Python import from the PyProcore package."""
+
+    module: str
+    imported_name: str | None = None
+
+
+class PyprocoreCallUsage(PyprocoreUsage):
+    """A detected object-client or helper call."""
+
+    call_chain: str
+
+
+class CodebaseScanReport(ProcoreModel):
+    """Bounded local report of PyProcore usage in a customer codebase."""
+
+    schema_version: str = MAINTENANCE_SCHEMA_VERSION
+    scanned_path: str
+    options: CodebaseScanOptions
+    files_scanned: list[CodebaseFileFinding] = Field(default_factory=list)
+    files_skipped: list[CodebaseFileFinding] = Field(default_factory=list)
+    imports: list[PyprocoreImportUsage] = Field(default_factory=list)
+    calls: list[PyprocoreCallUsage] = Field(default_factory=list)
+    cli_usages: list[PyprocoreCliUsage] = Field(default_factory=list)
+    usages: list[PyprocoreUsage] = Field(default_factory=list)
+    capability_counts: dict[str, int] = Field(default_factory=dict)
+    findings: list[ApiMaintenanceFinding] = Field(default_factory=list)
+    mode: str = "local_customer_codebase_scan"
+    files_modified: bool = False
+    remote_repo_access_enabled: bool = False
+    procore_calls_enabled: bool = False
+    external_ai_calls_enabled: bool = False
+    execution_enabled: bool = False
+    human_review_required: bool = True
+
+
+class ImpactedUsage(ProcoreModel):
+    """One normalized usage annotated with a possible API impact."""
+
+    usage: PyprocoreUsage
+    severity: str
+    reasons: list[str] = Field(default_factory=list)
+
+
+class MigrationSuggestion(ProcoreModel):
+    """A human-review action suggested by the impact scanner."""
+
+    capability_family: str
+    priority: str
+    action: str
+
+
+class ApiImpactFinding(ProcoreModel):
+    """Possible impact of local OAS drift on one capability family."""
+
+    classification: str
+    capability_family: str
+    message: str
+    changed_endpoint_paths: list[str] = Field(default_factory=list)
+    impacted_usages: list[ImpactedUsage] = Field(default_factory=list)
+    suggested_actions: list[str] = Field(default_factory=list)
+
+
+class ApiImpactReport(ProcoreModel):
+    """Local human-review report relating code usage to optional OAS drift."""
+
+    schema_version: str = MAINTENANCE_SCHEMA_VERSION
+    scanned_path: str
+    scan_report: CodebaseScanReport
+    drift_report: ApiDriftReport | None = None
+    oas_comparison_provided: bool = False
+    findings: list[ApiImpactFinding] = Field(default_factory=list)
+    impacted_usages: list[ImpactedUsage] = Field(default_factory=list)
+    migration_suggestions: list[MigrationSuggestion] = Field(default_factory=list)
+    notes: list[str] = Field(default_factory=list)
+    mode: str = "local_customer_codebase_impact_scan"
+    files_modified: bool = False
+    remote_repo_access_enabled: bool = False
+    procore_calls_enabled: bool = False
+    external_ai_calls_enabled: bool = False
+    execution_enabled: bool = False
+    human_review_required: bool = True

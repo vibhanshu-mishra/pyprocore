@@ -90,6 +90,62 @@ POST, PATCH, PUT, and DELETE are refused. GET/HEAD/OPTIONS endpoints with risky
 terms such as upload, approve, submit, payment, import, delete, close, or reopen
 are also refused.
 
+## Scan A Local Codebase
+
+Phase 18B can inspect a user-selected local folder for PyProcore imports,
+object-client calls, helper calls, CLI references, and package references:
+
+```bash
+procore-sdk maintenance usage-scan \
+  examples/maintenance/customer_codebase \
+  --format markdown
+```
+
+The scanner uses Python AST parsing and bounded lexical checks. It skips common
+virtual environment, build, cache, export, download, and secret directories,
+does not follow directory symlinks, limits file size, rejects binary content,
+and redacts common secret-looking snippet values before storing them.
+
+## Build A Usage Map
+
+```bash
+procore-sdk maintenance usage-map \
+  examples/maintenance/customer_codebase \
+  --format json
+```
+
+The map groups detected usage into broad capability families such as RFIs,
+submittals, workflows, analytics, catalog, and maintenance. Dynamic or
+unresolved access is reported as unknown rather than guessed.
+
+## Analyze Possible API Impact
+
+Scan without OAS comparison data:
+
+```bash
+procore-sdk maintenance impact-scan \
+  examples/maintenance/customer_codebase
+```
+
+Compare the same usage with two user-provided local OAS files:
+
+```bash
+procore-sdk maintenance impact-scan \
+  examples/maintenance/customer_codebase \
+  --old-oas examples/maintenance/old_fake_procore_oas.json \
+  --new-oas examples/maintenance/new_fake_procore_oas.json \
+  --format markdown
+```
+
+Impact labels are conservative: likely affected, possibly affected, unknown,
+not affected, or deprecated/risky usage. They are broad review signals, not
+proof of compatibility, production safety, or required migration.
+
+The scanner never clones repositories, fetches remote code or OAS files,
+executes or imports scanned files, edits customer code, generates patches,
+commits, branches, or pull requests, calls Procore or external AI/model APIs,
+or enables MCP, tool execution, or write actions.
+
 ## Human Review Checklist
 
 1. Verify the endpoint in official Procore documentation.
@@ -99,3 +155,4 @@ are also refused.
 5. Add mocked success, error, pagination, and authorization tests.
 6. Update API coverage, CLI, examples, and changelog documentation.
 7. Run the complete project quality suite.
+8. Review Phase 18B impact labels against tests and official documentation.

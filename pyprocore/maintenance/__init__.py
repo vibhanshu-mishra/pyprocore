@@ -1,5 +1,6 @@
 """Local-only API maintenance assistant for user-provided OAS JSON files."""
 
+from pyprocore.maintenance.codebase import scan_pyprocore_usage
 from pyprocore.maintenance.coverage import analyze_pyprocore_coverage_gaps
 from pyprocore.maintenance.drift import (
     compare_oas_catalogs,
@@ -10,6 +11,13 @@ from pyprocore.maintenance.drift import (
     detect_removed_endpoints,
     detect_risky_changes,
 )
+from pyprocore.maintenance.impact import analyze_codebase_api_impact
+from pyprocore.maintenance.impact_reports import (
+    api_impact_report_to_json,
+    api_impact_report_to_markdown,
+    codebase_scan_report_to_json,
+    codebase_scan_report_to_markdown,
+)
 from pyprocore.maintenance.models import (
     MAINTENANCE_MODE,
     MAINTENANCE_SCHEMA_VERSION,
@@ -17,12 +25,23 @@ from pyprocore.maintenance.models import (
     ApiCoverageGapReport,
     ApiDriftReport,
     ApiEndpointChange,
+    ApiImpactFinding,
+    ApiImpactReport,
     ApiMaintenanceFinding,
     ApiMaintenancePlan,
     ApiMaintenanceTask,
     ApiScaffoldCopyResult,
     ApiScaffoldFile,
     ApiScaffoldPlan,
+    CodebaseFileFinding,
+    CodebaseScanOptions,
+    CodebaseScanReport,
+    ImpactedUsage,
+    MigrationSuggestion,
+    PyprocoreCallUsage,
+    PyprocoreCliUsage,
+    PyprocoreImportUsage,
+    PyprocoreUsage,
 )
 from pyprocore.maintenance.plans import build_api_maintenance_plan
 from pyprocore.maintenance.reports import (
@@ -45,17 +64,33 @@ __all__ = [
     "ApiCoverageGapReport",
     "ApiDriftReport",
     "ApiEndpointChange",
+    "ApiImpactFinding",
+    "ApiImpactReport",
     "ApiMaintenanceFinding",
     "ApiMaintenancePlan",
     "ApiMaintenanceTask",
     "ApiScaffoldCopyResult",
     "ApiScaffoldFile",
     "ApiScaffoldPlan",
+    "CodebaseFileFinding",
+    "CodebaseScanOptions",
+    "CodebaseScanReport",
+    "ImpactedUsage",
+    "MigrationSuggestion",
+    "PyprocoreCallUsage",
+    "PyprocoreCliUsage",
+    "PyprocoreImportUsage",
+    "PyprocoreUsage",
+    "analyze_codebase_api_impact",
     "analyze_pyprocore_coverage_gaps",
     "build_api_maintenance_plan",
     "compare_oas_catalogs",
     "copy_read_only_endpoint_scaffold",
     "coverage_gap_report_to_markdown",
+    "api_impact_report_to_json",
+    "api_impact_report_to_markdown",
+    "codebase_scan_report_to_json",
+    "codebase_scan_report_to_markdown",
     "detect_added_endpoints",
     "detect_changed_methods",
     "detect_changed_operation_ids",
@@ -68,4 +103,5 @@ __all__ = [
     "plan_read_only_endpoint_scaffold",
     "scaffold_copy_result_to_markdown",
     "scaffold_plan_to_markdown",
+    "scan_pyprocore_usage",
 ]

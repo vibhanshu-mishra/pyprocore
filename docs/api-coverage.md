@@ -52,7 +52,7 @@ Procore environment.
 | Webhooks | Local helpers | Validate, redact, save, list, dry-run dispatch | No hosted webhook server is included. |
 | Agent registry | Metadata only | Manifest, tool list, tool lookup | No tool execution, server, credentials, or live Procore calls. |
 | OAS Catalog | Completed after v2.3.0 (unreleased) | Local endpoint summaries, safety reports, coverage reports | Metadata-only inspection of user-provided local OAS JSON files. No remote fetch, generated executable tools, Procore calls, MCP execution, or write actions. |
-| API Maintenance Assistant | Completed after v2.3.0 (unreleased) | Local OAS drift, coverage-gap, maintenance-plan, and draft read-only scaffold reports | Maintainer assistance only. No remote fetch, Procore calls, executable tools, automatic commits/PRs/publishing, or write actions. |
+| API Maintenance Assistant | Completed after v2.3.0 (unreleased) | Local OAS drift, coverage-gap, maintenance-plan, draft read-only scaffold, codebase usage, and possible-impact reports | Maintainer assistance only. No remote fetch, customer-code edits, Procore calls, executable tools, automatic commits/PRs/publishing, or write actions. |
 | Discovery Router | Completed after v2.3.0 (unreleased) | Local capability search, route suggestions, inventory and safety reports | Metadata-only discovery over PyProcore capabilities and optional local OAS catalog candidates. No execution, Procore calls, MCP execution, external AI/model calls, remote OAS fetch, generated tools, or write actions. |
 | Integration Blueprints | Completed after v2.3.0 (unreleased) | Local blueprints, readiness reports, sync-run records, webhook fixtures | Template/report-oriented integration guidance only. No hosted app, database dependency, automatic scheduler, Procore calls, MCP/tool execution, remote calls, or write actions. |
 | Analytics Recipes | Completed after v2.3.0 (unreleased) | Local RFI aging, submittal delay, change exposure, Daily Log completeness, project health reports | Local/exported data only. No Procore calls, AI/model calls, dashboard/database dependencies, MCP/tool execution, or write actions. |
@@ -183,6 +183,15 @@ endpoint support. It does not fetch remote specs, call Procore or external
 AI/model APIs, generate executable tools, enable MCP/Procore tool execution,
 scaffold risky/write endpoints, commit changes, open pull requests, publish
 packages, or enable writes. Human endpoint-shape review is required.
+
+## Completed After v2.3.0: Phase 18B Codebase Impact Notes
+
+Phase 18B scans user-selected local files for PyProcore imports, object-client
+calls, helpers, CLI references, and package references. It can correlate broad
+capability families with Phase 18A drift from two local OAS files. Findings are
+conservative review signals and do not prove compatibility or production
+safety. The scanner does not execute or edit customer code, fetch remote
+repositories or OAS files, call Procore, or enable tool/write execution.
 
 ## Phase 8A Endpoint Notes
 

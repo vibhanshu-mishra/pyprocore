@@ -234,6 +234,9 @@ procore-sdk maintenance coverage-gaps OAS.json --format json
 procore-sdk maintenance plan OAS.json --format markdown
 procore-sdk maintenance scaffold-plan OAS.json --path '/rest/v1.0/projects/{project_id}/resource' --method GET
 procore-sdk maintenance scaffold-read-endpoint OAS.json --path '/rest/v1.0/projects/{project_id}/resource' --method GET --output-dir ./tmp/draft --dry-run
+procore-sdk maintenance usage-scan CUSTOMER_CODEBASE --format markdown
+procore-sdk maintenance usage-map CUSTOMER_CODEBASE --format json
+procore-sdk maintenance impact-scan CUSTOMER_CODEBASE --old-oas OLD_OAS.json --new-oas NEW_OAS.json --format markdown
 ```
 
 These commands require no Procore credentials. They use local JSON files only
@@ -242,6 +245,9 @@ executable tools, register MCP/tool execution, stage or commit changes, open
 pull requests, publish packages, or enable writes. Scaffold output is draft
 only, refuses risky/write endpoints, preserves existing files by default, and
 requires human review. See [API Maintenance Assistant](api-maintenance.md).
+Phase 18B scan commands inspect local files without importing, executing, or
+editing them. Possible-impact labels are conservative and never certify
+compatibility.
 
 ## Starter Templates
 

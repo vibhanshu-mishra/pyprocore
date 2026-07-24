@@ -23,6 +23,8 @@ Current release status:
   blueprint, analytics recipe, and FastAPI starter-template helpers.
 - Phase 18A is tracked under Unreleased with local OAS drift, coverage-gap,
   maintenance-plan, and draft read-only scaffold assistance.
+- Phase 18B is tracked under Unreleased with local codebase usage maps,
+  redacted snippets, and conservative possible-impact reports.
 - `2.2.0` is the previous stable release.
 
 Before cutting a release, update the changelog with concise user-facing notes and

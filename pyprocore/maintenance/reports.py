@@ -8,10 +8,12 @@ from pyprocore.maintenance.models import (
     ApiCoverageGap,
     ApiCoverageGapReport,
     ApiDriftReport,
+    ApiImpactReport,
     ApiMaintenancePlan,
     ApiMaintenanceTask,
     ApiScaffoldCopyResult,
     ApiScaffoldPlan,
+    CodebaseScanReport,
 )
 
 
@@ -22,6 +24,8 @@ def maintenance_report_to_json(
         | ApiMaintenancePlan
         | ApiScaffoldPlan
         | ApiScaffoldCopyResult
+        | CodebaseScanReport
+        | ApiImpactReport
     ),
     *,
     pretty: bool = False,

@@ -5,6 +5,29 @@
     "version": "1.0"
   },
   "paths": {
+    "/rest/v1.1/projects/{project_id}/rfis": {
+      "get": {
+        "operationId": "listRfis",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ]
+      }
+    },
     "/rest/v1.0/projects/{project_id}/legacy_notes": {
       "get": {
         "operationId": "listLegacyNotes",

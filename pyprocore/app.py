@@ -204,11 +204,16 @@ from pyprocore.integrations import (
 from pyprocore.maintenance import (
     ApiCoverageGapReport,
     ApiDriftReport,
+    ApiImpactReport,
     ApiMaintenancePlan,
     ApiScaffoldCopyResult,
     ApiScaffoldPlan,
+    CodebaseScanReport,
+    analyze_codebase_api_impact,
     analyze_pyprocore_coverage_gaps,
+    api_impact_report_to_markdown,
     build_api_maintenance_plan,
+    codebase_scan_report_to_markdown,
     compare_oas_catalogs,
     copy_read_only_endpoint_scaffold,
     coverage_gap_report_to_markdown,
@@ -218,6 +223,7 @@ from pyprocore.maintenance import (
     plan_read_only_endpoint_scaffold,
     scaffold_copy_result_to_markdown,
     scaffold_plan_to_markdown,
+    scan_pyprocore_usage,
 )
 from pyprocore.mcp import (
     build_mcp_compatibility_report,
@@ -1673,6 +1679,26 @@ def build_parser() -> argparse.ArgumentParser:
     maintenance_scaffold_copy_parser.add_argument("--dry-run", action="store_true")
     maintenance_scaffold_copy_parser.add_argument("--overwrite", action="store_true")
     _add_maintenance_report_options(maintenance_scaffold_copy_parser)
+    maintenance_usage_scan_parser = maintenance_subcommands.add_parser(
+        "usage-scan",
+        help="Scan a local codebase for PyProcore usage without executing it",
+    )
+    maintenance_usage_scan_parser.add_argument("codebase_path", type=Path)
+    _add_maintenance_report_options(maintenance_usage_scan_parser)
+    maintenance_usage_map_parser = maintenance_subcommands.add_parser(
+        "usage-map",
+        help="Map local PyProcore usage to broad capability families",
+    )
+    maintenance_usage_map_parser.add_argument("codebase_path", type=Path)
+    _add_maintenance_report_options(maintenance_usage_map_parser)
+    maintenance_impact_scan_parser = maintenance_subcommands.add_parser(
+        "impact-scan",
+        help="Relate local PyProcore usage to optional local OAS drift",
+    )
+    maintenance_impact_scan_parser.add_argument("codebase_path", type=Path)
+    maintenance_impact_scan_parser.add_argument("--old-oas", type=Path)
+    maintenance_impact_scan_parser.add_argument("--new-oas", type=Path)
+    _add_maintenance_report_options(maintenance_impact_scan_parser)
 
     discovery_parser = subcommands.add_parser(
         "discovery",
@@ -4731,6 +4757,14 @@ def run_command(args: argparse.Namespace) -> Any:
                 args.output_dir,
                 dry_run=args.dry_run,
                 overwrite=args.overwrite,
+            )
+        if args.maintenance_command in {"usage-scan", "usage-map"}:
+            return scan_pyprocore_usage(args.codebase_path)
+        if args.maintenance_command == "impact-scan":
+            return analyze_codebase_api_impact(
+                args.codebase_path,
+                old_oas_path=args.old_oas,
+                new_oas_path=args.new_oas,
             )
         raise ValueError(f"Unsupported maintenance command: {args.maintenance_command}")
 
@@ -8117,6 +8151,12 @@ def main() -> None:
             return
         if isinstance(result, ApiScaffoldCopyResult):
             print(scaffold_copy_result_to_markdown(result).rstrip())
+            return
+        if isinstance(result, CodebaseScanReport):
+            print(codebase_scan_report_to_markdown(result).rstrip())
+            return
+        if isinstance(result, ApiImpactReport):
+            print(api_impact_report_to_markdown(result).rstrip())
             return
 
     if args.command == "discovery":

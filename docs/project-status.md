@@ -235,7 +235,9 @@ workers, and project health feeds. Phase 17D adds local project health
 analytics recipes for exported RFI, submittal, change, and Daily Log records.
 Phase 17E adds optional copied FastAPI read API starter templates. Phase 18A
 adds local OAS drift, coverage-gap, maintenance-plan, and draft read-only
-scaffold assistance for maintainers.
+scaffold assistance for maintainers. Phase 18B adds local customer-codebase
+usage maps and conservative possible-impact reports with optional local OAS
+drift comparison.
 
 Phase 17A is metadata/reporting only. It does not fetch remote OAS files,
 generate executable clients, register executable tools, call Procore, call
@@ -269,6 +271,13 @@ call Procore or external AI/model APIs, generate executable tools, enable MCP
 or Procore tool execution, scaffold write/risky endpoints, stage or commit
 changes, open pull requests, publish packages, or enable write actions. Draft
 files require human review.
+
+Phase 18B scans user-selected local folders using AST and lexical inspection.
+It does not clone or fetch repositories, execute or import scanned files, edit
+customer code, generate patches, commits, branches, or pull requests, call
+Procore or external AI/model APIs, enable MCP or Procore tool execution, or
+enable write actions. Findings require human review and do not certify
+compatibility.
 
 Phase 8B adds `PROCORE_AUTH_MODE=client_credentials` support for Procore Data
 Connection Apps. Authorization-code OAuth remains the default. Client

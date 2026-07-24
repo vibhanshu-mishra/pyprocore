@@ -27,8 +27,9 @@ for local OAS catalog reports, discovery routing metadata, integration
 blueprints, local project-health analytics recipes, and an optional copied
 FastAPI read API starter template. Phase 18A also adds a local API maintenance
 assistant for OAS drift, coverage-gap, maintenance-plan, and draft scaffold
-reports. These remain local metadata/template/report features and do not enable
-Procore writes or tool execution.
+reports. Phase 18B adds local customer-codebase usage maps and conservative
+possible-impact reports. These remain local metadata/template/report features
+and do not enable Procore writes or tool execution.
 
 ## Installation
 
@@ -142,8 +143,10 @@ environment variables that are already set.
 - Compare endpoint areas to known PyProcore read coverage.
 - Compare local specs and plan human-reviewed read-only coverage with the API
   maintenance assistant.
+- Scan a user-selected local codebase for PyProcore usage and relate broad
+  capability families to optional local OAS drift.
 - Produce JSON or Markdown reports without fetching remote catalogs, generating
-  executable tools, calling Procore, or enabling writes.
+  executable tools, editing customer code, calling Procore, or enabling writes.
 
 ### Local Discovery Router Metadata
 

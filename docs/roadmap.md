@@ -98,6 +98,11 @@ Safety status for `v2.3.0`:
   scaffolds. It does not fetch specs, call Procore, generate executable tools,
   scaffold risky/write endpoints, stage or commit changes, open pull requests,
   publish packages, or enable execution.
+- Phase 18B adds a local customer-codebase usage and possible-impact scanner.
+  It detects PyProcore imports, calls, CLI references, and broad capability
+  families, with optional local OAS drift correlation and redacted reports. It
+  does not execute or edit customer code, fetch repositories, generate patches
+  or pull requests, call remote services, or enable tool/write execution.
 - Additional Daily Log types with ambiguous or environment-specific endpoint
   shapes remain deferred until safe documented GET/list paths are confirmed.
 
