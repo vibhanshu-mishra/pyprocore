@@ -170,7 +170,7 @@ plugins, fetch remote registries, import plugin modules, execute plugin code,
 call Procore, call external AI/model APIs, enable MCP execution, or enable
 Procore tool execution.
 
-Examples `284` through `329` are completed post-`v2.3.0` unreleased examples.
+Examples `284` through `334` are completed post-`v2.3.0` unreleased examples.
 They are local metadata, report, exported-data, or template examples only.
 
 Examples `284` through `286` cover Phase 17A local OAS catalog intelligence.
@@ -236,6 +236,12 @@ They build, validate, diff, render, and compare fake local metadata/codebase
 fixtures only. They do not certify production compatibility, fetch remote
 specs/code, edit files, apply patches, run git, call GitHub/Procore/AI APIs,
 open pull requests, enable MCP/Procore tool execution, or perform writes.
+
+Examples `330` through `334` cover Phase 18F local migration guides,
+deprecation summaries, codebase impact review, artifact dry-runs, and upgrade
+checklists. They use bundled fake contracts and code only; they do not edit
+files, apply patches, run git, call GitHub/Procore/AI services, create commits
+or pull requests, or enable MCP/tool/write execution.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -761,6 +767,11 @@ The current example set runs from `01_list_companies.py` through
 | `327_maintenance_diff_contracts.py` | Compare fake old/new compatibility contracts |
 | `328_maintenance_compatibility_scan.py` | Compare fake customer usage with a local contract |
 | `329_maintenance_contract_markdown.py` | Render current compatibility metadata as Markdown |
+| `330_maintenance_migration_guide.py` | Build a general current-version migration readiness guide |
+| `331_maintenance_migration_guide_from_contracts.py` | Build a guide from fake old/new compatibility contracts |
+| `332_maintenance_migration_guide_with_codebase.py` | Add a fake local codebase compatibility review |
+| `333_maintenance_migration_guide_artifacts_dry_run.py` | Preview six migration-guide artifacts without writing |
+| `334_maintenance_upgrade_checklist.py` | Render a human-owned upgrade checklist |
 
 Sample golden datasets live in `examples/golden_datasets/`:
 
@@ -1012,4 +1023,9 @@ Sample webhook payloads live in `examples/webhooks/`:
   generation, validation, diffs, and codebase comparison. They do not certify
   compatibility, fetch remote files, edit code, run git, call GitHub/Procore,
   open PRs, enable MCP/tool execution, or enable writes.
+- Examples `330` through `334` add Phase 18F local migration-guide generation,
+  codebase impact summaries, fixed artifact dry-runs, test plans, deprecation
+  summaries, and upgrade checklists. They do not edit code, apply patches, run
+  git, call remote services, create commits or pull requests, or enable
+  MCP/tool/write execution.
 - Keep secrets out of code, screenshots, logs, and issue reports.

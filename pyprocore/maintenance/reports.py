@@ -18,6 +18,8 @@ from pyprocore.maintenance.models import (
     ApiScaffoldPlan,
     CodebaseCompatibilityReport,
     CodebaseScanReport,
+    MigrationGuide,
+    MigrationGuideReport,
     MigrationPatchPlan,
     MigrationPatchReport,
     PullRequestDraftPack,
@@ -40,6 +42,8 @@ def maintenance_report_to_json(
         | ApiImpactReport
         | MigrationPatchPlan
         | MigrationPatchReport
+        | MigrationGuide
+        | MigrationGuideReport
         | PullRequestDraftPack
         | PullRequestDraftReport
     ),

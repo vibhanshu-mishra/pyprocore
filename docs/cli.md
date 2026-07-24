@@ -269,6 +269,26 @@ Phase 18E compatibility commands generate and compare local metadata only.
 Contracts do not certify production compatibility, fetch remote specs, edit
 code, run git, call GitHub/Procore, open pull requests, or enable execution.
 
+Phase 18F adds local migration-guide reports:
+
+```bash
+procore-sdk maintenance migration-guide --format markdown
+procore-sdk maintenance migration-guide \
+  --from-contract OLD_CONTRACT.json \
+  --to-contract NEW_CONTRACT.json \
+  --codebase ./local-codebase \
+  --format json
+procore-sdk maintenance migration-guide-artifacts \
+  --from-contract OLD_CONTRACT.json \
+  --to-contract NEW_CONTRACT.json \
+  --output-dir ./tmp/migration-guide \
+  --dry-run
+```
+
+These commands require no credentials and perform no remote calls, source
+edits, patch application, git/GitHub operations, commits, pull requests, model
+calls, MCP/tool execution, or Procore writes.
+
 ## Starter Templates
 
 Phase 17E adds optional starter template commands:

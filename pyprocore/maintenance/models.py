@@ -650,3 +650,149 @@ class CodebaseCompatibilityReport(ProcoreModel):
     external_ai_calls_enabled: bool = False
     execution_enabled: bool = False
     human_review_required: bool = True
+
+
+class MigrationGuideOptions(ProcoreModel):
+    """Options controlling deterministic local migration-guide generation."""
+
+    title: str = "PyProcore Migration Guide"
+    generated_at: str | None = None
+
+
+class MigrationGuideAction(ProcoreModel):
+    """One human-owned action recommended by a migration guide."""
+
+    action: str
+    priority: str
+    manual_review_required: bool = True
+
+
+class MigrationGuideRisk(ProcoreModel):
+    """One migration risk and its required review level."""
+
+    level: str
+    subject: str
+    reason: str
+
+
+class MigrationGuideDeprecation(ProcoreModel):
+    """One deprecated helper with local migration guidance."""
+
+    helper: str
+    migration_note: str
+    risk_level: str = "medium"
+
+
+class MigrationGuideBreakingChange(ProcoreModel):
+    """One removed capability requiring breaking-change review."""
+
+    subject: str
+    change_type: str
+    migration_note: str
+    risk_level: str = "breaking"
+
+
+class MigrationGuideFeatureAddition(ProcoreModel):
+    """One new read-only or local-only capability."""
+
+    name: str
+    category: str
+    risk_level: str = "informational"
+
+
+class MigrationGuideKnownGap(ProcoreModel):
+    """One deferred or risky compatibility gap."""
+
+    family: str
+    status: str
+    reason: str
+    risk_level: str = "manual_review"
+
+
+class MigrationGuideItem(ProcoreModel):
+    """One normalized migration-guide item."""
+
+    category: str
+    subject: str
+    summary: str
+    risk_level: str
+    actions: list[MigrationGuideAction] = Field(default_factory=list)
+
+
+class MigrationGuideSection(ProcoreModel):
+    """One human-readable migration-guide section."""
+
+    title: str
+    summary: str
+    items: list[MigrationGuideItem] = Field(default_factory=list)
+
+
+class MigrationGuideValidationFinding(ProcoreModel):
+    """One guide-generation or artifact-safety finding."""
+
+    severity: str
+    code: str
+    message: str
+
+
+class MigrationGuideArtifact(ProcoreModel):
+    """One fixed local migration-guide artifact."""
+
+    relative_path: str
+    purpose: str
+    content: str
+
+
+class MigrationGuide(ProcoreModel):
+    """Structured local migration guide requiring human review."""
+
+    schema_version: str = MAINTENANCE_SCHEMA_VERSION
+    title: str
+    generated_at: str | None = None
+    from_version: str | None = None
+    to_version: str
+    comparison_provided: bool = False
+    summary: str
+    overall_risk: str = "informational"
+    sections: list[MigrationGuideSection] = Field(default_factory=list)
+    feature_additions: list[MigrationGuideFeatureAddition] = Field(default_factory=list)
+    breaking_changes: list[MigrationGuideBreakingChange] = Field(default_factory=list)
+    deprecations: list[MigrationGuideDeprecation] = Field(default_factory=list)
+    known_gaps: list[MigrationGuideKnownGap] = Field(default_factory=list)
+    risks: list[MigrationGuideRisk] = Field(default_factory=list)
+    recommended_upgrade_checklist: list[str] = Field(default_factory=list)
+    manual_verification_checklist: list[str] = Field(default_factory=list)
+    suggested_test_plan: list[str] = Field(default_factory=list)
+    maintainer_notes: list[str] = Field(default_factory=list)
+    safety_notes: list[str] = Field(default_factory=list)
+    codebase_impact: CodebaseCompatibilityReport | None = None
+    findings: list[MigrationGuideValidationFinding] = Field(default_factory=list)
+    mode: str = "local_migration_guide"
+    customer_files_modified: bool = False
+    patches_applied: bool = False
+    remote_fetch_enabled: bool = False
+    procore_calls_enabled: bool = False
+    git_operations_enabled: bool = False
+    github_api_calls_enabled: bool = False
+    pull_request_opened: bool = False
+    external_ai_calls_enabled: bool = False
+    execution_enabled: bool = False
+    human_review_required: bool = True
+
+
+class MigrationGuideReport(ProcoreModel):
+    """Result of a migration-guide artifact dry-run or local write."""
+
+    guide: MigrationGuide
+    output_dir: str
+    dry_run: bool
+    artifacts: list[MigrationGuideArtifact] = Field(default_factory=list)
+    planned_files: list[str] = Field(default_factory=list)
+    written_files: list[str] = Field(default_factory=list)
+    findings: list[MigrationGuideValidationFinding] = Field(default_factory=list)
+    customer_files_modified: bool = False
+    patches_applied: bool = False
+    git_operations_enabled: bool = False
+    github_api_calls_enabled: bool = False
+    pull_request_opened: bool = False
+    human_review_required: bool = True

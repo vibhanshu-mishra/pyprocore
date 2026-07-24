@@ -114,6 +114,7 @@ class DocsTruthAuditTestCase(unittest.TestCase):
             "Phase 18C",
             "Phase 18D",
             "Phase 18E",
+            "Phase 18F",
         ):
             self.assertIn(phrase, completed_section)
             self.assertNotIn(phrase, future_section)
@@ -165,6 +166,7 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         self.assertIn("Examples `315` through `319`", examples)
         self.assertIn("Examples `320` through `324`", examples)
         self.assertIn("Examples `325` through `329`", examples)
+        self.assertIn("Examples `330` through `334`", examples)
         self.assertIn("cover the `v2.3.0` Phase 7", examples)
         self.assertIn("do not require Procore credentials or execute tools", examples)
         self.assertIn("client credentials auth", examples)

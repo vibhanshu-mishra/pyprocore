@@ -262,3 +262,43 @@ require human review.
     create any real pull request manually after review.
 11. Treat Phase 18E contracts as compatibility metadata, not certification;
     verify important behavior with tests and reviewed documentation.
+
+## Generate A Migration Guide
+
+Phase 18F turns local compatibility contracts into a structured guide for
+human review:
+
+```bash
+procore-sdk maintenance migration-guide \
+  --from-contract examples/maintenance/contracts/old_pyprocore_compatibility_contract.json \
+  --to-contract examples/maintenance/contracts/new_pyprocore_compatibility_contract.json \
+  --format markdown
+```
+
+Add `--codebase examples/maintenance/customer_codebase` to include findings
+from a bounded local usage scan. Removed resources and CLI groups receive
+breaking review, new deprecations receive medium review, new read-only/local
+capabilities are informational or low risk, and dynamic usage remains manual
+review. Without contract arguments, the command produces a general current
+version guide and states that no comparison was provided.
+
+Preview the fixed artifact set without writing:
+
+```bash
+procore-sdk maintenance migration-guide-artifacts \
+  --from-contract examples/maintenance/contracts/old_pyprocore_compatibility_contract.json \
+  --to-contract examples/maintenance/contracts/new_pyprocore_compatibility_contract.json \
+  --output-dir ./tmp/migration-guide \
+  --dry-run
+```
+
+The fixed files are `migration_guide.md`, `migration_guide.json`,
+`upgrade_checklist.md`, `test_plan.md`, `deprecation_summary.md`, and
+`metadata.json`. Normal writes stay beneath the selected output directory and
+preserve existing files unless `--overwrite` is explicit.
+
+Migration guides are local reports, not automatic upgrades or production
+certification. They do not call Procore, fetch remote specs or code, edit
+customer files, apply patches, run git, call GitHub APIs, create commits or
+pull requests, call external AI/model APIs, or enable MCP/tool/write execution.
+Human review is required.

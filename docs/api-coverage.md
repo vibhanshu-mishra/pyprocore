@@ -220,6 +220,14 @@ codebase scans support human review. Contracts do not certify production
 compatibility, fetch remote files, edit code, run git, call GitHub/Procore, or
 enable MCP/tool/write execution.
 
+## Completed After v2.3.0: Phase 18F Migration Guide Notes
+
+Phase 18F generates local migration guides from Phase 18E compatibility
+contracts and optional bounded codebase scans. It classifies additions,
+removals, deprecations, known gaps, CLI changes, safety changes, and dynamic
+usage for human review. It adds no Procore endpoint coverage, makes no Procore
+call, edits no code, applies no patch, and enables no write or tool execution.
+
 ## Phase 8A Endpoint Notes
 
 Phase 8A adds read-only SDK coverage for Observations, Punch Items, and Generic

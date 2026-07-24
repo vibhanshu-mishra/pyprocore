@@ -59,6 +59,9 @@ Completed after `v2.3.0`; not yet published to PyPI.
 - Phase 18E local API compatibility contracts with deterministic package
   capability metadata, validation findings, contract diffs, codebase usage
   comparison, JSON/Markdown reports, and safe single-file output.
+- Phase 18F local deprecation and migration-guide generation from compatibility
+  contracts and optional codebase scans, with risk classification, upgrade and
+  test checklists, focused reports, and bounded output-directory artifacts.
 
 ### Security
 
@@ -85,6 +88,9 @@ Completed after `v2.3.0`; not yet published to PyPI.
 - Phase 18E contracts are local metadata, not production certification. They do
   not fetch remote files, edit code, apply patches, run git, call GitHub or
   Procore, open pull requests, enable MCP/tool execution, or enable writes.
+- Phase 18F migration guides are local reports requiring human review. They do
+  not fetch files, edit code, apply patches, run git, call GitHub/Procore/AI
+  services, create commits or pull requests, or enable tool/write execution.
 
 ### Deferred
 

@@ -118,6 +118,11 @@ Safety status for `v2.3.0`:
   production compatibility, fetch remote specs/code, edit files, run git, call
   GitHub/Procore/AI services, open pull requests, or enable tool/write
   execution.
+- Phase 18F adds local deprecation and migration-guide reports from
+  compatibility contracts and optional codebase scans, including risk groups,
+  upgrade and verification checklists, safe test plans, and bounded artifacts.
+  It does not edit code, apply patches, run git, call GitHub/Procore/AI
+  services, create commits or pull requests, or enable tool/write execution.
 - Additional Daily Log types with ambiguous or environment-specific endpoint
   shapes remain deferred until safe documented GET/list paths are confirmed.
 

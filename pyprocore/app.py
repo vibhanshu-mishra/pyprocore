@@ -213,6 +213,8 @@ from pyprocore.maintenance import (
     ApiScaffoldPlan,
     CodebaseCompatibilityReport,
     CodebaseScanReport,
+    MigrationGuide,
+    MigrationGuideReport,
     MigrationPatchPlan,
     MigrationPatchReport,
     PullRequestDraftPack,
@@ -223,6 +225,7 @@ from pyprocore.maintenance import (
     api_impact_report_to_markdown,
     build_api_maintenance_plan,
     build_current_compatibility_contract,
+    build_migration_guide,
     build_migration_patch_plan,
     build_pr_draft_pack,
     codebase_compatibility_report_to_markdown,
@@ -237,6 +240,8 @@ from pyprocore.maintenance import (
     drift_report_to_markdown,
     maintenance_plan_to_markdown,
     maintenance_report_to_json,
+    migration_guide_report_to_markdown,
+    migration_guide_to_markdown,
     migration_patch_plan_to_markdown,
     migration_patch_report_to_markdown,
     plan_read_only_endpoint_scaffold,
@@ -247,6 +252,7 @@ from pyprocore.maintenance import (
     scan_pyprocore_usage,
     validate_compatibility_contract_file,
     write_compatibility_contract,
+    write_migration_guide_artifacts,
     write_migration_patch_artifacts,
     write_pr_draft_pack,
 )
@@ -1799,6 +1805,29 @@ def build_parser() -> argparse.ArgumentParser:
     compatibility_scan_parser.add_argument("codebase_path", type=Path)
     compatibility_scan_parser.add_argument("--contract", required=True, type=Path)
     _add_maintenance_report_options(compatibility_scan_parser)
+    migration_guide_parser = maintenance_subcommands.add_parser(
+        "migration-guide",
+        help="Build a local human-review migration guide without editing code",
+    )
+    migration_guide_parser.add_argument("--from-contract", type=Path)
+    migration_guide_parser.add_argument("--to-contract", type=Path)
+    migration_guide_parser.add_argument("--codebase", type=Path)
+    _add_maintenance_report_options(migration_guide_parser)
+    migration_guide_artifacts_parser = maintenance_subcommands.add_parser(
+        "migration-guide-artifacts",
+        help="Dry-run or write local migration-guide reports to an output directory",
+    )
+    migration_guide_artifacts_parser.add_argument("--from-contract", type=Path)
+    migration_guide_artifacts_parser.add_argument("--to-contract", type=Path)
+    migration_guide_artifacts_parser.add_argument("--codebase", type=Path)
+    migration_guide_artifacts_parser.add_argument(
+        "--output-dir",
+        required=True,
+        type=Path,
+    )
+    migration_guide_artifacts_parser.add_argument("--dry-run", action="store_true")
+    migration_guide_artifacts_parser.add_argument("--overwrite", action="store_true")
+    _add_maintenance_report_options(migration_guide_artifacts_parser)
 
     discovery_parser = subcommands.add_parser(
         "discovery",
@@ -4922,6 +4951,24 @@ def run_command(args: argparse.Namespace) -> Any:
             return analyze_codebase_compatibility_with_contract(
                 args.codebase_path,
                 args.contract,
+            )
+        if args.maintenance_command == "migration-guide":
+            return build_migration_guide(
+                from_contract_path=args.from_contract,
+                to_contract_path=args.to_contract,
+                codebase_path=args.codebase,
+            )
+        if args.maintenance_command == "migration-guide-artifacts":
+            guide = build_migration_guide(
+                from_contract_path=args.from_contract,
+                to_contract_path=args.to_contract,
+                codebase_path=args.codebase,
+            )
+            return write_migration_guide_artifacts(
+                guide,
+                args.output_dir,
+                dry_run=args.dry_run,
+                overwrite=args.overwrite,
             )
         raise ValueError(f"Unsupported maintenance command: {args.maintenance_command}")
 
@@ -8338,6 +8385,12 @@ def main() -> None:
             return
         if isinstance(result, CodebaseCompatibilityReport):
             print(codebase_compatibility_report_to_markdown(result).rstrip())
+            return
+        if isinstance(result, MigrationGuide):
+            print(migration_guide_to_markdown(result).rstrip())
+            return
+        if isinstance(result, MigrationGuideReport):
+            print(migration_guide_report_to_markdown(result).rstrip())
             return
 
     if args.command == "discovery":

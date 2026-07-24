@@ -13,8 +13,9 @@
   read-only Project Tools metadata helpers, Phase 16B trusted plugin metadata
   policy/report foundations, Phase 17A local OAS catalog intelligence, Phase
   17B local discovery router metadata, Phase 17C local integration blueprints,
-  Phase 17D local project health analytics recipes, and Phase 17E optional
-  FastAPI read API starter templates.
+  Phase 17D local project health analytics recipes, Phase 17E optional FastAPI
+  read API starter templates, and Phase 18A-18F local API maintenance, impact,
+  review-artifact, compatibility-contract, and migration-guide tooling.
   This work is not part of the published `2.3.0` package until a future
   release is cut.
 
@@ -301,6 +302,12 @@ deprecations, known gaps, and safety boundaries. They are local metadata and
 do not certify production compatibility, fetch remote specifications, edit
 code, apply patches, run git, call GitHub or Procore, open pull requests,
 enable external AI/model calls, or enable MCP/tool/write execution.
+
+Phase 18F generates local deprecation and migration guides, risk summaries,
+upgrade checklists, verification steps, and safe test plans from those
+contracts and optional local usage scans. It does not edit customer files,
+apply patches, run git, call GitHub/Procore/AI services, create commits or pull
+requests, or enable MCP/tool/write execution.
 
 Phase 8B adds `PROCORE_AUTH_MODE=client_credentials` support for Procore Data
 Connection Apps. Authorization-code OAuth remains the default. Client

@@ -25,7 +25,9 @@ customer-codebase usage and possible-impact reports. These include human-review
 migration plans, optional non-applied patch artifacts, and local PR draft packs
 for human review. Local API compatibility contracts describe supported
 families, known gaps, and safety boundaries without certifying production
-compatibility. PR drafts and contracts do not run git, call GitHub, or open
+compatibility. Local migration-guide reports turn those contracts and optional
+usage scans into human-owned upgrade checklists and test plans. PR drafts,
+contracts, and migration guides do not run git, call GitHub, edit code, or open
 pull requests. All additions remain local metadata, report, or template
 helpers and do not enable Procore writes or execution.
 

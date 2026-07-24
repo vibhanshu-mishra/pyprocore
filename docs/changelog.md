@@ -34,6 +34,8 @@ Current release status:
 - Phase 18E is tracked under Unreleased with local compatibility contract
   generation, validation, diffs, and codebase usage comparison. Contracts are
   metadata and do not certify production compatibility.
+- Phase 18F is tracked under Unreleased with local migration guides,
+  deprecation summaries, upgrade/test checklists, and bounded report artifacts.
 - `2.2.0` is the previous stable release.
 
 Before cutting a release, update the changelog with concise user-facing notes and
