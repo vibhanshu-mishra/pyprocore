@@ -170,6 +170,9 @@ plugins, fetch remote registries, import plugin modules, execute plugin code,
 call Procore, call external AI/model APIs, enable MCP execution, or enable
 Procore tool execution.
 
+Examples `284` through `304` are completed post-`v2.3.0` unreleased examples.
+They are local metadata, report, exported-data, or template examples only.
+
 Examples `284` through `286` cover Phase 17A local OAS catalog intelligence.
 They read a tiny fake local OpenAPI/OAS JSON fixture and do not fetch remote
 catalogs, generate executable clients, call Procore, call external AI/model

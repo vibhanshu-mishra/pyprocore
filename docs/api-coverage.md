@@ -8,7 +8,7 @@ Procore environment.
 | --- | --- | --- | --- |
 | Companies | Supported | List | Used to discover companies available to the token. |
 | Projects | Supported | List, get | Project listing is company-scoped. |
-| Project Tools | Unreleased Phase 16A | List, get, find | Read-only project tool metadata. No tool execution or configuration mutation. |
+| Project Tools | Completed after v2.3.0 (unreleased) | List, get, find | Read-only project tool metadata. No tool execution or configuration mutation. |
 | RFIs | Supported | List, get, download attachments | Attachments are read from RFI questions when Procore includes signed URLs. |
 | Submittals | Supported | List, get, download attachments | Attachments are downloaded from Procore-provided URLs. |
 | Documents | Supported | List folders, list files, get, download, sync | Uses Procore folder/file endpoints behind user-friendly service names. |
@@ -51,11 +51,11 @@ Procore environment.
 | Workflows | Supported | CSV, JSONL, folder sync, project context, AI-ready packages | Workflows create local files and do not mutate Procore data. |
 | Webhooks | Local helpers | Validate, redact, save, list, dry-run dispatch | No hosted webhook server is included. |
 | Agent registry | Metadata only | Manifest, tool list, tool lookup | No tool execution, server, credentials, or live Procore calls. |
-| OAS Catalog | Unreleased Phase 17A | Local endpoint summaries, safety reports, coverage reports | Metadata-only inspection of user-provided local OAS JSON files. No remote fetch, generated executable tools, Procore calls, MCP execution, or write actions. |
-| Discovery Router | Unreleased Phase 17B | Local capability search, route suggestions, inventory and safety reports | Metadata-only discovery over PyProcore capabilities and optional local OAS catalog candidates. No execution, Procore calls, MCP execution, external AI/model calls, remote OAS fetch, generated tools, or write actions. |
-| Integration Blueprints | Unreleased Phase 17C | Local blueprints, readiness reports, sync-run records, webhook fixtures | Template/report-oriented integration guidance only. No hosted app, database dependency, automatic scheduler, Procore calls, MCP/tool execution, remote calls, or write actions. |
-| Analytics Recipes | Unreleased Phase 17D | Local RFI aging, submittal delay, change exposure, Daily Log completeness, project health reports | Local/exported data only. No Procore calls, AI/model calls, dashboard/database dependencies, MCP/tool execution, or write actions. |
-| FastAPI Starter Template | Unreleased Phase 17E | Local template inventory, report, dry-run copy, and copy helpers | Optional copied read-only backend example. FastAPI is not a PyProcore dependency. No hosted app, dependency install, database layer, scheduling, Procore calls, MCP/tool execution, external AI/model calls, remote fetch, or write actions. |
+| OAS Catalog | Completed after v2.3.0 (unreleased) | Local endpoint summaries, safety reports, coverage reports | Metadata-only inspection of user-provided local OAS JSON files. No remote fetch, generated executable tools, Procore calls, MCP execution, or write actions. |
+| Discovery Router | Completed after v2.3.0 (unreleased) | Local capability search, route suggestions, inventory and safety reports | Metadata-only discovery over PyProcore capabilities and optional local OAS catalog candidates. No execution, Procore calls, MCP execution, external AI/model calls, remote OAS fetch, generated tools, or write actions. |
+| Integration Blueprints | Completed after v2.3.0 (unreleased) | Local blueprints, readiness reports, sync-run records, webhook fixtures | Template/report-oriented integration guidance only. No hosted app, database dependency, automatic scheduler, Procore calls, MCP/tool execution, remote calls, or write actions. |
+| Analytics Recipes | Completed after v2.3.0 (unreleased) | Local RFI aging, submittal delay, change exposure, Daily Log completeness, project health reports | Local/exported data only. No Procore calls, AI/model calls, dashboard/database dependencies, MCP/tool execution, or write actions. |
+| FastAPI Starter Template | Completed after v2.3.0 (unreleased) | Local template inventory, report, dry-run copy, and copy helpers | Optional copied read-only backend example. FastAPI is not a PyProcore dependency. No hosted app, dependency install, database layer, scheduling, Procore calls, MCP/tool execution, external AI/model calls, remote fetch, or write actions. |
 
 ## Agent Tool Registry
 
@@ -71,7 +71,7 @@ capability summaries, contract validation, snapshots, compatibility reports,
 and fixtures add no new Procore endpoint coverage. They are local metadata
 only and do not call Procore.
 
-## Unreleased Phase 16A Endpoint Notes
+## Completed After v2.3.0: Phase 16A Endpoint Notes
 
 Phase 16A adds read-only SDK coverage for Project Tools metadata:
 
@@ -90,7 +90,7 @@ additional waste variants, transmittals, project emails, and workforce/resource
 request coverage remain deferred until safe, unambiguous GET/list endpoint
 shapes are documented and modeled.
 
-## Unreleased Phase 17A OAS Catalog Notes
+## Completed After v2.3.0: Phase 17A OAS Catalog Notes
 
 Phase 17A adds a local OAS-backed endpoint catalog for coverage intelligence.
 Users provide a local OpenAPI/OAS JSON file; PyProcore parses endpoint metadata,
@@ -104,7 +104,7 @@ Procore, enable MCP execution, enable Procore tool execution, or enable create,
 update, delete, upload, approve, submit, payment, import, send, or other write
 actions.
 
-## Unreleased Phase 17B Discovery Router Notes
+## Completed After v2.3.0: Phase 17B Discovery Router Notes
 
 Phase 17B adds a local discovery/router metadata layer for searching PyProcore
 capabilities by human intent. It can suggest candidate resource families and
@@ -121,7 +121,7 @@ AI/model APIs, fetch remote OAS files, generate executable clients or tools,
 enable MCP execution, enable Procore tool execution, or enable create, update,
 delete, upload, approve, submit, payment, import, send, or other write actions.
 
-## Unreleased Phase 17C Integration Blueprint Notes
+## Completed After v2.3.0: Phase 17C Integration Blueprint Notes
 
 Phase 17C adds local integration blueprint metadata for teams designing their
 own PyProcore sync workers, webhook receivers, read-only internal APIs,
@@ -135,7 +135,7 @@ enable Procore tool execution, fetch remote resources, or enable create,
 update, delete, upload, approve, submit, payment, import, send, or other write
 actions.
 
-## Unreleased Phase 17D Analytics Recipe Notes
+## Completed After v2.3.0: Phase 17D Analytics Recipe Notes
 
 Phase 17D adds local project health analytics recipes for teams reviewing
 exported Procore records without live API access. The recipes can analyze local
@@ -153,7 +153,7 @@ database or external analytics dependencies, fetch remote resources, or enable
 create, update, delete, upload, approve, submit, payment, import, send, or other
 write actions.
 
-## Unreleased Phase 17E FastAPI Starter Notes
+## Completed After v2.3.0: Phase 17E FastAPI Starter Notes
 
 Phase 17E adds optional copied starter templates for teams that want to
 experiment with a small read-only FastAPI backend powered by PyProcore.

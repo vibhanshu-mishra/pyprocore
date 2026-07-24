@@ -22,6 +22,12 @@ workflow exports, async read helpers, enterprise scheduled-export planning,
 metadata-only plugin scaffolding, deterministic evals, and discovery-only MCP
 metadata. PyProcore does not call external AI/model APIs by default.
 
+The current repository also includes completed post-`v2.3.0` unreleased work
+for local OAS catalog reports, discovery routing metadata, integration
+blueprints, local project-health analytics recipes, and an optional copied
+FastAPI read API starter template. These remain local, metadata/template/report
+features and do not enable Procore writes or tool execution.
+
 ## Installation
 
 Install the current stable release:

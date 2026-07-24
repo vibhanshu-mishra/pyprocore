@@ -9,7 +9,7 @@
   read coverage, Phase 9 enterprise hardening, Phase 10 async support, Phase 11
   plugin metadata/hooks/scaffolding, Phase 12 AI workflow examples, Phase 13
   deterministic evals, and Phase 15 discovery-only MCP compatibility tooling.
-- Post-release development for the next unreleased version includes Phase 16A
+- Completed post-release work for the next unreleased version includes Phase 16A
   read-only Project Tools metadata helpers, Phase 16B trusted plugin metadata
   policy/report foundations, Phase 17A local OAS catalog intelligence, Phase
   17B local discovery router metadata, Phase 17C local integration blueprints,
@@ -223,7 +223,7 @@ typed flexible models, search helpers, local CSV/JSONL exports, CLI commands,
 agent registry metadata, docs, examples, and mocked tests. It does not add
 create/update/delete actions and does not enable agent tool execution.
 
-## Prepared For The Next Unreleased Version
+## Completed After v2.3.0 (Unreleased)
 
 Phase 16A adds read-only Project Tools metadata helpers. Phase 16B adds local
 trusted plugin policy and report metadata. Phase 17A adds local OAS-backed
@@ -233,6 +233,7 @@ intent. Phase 17C adds local integration blueprints for sync workers, webhook
 receivers, read-only API templates, dashboard data bridges, scheduled export
 workers, and project health feeds. Phase 17D adds local project health
 analytics recipes for exported RFI, submittal, change, and Daily Log records.
+Phase 17E adds optional copied FastAPI read API starter templates.
 
 Phase 17A is metadata/reporting only. It does not fetch remote OAS files,
 generate executable clients, register executable tools, call Procore, call

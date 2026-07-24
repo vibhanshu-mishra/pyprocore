@@ -18,6 +18,9 @@ Current release status:
 - `2.3.0` includes expanded read coverage, enterprise hardening, async helpers,
   metadata-only plugins, AI workflow examples, deterministic evals, and
   discovery-only MCP compatibility tooling.
+- The root changelog also tracks completed post-`v2.3.0` unreleased work,
+  including Phase 17 local OAS catalog, discovery router, integration
+  blueprint, analytics recipe, and FastAPI starter-template helpers.
 - `2.2.0` is the previous stable release.
 
 Before cutting a release, update the changelog with concise user-facing notes and

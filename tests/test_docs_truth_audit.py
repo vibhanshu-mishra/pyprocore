@@ -102,13 +102,23 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         self.assertNotIn("Async downloads", future_section)
         self.assertNotIn("Richer async batch orchestration", future_section)
 
+        self.assertIn("Completed After v2.3.0 (Unreleased)", completed_section)
         for phrase in (
-            "trusted plugin",
-            "MCP execution",
+            "Phase 17A",
+            "Phase 17B",
+            "Phase 17C",
+            "Phase 17D",
+            "Phase 17E",
+        ):
+            self.assertIn(phrase, completed_section)
+            self.assertNotIn(phrase, future_section)
+
+        for phrase in (
             "Guarded tool execution",
+            "approval-aware",
+            "Plugin install and remote execution are not enabled today",
         ):
             self.assertIn(phrase.lower(), future_section.lower())
-            self.assertNotIn(phrase, completed_section)
 
     def test_changelog_has_released_2_3_0_section(self) -> None:
         """Changelog should place current release notes under 2.3.0."""

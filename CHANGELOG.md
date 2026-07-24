@@ -7,7 +7,11 @@ and this project follows semantic versioning.
 
 ## [Unreleased]
 
+Completed after `v2.3.0`; not yet published to PyPI.
+
 ### Added
+
+#### Phase 16
 
 - Phase 16A read-only Project Tools metadata coverage with list/get/find
   helpers, typed flexible `ProjectTool` models, CLI commands, local examples,
@@ -16,6 +20,9 @@ and this project follows semantic versioning.
   policies, optional publisher/signature/checksum/compatibility metadata,
   metadata-only trust reports, CLI validation commands, local examples, and
   mocked tests.
+
+#### Phase 17
+
 - Phase 17A local OAS-backed safe endpoint catalog for user-provided JSON
   OpenAPI/OAS files, with typed endpoint metadata, safety classification,
   coverage comparison reports, CLI commands, local fake-OAS examples, and
@@ -33,6 +40,14 @@ and this project follows semantic versioning.
 - Phase 17E optional FastAPI read API starter template with static copied
   files, local template inventory/report/copy CLI commands, examples, docs, and
   mocked/local tests. FastAPI remains outside PyProcore package dependencies.
+
+### Security
+
+- Phase 17A-17E remain local metadata, report, template, or exported-data
+  helpers only. They do not fetch remote OAS files, generate executable tools,
+  call Procore, call external AI/model APIs, enable MCP execution, enable
+  Procore tool execution, install dependencies, host apps, add database
+  services, schedule jobs, or enable Procore write actions.
 
 ### Deferred
 

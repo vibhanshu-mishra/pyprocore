@@ -16,6 +16,12 @@ coverage, enterprise hardening, async helpers, plugin metadata/hooks, AI
 workflow examples, deterministic evals, and discovery-only MCP compatibility
 tooling. Tool execution remains disabled.
 
+The current repository also documents completed post-`v2.3.0` unreleased
+additions: local OAS catalog reports, discovery router metadata, integration
+blueprints, local project health analytics recipes, and an optional copied
+FastAPI starter template. These additions remain local metadata, report, or
+template helpers and do not enable Procore writes or execution.
+
 ## What PyProcore Can Do
 
 - Authenticate with Procore using OAuth.

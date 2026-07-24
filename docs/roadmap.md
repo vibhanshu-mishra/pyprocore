@@ -57,9 +57,7 @@ Safety status for `v2.3.0`:
 - Local workflow plans, scheduled examples, webhook helpers, Docker templates, and CI examples.
 - Documentation site, recipes, examples, security docs, contributor docs, and release tooling.
 
-## Future
-
-### Prepared For The Next Unreleased Version
+## Completed After v2.3.0 (Unreleased)
 
 - Phase 16A adds read-only Project Tools metadata helpers for listing, getting,
   and finding project tool metadata. It does not execute tools, configure
@@ -96,6 +94,8 @@ Safety status for `v2.3.0`:
   MCP/tool execution, fetch remote files, or enable write actions.
 - Additional Daily Log types with ambiguous or environment-specific endpoint
   shapes remain deferred until safe documented GET/list paths are confirmed.
+
+## Future
 
 ### Additional Read Coverage
 
