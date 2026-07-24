@@ -199,6 +199,8 @@ environment variables that are already set.
 - Validate discovery metadata locally without credentials.
 - Keep MCP discovery separate from tool execution.
 
+See the [full feature](docs/features.md) inventory.
+
 ## Supported Resource Families
 
 PyProcore supports read-oriented access across these resource families:
@@ -213,8 +215,6 @@ PyProcore supports read-oriented access across these resource families:
 
 See [API Coverage](docs/api-coverage.md) for endpoint notes, permission context,
 and live-verification limitations.
-
-See the [full feature](docs/features.md) inventory.
 
 ## CLI Overview
 
