@@ -17,27 +17,17 @@ The SDK is read-oriented and safety-first. It is designed for listing,
 retrieving, searching, downloading, exporting, packaging, and validating Procore
 project data while keeping write and execution surfaces closed by default.
 
-The current stable release is `2.3.0`. It includes typed API access, local
-workflow exports, async read helpers, enterprise scheduled-export planning,
-metadata-only plugin scaffolding, deterministic evals, and discovery-only MCP
-metadata. PyProcore does not call external AI/model APIs by default.
+The latest published stable release is `2.3.0`. Version `2.4.0` is prepared in
+this repository but has not yet been published. It adds Project Tools read
+coverage, local plugin trust policy reports, OAS catalog and discovery
+metadata, integration blueprints, local analytics, an optional FastAPI starter,
+and a human-review API maintenance workflow covering drift, impact, migration
+plans, draft packs, compatibility contracts, and migration guides.
 
-The current repository also includes completed post-`v2.3.0` unreleased work
-for local OAS catalog reports, discovery routing metadata, integration
-blueprints, local project-health analytics recipes, and an optional copied
-FastAPI read API starter template. Phase 18A also adds a local API maintenance
-assistant for OAS drift, coverage-gap, maintenance-plan, and draft scaffold
-reports. Phase 18B adds local customer-codebase usage maps and conservative
-possible-impact reports. Phase 18C adds human-review migration plans, suggested
-documentation diffs, and optional local patch-plan artifacts. Phase 18D adds
-local PR draft packs containing titles, body previews, checklists, test plans,
-and risk summaries for human review. Phase 18E adds machine-readable local API
-compatibility contracts, validation, contract diffs, and codebase compatibility
-reports. Phase 18F turns those contracts and optional usage scans into
-human-review migration guides, upgrade checklists, and test plans. These remain local
-metadata/template/report features and do not edit customer code, apply patches,
-run git, call GitHub, open pull requests, enable Procore writes, or enable tool
-execution.
+These features remain read-only, local, or report-oriented. MCP is
+discovery-only, Procore tool execution is disabled, and no external AI/model
+API is called by default. Maintenance helpers do not fetch remote code/specs,
+edit customer code, apply patches, run git, call GitHub, or open pull requests.
 
 ## Installation
 
@@ -52,6 +42,9 @@ Install optional async HTTP support:
 ```bash
 python3 -m pip install "pyprocore[async]==2.3.0"
 ```
+
+The prepared `2.4.0` package is available from this checkout only until manual
+release publication.
 
 ## Quick Start
 
@@ -290,21 +283,17 @@ private project data.
 Run `make docs-build` to build the MkDocs site or `make docs-serve` to preview
 it locally.
 
-## What Is New In v2.3.0
+## Prepared For v2.4.0
 
-`v2.3.0` is an additive, backward-compatible release. Highlights include:
+`v2.4.0` is an additive, backward-compatible release candidate. Highlights:
 
-- Expanded read coverage for field, directory, financial, contract, billing,
-  schedule, task, form, coordination issue, and action-plan metadata.
-- Enterprise auth, token-store, scheduled-export, private deployment, and
-  production runbook hardening.
-- Async client, async export/download helpers, async batch planning, and broader
-  async read coverage.
-- Metadata-only plugin manifests, JSON config, local hooks, extension-pack
-  metadata, and local scaffolding.
-- Model-agnostic AI workflow examples and local context package helpers.
-- Deterministic evals, regression checks, and offline model-response fixtures.
-- Discovery-only MCP resources, prompts, contracts, snapshots, and reports.
+- Read-only Project Tools metadata helpers.
+- Local plugin trust policies and compatibility reports.
+- Local OAS catalog, discovery routing, integration blueprints, analytics
+  recipes, and an optional copied FastAPI starter.
+- Human-review API drift, codebase impact, migration planning, PR draft,
+  compatibility contract, and migration-guide reports.
+- Examples through `334` and corresponding mocked/local tests.
 
 Detailed release history lives in [CHANGELOG.md](CHANGELOG.md),
 [Project Status](docs/project-status.md), and [Roadmap](docs/roadmap.md).

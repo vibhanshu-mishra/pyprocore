@@ -9,15 +9,15 @@ PyProcore focuses on safe, read-oriented automation. It is designed for listing,
 retrieving, downloading, exporting, packaging, and reviewing project information
 locally. The current workflow examples do not mutate Procore data.
 
-Current stable release: `2.3.0`.
+Latest published stable release: `2.3.0`. Prepared package version: `2.4.0`
+(not yet published).
 
 PyProcore `2.3.0` includes the completed Phase 7 Agent Layer plus expanded read
 coverage, enterprise hardening, async helpers, plugin metadata/hooks, AI
 workflow examples, deterministic evals, and discovery-only MCP compatibility
 tooling. Tool execution remains disabled.
 
-The current repository also documents completed post-`v2.3.0` unreleased
-additions: local OAS catalog reports, discovery router metadata, integration
+The prepared `2.4.0` release adds local OAS catalog reports, discovery router metadata, integration
 blueprints, local project health analytics recipes, and an optional copied
 FastAPI starter template, plus a local API maintenance assistant for OAS drift,
 coverage gaps, maintenance plans, draft read-only scaffolds, and local
@@ -29,7 +29,8 @@ compatibility. Local migration-guide reports turn those contracts and optional
 usage scans into human-owned upgrade checklists and test plans. PR drafts,
 contracts, and migration guides do not run git, call GitHub, edit code, or open
 pull requests. All additions remain local metadata, report, or template
-helpers and do not enable Procore writes or execution.
+helpers and do not enable Procore writes or execution. Publication remains a
+separate manual release step.
 
 ## What PyProcore Can Do
 

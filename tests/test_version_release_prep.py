@@ -1,4 +1,4 @@
-"""Tests for 2.3.0 release documentation state."""
+"""Tests for prepared 2.4.0 release documentation state."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 class VersionReleasePrepTestCase(unittest.TestCase):
-    """Validate released 2.3.0 version and docs state."""
+    """Validate prepared 2.4.0 metadata and published 2.3.0 history."""
 
     def read_text(self, relative_path: str) -> str:
         """Read a repository file.
@@ -23,21 +23,22 @@ class VersionReleasePrepTestCase(unittest.TestCase):
         """
         return (PROJECT_ROOT / relative_path).read_text(encoding="utf-8")
 
-    def test_package_version_is_2_3_0(self) -> None:
-        """The package root should expose the released version."""
-        self.assertEqual(pyprocore.__version__, "2.3.0")
+    def test_package_version_is_2_4_0(self) -> None:
+        """The package root should expose the prepared version."""
+        self.assertEqual(pyprocore.__version__, "2.4.0")
 
-    def test_pyproject_version_is_2_3_0(self) -> None:
+    def test_pyproject_version_is_2_4_0(self) -> None:
         """pyproject metadata should match the package root version."""
         pyproject = tomllib.loads(self.read_text("pyproject.toml"))
 
-        self.assertEqual(pyproject["project"]["version"], "2.3.0")
+        self.assertEqual(pyproject["project"]["version"], "2.4.0")
 
-    def test_changelog_has_2_3_0_release_section(self) -> None:
-        """CHANGELOG should have a dated 2.3.0 release section."""
+    def test_changelog_has_2_4_0_release_section(self) -> None:
+        """CHANGELOG should have dated 2.4.0 and historical 2.3.0 sections."""
         changelog = self.read_text("CHANGELOG.md")
 
         self.assertIn("## [Unreleased]", changelog)
+        self.assertIn("## [2.4.0] - 2026-07-24", changelog)
         self.assertIn("## [2.3.0] - 2026-07-19", changelog)
         self.assertIn("Phase 8A read-only API coverage", changelog)
         self.assertIn("Phase 15C MCP compatibility polish", changelog)
@@ -58,6 +59,8 @@ class VersionReleasePrepTestCase(unittest.TestCase):
         self.assertIn("tagged as `v2.3.0`", docs)
         self.assertIn("released on GitHub", docs)
         self.assertIn("Previous stable release: `2.2.0`", docs)
+        self.assertIn("Prepared package version: `2.4.0`", docs)
+        self.assertIn("not yet been published", docs)
 
     def test_docs_do_not_claim_2_3_0_is_unpublished(self) -> None:
         """Docs should not keep stale 2.3.0 pre-publish language."""
@@ -77,6 +80,25 @@ class VersionReleasePrepTestCase(unittest.TestCase):
             "publish 2.3.0 later",
         )
         for phrase in forbidden_phrases:
+            self.assertNotIn(phrase, docs)
+
+    def test_docs_do_not_claim_2_4_0_is_published(self) -> None:
+        """Prepared release docs must not claim publication or release completion."""
+        docs = "\n".join(
+            [
+                self.read_text("README.md"),
+                self.read_text("docs/release.md"),
+                self.read_text("docs/project-status.md"),
+                self.read_text("docs/index.md"),
+            ]
+        )
+
+        for phrase in (
+            "2.4.0 has been published",
+            "2.4.0 is published",
+            "tagged as `v2.4.0`",
+            "`v2.4.0` GitHub release created",
+        ):
             self.assertNotIn(phrase, docs)
 
     def test_github_workflow_files_are_unmodified(self) -> None:

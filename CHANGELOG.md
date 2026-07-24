@@ -7,90 +7,77 @@ and this project follows semantic versioning.
 
 ## [Unreleased]
 
-Completed after `v2.3.0`; not yet published to PyPI.
+No changes yet.
+
+## [2.4.0] - 2026-07-24
+
+Prepared for release; not yet published to PyPI or released on GitHub.
+
+PyProcore 2.4.0 is an additive, backward-compatible release focused on safe
+read-only coverage and local, human-review maintenance intelligence.
 
 ### Added
 
-#### Phase 16
+#### API Coverage
 
-- Phase 16A read-only Project Tools metadata coverage with list/get/find
-  helpers, typed flexible `ProjectTool` models, CLI commands, local examples,
-  and mocked tests.
-- Phase 16B trusted plugin ecosystem foundation with JSON-only local trust
-  policies, optional publisher/signature/checksum/compatibility metadata,
-  metadata-only trust reports, CLI validation commands, local examples, and
-  mocked tests.
+- Phase 16A Project Tools list/get/find helpers, flexible typed models, CLI
+  commands, exports, examples, and mocked tests. Coverage remains read-only.
 
-#### Phase 17
+#### Self-Maintaining API Maintenance Assistant
 
-- Phase 17A local OAS-backed safe endpoint catalog for user-provided JSON
-  OpenAPI/OAS files, with typed endpoint metadata, safety classification,
-  coverage comparison reports, CLI commands, local fake-OAS examples, and
-  mocked/local tests.
-- Phase 17B local discovery router metadata layer for searching PyProcore
-  capabilities by intent, route suggestion reports, optional local OAS-backed
-  discovery candidates, CLI commands, local examples, and mocked/local tests.
-- Phase 17C local integration blueprint metadata layer with blueprint
-  inventory, readiness reports, local sync-run records, webhook fixture
-  helpers, CLI commands, docs, examples, and mocked/local tests.
-- Phase 17D local project health analytics recipes for exported RFI,
-  submittal, change, and Daily Log records, with deterministic heuristic
-  scoring, JSON/Markdown/CSV reports, CLI commands, local fake-data examples,
-  and mocked/local tests.
-- Phase 17E optional FastAPI read API starter template with static copied
-  files, local template inventory/report/copy CLI commands, examples, docs, and
-  mocked/local tests. FastAPI remains outside PyProcore package dependencies.
+- Phase 17A local OAS-backed endpoint catalog with safety classification,
+  coverage summaries, and JSON/Markdown reports for user-provided local files.
+- Phase 17B deterministic discovery-router metadata with local capability
+  search, route suggestions, descriptions, and optional fake/local OAS context.
+- Phase 18A local OAS drift, coverage-gap, maintenance-plan, and safe draft
+  read-only scaffold reports.
+- Phase 18B bounded customer-codebase usage and compatibility impact scanning.
+- Phase 18C conservative migration patch planning and non-applied
+  documentation-only suggested diffs.
+- Phase 18D local PR draft packs with titles, body previews, checklists, test
+  plans, risk summaries, and bounded review artifacts.
+- Phase 18E deterministic API compatibility contracts, validation, diffs, and
+  local codebase compatibility reports.
+- Phase 18F deprecation and migration-guide reports with risk classification,
+  upgrade checklists, test plans, and bounded local artifacts.
 
-#### Phase 18
+#### Local Analytics And Templates
 
-- Phase 18A local API maintenance assistant for comparing user-provided OAS
-  JSON files, detecting endpoint/method/parameter/operation-ID drift,
-  analyzing read-only coverage gaps, building human-review maintenance plans,
-  and planning or copying draft read-only scaffold files.
-- Phase 18B local customer-codebase impact scanner for conservative AST and
-  lexical PyProcore usage detection, capability mapping, optional local OAS
-  drift correlation, redacted snippets, and JSON/Markdown human-review reports.
-- Phase 18C local migration patch planner with conservative usage-specific
-  review suggestions, safe documentation-only suggested diffs, manual review
-  checklists, and optional JSON/Markdown/diff artifacts.
-- Phase 18D local PR draft packs with conservative titles, body previews,
-  review checklists, safe test plans, grouped risk summaries, and optional
-  output-directory artifacts for human review.
-- Phase 18E local API compatibility contracts with deterministic package
-  capability metadata, validation findings, contract diffs, codebase usage
-  comparison, JSON/Markdown reports, and safe single-file output.
-- Phase 18F local deprecation and migration-guide generation from compatibility
-  contracts and optional codebase scans, with risk classification, upgrade and
-  test checklists, focused reports, and bounded output-directory artifacts.
+- Phase 17C local integration blueprints, readiness reports, sync-run records,
+  and webhook fixtures.
+- Phase 17D deterministic project-health analytics over local/exported RFI,
+  submittal, change, and Daily Log records.
+- Phase 17E optional copied FastAPI read API starter template. FastAPI remains
+  outside PyProcore runtime dependencies.
+
+#### Plugin Trust And Ecosystem
+
+- Phase 16B JSON-only trusted-publisher, compatibility, capability, checksum,
+  signature-metadata, policy-validation, and trust-report foundations.
+
+### Docs
+
+- Added CLI, API coverage, maintenance, analytics, template, plugin trust,
+  roadmap, project-status, and safety documentation.
+- Expanded local, credential-free examples through example 334.
+
+### Tests
+
+- Added mocked and local-only tests for Phase 16A through Phase 18F.
+- Preserved documentation truth, secrets, formatting, lint, type-checking,
+  package-build, and strict MkDocs validation.
 
 ### Security
 
-- Phase 17A-17E remain local metadata, report, template, or exported-data
-  helpers only. They do not fetch remote OAS files, generate executable tools,
-  call Procore, call external AI/model APIs, enable MCP execution, enable
-  Procore tool execution, install dependencies, host apps, add database
-  services, schedule jobs, or enable Procore write actions.
-- Phase 18A does not fetch remote specs, call Procore or external AI/model
-  APIs, generate executable tools, enable MCP/Procore tool execution, scaffold
-  write/risky endpoints, stage or commit changes, open pull requests, publish
-  packages, or enable write actions. Draft files require human review.
-- Phase 18B scans user-selected local folders only. It does not clone or fetch
-  repositories or OAS files, execute or edit scanned files, generate patches,
-  commits, branches, or pull requests, call Procore or external AI/model APIs,
-  enable MCP/Procore tool execution, or enable write actions.
-- Phase 18C does not edit customer files, apply patches, run git, create commits
-  or pull requests, fetch remote code/OAS files, call Procore or external
-  AI/model APIs, enable MCP/Procore tool execution, or enable write actions.
-- Phase 18D does not edit customer files, apply patches, run git, call GitHub
-  APIs, create commits or pull requests, fetch remote code/OAS files, call
-  Procore or external AI/model APIs, enable MCP/Procore tool execution, or
-  enable write actions.
-- Phase 18E contracts are local metadata, not production certification. They do
-  not fetch remote files, edit code, apply patches, run git, call GitHub or
-  Procore, open pull requests, enable MCP/tool execution, or enable writes.
-- Phase 18F migration guides are local reports requiring human review. They do
-  not fetch files, edit code, apply patches, run git, call GitHub/Procore/AI
-  services, create commits or pull requests, or enable tool/write execution.
+- MCP remains discovery-only and Procore tool execution remains disabled.
+- No Procore create, update, delete, upload, approval, submission, payment, or
+  other write action is enabled.
+- Local OAS, impact, migration, PR-draft, compatibility, and guide helpers do
+  not fetch remote files, edit customer code, apply patches, run git, call
+  GitHub/Procore/external AI services, create commits or pull requests, or
+  certify production compatibility.
+- Plugin trust remains metadata validation only; no remote install, arbitrary
+  import, manifest-driven execution, or registry fetch is enabled.
 
 ### Deferred
 

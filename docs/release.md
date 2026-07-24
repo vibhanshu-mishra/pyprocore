@@ -10,6 +10,29 @@ tagged as `v2.3.0`, and released on GitHub.
 
 PyProcore `2.2.0` is the previous stable release.
 
+## Prepared Release: 2.4.0
+
+Package metadata and release notes are prepared for `2.4.0`. This version has
+not yet been published to PyPI or TestPyPI, tagged, or released on GitHub.
+Publishing and release creation require final manual confirmation.
+
+Before publication, verify:
+
+```bash
+PYTHONPATH=. procore-sdk --version
+python3 scripts/check_release_candidate.py
+```
+
+Expected local version output:
+
+```text
+pyprocore 2.4.0
+```
+
+The prepared release includes Phase 16A-16B, Phase 17A-17E, and Phase
+18A-18F. MCP remains discovery-only, Procore tool execution and write actions
+remain disabled, and maintenance helpers remain local and human-review-first.
+
 ## Verify 2.3.0
 
 To verify the published package in a clean environment:

@@ -14,27 +14,27 @@ The canonical changelog lives in the GitHub repository:
 
 Current release status:
 
-- `2.3.0` is the current stable PyPI release.
+- `2.3.0` is the latest published stable PyPI release.
+- `2.4.0` is prepared in the repository and has not yet been published.
 - `2.3.0` includes expanded read coverage, enterprise hardening, async helpers,
   metadata-only plugins, AI workflow examples, deterministic evals, and
   discovery-only MCP compatibility tooling.
-- The root changelog also tracks completed post-`v2.3.0` unreleased work,
-  including Phase 17 local OAS catalog, discovery router, integration
-  blueprint, analytics recipe, and FastAPI starter-template helpers.
-- Phase 18A is tracked under Unreleased with local OAS drift, coverage-gap,
+- The root changelog includes the prepared `2.4.0` work: Phase 16A-16B,
+  Phase 17A-17E, and Phase 18A-18F.
+- Phase 18A adds local OAS drift, coverage-gap,
   maintenance-plan, and draft read-only scaffold assistance.
-- Phase 18B is tracked under Unreleased with local codebase usage maps,
+- Phase 18B adds local codebase usage maps,
   redacted snippets, and conservative possible-impact reports.
-- Phase 18C is tracked under Unreleased with local migration plans,
+- Phase 18C adds local migration plans,
   documentation-only suggested diffs, review checklists, and optional
   patch-plan artifacts that are never applied automatically.
-- Phase 18D is tracked under Unreleased with local PR draft titles, body
+- Phase 18D adds local PR draft titles, body
   previews, review checklists, safe test plans, risk summaries, and optional
   artifacts. It does not run git, call GitHub, or open pull requests.
-- Phase 18E is tracked under Unreleased with local compatibility contract
+- Phase 18E adds local compatibility contract
   generation, validation, diffs, and codebase usage comparison. Contracts are
   metadata and do not certify production compatibility.
-- Phase 18F is tracked under Unreleased with local migration guides,
+- Phase 18F adds local migration guides,
   deprecation summaries, upgrade/test checklists, and bounded report artifacts.
 - `2.2.0` is the previous stable release.
 

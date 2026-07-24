@@ -60,7 +60,7 @@ class CurrentCompatibilityContractTests(unittest.TestCase):
         contract = build_current_compatibility_contract()
         boundaries = {row.name: row.status for row in contract.safety_boundaries}
 
-        self.assertEqual(contract.pyprocore_version, "2.3.0")
+        self.assertEqual(contract.pyprocore_version, "2.4.0")
         self.assertEqual(boundaries["mcp"], "discovery_only")
         self.assertEqual(boundaries["procore_write_actions"], "disabled")
         self.assertEqual(boundaries["tool_execution"], "disabled")

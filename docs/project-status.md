@@ -3,21 +3,38 @@
 ## Current Versions
 
 - Current stable release: `2.3.0`
+- Prepared package version: `2.4.0` (not yet published)
 - Previous stable release: `2.2.0`
 - `v2.3.0` is published on PyPI and released on GitHub.
 - `2.3.0` includes the additive work completed after `2.2.0`: Phase 8 expanded
   read coverage, Phase 9 enterprise hardening, Phase 10 async support, Phase 11
   plugin metadata/hooks/scaffolding, Phase 12 AI workflow examples, Phase 13
   deterministic evals, and Phase 15 discovery-only MCP compatibility tooling.
-- Completed post-release work for the next unreleased version includes Phase 16A
+- The prepared `2.4.0` release includes Phase 16A
   read-only Project Tools metadata helpers, Phase 16B trusted plugin metadata
   policy/report foundations, Phase 17A local OAS catalog intelligence, Phase
   17B local discovery router metadata, Phase 17C local integration blueprints,
   Phase 17D local project health analytics recipes, Phase 17E optional FastAPI
   read API starter templates, and Phase 18A-18F local API maintenance, impact,
   review-artifact, compatibility-contract, and migration-guide tooling.
-  This work is not part of the published `2.3.0` package until a future
-  release is cut.
+  This work remains unpublished until the manual `2.4.0` release is completed.
+
+## Prepared Release: 2.4.0
+
+PyProcore `2.4.0` is prepared for release with:
+
+- read-only Project Tools metadata coverage;
+- JSON-only plugin trust policies and local trust reports;
+- local OAS catalog, discovery router, integration blueprint, analytics, and
+  optional copied FastAPI starter helpers;
+- local API drift, codebase impact, migration plan, PR draft, compatibility
+  contract, deprecation, and migration-guide reports;
+- examples through `334` and comprehensive mocked/local validation.
+
+It has not been published to PyPI or released on GitHub. MCP remains
+discovery-only, Procore tool execution remains disabled, and no Procore write,
+remote OAS/code fetch, GitHub API, external AI/model, or automatic migration
+behavior is enabled.
 
 ## Current Stable Release: 2.3.0
 
@@ -224,7 +241,7 @@ typed flexible models, search helpers, local CSV/JSONL exports, CLI commands,
 agent registry metadata, docs, examples, and mocked tests. It does not add
 create/update/delete actions and does not enable agent tool execution.
 
-## Completed After v2.3.0 (Unreleased)
+## Included In Prepared v2.4.0
 
 Phase 16A adds read-only Project Tools metadata helpers. Phase 16B adds local
 trusted plugin policy and report metadata. Phase 17A adds local OAS-backed

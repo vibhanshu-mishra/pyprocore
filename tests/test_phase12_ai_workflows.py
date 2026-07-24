@@ -254,7 +254,7 @@ class Phase12AiWorkflowsTestCase(unittest.TestCase):
 
         self.assertFalse(response["metadata"]["execution_enabled"])
         self.assertTrue(response["metadata"]["discovery_only"])
-        self.assertEqual(pyprocore.__version__, "2.3.0")
+        self.assertEqual(pyprocore.__version__, "2.4.0")
 
 
 if __name__ == "__main__":

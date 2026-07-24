@@ -208,8 +208,8 @@ tool execution.
 
 ## Local OAS Catalog
 
-The following local metadata/report commands are completed after `v2.3.0` and
-are tracked under Unreleased until the next package release.
+The following local metadata/report commands are included in the prepared
+`v2.4.0` package. They are not part of the published `v2.3.0` wheel.
 
 Phase 17A adds local OAS catalog commands for endpoint coverage intelligence:
 

@@ -52,7 +52,7 @@ class MigrationGuideBuilderTests(unittest.TestCase):
         guide = build_migration_guide()
 
         self.assertIsInstance(guide, MigrationGuide)
-        self.assertEqual(guide.to_version, "2.3.0")
+        self.assertEqual(guide.to_version, "2.4.0")
         self.assertFalse(guide.comparison_provided)
         self.assertIn("no previous/target", guide.summary)
 

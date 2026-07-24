@@ -21,14 +21,14 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         """Read a repository file."""
         return (PROJECT_ROOT / relative_path).read_text(encoding="utf-8")
 
-    def test_source_version_is_2_3_0(self) -> None:
-        """Package and pyproject versions should remain at 2.3.0."""
+    def test_source_version_is_2_4_0(self) -> None:
+        """Package and pyproject versions should be prepared at 2.4.0."""
         pyproject = tomllib.loads(self.read_text("pyproject.toml"))
 
-        self.assertEqual(pyprocore.__version__, "2.3.0")
-        self.assertEqual(pyproject["project"]["version"], "2.3.0")
+        self.assertEqual(pyprocore.__version__, "2.4.0")
+        self.assertEqual(pyproject["project"]["version"], "2.4.0")
 
-    def test_cli_version_returns_2_2_0(self) -> None:
+    def test_cli_version_returns_2_4_0(self) -> None:
         """The CLI version output should reflect the package version."""
         env = {**os.environ, "PYTHONPATH": str(PROJECT_ROOT)}
         completed = subprocess.run(
@@ -41,7 +41,7 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         )
 
         self.assertEqual(completed.returncode, 0, completed.stderr)
-        self.assertIn("pyprocore 2.3.0", completed.stdout)
+        self.assertIn("pyprocore 2.4.0", completed.stdout)
 
     def test_readme_positions_public_sdk_capabilities(self) -> None:
         """README should explain public SDK capabilities and safety boundaries."""
@@ -50,7 +50,8 @@ class DocsTruthAuditTestCase(unittest.TestCase):
 
         self.assertIn("open-source python sdk and automation toolkit", readme_lower)
         self.assertIn("read-oriented procore integrations", readme_lower)
-        self.assertIn("The current stable release is `2.3.0`", readme)
+        self.assertIn("latest published stable release is `2.3.0`", readme)
+        self.assertIn("Version `2.4.0` is prepared", readme)
         self.assertIn("python3 -m pip install pyprocore==2.3.0", readme)
         for phrase in (
             "Typed Procore API Access",
@@ -71,6 +72,7 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         index = self.read_text("docs/index.md")
 
         self.assertIn("Current stable release: `2.3.0`", status)
+        self.assertIn("Prepared package version: `2.4.0`", status)
         self.assertIn("Previous stable release: `2.2.0`", status)
         self.assertIn("PyPI release completed", self.read_text("docs/release.md"))
         self.assertIn("Tool execution remains disabled", status)
@@ -86,6 +88,7 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         completed_section = roadmap.split("## Future", 1)[0]
         future_section = roadmap.split("## Future", 1)[1]
         released_section = roadmap.split("### v2.3.0", 1)[1].split("### v2.2.0", 1)[0]
+        prepared_section = roadmap.split("## Prepared For v2.4.0", 1)[1].split("## Future", 1)[0]
 
         self.assertIn("### v2.3.0", roadmap)
         self.assertIn("### v2.2.0", roadmap)
@@ -102,7 +105,7 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         self.assertNotIn("Async downloads", future_section)
         self.assertNotIn("Richer async batch orchestration", future_section)
 
-        self.assertIn("Completed After v2.3.0 (Unreleased)", completed_section)
+        self.assertIn("Prepared For v2.4.0", completed_section)
         for phrase in (
             "Phase 17A",
             "Phase 17B",
@@ -116,7 +119,7 @@ class DocsTruthAuditTestCase(unittest.TestCase):
             "Phase 18E",
             "Phase 18F",
         ):
-            self.assertIn(phrase, completed_section)
+            self.assertIn(phrase, prepared_section)
             self.assertNotIn(phrase, future_section)
 
         for phrase in (
@@ -126,9 +129,13 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         ):
             self.assertIn(phrase.lower(), future_section.lower())
 
-    def test_changelog_has_released_2_3_0_section(self) -> None:
-        """Changelog should place current release notes under 2.3.0."""
+    def test_changelog_has_prepared_2_4_0_section(self) -> None:
+        """Changelog should place new release notes under prepared 2.4.0."""
         changelog = self.read_text("CHANGELOG.md")
+        section_2_4 = changelog.split("## [2.4.0] - 2026-07-24", 1)[1].split(
+            "## [2.3.0] - 2026-07-19",
+            1,
+        )[0]
         section_2_3 = changelog.split("## [2.3.0] - 2026-07-19", 1)[1].split(
             "## [2.2.0] - 2026-07-12",
             1,
@@ -139,6 +146,8 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         )[0]
         section_2_1 = changelog.split("## [2.1.0] - 2026-07-11", 1)[1]
 
+        self.assertIn("Phase 16A Project Tools", section_2_4)
+        self.assertIn("Phase 18F deprecation and migration-guide", section_2_4)
         self.assertIn("Phase 8A read-only API coverage", section_2_3)
         self.assertIn("Phase 15C MCP compatibility polish", section_2_3)
         self.assertIn("published to PyPI", section_2_2)

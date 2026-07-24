@@ -71,7 +71,7 @@ FAIL_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
     ),
     (
         re.compile(
-            r"(prepared for `?2\.3\.0`?|prepared.*2\.3\.0|2\.3\.0.*prepared)",
+            r"(prepared for `?2\.3\.0`?|prepared[^.\n]*2\.3\.0|2\.3\.0[^.\n]*prepared)",
             re.IGNORECASE,
         ),
         "`2.3.0` is the current stable release, not a prepared release.",
