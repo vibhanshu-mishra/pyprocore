@@ -1,0 +1,16 @@
+[
+  {
+    "estimated_exposure": 42000,
+    "id": 3001,
+    "number": "CE-001",
+    "status": "Open",
+    "title": "Lobby framing revision"
+  },
+  {
+    "estimated_exposure": 18000,
+    "id": 3002,
+    "number": "PCO-002",
+    "status": "Approved",
+    "title": "Owner finish upgrade"
+  }
+]

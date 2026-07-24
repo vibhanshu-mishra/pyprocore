@@ -54,6 +54,7 @@ Procore environment.
 | OAS Catalog | Unreleased Phase 17A | Local endpoint summaries, safety reports, coverage reports | Metadata-only inspection of user-provided local OAS JSON files. No remote fetch, generated executable tools, Procore calls, MCP execution, or write actions. |
 | Discovery Router | Unreleased Phase 17B | Local capability search, route suggestions, inventory and safety reports | Metadata-only discovery over PyProcore capabilities and optional local OAS catalog candidates. No execution, Procore calls, MCP execution, external AI/model calls, remote OAS fetch, generated tools, or write actions. |
 | Integration Blueprints | Unreleased Phase 17C | Local blueprints, readiness reports, sync-run records, webhook fixtures | Template/report-oriented integration guidance only. No hosted app, database dependency, automatic scheduler, Procore calls, MCP/tool execution, remote calls, or write actions. |
+| Analytics Recipes | Unreleased Phase 17D | Local RFI aging, submittal delay, change exposure, Daily Log completeness, project health reports | Local/exported data only. No Procore calls, AI/model calls, dashboard/database dependencies, MCP/tool execution, or write actions. |
 
 ## Agent Tool Registry
 
@@ -132,6 +133,24 @@ a database, call Procore, call external AI/model APIs, enable MCP execution,
 enable Procore tool execution, fetch remote resources, or enable create,
 update, delete, upload, approve, submit, payment, import, send, or other write
 actions.
+
+## Unreleased Phase 17D Analytics Recipe Notes
+
+Phase 17D adds local project health analytics recipes for teams reviewing
+exported Procore records without live API access. The recipes can analyze local
+JSON, JSONL, CSV, or in-memory record dictionaries for RFI aging, submittal
+delay, change exposure, Daily Log completeness, and combined project health.
+
+Reports are deterministic and heuristic. They are designed to identify records
+worth reviewing, not to predict project outcomes or replace professional
+judgment. Outputs can be JSON, Markdown, or CSV summaries depending on the
+command/helper used.
+
+This layer does not call Procore, call external AI/model APIs, enable MCP
+execution, enable Procore tool execution, create a hosted dashboard, add
+database or external analytics dependencies, fetch remote resources, or enable
+create, update, delete, upload, approve, submit, payment, import, send, or other
+write actions.
 
 ## Phase 8A Endpoint Notes
 

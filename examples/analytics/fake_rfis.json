@@ -1,0 +1,20 @@
+[
+  {
+    "ball_in_court": "Architect",
+    "created_at": "2026-06-01",
+    "due_date": "2026-06-15",
+    "id": 1001,
+    "number": "15",
+    "schedule_impact": "TBD",
+    "status": "Open",
+    "title": "Confirm lobby ceiling detail"
+  },
+  {
+    "created_at": "2026-06-10",
+    "due_date": "2026-06-20",
+    "id": 1002,
+    "number": "16",
+    "status": "Closed",
+    "title": "Clarify door hardware finish"
+  }
+]

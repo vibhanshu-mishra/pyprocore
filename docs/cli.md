@@ -245,6 +245,26 @@ AI/model APIs, enable MCP execution, enable Procore tool execution, or enable
 write actions. If a direct local test secret is passed with `--secret-is-value`,
 the CLI does not echo it.
 
+## Local Analytics Recipes
+
+Phase 17D adds local project health analytics commands for exported records:
+
+```bash
+procore-sdk analytics rfi-aging examples/analytics/fake_rfis.json --format markdown
+procore-sdk analytics submittal-delay examples/analytics/fake_submittals.json --format json
+procore-sdk analytics change-exposure examples/analytics/fake_changes.json --format markdown
+procore-sdk analytics daily-log-completeness examples/analytics/fake_daily_logs.json --start-date 2026-06-01 --end-date 2026-06-05
+procore-sdk analytics project-health --rfis examples/analytics/fake_rfis.json --submittals examples/analytics/fake_submittals.json --changes examples/analytics/fake_changes.json --daily-logs examples/analytics/fake_daily_logs.json --start-date 2026-06-01 --end-date 2026-06-05 --format markdown
+procore-sdk analytics sample-data --output-dir ./tmp/analytics-sample
+```
+
+Analytics commands read local JSON, JSONL, or CSV files only. They produce
+deterministic, heuristic review reports for RFI aging, submittal delay, change
+exposure, Daily Log completeness, and combined project health. They do not call
+Procore, call external AI/model APIs, enable MCP execution, enable Procore tool
+execution, create a hosted dashboard, add database dependencies, or enable write
+actions.
+
 ## Local Discovery Router
 
 Phase 17B adds local discovery commands for searching PyProcore capability

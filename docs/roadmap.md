@@ -84,6 +84,11 @@ Safety status for `v2.3.0`:
   infrastructure, schedule jobs automatically, add database dependencies, call
   Procore, call external AI/model APIs, enable MCP/tool execution, fetch remote
   resources, or enable write actions.
+- Phase 17D adds local project health analytics recipes for exported RFI,
+  submittal, change, and Daily Log records. It reads local JSON, JSONL, CSV, or
+  in-memory dictionaries only and produces deterministic heuristic review
+  reports without Procore calls, external AI/model calls, MCP/tool execution,
+  dashboard/database dependencies, remote resources, or write actions.
 - Additional Daily Log types with ambiguous or environment-specific endpoint
   shapes remain deferred until safe documented GET/list paths are confirmed.
 

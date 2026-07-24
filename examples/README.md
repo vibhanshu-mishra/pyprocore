@@ -188,6 +188,12 @@ fixtures only. They do not host apps, add database dependencies, schedule jobs
 automatically, call Procore, call external AI/model APIs, enable MCP/tool
 execution, fetch remote resources, or enable write actions.
 
+Examples `296` through `300` cover Phase 17D local project health analytics
+recipes. They read fake local JSON fixtures and produce deterministic heuristic
+reports only. They do not call Procore, call external AI/model APIs, create a
+hosted dashboard, add database/external analytics dependencies, enable MCP/tool
+execution, or enable write actions.
+
 Agent examples do not require Procore credentials or execute tools.
 
 ## Environment Variables
@@ -317,6 +323,11 @@ python3 examples/292_integration_readiness_report.py
 python3 examples/293_local_sync_run_log.py
 python3 examples/294_webhook_signature_fixture.py
 python3 examples/295_dashboard_data_bridge_blueprint.py
+python3 examples/296_project_health_sample_data.py
+python3 examples/297_rfi_aging_risk_report.py
+python3 examples/298_submittal_delay_report.py
+python3 examples/299_change_exposure_summary.py
+python3 examples/300_combined_project_health_report.py
 ```
 
 Documents use Procore's Project Folders and Files endpoints internally. Before a
@@ -673,6 +684,11 @@ The current example set runs from `01_list_companies.py` through
 | `293_local_sync_run_log.py` | Write a local sync-run record and redacted log |
 | `294_webhook_signature_fixture.py` | Build and verify a local webhook signature fixture |
 | `295_dashboard_data_bridge_blueprint.py` | Inspect the dashboard data bridge blueprint |
+| `296_project_health_sample_data.py` | Write fake local analytics sample data |
+| `297_rfi_aging_risk_report.py` | Analyze RFI aging risk from fake local data |
+| `298_submittal_delay_report.py` | Analyze submittal delay risk from fake local data |
+| `299_change_exposure_summary.py` | Summarize change exposure from fake local data |
+| `300_combined_project_health_report.py` | Build a combined local project health report |
 
 Sample golden datasets live in `examples/golden_datasets/`:
 
@@ -891,4 +907,9 @@ Sample webhook payloads live in `examples/webhooks/`:
   and webhook fixtures only. They do not host apps, add database dependencies,
   schedule jobs automatically, call Procore, call external AI/model APIs,
   enable MCP/tool execution, fetch remote resources, or enable write actions.
+- Examples `296` through `300` add Phase 17D local analytics recipe examples.
+  They read fake local JSON fixtures and produce deterministic heuristic
+  reports only. They do not call Procore, call external AI/model APIs, create a
+  hosted dashboard, add database/external analytics dependencies, enable
+  MCP/tool execution, or enable write actions.
 - Keep secrets out of code, screenshots, logs, and issue reports.

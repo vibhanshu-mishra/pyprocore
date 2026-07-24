@@ -49,6 +49,17 @@ from pyprocore.agent import (
     run_mcp_stdio_server,
     write_agent_eval_results,
 )
+from pyprocore.analytics import (
+    ProjectHealthRecipeResult,
+    analytics_result_to_json,
+    analytics_result_to_markdown,
+    run_change_exposure_recipe,
+    run_daily_log_completeness_recipe,
+    run_project_health_recipe,
+    run_rfi_aging_recipe,
+    run_submittal_delay_recipe,
+    write_sample_analytics_data,
+)
 from pyprocore.auth.diagnostics import (
     AuthClientCredentialsResult,
     AuthExchangeResult,
@@ -1760,6 +1771,89 @@ def build_parser() -> argparse.ArgumentParser:
         "--json", dest="json_output", action="store_true"
     )
     integrations_webhook_verify_parser.add_argument("--pretty", action="store_true")
+
+    analytics_parser = subcommands.add_parser(
+        "analytics",
+        help="Run local project health analytics recipes without calling Procore",
+    )
+    analytics_subcommands = analytics_parser.add_subparsers(
+        dest="analytics_command",
+        required=True,
+    )
+    analytics_rfi_parser = analytics_subcommands.add_parser(
+        "rfi-aging",
+        help="Analyze local RFI records for aging risk",
+    )
+    analytics_rfi_parser.add_argument("path", type=Path)
+    analytics_rfi_parser.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="markdown",
+    )
+    analytics_rfi_parser.add_argument("--json", dest="json_output", action="store_true")
+    analytics_rfi_parser.add_argument("--pretty", action="store_true")
+    analytics_submittal_parser = analytics_subcommands.add_parser(
+        "submittal-delay",
+        help="Analyze local submittal records for delay risk",
+    )
+    analytics_submittal_parser.add_argument("path", type=Path)
+    analytics_submittal_parser.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="markdown",
+    )
+    analytics_submittal_parser.add_argument("--json", dest="json_output", action="store_true")
+    analytics_submittal_parser.add_argument("--pretty", action="store_true")
+    analytics_change_parser = analytics_subcommands.add_parser(
+        "change-exposure",
+        help="Analyze local change records for exposure risk",
+    )
+    analytics_change_parser.add_argument("path", type=Path)
+    analytics_change_parser.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="markdown",
+    )
+    analytics_change_parser.add_argument("--json", dest="json_output", action="store_true")
+    analytics_change_parser.add_argument("--pretty", action="store_true")
+    analytics_daily_log_parser = analytics_subcommands.add_parser(
+        "daily-log-completeness",
+        help="Analyze local daily log records for date coverage",
+    )
+    analytics_daily_log_parser.add_argument("path", type=Path)
+    analytics_daily_log_parser.add_argument("--start-date", default=None)
+    analytics_daily_log_parser.add_argument("--end-date", default=None)
+    analytics_daily_log_parser.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="markdown",
+    )
+    analytics_daily_log_parser.add_argument("--json", dest="json_output", action="store_true")
+    analytics_daily_log_parser.add_argument("--pretty", action="store_true")
+    analytics_project_health_parser = analytics_subcommands.add_parser(
+        "project-health",
+        help="Combine local analytics recipe results into a project health score",
+    )
+    analytics_project_health_parser.add_argument("--rfis", type=Path, default=None)
+    analytics_project_health_parser.add_argument("--submittals", type=Path, default=None)
+    analytics_project_health_parser.add_argument("--changes", type=Path, default=None)
+    analytics_project_health_parser.add_argument("--daily-logs", type=Path, default=None)
+    analytics_project_health_parser.add_argument("--start-date", default=None)
+    analytics_project_health_parser.add_argument("--end-date", default=None)
+    analytics_project_health_parser.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="markdown",
+    )
+    analytics_project_health_parser.add_argument("--json", dest="json_output", action="store_true")
+    analytics_project_health_parser.add_argument("--pretty", action="store_true")
+    analytics_sample_parser = analytics_subcommands.add_parser(
+        "sample-data",
+        help="Write fake local analytics sample datasets",
+    )
+    analytics_sample_parser.add_argument("--output-dir", required=True, type=Path)
+    analytics_sample_parser.add_argument("--json", dest="json_output", action="store_true")
+    analytics_sample_parser.add_argument("--pretty", action="store_true")
 
     subcommands.add_parser("companies", help="List companies")
 
@@ -4560,6 +4654,40 @@ def run_command(args: argparse.Namespace) -> Any:
                 f"Unsupported integrations webhook command: " f"{args.integrations_webhook_command}"
             )
         raise ValueError(f"Unsupported integrations command: {args.integrations_command}")
+
+    if args.command == "analytics":
+        if args.analytics_command == "rfi-aging":
+            return run_rfi_aging_recipe(args.path)
+        if args.analytics_command == "submittal-delay":
+            return run_submittal_delay_recipe(args.path)
+        if args.analytics_command == "change-exposure":
+            return run_change_exposure_recipe(args.path)
+        if args.analytics_command == "daily-log-completeness":
+            return run_daily_log_completeness_recipe(
+                args.path,
+                start_date=args.start_date,
+                end_date=args.end_date,
+            )
+        if args.analytics_command == "project-health":
+            return run_project_health_recipe(
+                rfis_path=args.rfis,
+                submittals_path=args.submittals,
+                changes_path=args.changes,
+                daily_logs_path=args.daily_logs,
+                start_date=args.start_date,
+                end_date=args.end_date,
+            )
+        if args.analytics_command == "sample-data":
+            return {
+                "written_files": [
+                    str(path) for path in write_sample_analytics_data(args.output_dir)
+                ],
+                "mode": "local_fake_analytics_sample_data_only",
+                "procore_api_call_required": False,
+                "external_ai_call_required": False,
+                "write_actions_enabled": False,
+            }
+        raise ValueError(f"Unsupported analytics command: {args.analytics_command}")
 
     if args.command == "workflow-plan":
         if args.workflow_plan_command == "list":
@@ -7849,6 +7977,23 @@ def main() -> None:
             return
         if isinstance(result, dict) and getattr(args, "integrations_command", None) == "webhook":
             print(json.dumps(result, indent=2 if args.json_output or args.pretty else None))
+            return
+
+    if args.command == "analytics":
+        if isinstance(result, ProjectHealthRecipeResult):
+            if args.json_output or getattr(args, "format", None) == "json":
+                print(analytics_result_to_json(result, pretty=True))
+            else:
+                print(analytics_result_to_markdown(result).rstrip())
+            return
+        if isinstance(result, dict):
+            if args.json_output or getattr(args, "pretty", False):
+                print(json.dumps(result, indent=2, default=str))
+            else:
+                print("Analytics sample data written:")
+                for path in result.get("written_files", []):
+                    print(f"- {path}")
+                print("No Procore API calls, external AI calls, or write actions were performed.")
             return
 
     if args.command == "workflow-plan" and args.workflow_plan_command == "list":

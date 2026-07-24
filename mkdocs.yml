@@ -22,6 +22,7 @@ nav:
   - MCP Discovery: mcp.md
   - Plugins: plugins.md
   - Integration Blueprints: integration-blueprints.md
+  - Analytics Recipes: analytics-recipes.md
   - Golden Evals: evals.md
   - Project Status: project-status.md
   - Security: security.md

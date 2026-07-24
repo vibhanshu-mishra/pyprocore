@@ -153,6 +153,14 @@ environment variables that are already set.
 - Keep blueprints local-only: no hosted app, no database dependency, no automatic
   scheduler, no Procore calls, no MCP/tool execution, and no write actions.
 
+### Local Project Health Analytics
+
+- Analyze local/exported RFI, submittal, change, and Daily Log records.
+- Produce deterministic JSON, Markdown, and CSV summaries for review workflows.
+- Combine available signals into a heuristic project health report.
+- Keep analytics local-only: no Procore calls, no external AI/model calls, no
+  hosted dashboard, no database dependency, and no write actions.
+
 ### Deterministic Evals And Regression Checks
 
 - Run local golden eval suites for workflow packages and manifests.
@@ -198,6 +206,7 @@ procore-sdk evals run
 procore-sdk mcp validate
 procore-sdk catalog summarize examples/catalog/fake_procore_oas.json
 procore-sdk discovery search "overdue rfis"
+procore-sdk analytics project-health --rfis examples/analytics/fake_rfis.json --format markdown
 ```
 
 See [CLI Usage](docs/cli.md) for the full command reference.
@@ -236,6 +245,7 @@ private project data.
 | Agent API | [docs/agent-api.md](docs/agent-api.md) |
 | MCP Discovery | [docs/mcp.md](docs/mcp.md) |
 | Plugins | [docs/plugins.md](docs/plugins.md) |
+| Analytics Recipes | [docs/analytics-recipes.md](docs/analytics-recipes.md) |
 | Golden Evals | [docs/evals.md](docs/evals.md) |
 | Release Guide | [docs/release.md](docs/release.md) |
 | Roadmap | [docs/roadmap.md](docs/roadmap.md) |

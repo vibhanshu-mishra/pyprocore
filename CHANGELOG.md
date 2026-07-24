@@ -26,6 +26,10 @@ and this project follows semantic versioning.
 - Phase 17C local integration blueprint metadata layer with blueprint
   inventory, readiness reports, local sync-run records, webhook fixture
   helpers, CLI commands, docs, examples, and mocked/local tests.
+- Phase 17D local project health analytics recipes for exported RFI,
+  submittal, change, and Daily Log records, with deterministic heuristic
+  scoring, JSON/Markdown/CSV reports, CLI commands, local fake-data examples,
+  and mocked/local tests.
 
 ### Deferred
 

@@ -28,6 +28,8 @@ tooling. Tool execution remains disabled.
 - Prepare model-agnostic local AI workflow prompts, checklists, and vector manifests.
 - Use the async client foundation for read-oriented workflows.
 - Inspect metadata-only plugin manifests for future extension packs.
+- Run deterministic local analytics recipes for exported project-health review
+  signals.
 - Export CSV, JSONL, Markdown, and manifest files.
 - Run repeatable workflow plans from local JSON files.
 - Inspect a local agent tool registry, local HTTP discovery API, OpenAPI export, JSON Schema export, MCP-style discovery metadata, opt-in run logs, and deterministic agent evals for future assistant integrations.
@@ -49,6 +51,7 @@ tooling. Tool execution remains disabled.
 - [Plugin Architecture](plugins.md)
   includes metadata-only manifests, local hooks, JSON configs, extension packs,
   and local plugin developer scaffolding.
+- [Local Project Health Analytics](analytics-recipes.md)
 - [Golden Evals](evals.md), including Phase 13A local deterministic
   datasets, Phase 13B workflow-specific eval suites, Phase 13C local
   baselines/regression tracking, and Phase 13D offline model-response fixture
