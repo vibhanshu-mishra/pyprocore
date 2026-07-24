@@ -214,6 +214,8 @@ PyProcore supports read-oriented access across these resource families:
 See [API Coverage](docs/api-coverage.md) for endpoint notes, permission context,
 and live-verification limitations.
 
+See the full feature inventory: [docs/features.md](docs/features.md) |
+
 ## CLI Overview
 
 Common commands:
@@ -277,6 +279,7 @@ private project data.
 | Golden Evals | [docs/evals.md](docs/evals.md) |
 | Release Guide | [docs/release.md](docs/release.md) |
 | Roadmap | [docs/roadmap.md](docs/roadmap.md) |
+| Features | [docs/features.md](docs/features.md) |
 | Examples | [examples/README.md](examples/README.md) |
 | Project Status | [docs/project-status.md](docs/project-status.md) |
 | GitHub Labels | [docs/github-labels.md](docs/github-labels.md) |
