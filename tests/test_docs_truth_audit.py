@@ -82,6 +82,29 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         self.assertNotIn("final-release-readiness.md", mkdocs)
         self.assertFalse((PROJECT_ROOT / "docs/final-release-readiness.md").exists())
 
+    def test_feature_inventory_covers_phases_and_safety_boundaries(self) -> None:
+        """Feature inventory should remain complete and safety-first."""
+        features = self.read_text("docs/features.md")
+        mkdocs = self.read_text("mkdocs.yml")
+
+        self.assertIn("Feature Inventory: features.md", mkdocs)
+        for heading in (
+            "## Initial SDK Foundation",
+            "## Phase 1 — Core Polish",
+            "## Phase 7 — Open Agent API Layer",
+            "## Phase 15 — MCP Discovery",
+            "## Phase 18F — Deprecation and Migration Guide Generator",
+        ):
+            self.assertIn(heading, features)
+        for phrase in (
+            "Procore write",
+            "MCP remains discovery-only",
+            "human-review",
+            "local-only",
+            "Phase 18F",
+        ):
+            self.assertIn(phrase, features)
+
     def test_roadmap_places_future_items_under_future(self) -> None:
         """Roadmap should separate released and future work."""
         roadmap = self.read_text("docs/roadmap.md")

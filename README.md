@@ -261,6 +261,7 @@ private project data.
 | Documentation Home | [docs/index.md](docs/index.md) |
 | Getting Started | [docs/getting-started.md](docs/getting-started.md) |
 | Authentication | [docs/authentication.md](docs/authentication.md) |
+| Complete Feature Inventory | [docs/features.md](docs/features.md) |
 | API Coverage | [docs/api-coverage.md](docs/api-coverage.md) |
 | Workflows | [docs/workflows.md](docs/workflows.md) |
 | Docker Automation | [docs/automation/docker.md](docs/automation/docker.md) |

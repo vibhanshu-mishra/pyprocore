@@ -56,6 +56,8 @@ separate manual release step.
 - [Getting Started](getting-started.md)
 - [Authentication](authentication.md)
 - [CLI Usage](cli.md)
+- [Feature Inventory](features.md), a phase-by-phase guide to implemented SDK,
+  workflow, automation, safety, and maintainer capabilities.
 - [API Coverage](api-coverage.md)
 - [API Maintenance Assistant](api-maintenance.md)
 - [Workflows](workflows.md)

@@ -57,6 +57,9 @@ read-only coverage and local, human-review maintenance intelligence.
 
 ### Docs
 
+- Added a complete phase-by-phase feature inventory covering the initial SDK
+  foundation through Phase 18F, including user-facing explanations and explicit
+  safety boundaries.
 - Added CLI, API coverage, maintenance, analytics, template, plugin trust,
   roadmap, project-status, and safety documentation.
 - Expanded local, credential-free examples through example 334.

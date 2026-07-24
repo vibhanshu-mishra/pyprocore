@@ -19,6 +19,9 @@
   review-artifact, compatibility-contract, and migration-guide tooling.
   This work remains unpublished until the manual `2.4.0` release is completed.
 
+See the [Feature Inventory](features.md) for a phase-by-phase account of
+implemented SDK, workflow, automation, safety, and maintainer capabilities.
+
 ## Prepared Release: 2.4.0
 
 PyProcore `2.4.0` is prepared for release with:
