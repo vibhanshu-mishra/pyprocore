@@ -56,6 +56,9 @@ Completed after `v2.3.0`; not yet published to PyPI.
 - Phase 18D local PR draft packs with conservative titles, body previews,
   review checklists, safe test plans, grouped risk summaries, and optional
   output-directory artifacts for human review.
+- Phase 18E local API compatibility contracts with deterministic package
+  capability metadata, validation findings, contract diffs, codebase usage
+  comparison, JSON/Markdown reports, and safe single-file output.
 
 ### Security
 
@@ -79,6 +82,9 @@ Completed after `v2.3.0`; not yet published to PyPI.
   APIs, create commits or pull requests, fetch remote code/OAS files, call
   Procore or external AI/model APIs, enable MCP/Procore tool execution, or
   enable write actions.
+- Phase 18E contracts are local metadata, not production certification. They do
+  not fetch remote files, edit code, apply patches, run git, call GitHub or
+  Procore, open pull requests, enable MCP/tool execution, or enable writes.
 
 ### Deferred
 

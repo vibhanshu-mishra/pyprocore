@@ -1,0 +1,64 @@
+{
+  "certification": false,
+  "contract_schema_version": "1",
+  "deprecations": [],
+  "generated_at": "2026-01-01T00:00:00Z",
+  "human_review_required": true,
+  "known_gaps": [
+    {
+      "family": "transmittals",
+      "reason": "Endpoint shape is not yet confirmed.",
+      "status": "deferred"
+    }
+  ],
+  "local_only_features": [
+    "API maintenance reports"
+  ],
+  "mode": "local_api_compatibility_contract",
+  "pyprocore_version": "2.2.0",
+  "removed_helpers": [],
+  "resources": [
+    {
+      "category": "procore_read",
+      "local_only": false,
+      "name": "rfis",
+      "operations": [
+        {
+          "local_only": false,
+          "name": "list_rfis",
+          "read_only": true
+        }
+      ],
+      "read_only": true
+    },
+    {
+      "category": "local_only",
+      "local_only": true,
+      "name": "workflows",
+      "operations": [
+        {
+          "local_only": true,
+          "name": "build_project_context_package",
+          "read_only": true
+        }
+      ],
+      "read_only": true
+    }
+  ],
+  "safety_boundaries": [
+    {"description": "Discovery metadata only.", "name": "mcp", "status": "discovery_only"},
+    {"description": "Execution disabled.", "name": "tool_execution", "status": "disabled"},
+    {"description": "Write actions disabled.", "name": "procore_write_actions", "status": "disabled"},
+    {"description": "No external model calls.", "name": "external_ai_model_calls", "status": "none"},
+    {"description": "No maintenance fetch.", "name": "maintenance_remote_fetch", "status": "none"},
+    {"description": "No automatic PRs.", "name": "automatic_pull_requests", "status": "disabled"},
+    {"description": "No automatic commits.", "name": "automatic_commits", "status": "disabled"}
+  ],
+  "supported_cli_groups": [
+    "maintenance",
+    "rfis"
+  ],
+  "supported_read_only_service_areas": [
+    "rfis"
+  ]
+}

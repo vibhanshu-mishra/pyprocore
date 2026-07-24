@@ -243,6 +243,11 @@ procore-sdk maintenance patch-plan CUSTOMER_CODEBASE --old-oas OLD_OAS.json --ne
 procore-sdk maintenance patch-artifacts CUSTOMER_CODEBASE --old-oas OLD_OAS.json --new-oas NEW_OAS.json --output-dir ./tmp/review --dry-run
 procore-sdk maintenance pr-draft CUSTOMER_CODEBASE --format markdown
 procore-sdk maintenance pr-draft-pack CUSTOMER_CODEBASE --old-oas OLD_OAS.json --new-oas NEW_OAS.json --output-dir ./tmp/pr-draft --dry-run
+procore-sdk maintenance compatibility-contract --format json
+procore-sdk maintenance compatibility-contract --output ./compatibility.json
+procore-sdk maintenance validate-contract ./compatibility.json --format markdown
+procore-sdk maintenance diff-contracts OLD_CONTRACT.json NEW_CONTRACT.json --format markdown
+procore-sdk maintenance compatibility-scan CUSTOMER_CODEBASE --contract ./compatibility.json --format markdown
 ```
 
 These commands require no Procore credentials. They use local files only
@@ -260,6 +265,9 @@ patches, run git, create commits or pull requests, or call remote services.
 Phase 18D PR draft commands produce local title/body/checklist/test/risk
 artifacts only. They do not run git, call GitHub APIs, open pull requests,
 apply patches, edit customer files, or call Procore.
+Phase 18E compatibility commands generate and compare local metadata only.
+Contracts do not certify production compatibility, fetch remote specs, edit
+code, run git, call GitHub/Procore, open pull requests, or enable execution.
 
 ## Starter Templates
 

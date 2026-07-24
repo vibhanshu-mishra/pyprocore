@@ -510,3 +510,143 @@ class PullRequestDraftReport(ProcoreModel):
     github_api_calls_enabled: bool = False
     pull_request_opened: bool = False
     human_review_required: bool = True
+
+
+class ApiCompatibilityContractOptions(ProcoreModel):
+    """Options controlling deterministic compatibility contract metadata."""
+
+    generated_at: str | None = None
+
+
+class ApiCompatibilityOperation(ProcoreModel):
+    """One supported SDK operation described by compatibility metadata."""
+
+    name: str
+    read_only: bool = True
+    local_only: bool = False
+
+
+class ApiCompatibilityResource(ProcoreModel):
+    """One supported capability or resource family."""
+
+    name: str
+    category: str
+    operations: list[ApiCompatibilityOperation] = Field(default_factory=list)
+    read_only: bool = True
+    local_only: bool = False
+
+
+class ApiCompatibilitySafetyBoundary(ProcoreModel):
+    """One explicit compatibility contract safety boundary."""
+
+    name: str
+    status: str
+    description: str
+
+
+class ApiCompatibilityDeprecation(ProcoreModel):
+    """Deprecated or removed helper metadata with required migration guidance."""
+
+    helper: str
+    status: str = "deprecated"
+    migration_note: str
+
+
+class ApiCompatibilityKnownGap(ProcoreModel):
+    """One known deferred, risky, or unsupported resource family."""
+
+    family: str
+    status: str
+    reason: str
+
+
+class ApiCompatibilityValidationFinding(ProcoreModel):
+    """One contract validation or codebase compatibility finding."""
+
+    severity: str
+    code: str
+    message: str
+    file_path: str | None = None
+    symbol: str | None = None
+    family: str | None = None
+    migration_note: str | None = None
+
+
+class ApiCompatibilityContract(ProcoreModel):
+    """Machine-readable local compatibility metadata for one SDK version."""
+
+    contract_schema_version: str
+    pyprocore_version: str
+    generated_at: str | None = None
+    resources: list[ApiCompatibilityResource] = Field(default_factory=list)
+    supported_read_only_service_areas: list[str] = Field(default_factory=list)
+    supported_cli_groups: list[str] = Field(default_factory=list)
+    local_only_features: list[str] = Field(default_factory=list)
+    safety_boundaries: list[ApiCompatibilitySafetyBoundary] = Field(default_factory=list)
+    deprecations: list[ApiCompatibilityDeprecation] = Field(default_factory=list)
+    removed_helpers: list[ApiCompatibilityDeprecation] = Field(default_factory=list)
+    known_gaps: list[ApiCompatibilityKnownGap] = Field(default_factory=list)
+    mode: str = "local_api_compatibility_contract"
+    certification: bool = False
+    human_review_required: bool = True
+
+
+class ApiCompatibilityChange(ProcoreModel):
+    """One detected difference between two local compatibility contracts."""
+
+    change_type: str
+    subject: str
+    before: str | None = None
+    after: str | None = None
+    risk_level: str
+    migration_note: str
+
+
+class ApiCompatibilityDiffReport(ProcoreModel):
+    """Differences between two local JSON compatibility contracts."""
+
+    old_contract_path: str
+    new_contract_path: str
+    added_resource_families: list[str] = Field(default_factory=list)
+    removed_resource_families: list[str] = Field(default_factory=list)
+    changed_safety_boundaries: list[ApiCompatibilityChange] = Field(default_factory=list)
+    added_cli_groups: list[str] = Field(default_factory=list)
+    removed_cli_groups: list[str] = Field(default_factory=list)
+    added_deprecations: list[ApiCompatibilityDeprecation] = Field(default_factory=list)
+    removed_deprecations: list[ApiCompatibilityDeprecation] = Field(default_factory=list)
+    changed_known_gaps: list[ApiCompatibilityChange] = Field(default_factory=list)
+    changes: list[ApiCompatibilityChange] = Field(default_factory=list)
+    risk_level: str = "low"
+    human_review_required: bool = True
+
+
+class ApiCompatibilityValidationReport(ProcoreModel):
+    """Validation result for local compatibility metadata."""
+
+    valid: bool
+    findings: list[ApiCompatibilityValidationFinding] = Field(default_factory=list)
+    contract: ApiCompatibilityContract | None = None
+    human_review_required: bool = True
+
+
+class CodebaseCompatibilityReport(ProcoreModel):
+    """Local codebase usage compared with one compatibility contract."""
+
+    scanned_path: str
+    contract_path: str
+    contract_version: str
+    scan_report: CodebaseScanReport
+    compatible: list[ApiCompatibilityValidationFinding] = Field(default_factory=list)
+    deprecated: list[ApiCompatibilityValidationFinding] = Field(default_factory=list)
+    removed: list[ApiCompatibilityValidationFinding] = Field(default_factory=list)
+    unknown_manual_review: list[ApiCompatibilityValidationFinding] = Field(default_factory=list)
+    local_only: list[ApiCompatibilityValidationFinding] = Field(default_factory=list)
+    customer_files_modified: bool = False
+    patches_applied: bool = False
+    remote_fetch_enabled: bool = False
+    procore_calls_enabled: bool = False
+    git_operations_enabled: bool = False
+    github_api_calls_enabled: bool = False
+    external_ai_calls_enabled: bool = False
+    execution_enabled: bool = False
+    human_review_required: bool = True

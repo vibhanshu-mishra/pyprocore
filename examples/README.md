@@ -170,7 +170,7 @@ plugins, fetch remote registries, import plugin modules, execute plugin code,
 call Procore, call external AI/model APIs, enable MCP execution, or enable
 Procore tool execution.
 
-Examples `284` through `324` are completed post-`v2.3.0` unreleased examples.
+Examples `284` through `329` are completed post-`v2.3.0` unreleased examples.
 They are local metadata, report, exported-data, or template examples only.
 
 Examples `284` through `286` cover Phase 17A local OAS catalog intelligence.
@@ -230,6 +230,12 @@ plans, and dry-run artifact paths from fake local fixtures. They do not edit
 customer files, apply patches, run git, call GitHub APIs, open pull requests,
 fetch remote code/OAS files, call Procore or external AI/model APIs, enable
 MCP/Procore tool execution, or perform write actions.
+
+Examples `325` through `329` cover Phase 18E local compatibility contracts.
+They build, validate, diff, render, and compare fake local metadata/codebase
+fixtures only. They do not certify production compatibility, fetch remote
+specs/code, edit files, apply patches, run git, call GitHub/Procore/AI APIs,
+open pull requests, enable MCP/Procore tool execution, or perform writes.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -750,6 +756,11 @@ The current example set runs from `01_list_companies.py` through
 | `322_maintenance_pr_draft_pack_dry_run.py` | Preview nine PR draft artifact paths without writing |
 | `323_maintenance_pr_review_checklist.py` | Render the local PR human-review checklist |
 | `324_maintenance_pr_test_plan.py` | Render the safe manual PR test plan |
+| `325_maintenance_compatibility_contract.py` | Build deterministic current-package compatibility metadata |
+| `326_maintenance_validate_contract.py` | Validate a fake local compatibility contract |
+| `327_maintenance_diff_contracts.py` | Compare fake old/new compatibility contracts |
+| `328_maintenance_compatibility_scan.py` | Compare fake customer usage with a local contract |
+| `329_maintenance_contract_markdown.py` | Render current compatibility metadata as Markdown |
 
 Sample golden datasets live in `examples/golden_datasets/`:
 
@@ -997,4 +1008,8 @@ Sample webhook payloads live in `examples/webhooks/`:
   files, apply patches, run git, call GitHub APIs, open pull requests, fetch
   remote code/OAS files, call Procore or AI/model APIs, enable MCP/tool
   execution, or enable writes.
+- Examples `325` through `329` add Phase 18E local compatibility contract
+  generation, validation, diffs, and codebase comparison. They do not certify
+  compatibility, fetch remote files, edit code, run git, call GitHub/Procore,
+  open PRs, enable MCP/tool execution, or enable writes.
 - Keep secrets out of code, screenshots, logs, and issue reports.

@@ -221,6 +221,32 @@ git, stage or commit files, call GitHub APIs, open pull requests, fetch remote
 code or OAS files, call Procore or external AI/model APIs, or enable MCP/tool
 or write execution. Every artifact requires human review.
 
+## API Compatibility Contracts
+
+Phase 18E describes the current SDK surface in deterministic local metadata:
+
+```bash
+procore-sdk maintenance compatibility-contract --format json
+procore-sdk maintenance compatibility-contract --output ./compatibility.json
+procore-sdk maintenance validate-contract ./compatibility.json --format markdown
+procore-sdk maintenance diff-contracts OLD.json NEW.json --format markdown
+procore-sdk maintenance compatibility-scan CUSTOMER_CODEBASE \
+  --contract ./compatibility.json \
+  --format markdown
+```
+
+A contract records the PyProcore version, schema version, supported capability
+families, read-only service areas, CLI groups, local-only features, known gaps,
+deprecations, and explicit safety boundaries. Contract diffs identify added or
+removed families and CLI groups, changed safety boundaries or known gaps, and
+deprecation changes. Compatibility scans reuse the bounded Phase 18B scanner.
+
+Contracts are local JSON metadata files. They do not fetch remote
+specifications, call Procore, certify production compatibility, edit code,
+apply patches, run git, call GitHub APIs, open pull requests, call external
+AI/model APIs, or enable MCP/tool/write execution. Maintenance decisions
+require human review.
+
 ## Human Review Checklist
 
 1. Verify the endpoint in official Procore documentation.
@@ -234,3 +260,5 @@ or write execution. Every artifact requires human review.
 9. Treat all Phase 18C diffs as suggestions and apply accepted changes manually.
 10. Treat Phase 18D titles, bodies, checklists, and test plans as local drafts;
     create any real pull request manually after review.
+11. Treat Phase 18E contracts as compatibility metadata, not certification;
+    verify important behavior with tests and reviewed documentation.

@@ -31,6 +31,9 @@ Current release status:
 - Phase 18D is tracked under Unreleased with local PR draft titles, body
   previews, review checklists, safe test plans, risk summaries, and optional
   artifacts. It does not run git, call GitHub, or open pull requests.
+- Phase 18E is tracked under Unreleased with local compatibility contract
+  generation, validation, diffs, and codebase usage comparison. Contracts are
+  metadata and do not certify production compatibility.
 - `2.2.0` is the previous stable release.
 
 Before cutting a release, update the changelog with concise user-facing notes and

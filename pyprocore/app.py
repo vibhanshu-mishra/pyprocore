@@ -202,27 +202,38 @@ from pyprocore.integrations import (
     verify_webhook_signature,
 )
 from pyprocore.maintenance import (
+    ApiCompatibilityContract,
+    ApiCompatibilityDiffReport,
+    ApiCompatibilityValidationReport,
     ApiCoverageGapReport,
     ApiDriftReport,
     ApiImpactReport,
     ApiMaintenancePlan,
     ApiScaffoldCopyResult,
     ApiScaffoldPlan,
+    CodebaseCompatibilityReport,
     CodebaseScanReport,
     MigrationPatchPlan,
     MigrationPatchReport,
     PullRequestDraftPack,
     PullRequestDraftReport,
     analyze_codebase_api_impact,
+    analyze_codebase_compatibility_with_contract,
     analyze_pyprocore_coverage_gaps,
     api_impact_report_to_markdown,
     build_api_maintenance_plan,
+    build_current_compatibility_contract,
     build_migration_patch_plan,
     build_pr_draft_pack,
+    codebase_compatibility_report_to_markdown,
     codebase_scan_report_to_markdown,
     compare_oas_catalogs,
+    compatibility_contract_to_markdown,
+    compatibility_diff_report_to_markdown,
+    compatibility_validation_report_to_markdown,
     copy_read_only_endpoint_scaffold,
     coverage_gap_report_to_markdown,
+    diff_compatibility_contracts,
     drift_report_to_markdown,
     maintenance_plan_to_markdown,
     maintenance_report_to_json,
@@ -234,6 +245,8 @@ from pyprocore.maintenance import (
     scaffold_copy_result_to_markdown,
     scaffold_plan_to_markdown,
     scan_pyprocore_usage,
+    validate_compatibility_contract_file,
+    write_compatibility_contract,
     write_migration_patch_artifacts,
     write_pr_draft_pack,
 )
@@ -1759,6 +1772,33 @@ def build_parser() -> argparse.ArgumentParser:
     pr_draft_pack_parser.add_argument("--dry-run", action="store_true")
     pr_draft_pack_parser.add_argument("--overwrite", action="store_true")
     _add_maintenance_report_options(pr_draft_pack_parser)
+    compatibility_contract_parser = maintenance_subcommands.add_parser(
+        "compatibility-contract",
+        help="Build current local API compatibility contract metadata",
+    )
+    compatibility_contract_parser.add_argument("--output", type=Path)
+    compatibility_contract_parser.add_argument("--overwrite", action="store_true")
+    _add_maintenance_report_options(compatibility_contract_parser)
+    validate_contract_parser = maintenance_subcommands.add_parser(
+        "validate-contract",
+        help="Validate one local JSON compatibility contract",
+    )
+    validate_contract_parser.add_argument("contract_path", type=Path)
+    _add_maintenance_report_options(validate_contract_parser)
+    diff_contracts_parser = maintenance_subcommands.add_parser(
+        "diff-contracts",
+        help="Compare two local JSON compatibility contracts",
+    )
+    diff_contracts_parser.add_argument("old_contract_path", type=Path)
+    diff_contracts_parser.add_argument("new_contract_path", type=Path)
+    _add_maintenance_report_options(diff_contracts_parser)
+    compatibility_scan_parser = maintenance_subcommands.add_parser(
+        "compatibility-scan",
+        help="Compare local codebase usage with a local compatibility contract",
+    )
+    compatibility_scan_parser.add_argument("codebase_path", type=Path)
+    compatibility_scan_parser.add_argument("--contract", required=True, type=Path)
+    _add_maintenance_report_options(compatibility_scan_parser)
 
     discovery_parser = subcommands.add_parser(
         "discovery",
@@ -4861,6 +4901,27 @@ def run_command(args: argparse.Namespace) -> Any:
                 args.output_dir,
                 dry_run=args.dry_run,
                 overwrite=args.overwrite,
+            )
+        if args.maintenance_command == "compatibility-contract":
+            contract = build_current_compatibility_contract()
+            if args.output:
+                write_compatibility_contract(
+                    contract,
+                    args.output,
+                    overwrite=args.overwrite,
+                )
+            return contract
+        if args.maintenance_command == "validate-contract":
+            return validate_compatibility_contract_file(args.contract_path)
+        if args.maintenance_command == "diff-contracts":
+            return diff_compatibility_contracts(
+                args.old_contract_path,
+                args.new_contract_path,
+            )
+        if args.maintenance_command == "compatibility-scan":
+            return analyze_codebase_compatibility_with_contract(
+                args.codebase_path,
+                args.contract,
             )
         raise ValueError(f"Unsupported maintenance command: {args.maintenance_command}")
 
@@ -8265,6 +8326,18 @@ def main() -> None:
             return
         if isinstance(result, PullRequestDraftReport):
             print(pr_draft_report_to_markdown(result).rstrip())
+            return
+        if isinstance(result, ApiCompatibilityContract):
+            print(compatibility_contract_to_markdown(result).rstrip())
+            return
+        if isinstance(result, ApiCompatibilityValidationReport):
+            print(compatibility_validation_report_to_markdown(result).rstrip())
+            return
+        if isinstance(result, ApiCompatibilityDiffReport):
+            print(compatibility_diff_report_to_markdown(result).rstrip())
+            return
+        if isinstance(result, CodebaseCompatibilityReport):
+            print(codebase_compatibility_report_to_markdown(result).rstrip())
             return
 
     if args.command == "discovery":

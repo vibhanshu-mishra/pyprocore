@@ -113,6 +113,11 @@ Safety status for `v2.3.0`:
   output-directory artifacts. It does not edit customer files, apply patches,
   run git, call GitHub APIs, create pull requests, fetch remote resources, call
   Procore/AI services, or enable tool/write execution.
+- Phase 18E adds deterministic local compatibility contracts, validation,
+  contract diffs, and codebase usage comparison. Contracts do not certify
+  production compatibility, fetch remote specs/code, edit files, run git, call
+  GitHub/Procore/AI services, open pull requests, or enable tool/write
+  execution.
 - Additional Daily Log types with ambiguous or environment-specific endpoint
   shapes remain deferred until safe documented GET/list paths are confirmed.
 

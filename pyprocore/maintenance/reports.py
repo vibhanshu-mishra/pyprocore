@@ -5,6 +5,9 @@ from __future__ import annotations
 import json
 
 from pyprocore.maintenance.models import (
+    ApiCompatibilityContract,
+    ApiCompatibilityDiffReport,
+    ApiCompatibilityValidationReport,
     ApiCoverageGap,
     ApiCoverageGapReport,
     ApiDriftReport,
@@ -13,6 +16,7 @@ from pyprocore.maintenance.models import (
     ApiMaintenanceTask,
     ApiScaffoldCopyResult,
     ApiScaffoldPlan,
+    CodebaseCompatibilityReport,
     CodebaseScanReport,
     MigrationPatchPlan,
     MigrationPatchReport,
@@ -24,11 +28,15 @@ from pyprocore.maintenance.models import (
 def maintenance_report_to_json(
     report: (
         ApiDriftReport
+        | ApiCompatibilityContract
+        | ApiCompatibilityDiffReport
+        | ApiCompatibilityValidationReport
         | ApiCoverageGapReport
         | ApiMaintenancePlan
         | ApiScaffoldPlan
         | ApiScaffoldCopyResult
         | CodebaseScanReport
+        | CodebaseCompatibilityReport
         | ApiImpactReport
         | MigrationPatchPlan
         | MigrationPatchReport
