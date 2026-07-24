@@ -214,7 +214,7 @@ PyProcore supports read-oriented access across these resource families:
 See [API Coverage](docs/api-coverage.md) for endpoint notes, permission context,
 and live-verification limitations.
 
-See the full feature inventory: [docs/features.md](docs/features.md) |
+See the full feature inventory: [docs/features.md](docs/features.md)
 
 ## CLI Overview
 
