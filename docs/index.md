@@ -22,9 +22,10 @@ blueprints, local project health analytics recipes, and an optional copied
 FastAPI starter template, plus a local API maintenance assistant for OAS drift,
 coverage gaps, maintenance plans, draft read-only scaffolds, and local
 customer-codebase usage and possible-impact reports. These include human-review
-migration plans and optional non-applied patch artifacts. All additions remain
-local metadata, report, or template helpers and do not enable Procore writes or
-execution.
+migration plans, optional non-applied patch artifacts, and local PR draft packs
+for human review. PR drafts do not run git, call GitHub, or open pull requests.
+All additions remain local metadata, report, or template helpers and do not
+enable Procore writes or execution.
 
 ## What PyProcore Can Do
 

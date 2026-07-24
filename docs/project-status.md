@@ -238,7 +238,9 @@ adds local OAS drift, coverage-gap, maintenance-plan, and draft read-only
 scaffold assistance for maintainers. Phase 18B adds local customer-codebase
 usage maps and conservative possible-impact reports with optional local OAS
 drift comparison. Phase 18C adds local human-review migration plans, safe
-documentation-only suggested diffs, and optional patch-plan artifacts.
+documentation-only suggested diffs, and optional patch-plan artifacts. Phase
+18D adds local PR draft titles, bodies, review checklists, safe test plans,
+risk summaries, and optional output-directory artifacts.
 
 Phase 17A is metadata/reporting only. It does not fetch remote OAS files,
 generate executable clients, register executable tools, call Procore, call
@@ -285,6 +287,12 @@ apply patches, run git, create commits, branches, or pull requests, fetch
 remote code or OAS files, call Procore or external AI/model APIs, enable MCP or
 Procore tool execution, or enable write actions. Its reports and artifacts are
 suggestions requiring manual review.
+
+Phase 18D renders Phase 18C metadata into local PR draft artifacts only. It
+does not edit customer files, apply patches, run git, stage, commit, push, call
+GitHub APIs, open pull requests, fetch remote code/OAS files, call Procore or
+external AI/model APIs, enable MCP/Procore tool execution, or enable write
+actions. Human review is required before using any draft content.
 
 Phase 8B adds `PROCORE_AUTH_MODE=client_credentials` support for Procore Data
 Connection Apps. Authorization-code OAuth remains the default. Client

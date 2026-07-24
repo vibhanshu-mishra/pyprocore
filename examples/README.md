@@ -170,7 +170,7 @@ plugins, fetch remote registries, import plugin modules, execute plugin code,
 call Procore, call external AI/model APIs, enable MCP execution, or enable
 Procore tool execution.
 
-Examples `284` through `319` are completed post-`v2.3.0` unreleased examples.
+Examples `284` through `324` are completed post-`v2.3.0` unreleased examples.
 They are local metadata, report, exported-data, or template examples only.
 
 Examples `284` through `286` cover Phase 17A local OAS catalog intelligence.
@@ -223,6 +223,13 @@ artifact paths, and print manual-review checklists from fake fixtures only.
 They do not edit customer files, apply patches, run git, create commits or pull
 requests, fetch remote code/OAS files, call Procore or external AI/model APIs,
 enable MCP/Procore tool execution, or perform write actions.
+
+Examples `320` through `324` cover the Phase 18D local PR draft pack. They
+render conservative PR titles, body previews, review checklists, safe test
+plans, and dry-run artifact paths from fake local fixtures. They do not edit
+customer files, apply patches, run git, call GitHub APIs, open pull requests,
+fetch remote code/OAS files, call Procore or external AI/model APIs, enable
+MCP/Procore tool execution, or perform write actions.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -738,6 +745,11 @@ The current example set runs from `01_list_companies.py` through
 | `317_maintenance_patch_plan_markdown.py` | Render a Markdown patch suggestion plan |
 | `318_maintenance_patch_artifacts_dry_run.py` | Preview migration artifact paths without writing |
 | `319_maintenance_manual_review_checklist.py` | Render the migration manual-review checklist |
+| `320_maintenance_pr_draft.py` | Build a general local PR draft without OAS comparison |
+| `321_maintenance_pr_draft_with_oas.py` | Add fake local OAS drift context to a PR draft |
+| `322_maintenance_pr_draft_pack_dry_run.py` | Preview nine PR draft artifact paths without writing |
+| `323_maintenance_pr_review_checklist.py` | Render the local PR human-review checklist |
+| `324_maintenance_pr_test_plan.py` | Render the safe manual PR test plan |
 
 Sample golden datasets live in `examples/golden_datasets/`:
 
@@ -980,4 +992,9 @@ Sample webhook payloads live in `examples/webhooks/`:
   they are never applied. These examples do not edit customer files, run git,
   create commits/PRs, fetch remote resources, call Procore or AI/model APIs,
   enable MCP/tool execution, or enable writes.
+- Examples `320` through `324` add Phase 18D local PR draft packs, review
+  checklists, test plans, and artifact dry-runs. They do not edit customer
+  files, apply patches, run git, call GitHub APIs, open pull requests, fetch
+  remote code/OAS files, call Procore or AI/model APIs, enable MCP/tool
+  execution, or enable writes.
 - Keep secrets out of code, screenshots, logs, and issue reports.

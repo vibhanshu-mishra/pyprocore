@@ -108,6 +108,11 @@ Safety status for `v2.3.0`:
   review checklists, and optional output artifacts. It does not edit customer
   files, apply patches, run git, create commits or pull requests, fetch remote
   resources, call Procore/AI services, or enable tool/write execution.
+- Phase 18D adds local PR draft packs with conservative title/body drafts,
+  review checklists, test plans, grouped risk summaries, and optional
+  output-directory artifacts. It does not edit customer files, apply patches,
+  run git, call GitHub APIs, create pull requests, fetch remote resources, call
+  Procore/AI services, or enable tool/write execution.
 - Additional Daily Log types with ambiguous or environment-specific endpoint
   shapes remain deferred until safe documented GET/list paths are confirmed.
 

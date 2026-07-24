@@ -53,6 +53,9 @@ Completed after `v2.3.0`; not yet published to PyPI.
 - Phase 18C local migration patch planner with conservative usage-specific
   review suggestions, safe documentation-only suggested diffs, manual review
   checklists, and optional JSON/Markdown/diff artifacts.
+- Phase 18D local PR draft packs with conservative titles, body previews,
+  review checklists, safe test plans, grouped risk summaries, and optional
+  output-directory artifacts for human review.
 
 ### Security
 
@@ -72,6 +75,10 @@ Completed after `v2.3.0`; not yet published to PyPI.
 - Phase 18C does not edit customer files, apply patches, run git, create commits
   or pull requests, fetch remote code/OAS files, call Procore or external
   AI/model APIs, enable MCP/Procore tool execution, or enable write actions.
+- Phase 18D does not edit customer files, apply patches, run git, call GitHub
+  APIs, create commits or pull requests, fetch remote code/OAS files, call
+  Procore or external AI/model APIs, enable MCP/Procore tool execution, or
+  enable write actions.
 
 ### Deferred
 

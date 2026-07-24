@@ -424,3 +424,89 @@ class MigrationPatchReport(ProcoreModel):
     patches_applied: bool = False
     git_operations_enabled: bool = False
     human_review_required: bool = True
+
+
+class PullRequestDraftOptions(ProcoreModel):
+    """Options controlling local pull-request draft content."""
+
+    include_suggested_changes: bool = True
+    include_no_action_suggestions: bool = True
+
+
+class PullRequestDraftChecklistItem(ProcoreModel):
+    """One human-review checklist item in a local PR draft pack."""
+
+    category: str
+    text: str
+    required: bool = True
+    completed: bool = False
+
+
+class PullRequestDraftRiskSummary(ProcoreModel):
+    """Migration suggestions grouped by conservative review priority."""
+
+    high: list[MigrationPatchSuggestion] = Field(default_factory=list)
+    medium: list[MigrationPatchSuggestion] = Field(default_factory=list)
+    low: list[MigrationPatchSuggestion] = Field(default_factory=list)
+    unknown_manual_review: list[MigrationPatchSuggestion] = Field(default_factory=list)
+
+
+class PullRequestDraftSection(ProcoreModel):
+    """One titled Markdown section in the proposed PR body."""
+
+    heading: str
+    content: str
+
+
+class PullRequestDraftArtifact(ProcoreModel):
+    """One local PR-draft artifact that may be written on explicit request."""
+
+    relative_path: str
+    purpose: str
+    content: str
+
+
+class PullRequestDraftPack(ProcoreModel):
+    """Local human-review PR draft package derived from migration metadata."""
+
+    schema_version: str = MAINTENANCE_SCHEMA_VERSION
+    scanned_path: str
+    options: PullRequestDraftOptions
+    migration_plan: MigrationPatchPlan
+    title: str
+    body: str
+    sections: list[PullRequestDraftSection] = Field(default_factory=list)
+    review_checklist: list[PullRequestDraftChecklistItem] = Field(default_factory=list)
+    test_plan: list[str] = Field(default_factory=list)
+    risk_summary: PullRequestDraftRiskSummary
+    impacted_files: list[str] = Field(default_factory=list)
+    artifacts: list[PullRequestDraftArtifact] = Field(default_factory=list)
+    mode: str = "local_pr_draft_pack"
+    customer_files_modified: bool = False
+    patches_applied: bool = False
+    git_operations_enabled: bool = False
+    github_api_calls_enabled: bool = False
+    pull_request_opened: bool = False
+    remote_repo_access_enabled: bool = False
+    procore_calls_enabled: bool = False
+    external_ai_calls_enabled: bool = False
+    execution_enabled: bool = False
+    human_review_required: bool = True
+
+
+class PullRequestDraftReport(ProcoreModel):
+    """Result of a PR draft pack dry-run or explicit local artifact write."""
+
+    pack: PullRequestDraftPack
+    output_dir: str
+    dry_run: bool
+    artifacts: list[PullRequestDraftArtifact] = Field(default_factory=list)
+    planned_files: list[str] = Field(default_factory=list)
+    written_files: list[str] = Field(default_factory=list)
+    findings: list[MigrationSafetyFinding] = Field(default_factory=list)
+    customer_files_modified: bool = False
+    patches_applied: bool = False
+    git_operations_enabled: bool = False
+    github_api_calls_enabled: bool = False
+    pull_request_opened: bool = False
+    human_review_required: bool = True

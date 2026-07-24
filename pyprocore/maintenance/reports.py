@@ -16,6 +16,8 @@ from pyprocore.maintenance.models import (
     CodebaseScanReport,
     MigrationPatchPlan,
     MigrationPatchReport,
+    PullRequestDraftPack,
+    PullRequestDraftReport,
 )
 
 
@@ -30,6 +32,8 @@ def maintenance_report_to_json(
         | ApiImpactReport
         | MigrationPatchPlan
         | MigrationPatchReport
+        | PullRequestDraftPack
+        | PullRequestDraftReport
     ),
     *,
     pretty: bool = False,

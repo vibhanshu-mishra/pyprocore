@@ -241,6 +241,8 @@ procore-sdk maintenance impact-scan CUSTOMER_CODEBASE --old-oas OLD_OAS.json --n
 procore-sdk maintenance migration-plan CUSTOMER_CODEBASE --format markdown
 procore-sdk maintenance patch-plan CUSTOMER_CODEBASE --old-oas OLD_OAS.json --new-oas NEW_OAS.json --format markdown
 procore-sdk maintenance patch-artifacts CUSTOMER_CODEBASE --old-oas OLD_OAS.json --new-oas NEW_OAS.json --output-dir ./tmp/review --dry-run
+procore-sdk maintenance pr-draft CUSTOMER_CODEBASE --format markdown
+procore-sdk maintenance pr-draft-pack CUSTOMER_CODEBASE --old-oas OLD_OAS.json --new-oas NEW_OAS.json --output-dir ./tmp/pr-draft --dry-run
 ```
 
 These commands require no Procore credentials. They use local files only
@@ -255,6 +257,9 @@ compatibility.
 Phase 18C patch plans are suggestions only. Artifact output is constrained to
 the selected output directory; commands never edit scanned files, apply
 patches, run git, create commits or pull requests, or call remote services.
+Phase 18D PR draft commands produce local title/body/checklist/test/risk
+artifacts only. They do not run git, call GitHub APIs, open pull requests,
+apply patches, edit customer files, or call Procore.
 
 ## Starter Templates
 

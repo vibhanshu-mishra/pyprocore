@@ -211,11 +211,14 @@ from pyprocore.maintenance import (
     CodebaseScanReport,
     MigrationPatchPlan,
     MigrationPatchReport,
+    PullRequestDraftPack,
+    PullRequestDraftReport,
     analyze_codebase_api_impact,
     analyze_pyprocore_coverage_gaps,
     api_impact_report_to_markdown,
     build_api_maintenance_plan,
     build_migration_patch_plan,
+    build_pr_draft_pack,
     codebase_scan_report_to_markdown,
     compare_oas_catalogs,
     copy_read_only_endpoint_scaffold,
@@ -226,10 +229,13 @@ from pyprocore.maintenance import (
     migration_patch_plan_to_markdown,
     migration_patch_report_to_markdown,
     plan_read_only_endpoint_scaffold,
+    pr_draft_pack_to_markdown,
+    pr_draft_report_to_markdown,
     scaffold_copy_result_to_markdown,
     scaffold_plan_to_markdown,
     scan_pyprocore_usage,
     write_migration_patch_artifacts,
+    write_pr_draft_pack,
 )
 from pyprocore.mcp import (
     build_mcp_compatibility_report,
@@ -1734,6 +1740,25 @@ def build_parser() -> argparse.ArgumentParser:
     patch_artifacts_parser.add_argument("--dry-run", action="store_true")
     patch_artifacts_parser.add_argument("--overwrite", action="store_true")
     _add_maintenance_report_options(patch_artifacts_parser)
+    pr_draft_parser = maintenance_subcommands.add_parser(
+        "pr-draft",
+        help="Build a local human-review PR draft without git or GitHub calls",
+    )
+    pr_draft_parser.add_argument("codebase_path", type=Path)
+    pr_draft_parser.add_argument("--old-oas", type=Path)
+    pr_draft_parser.add_argument("--new-oas", type=Path)
+    _add_maintenance_report_options(pr_draft_parser)
+    pr_draft_pack_parser = maintenance_subcommands.add_parser(
+        "pr-draft-pack",
+        help="Dry-run or write local PR draft artifacts to an output directory",
+    )
+    pr_draft_pack_parser.add_argument("codebase_path", type=Path)
+    pr_draft_pack_parser.add_argument("--old-oas", type=Path)
+    pr_draft_pack_parser.add_argument("--new-oas", type=Path)
+    pr_draft_pack_parser.add_argument("--output-dir", required=True, type=Path)
+    pr_draft_pack_parser.add_argument("--dry-run", action="store_true")
+    pr_draft_pack_parser.add_argument("--overwrite", action="store_true")
+    _add_maintenance_report_options(pr_draft_pack_parser)
 
     discovery_parser = subcommands.add_parser(
         "discovery",
@@ -4815,6 +4840,24 @@ def run_command(args: argparse.Namespace) -> Any:
             )
             return write_migration_patch_artifacts(
                 migration_plan,
+                args.output_dir,
+                dry_run=args.dry_run,
+                overwrite=args.overwrite,
+            )
+        if args.maintenance_command == "pr-draft":
+            return build_pr_draft_pack(
+                args.codebase_path,
+                old_oas_path=args.old_oas,
+                new_oas_path=args.new_oas,
+            )
+        if args.maintenance_command == "pr-draft-pack":
+            pack = build_pr_draft_pack(
+                args.codebase_path,
+                old_oas_path=args.old_oas,
+                new_oas_path=args.new_oas,
+            )
+            return write_pr_draft_pack(
+                pack,
                 args.output_dir,
                 dry_run=args.dry_run,
                 overwrite=args.overwrite,
@@ -8216,6 +8259,12 @@ def main() -> None:
             return
         if isinstance(result, MigrationPatchReport):
             print(migration_patch_report_to_markdown(result).rstrip())
+            return
+        if isinstance(result, PullRequestDraftPack):
+            print(pr_draft_pack_to_markdown(result).rstrip())
+            return
+        if isinstance(result, PullRequestDraftReport):
+            print(pr_draft_report_to_markdown(result).rstrip())
             return
 
     if args.command == "discovery":

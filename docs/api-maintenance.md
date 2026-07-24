@@ -192,6 +192,35 @@ runs git, stages or commits changes, creates a branch or pull request, fetches
 remote code/OAS files, calls Procore or external AI/model APIs, or enables MCP,
 tool execution, or write actions.
 
+## Build A Local PR Draft Pack
+
+Phase 18D converts the same local migration plan into human-review pull-request
+draft materials:
+
+```bash
+procore-sdk maintenance pr-draft \
+  examples/maintenance/customer_codebase \
+  --format markdown
+
+procore-sdk maintenance pr-draft-pack \
+  examples/maintenance/customer_codebase \
+  --old-oas examples/maintenance/old_fake_procore_oas.json \
+  --new-oas examples/maintenance/new_fake_procore_oas.json \
+  --output-dir ./tmp/pr-draft \
+  --dry-run
+```
+
+The fixed artifact set contains `title.txt`, `body.md`,
+`review_checklist.md`, `test_plan.md`, `risk_summary.md`,
+`impacted_files.json`, `suggested_changes.diff`, `migration_report.md`, and
+`metadata.json`. Dry-run is non-writing. Explicit local output preserves
+existing files unless `--overwrite` is provided.
+
+This is not PR automation. It does not edit customer files, apply patches, run
+git, stage or commit files, call GitHub APIs, open pull requests, fetch remote
+code or OAS files, call Procore or external AI/model APIs, or enable MCP/tool
+or write execution. Every artifact requires human review.
+
 ## Human Review Checklist
 
 1. Verify the endpoint in official Procore documentation.
@@ -203,3 +232,5 @@ tool execution, or write actions.
 7. Run the complete project quality suite.
 8. Review Phase 18B impact labels against tests and official documentation.
 9. Treat all Phase 18C diffs as suggestions and apply accepted changes manually.
+10. Treat Phase 18D titles, bodies, checklists, and test plans as local drafts;
+    create any real pull request manually after review.

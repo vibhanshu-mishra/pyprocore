@@ -28,6 +28,9 @@ Current release status:
 - Phase 18C is tracked under Unreleased with local migration plans,
   documentation-only suggested diffs, review checklists, and optional
   patch-plan artifacts that are never applied automatically.
+- Phase 18D is tracked under Unreleased with local PR draft titles, body
+  previews, review checklists, safe test plans, risk summaries, and optional
+  artifacts. It does not run git, call GitHub, or open pull requests.
 - `2.2.0` is the previous stable release.
 
 Before cutting a release, update the changelog with concise user-facing notes and

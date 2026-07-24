@@ -29,9 +29,12 @@ FastAPI read API starter template. Phase 18A also adds a local API maintenance
 assistant for OAS drift, coverage-gap, maintenance-plan, and draft scaffold
 reports. Phase 18B adds local customer-codebase usage maps and conservative
 possible-impact reports. Phase 18C adds human-review migration plans, suggested
-documentation diffs, and optional local patch-plan artifacts. These remain
-local metadata/template/report features and do not edit customer code, apply
-patches, enable Procore writes, or enable tool execution.
+documentation diffs, and optional local patch-plan artifacts. Phase 18D adds
+local PR draft packs containing titles, body previews, checklists, test plans,
+and risk summaries for human review. These remain local
+metadata/template/report features and do not edit customer code, apply patches,
+run git, call GitHub, open pull requests, enable Procore writes, or enable tool
+execution.
 
 ## Installation
 
