@@ -146,6 +146,52 @@ executes or imports scanned files, edits customer code, generates patches,
 commits, branches, or pull requests, calls Procore or external AI/model APIs,
 or enables MCP, tool execution, or write actions.
 
+## Build A Migration Patch Plan
+
+Phase 18C turns local usage and possible-impact findings into conservative
+human-review suggestions:
+
+```bash
+procore-sdk maintenance migration-plan \
+  examples/maintenance/customer_codebase \
+  --format markdown
+
+procore-sdk maintenance patch-plan \
+  examples/maintenance/customer_codebase \
+  --old-oas examples/maintenance/old_fake_procore_oas.json \
+  --new-oas examples/maintenance/new_fake_procore_oas.json \
+  --format markdown
+```
+
+Suggestions distinguish removed endpoint review, changed parameters, newly
+optional parameters, dynamic usage, CLI documentation, imports, local
+analytics, and cases where no action is indicated. Dynamic, ambiguous, and
+Python code usage remains manual-review only. Suggested unified diffs are
+limited to static non-Python CLI/documentation references and are never applied.
+
+## Write Optional Review Artifacts
+
+Preview the fixed artifact set without writing:
+
+```bash
+procore-sdk maintenance patch-artifacts \
+  examples/maintenance/customer_codebase \
+  --old-oas examples/maintenance/old_fake_procore_oas.json \
+  --new-oas examples/maintenance/new_fake_procore_oas.json \
+  --output-dir ./tmp/migration-review \
+  --dry-run
+```
+
+Without `--dry-run`, the command can write `migration_report.md`,
+`migration_report.json`, `suggested_changes.diff`, `impacted_files.json`, and
+`manual_review_checklist.md` beneath the selected output directory. Existing
+artifacts are preserved unless `--overwrite` is explicit.
+
+The artifact writer never touches scanned customer files, applies a patch,
+runs git, stages or commits changes, creates a branch or pull request, fetches
+remote code/OAS files, calls Procore or external AI/model APIs, or enables MCP,
+tool execution, or write actions.
+
 ## Human Review Checklist
 
 1. Verify the endpoint in official Procore documentation.
@@ -156,3 +202,4 @@ or enables MCP, tool execution, or write actions.
 6. Update API coverage, CLI, examples, and changelog documentation.
 7. Run the complete project quality suite.
 8. Review Phase 18B impact labels against tests and official documentation.
+9. Treat all Phase 18C diffs as suggestions and apply accepted changes manually.

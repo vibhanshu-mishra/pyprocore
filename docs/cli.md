@@ -226,7 +226,8 @@ clients, call Procore, enable MCP/tool execution, or enable write actions.
 
 ## API Maintenance Assistant
 
-Phase 18A adds local maintainer reports and draft-only scaffold planning:
+Phase 18 adds local maintainer reports, scanner intelligence, migration plans,
+and draft-only scaffold planning:
 
 ```bash
 procore-sdk maintenance drift OLD_OAS.json NEW_OAS.json --format markdown
@@ -237,9 +238,12 @@ procore-sdk maintenance scaffold-read-endpoint OAS.json --path '/rest/v1.0/proje
 procore-sdk maintenance usage-scan CUSTOMER_CODEBASE --format markdown
 procore-sdk maintenance usage-map CUSTOMER_CODEBASE --format json
 procore-sdk maintenance impact-scan CUSTOMER_CODEBASE --old-oas OLD_OAS.json --new-oas NEW_OAS.json --format markdown
+procore-sdk maintenance migration-plan CUSTOMER_CODEBASE --format markdown
+procore-sdk maintenance patch-plan CUSTOMER_CODEBASE --old-oas OLD_OAS.json --new-oas NEW_OAS.json --format markdown
+procore-sdk maintenance patch-artifacts CUSTOMER_CODEBASE --old-oas OLD_OAS.json --new-oas NEW_OAS.json --output-dir ./tmp/review --dry-run
 ```
 
-These commands require no Procore credentials. They use local JSON files only
+These commands require no Procore credentials. They use local files only
 and do not fetch specs, call Procore or external AI/model APIs, generate
 executable tools, register MCP/tool execution, stage or commit changes, open
 pull requests, publish packages, or enable writes. Scaffold output is draft
@@ -248,6 +252,9 @@ requires human review. See [API Maintenance Assistant](api-maintenance.md).
 Phase 18B scan commands inspect local files without importing, executing, or
 editing them. Possible-impact labels are conservative and never certify
 compatibility.
+Phase 18C patch plans are suggestions only. Artifact output is constrained to
+the selected output directory; commands never edit scanned files, apply
+patches, run git, create commits or pull requests, or call remote services.
 
 ## Starter Templates
 

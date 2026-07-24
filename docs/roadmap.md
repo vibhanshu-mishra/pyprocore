@@ -103,6 +103,11 @@ Safety status for `v2.3.0`:
   families, with optional local OAS drift correlation and redacted reports. It
   does not execute or edit customer code, fetch repositories, generate patches
   or pull requests, call remote services, or enable tool/write execution.
+- Phase 18C adds a local migration patch planner for conservative
+  usage-specific suggestions, documentation-only suggested diffs, manual
+  review checklists, and optional output artifacts. It does not edit customer
+  files, apply patches, run git, create commits or pull requests, fetch remote
+  resources, call Procore/AI services, or enable tool/write execution.
 - Additional Daily Log types with ambiguous or environment-specific endpoint
   shapes remain deferred until safe documented GET/list paths are confirmed.
 

@@ -324,3 +324,103 @@ class ApiImpactReport(ProcoreModel):
     external_ai_calls_enabled: bool = False
     execution_enabled: bool = False
     human_review_required: bool = True
+
+
+class MigrationPatchPlanOptions(ProcoreModel):
+    """Options controlling conservative migration patch planning."""
+
+    include_suggested_diffs: bool = True
+    include_no_action_suggestions: bool = True
+
+
+class MigrationSafetyFinding(ProcoreModel):
+    """A safety boundary or manual-review finding from migration planning."""
+
+    severity: str
+    code: str
+    message: str
+
+
+class MigrationPatchHunk(ProcoreModel):
+    """One non-applied, human-review unified diff hunk."""
+
+    file_path: str
+    line_number: int
+    original_text: str
+    suggested_text: str
+    unified_diff: str
+    applied: bool = False
+    human_review_required: bool = True
+
+
+class MigrationPatchSuggestion(ProcoreModel):
+    """One conservative migration or review suggestion for detected usage."""
+
+    suggestion_id: str
+    category: str
+    severity: str
+    message: str
+    file_path: str
+    line_number: int | None = None
+    capability_family: str
+    usage_type: str
+    source_snippet: str | None = None
+    related_endpoint_paths: list[str] = Field(default_factory=list)
+    manual_review_only: bool = True
+    exact_change_safe: bool = False
+    hunk: MigrationPatchHunk | None = None
+
+
+class MigrationPatchFile(ProcoreModel):
+    """Suggestions grouped for one scanned customer file."""
+
+    file_path: str
+    suggestions: list[MigrationPatchSuggestion] = Field(default_factory=list)
+    hunks: list[MigrationPatchHunk] = Field(default_factory=list)
+
+
+class MigrationPatchPlan(ProcoreModel):
+    """Local migration patch plan that never modifies customer files."""
+
+    schema_version: str = MAINTENANCE_SCHEMA_VERSION
+    scanned_path: str
+    options: MigrationPatchPlanOptions
+    impact_report: ApiImpactReport
+    impacted_files: list[str] = Field(default_factory=list)
+    suggestions: list[MigrationPatchSuggestion] = Field(default_factory=list)
+    files: list[MigrationPatchFile] = Field(default_factory=list)
+    manual_review_checklist: list[str] = Field(default_factory=list)
+    safety_findings: list[MigrationSafetyFinding] = Field(default_factory=list)
+    mode: str = "local_migration_patch_plan"
+    customer_files_modified: bool = False
+    patches_applied: bool = False
+    git_operations_enabled: bool = False
+    remote_repo_access_enabled: bool = False
+    procore_calls_enabled: bool = False
+    external_ai_calls_enabled: bool = False
+    execution_enabled: bool = False
+    human_review_required: bool = True
+
+
+class MigrationPatchArtifact(ProcoreModel):
+    """One optional local patch-plan artifact."""
+
+    relative_path: str
+    content: str
+    purpose: str
+
+
+class MigrationPatchReport(ProcoreModel):
+    """Result of a migration patch artifact dry-run or local write."""
+
+    plan: MigrationPatchPlan
+    output_dir: str
+    dry_run: bool
+    artifacts: list[MigrationPatchArtifact] = Field(default_factory=list)
+    written_files: list[str] = Field(default_factory=list)
+    planned_files: list[str] = Field(default_factory=list)
+    safety_findings: list[MigrationSafetyFinding] = Field(default_factory=list)
+    customer_files_modified: bool = False
+    patches_applied: bool = False
+    git_operations_enabled: bool = False
+    human_review_required: bool = True

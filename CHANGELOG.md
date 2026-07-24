@@ -50,6 +50,9 @@ Completed after `v2.3.0`; not yet published to PyPI.
 - Phase 18B local customer-codebase impact scanner for conservative AST and
   lexical PyProcore usage detection, capability mapping, optional local OAS
   drift correlation, redacted snippets, and JSON/Markdown human-review reports.
+- Phase 18C local migration patch planner with conservative usage-specific
+  review suggestions, safe documentation-only suggested diffs, manual review
+  checklists, and optional JSON/Markdown/diff artifacts.
 
 ### Security
 
@@ -66,6 +69,9 @@ Completed after `v2.3.0`; not yet published to PyPI.
   repositories or OAS files, execute or edit scanned files, generate patches,
   commits, branches, or pull requests, call Procore or external AI/model APIs,
   enable MCP/Procore tool execution, or enable write actions.
+- Phase 18C does not edit customer files, apply patches, run git, create commits
+  or pull requests, fetch remote code/OAS files, call Procore or external
+  AI/model APIs, enable MCP/Procore tool execution, or enable write actions.
 
 ### Deferred
 

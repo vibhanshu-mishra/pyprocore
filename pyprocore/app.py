@@ -209,10 +209,13 @@ from pyprocore.maintenance import (
     ApiScaffoldCopyResult,
     ApiScaffoldPlan,
     CodebaseScanReport,
+    MigrationPatchPlan,
+    MigrationPatchReport,
     analyze_codebase_api_impact,
     analyze_pyprocore_coverage_gaps,
     api_impact_report_to_markdown,
     build_api_maintenance_plan,
+    build_migration_patch_plan,
     codebase_scan_report_to_markdown,
     compare_oas_catalogs,
     copy_read_only_endpoint_scaffold,
@@ -220,10 +223,13 @@ from pyprocore.maintenance import (
     drift_report_to_markdown,
     maintenance_plan_to_markdown,
     maintenance_report_to_json,
+    migration_patch_plan_to_markdown,
+    migration_patch_report_to_markdown,
     plan_read_only_endpoint_scaffold,
     scaffold_copy_result_to_markdown,
     scaffold_plan_to_markdown,
     scan_pyprocore_usage,
+    write_migration_patch_artifacts,
 )
 from pyprocore.mcp import (
     build_mcp_compatibility_report,
@@ -1699,6 +1705,35 @@ def build_parser() -> argparse.ArgumentParser:
     maintenance_impact_scan_parser.add_argument("--old-oas", type=Path)
     maintenance_impact_scan_parser.add_argument("--new-oas", type=Path)
     _add_maintenance_report_options(maintenance_impact_scan_parser)
+    for command_name, command_help in [
+        (
+            "migration-plan",
+            "Build a local human-review migration readiness and patch plan",
+        ),
+        (
+            "patch-plan",
+            "Build conservative non-applied patch suggestions from local usage",
+        ),
+    ]:
+        migration_parser = maintenance_subcommands.add_parser(
+            command_name,
+            help=command_help,
+        )
+        migration_parser.add_argument("codebase_path", type=Path)
+        migration_parser.add_argument("--old-oas", type=Path)
+        migration_parser.add_argument("--new-oas", type=Path)
+        _add_maintenance_report_options(migration_parser)
+    patch_artifacts_parser = maintenance_subcommands.add_parser(
+        "patch-artifacts",
+        help="Dry-run or write migration review artifacts outside customer files",
+    )
+    patch_artifacts_parser.add_argument("codebase_path", type=Path)
+    patch_artifacts_parser.add_argument("--old-oas", type=Path)
+    patch_artifacts_parser.add_argument("--new-oas", type=Path)
+    patch_artifacts_parser.add_argument("--output-dir", required=True, type=Path)
+    patch_artifacts_parser.add_argument("--dry-run", action="store_true")
+    patch_artifacts_parser.add_argument("--overwrite", action="store_true")
+    _add_maintenance_report_options(patch_artifacts_parser)
 
     discovery_parser = subcommands.add_parser(
         "discovery",
@@ -4765,6 +4800,24 @@ def run_command(args: argparse.Namespace) -> Any:
                 args.codebase_path,
                 old_oas_path=args.old_oas,
                 new_oas_path=args.new_oas,
+            )
+        if args.maintenance_command in {"migration-plan", "patch-plan"}:
+            return build_migration_patch_plan(
+                args.codebase_path,
+                old_oas_path=args.old_oas,
+                new_oas_path=args.new_oas,
+            )
+        if args.maintenance_command == "patch-artifacts":
+            migration_plan = build_migration_patch_plan(
+                args.codebase_path,
+                old_oas_path=args.old_oas,
+                new_oas_path=args.new_oas,
+            )
+            return write_migration_patch_artifacts(
+                migration_plan,
+                args.output_dir,
+                dry_run=args.dry_run,
+                overwrite=args.overwrite,
             )
         raise ValueError(f"Unsupported maintenance command: {args.maintenance_command}")
 
@@ -8157,6 +8210,12 @@ def main() -> None:
             return
         if isinstance(result, ApiImpactReport):
             print(api_impact_report_to_markdown(result).rstrip())
+            return
+        if isinstance(result, MigrationPatchPlan):
+            print(migration_patch_plan_to_markdown(result).rstrip())
+            return
+        if isinstance(result, MigrationPatchReport):
+            print(migration_patch_report_to_markdown(result).rstrip())
             return
 
     if args.command == "discovery":

@@ -18,6 +18,7 @@ from pyprocore.maintenance.impact_reports import (
     codebase_scan_report_to_json,
     codebase_scan_report_to_markdown,
 )
+from pyprocore.maintenance.migration import build_migration_patch_plan
 from pyprocore.maintenance.models import (
     MAINTENANCE_MODE,
     MAINTENANCE_SCHEMA_VERSION,
@@ -37,11 +38,31 @@ from pyprocore.maintenance.models import (
     CodebaseScanOptions,
     CodebaseScanReport,
     ImpactedUsage,
+    MigrationPatchArtifact,
+    MigrationPatchFile,
+    MigrationPatchHunk,
+    MigrationPatchPlan,
+    MigrationPatchPlanOptions,
+    MigrationPatchReport,
+    MigrationPatchSuggestion,
+    MigrationSafetyFinding,
     MigrationSuggestion,
     PyprocoreCallUsage,
     PyprocoreCliUsage,
     PyprocoreImportUsage,
     PyprocoreUsage,
+)
+from pyprocore.maintenance.patch_plan import (
+    render_unified_diff_suggestion,
+    write_migration_patch_artifacts,
+)
+from pyprocore.maintenance.patch_reports import (
+    build_migration_patch_artifacts,
+    manual_review_checklist_to_markdown,
+    migration_patch_plan_to_json,
+    migration_patch_plan_to_markdown,
+    migration_patch_report_to_json,
+    migration_patch_report_to_markdown,
 )
 from pyprocore.maintenance.plans import build_api_maintenance_plan
 from pyprocore.maintenance.reports import (
@@ -77,6 +98,14 @@ __all__ = [
     "CodebaseScanReport",
     "ImpactedUsage",
     "MigrationSuggestion",
+    "MigrationPatchArtifact",
+    "MigrationPatchFile",
+    "MigrationPatchHunk",
+    "MigrationPatchPlan",
+    "MigrationPatchPlanOptions",
+    "MigrationPatchReport",
+    "MigrationPatchSuggestion",
+    "MigrationSafetyFinding",
     "PyprocoreCallUsage",
     "PyprocoreCliUsage",
     "PyprocoreImportUsage",
@@ -84,6 +113,8 @@ __all__ = [
     "analyze_codebase_api_impact",
     "analyze_pyprocore_coverage_gaps",
     "build_api_maintenance_plan",
+    "build_migration_patch_artifacts",
+    "build_migration_patch_plan",
     "compare_oas_catalogs",
     "copy_read_only_endpoint_scaffold",
     "coverage_gap_report_to_markdown",
@@ -100,8 +131,15 @@ __all__ = [
     "drift_report_to_markdown",
     "maintenance_plan_to_markdown",
     "maintenance_report_to_json",
+    "manual_review_checklist_to_markdown",
+    "migration_patch_plan_to_json",
+    "migration_patch_plan_to_markdown",
+    "migration_patch_report_to_json",
+    "migration_patch_report_to_markdown",
     "plan_read_only_endpoint_scaffold",
     "scaffold_copy_result_to_markdown",
     "scaffold_plan_to_markdown",
     "scan_pyprocore_usage",
+    "render_unified_diff_suggestion",
+    "write_migration_patch_artifacts",
 ]

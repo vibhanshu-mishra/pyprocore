@@ -14,6 +14,8 @@ from pyprocore.maintenance.models import (
     ApiScaffoldCopyResult,
     ApiScaffoldPlan,
     CodebaseScanReport,
+    MigrationPatchPlan,
+    MigrationPatchReport,
 )
 
 
@@ -26,6 +28,8 @@ def maintenance_report_to_json(
         | ApiScaffoldCopyResult
         | CodebaseScanReport
         | ApiImpactReport
+        | MigrationPatchPlan
+        | MigrationPatchReport
     ),
     *,
     pretty: bool = False,

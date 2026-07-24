@@ -170,7 +170,7 @@ plugins, fetch remote registries, import plugin modules, execute plugin code,
 call Procore, call external AI/model APIs, enable MCP execution, or enable
 Procore tool execution.
 
-Examples `284` through `314` are completed post-`v2.3.0` unreleased examples.
+Examples `284` through `319` are completed post-`v2.3.0` unreleased examples.
 They are local metadata, report, exported-data, or template examples only.
 
 Examples `284` through `286` cover Phase 17A local OAS catalog intelligence.
@@ -216,6 +216,13 @@ optional fake local OAS drift, render Markdown, and demonstrate snippet
 redaction. They do not execute or edit customer files, fetch repositories or
 OAS files, call Procore or external AI/model APIs, enable MCP/Procore tool
 execution, generate patches or pull requests, or perform write actions.
+
+Examples `315` through `319` cover the Phase 18C migration patch planner.
+They build local migration plans, render suggested documentation diffs, preview
+artifact paths, and print manual-review checklists from fake fixtures only.
+They do not edit customer files, apply patches, run git, create commits or pull
+requests, fetch remote code/OAS files, call Procore or external AI/model APIs,
+enable MCP/Procore tool execution, or perform write actions.
 
 Agent examples do not require Procore credentials or execute tools.
 
@@ -726,6 +733,11 @@ The current example set runs from `01_list_companies.py` through
 | `312_maintenance_impact_scan_with_fake_oas.py` | Correlate fake local usage with fake local OAS drift |
 | `313_maintenance_usage_map_markdown.py` | Render a local capability usage map as Markdown |
 | `314_maintenance_scan_redaction.py` | Demonstrate secret-looking snippet redaction |
+| `315_maintenance_migration_plan.py` | Build a general local migration readiness plan |
+| `316_maintenance_migration_plan_with_oas.py` | Correlate migration suggestions with fake OAS drift |
+| `317_maintenance_patch_plan_markdown.py` | Render a Markdown patch suggestion plan |
+| `318_maintenance_patch_artifacts_dry_run.py` | Preview migration artifact paths without writing |
+| `319_maintenance_manual_review_checklist.py` | Render the migration manual-review checklist |
 
 Sample golden datasets live in `examples/golden_datasets/`:
 
@@ -963,4 +975,9 @@ Sample webhook payloads live in `examples/webhooks/`:
   require human review, and never execute or edit customer code, fetch remote
   resources, generate patches or pull requests, call Procore or external
   AI/model APIs, enable MCP/tool execution, or enable writes.
+- Examples `315` through `319` add Phase 18C local migration plans and optional
+  patch-artifact previews. Suggested diffs are documentation review aids only;
+  they are never applied. These examples do not edit customer files, run git,
+  create commits/PRs, fetch remote resources, call Procore or AI/model APIs,
+  enable MCP/tool execution, or enable writes.
 - Keep secrets out of code, screenshots, logs, and issue reports.

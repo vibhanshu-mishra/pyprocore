@@ -25,6 +25,9 @@ Current release status:
   maintenance-plan, and draft read-only scaffold assistance.
 - Phase 18B is tracked under Unreleased with local codebase usage maps,
   redacted snippets, and conservative possible-impact reports.
+- Phase 18C is tracked under Unreleased with local migration plans,
+  documentation-only suggested diffs, review checklists, and optional
+  patch-plan artifacts that are never applied automatically.
 - `2.2.0` is the previous stable release.
 
 Before cutting a release, update the changelog with concise user-facing notes and

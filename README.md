@@ -28,8 +28,10 @@ blueprints, local project-health analytics recipes, and an optional copied
 FastAPI read API starter template. Phase 18A also adds a local API maintenance
 assistant for OAS drift, coverage-gap, maintenance-plan, and draft scaffold
 reports. Phase 18B adds local customer-codebase usage maps and conservative
-possible-impact reports. These remain local metadata/template/report features
-and do not enable Procore writes or tool execution.
+possible-impact reports. Phase 18C adds human-review migration plans, suggested
+documentation diffs, and optional local patch-plan artifacts. These remain
+local metadata/template/report features and do not edit customer code, apply
+patches, enable Procore writes, or enable tool execution.
 
 ## Installation
 
@@ -145,6 +147,8 @@ environment variables that are already set.
   maintenance assistant.
 - Scan a user-selected local codebase for PyProcore usage and relate broad
   capability families to optional local OAS drift.
+- Build human-review migration plans and optional review artifacts without
+  applying patches, running git, or changing customer files.
 - Produce JSON or Markdown reports without fetching remote catalogs, generating
   executable tools, editing customer code, calling Procore, or enabling writes.
 
