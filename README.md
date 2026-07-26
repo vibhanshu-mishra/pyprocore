@@ -17,11 +17,13 @@ The SDK is read-oriented and safety-first. It is designed for listing,
 retrieving, searching, downloading, exporting, packaging, and validating Procore
 project data while keeping write and execution surfaces closed by default.
 
-The latest published stable release is `2.4.0`. It adds Project Tools read
-coverage, local plugin trust policy reports, OAS catalog and discovery
-metadata, integration blueprints, local analytics, an optional FastAPI starter,
-and a human-review API maintenance workflow covering drift, impact, migration
-plans, draft packs, compatibility contracts, and migration guides.
+The latest published stable release is `2.4.0`.
+
+Highlights:
+- Read-only Project Tools coverage
+- Local analytics and FastAPI starter templates
+- OAS catalog and discovery metadata
+- Human-review API maintenance workflows for drift, impact, migration plans, PR drafts, compatibility contracts, and migration guides
 
 These features remain read-only, local, or report-oriented. MCP is
 discovery-only, Procore tool execution is disabled, and no external AI/model
@@ -197,7 +199,14 @@ environment variables that are already set.
 - Validate discovery metadata locally without credentials.
 - Keep MCP discovery separate from tool execution.
 
-See the [full feature](docs/features.md) inventory.
+### Self-Maintaining API Maintenance Assistant
+
+- Compare local OAS files and detect API drift.
+- Scan a local codebase for PyProcore usage.
+- Generate migration plans, patch suggestions, PR draft packs, compatibility contracts, and migration guides.
+- Keep everything local and human-reviewed: no code edits, no git commands, no GitHub API calls, no Procore calls.
+
+See the [complete feature inventory](docs/features.md).
 
 ## Supported Resource Families
 
@@ -233,6 +242,9 @@ procore-sdk discovery search "overdue rfis"
 procore-sdk analytics project-health --rfis examples/analytics/fake_rfis.json --format markdown
 procore-sdk templates show fastapi-read-api
 procore-sdk templates copy fastapi-read-api --output-dir ./tmp-fastapi-read-api --dry-run
+procore-sdk maintenance drift old_oas.json new_oas.json --format markdown
+procore-sdk maintenance usage-scan ./my-project --format markdown
+procore-sdk maintenance migration-guide --from-contract old.json --to-contract new.json --format markdown
 ```
 
 See [CLI Usage](docs/cli.md) for the full command reference.
@@ -277,7 +289,6 @@ private project data.
 | Golden Evals | [docs/evals.md](docs/evals.md) |
 | Release Guide | [docs/release.md](docs/release.md) |
 | Roadmap | [docs/roadmap.md](docs/roadmap.md) |
-| Features | [docs/features.md](docs/features.md) |
 | Examples | [examples/README.md](examples/README.md) |
 | Project Status | [docs/project-status.md](docs/project-status.md) |
 | GitHub Labels | [docs/github-labels.md](docs/github-labels.md) |
