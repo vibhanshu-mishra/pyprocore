@@ -96,108 +96,62 @@ environment variables that are already set.
 
 ## What You Can Build
 
-### Typed Procore API Access
+### Read-Only Procore Data Tools
 
-- Work with typed Pydantic models instead of raw JSON dictionaries.
-- Use an object-oriented `Procore` client or function-style service helpers.
-- Rely on automatic pagination, retries, token refresh, and custom SDK errors.
+- Build typed Procore integrations for companies, projects, RFIs, submittals,
+  documents, drawings, specifications, photos, Daily Logs, observations, punch
+  items, correspondence, meetings, inspections, incidents, directory data,
+  financial metadata, contracts, schedules, tasks, forms, and Project Tools.
+- Use OAuth, token refresh, pagination, retries, typed models, exports, and
+  custom SDK errors without rebuilding the plumbing from scratch.
 
-### Local Exports And Sync Workflows
+### Local Reporting And Export Workflows
 
-- Export supported resources to CSV, JSONL, Markdown, and manifest files.
-- Build repeatable local workflow plans for project exports.
-- Run dry-run and validation helpers before scheduled automation.
+- Export supported resources to CSV, JSONL, Markdown, manifests, and local
+  project context packages.
+- Build repeatable read-only workflows for audits, reviews, reporting,
+  scheduled-export planning, and project documentation.
 
 ### AI-Ready Local Context Packages
 
-- Package RFIs, submittals, documents, drawings, specs, and project context for
-  review workflows.
-- Generate local prompt packs, checklists, source indexes, and vector-export
-  manifests.
-- Keep model selection outside the SDK; no AI provider is called by default.
+- Package project data into local prompt packs, source indexes, checklists, and
+  vector-export manifests.
+- Keep model choice outside the SDK: PyProcore prepares local context, but does
+  not call external AI/model APIs by default.
 
-### Async Read Workflows
+### Async And Batch Read Workflows
 
-- Use `AsyncProcore` for read-oriented async workflows.
-- Export and download with conservative concurrency controls.
-- Plan async multi-project batches with local validation and dry-run manifests.
+- Use `AsyncProcore` for read-oriented async integrations.
+- Plan multi-project exports and downloads with conservative concurrency,
+  dry-run manifests, and local validation.
 
-### Enterprise Scheduled-Export Planning
+### Local Analytics And Project Health Reviews
 
-- Validate scheduled export configs locally.
-- Review token-store safety and credential rotation guidance.
-- Use private deployment and production runbook docs for operational planning.
+- Analyze exported/local RFI, submittal, change, and Daily Log records.
+- Generate deterministic project health summaries without calling Procore,
+  running AI, hosting dashboards, or adding database dependencies.
 
-### Plugin Metadata And Local Extension Scaffolding
+### API Discovery And Maintenance Workflows
 
-- Inspect metadata-only plugin manifests and extension-pack files.
-- Register trusted in-process hooks only from local application code.
-- Generate local plugin developer templates without fetching or installing
-  remote plugins.
-- Validate local plugin trust policies and metadata-only trust reports without
-  installing, importing, or executing plugin code.
+- Inspect local OpenAPI/OAS files, classify endpoints, compare coverage gaps,
+  and detect API drift.
+- Scan local codebases for PyProcore usage, generate migration plans, create
+  review-only patch suggestions, prepare PR draft packs, publish compatibility
+  contracts, and generate migration guides.
 
-### Local OAS Catalog Intelligence
+### Templates, Blueprints, And Plugin Metadata
 
-- Inspect a user-provided local OpenAPI/OAS JSON file.
-- Classify endpoints as read-only, risky/write, or unknown from metadata.
-- Compare endpoint areas to known PyProcore read coverage.
-- Compare local specs and plan human-reviewed read-only coverage with the API
-  maintenance assistant.
-- Scan a user-selected local codebase for PyProcore usage and relate broad
-  capability families to optional local OAS drift.
-- Build human-review migration plans and optional review artifacts without
-  applying patches, running git, or changing customer files.
-- Produce JSON or Markdown reports without fetching remote catalogs, generating
-  executable tools, editing customer code, calling Procore, or enabling writes.
+- Copy optional starter templates such as the FastAPI read-only API example.
+- Inspect local integration blueprints, plugin manifests, extension packs, trust
+  policies, and scaffolds without installing remote plugins or executing plugin
+  code.
 
-### Local Discovery Router Metadata
+### Agent, MCP, And Evaluation Metadata
 
-- Search PyProcore capability metadata by intent, such as `overdue rfis`.
-- Get ranked route suggestions with reasons and explicit safety boundaries.
-- Include local OAS catalog candidates when a local OAS JSON file is provided.
-- Keep discovery metadata-only: no SDK execution, no Procore calls, no MCP
-  execution, no external AI/model calls, no remote OAS fetch, and no writes.
-
-### Local Integration Blueprints
-
-- Inspect safe templates for sync workers, webhook receivers, read-only APIs,
-  dashboard data bridges, scheduled exports, and project health feeds.
-- Create local sync-run JSON/JSONL records and sanitized webhook fixtures.
-- Run local readiness checks for output paths, env vars, token-store placement,
-  webhook secrets, and no-secrets guidance.
-- Keep blueprints local-only: no hosted app, no database dependency, no automatic
-  scheduler, no Procore calls, no MCP/tool execution, and no write actions.
-
-### Local Project Health Analytics
-
-- Analyze local/exported RFI, submittal, change, and Daily Log records.
-- Produce deterministic JSON, Markdown, and CSV summaries for review workflows.
-- Combine available signals into a heuristic project health report.
-- Keep analytics local-only: no Procore calls, no external AI/model calls, no
-  hosted dashboard, no database dependency, and no write actions.
-
-### Optional FastAPI Read API Starter
-
-- Inspect or copy a static FastAPI starter template for read-only backend
-  experiments.
-- Keep FastAPI and uvicorn outside PyProcore package dependencies.
-- Copy local template files only; no app is hosted, no dependencies are
-  installed, no Procore calls are made, and no write routes are enabled.
-
-### Deterministic Evals And Regression Checks
-
-- Run local golden eval suites for workflow packages and manifests.
-- Compare deterministic baselines and regression reports.
-- Score offline model-response fixtures without calling a model.
-
-### MCP Discovery Metadata
-
-- Inspect MCP-style resources, prompts, contracts, snapshots, and reports.
-- Inspect the local agent tool registry, local agent API server, agent OpenAPI
-  and JSON Schema exports, and replay metadata.
-- Validate discovery metadata locally without credentials.
-- Keep MCP discovery separate from tool execution.
+- Inspect local agent API metadata, JSON Schemas, OpenAPI exports, run logs,
+  replay metadata, MCP-style resources, prompts, contracts, and snapshots.
+- Run deterministic golden evals and offline model-response fixture checks
+  without calling live models or enabling tool execution.
 
 ### Self-Maintaining API Maintenance Assistant
 
@@ -206,7 +160,8 @@ environment variables that are already set.
 - Generate migration plans, patch suggestions, PR draft packs, compatibility contracts, and migration guides.
 - Keep everything local and human-reviewed: no code edits, no git commands, no GitHub API calls, no Procore calls.
 
-See the [complete feature inventory](docs/features.md).
+See the [complete feature inventory](docs/features.md) for the full
+phase-by-phase breakdown.
 
 ## Supported Resource Families
 
