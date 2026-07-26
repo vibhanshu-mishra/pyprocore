@@ -21,7 +21,7 @@ The latest published stable release is `2.4.0`.
 
 Highlights:
 - Read-only Project Tools coverage
-- Local analytics and FastAPI starter templates
+- Local analytics and FastAPI starter template
 - OAS catalog and discovery metadata
 - Human-review API maintenance workflows for drift, impact, migration plans, PR drafts, compatibility contracts, and migration guides
 
@@ -131,13 +131,12 @@ environment variables that are already set.
 - Generate deterministic project health summaries without calling Procore,
   running AI, hosting dashboards, or adding database dependencies.
 
-### API Discovery And Maintenance Workflows
+### API Discovery And OAS Intelligence
 
 - Inspect local OpenAPI/OAS files, classify endpoints, compare coverage gaps,
   and detect API drift.
-- Scan local codebases for PyProcore usage, generate migration plans, create
-  review-only patch suggestions, prepare PR draft packs, publish compatibility
-  contracts, and generate migration guides.
+- Generate local JSON and Markdown reports for endpoint review without fetching
+  remote specs, generating executable tools, calling Procore, or enabling writes.
 
 ### Templates, Blueprints, And Plugin Metadata
 
