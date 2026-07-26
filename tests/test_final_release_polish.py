@@ -41,18 +41,26 @@ class FinalReleasePolishTestCase(unittest.TestCase):
     def test_readme_mentions_newer_release_features(self) -> None:
         """README should mention newer workflow, AI, automation, and security features."""
         readme = self.read_text("README.md")
+        readme_lower = readme.lower()
+        features = self.read_text("docs/features.md").lower()
+        plugins = self.read_text("docs/plugins.md").lower()
 
-        for phrase in (
+        for command in (
             "project-context",
             "scheduled-export dry-run",
             "procore-sdk evals run",
             "procore-sdk mcp validate",
-            "AI-Ready Local Context Packages",
-            "Plugin Metadata And Local Extension Scaffolding",
-            "Project Status",
-            "Procore tool execution is disabled",
         ):
-            self.assertIn(phrase, readme)
+            self.assertIn(command, readme_lower)
+
+        for concept in ("project context packages", "prompt packs", "external ai/model"):
+            self.assertIn(concept, f"{readme_lower}\n{features}")
+        for concept in ("plugin metadata", "developer scaffolding", "local template"):
+            self.assertIn(concept, f"{plugins}\n{features}")
+
+        self.assertIn("project status", readme_lower)
+        self.assertIn("Procore tool execution is disabled", readme)
+        self.assertIn("MCP remains discovery-only", self.read_text("docs/features.md"))
 
     def test_changelog_summarizes_major_release_phases(self) -> None:
         """Changelog should summarize the major released phases."""

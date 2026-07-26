@@ -152,11 +152,14 @@ class AgentRegistryTestCase(unittest.TestCase):
         ):
             self.assertTrue((PROJECT_ROOT / relative_path).exists(), relative_path)
 
-        readme = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
+        agent_docs = (PROJECT_ROOT / "docs/agent-api.md").read_text(encoding="utf-8").lower()
+        features = (PROJECT_ROOT / "docs/features.md").read_text(encoding="utf-8").lower()
         mkdocs = (PROJECT_ROOT / "mkdocs.yml").read_text(encoding="utf-8")
         recipes = (PROJECT_ROOT / "docs/recipes/index.md").read_text(encoding="utf-8")
 
-        self.assertIn("agent tool registry", readme.lower())
+        registry_docs = f"{agent_docs}\n{features}"
+        for concept in ("agent tool registry", "metadata", "execution remains disabled"):
+            self.assertIn(concept, registry_docs)
         self.assertIn("agent-api.md", mkdocs)
         self.assertIn("use-agent-tool-registry.md", mkdocs)
         self.assertIn("Use The Agent Tool Registry", recipes)

@@ -239,12 +239,13 @@ class AgentOpenAPITestCase(unittest.TestCase):
 
         mkdocs = (PROJECT_ROOT / "mkdocs.yml").read_text(encoding="utf-8")
         docs = (PROJECT_ROOT / "docs/agent-api.md").read_text(encoding="utf-8")
-        readme = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
+        cli_docs = (PROJECT_ROOT / "docs/cli.md").read_text(encoding="utf-8")
+        agent_docs = f"{docs}\n{cli_docs}".lower()
 
         self.assertIn("export-agent-openapi.md", mkdocs)
-        self.assertIn("OpenAPI", docs)
-        self.assertIn("JSON Schema", docs)
-        self.assertIn("agent openapi", readme.lower())
+        for concept in ("openapi", "json schema", "procore-sdk agent openapi"):
+            self.assertIn(concept, agent_docs)
+        self.assertIn("does not execute tools", agent_docs)
 
     def test_openapi_source_does_not_enable_execution_or_live_calls(self) -> None:
         """The OpenAPI module should not execute tools or call Procore."""

@@ -47,22 +47,39 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         """README should explain public SDK capabilities and safety boundaries."""
         readme = self.read_text("README.md")
         readme_lower = readme.lower()
+        features_lower = self.read_text("docs/features.md").lower()
+        maintenance_lower = self.read_text("docs/api-maintenance.md").lower()
+        capability_docs = f"{readme_lower}\n{features_lower}"
 
         self.assertIn("open-source python sdk and automation toolkit", readme_lower)
         self.assertIn("read-oriented procore integrations", readme_lower)
         self.assertIn("latest published stable release is `2.4.0`", readme)
         self.assertIn("python3 -m pip install pyprocore==2.4.0", readme)
-        for phrase in (
-            "Typed Procore API Access",
-            "AI-Ready Local Context Packages",
-            "Async Read Workflows",
-            "Deterministic Evals And Regression Checks",
-            "MCP is discovery-only",
-            "Procore tool execution is disabled",
-            "No external AI/model APIs are called by default",
-            "No Procore create, update, delete, upload, approve, submit, payment",
+
+        for concepts in (
+            ("typed", "pydantic", "read-oriented"),
+            ("project context packages", "prompt packs", "external ai/model"),
+            ("asyncprocore", "read-oriented", "concurrency"),
+            ("deterministic", "eval", "regression"),
         ):
-            self.assertIn(phrase, readme)
+            for concept in concepts:
+                self.assertIn(concept, capability_docs)
+
+        self.assertIn("MCP remains discovery-only", self.read_text("docs/features.md"))
+        self.assertIn("Procore tool execution is disabled", readme)
+        self.assertIn("No external AI/model APIs are called by default", readme)
+        self.assertIn(
+            "No Procore create, update, delete, upload, approve, submit, payment",
+            readme,
+        )
+        self.assertIn("local-only and human-review-first", features_lower)
+        for prohibited_claim in (
+            "automatically creates pull requests",
+            "automatically creates commits",
+            "automatically edits customer code",
+            "automatically runs git",
+        ):
+            self.assertNotIn(prohibited_claim, maintenance_lower)
 
     def test_project_status_page_and_mkdocs_nav_exist(self) -> None:
         """Project status page should exist and be included in docs navigation."""

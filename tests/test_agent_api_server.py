@@ -276,12 +276,14 @@ class AgentAPIServerTestCase(unittest.TestCase):
         ):
             self.assertTrue((PROJECT_ROOT / relative_path).exists(), relative_path)
 
-        readme = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
         docs = (PROJECT_ROOT / "docs/agent-api.md").read_text(encoding="utf-8")
+        cli_docs = (PROJECT_ROOT / "docs/cli.md").read_text(encoding="utf-8")
         mkdocs = (PROJECT_ROOT / "mkdocs.yml").read_text(encoding="utf-8")
+        agent_docs = f"{docs}\n{cli_docs}".lower()
 
-        self.assertIn("local agent API server", readme)
-        self.assertIn("127.0.0.1", docs)
+        for concept in ("local http discovery api", "127.0.0.1", "agent serve"):
+            self.assertIn(concept, agent_docs)
+        self.assertIn("does not execute tools", agent_docs)
         self.assertIn("run-local-agent-api-server.md", mkdocs)
 
 
