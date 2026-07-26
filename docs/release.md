@@ -5,22 +5,22 @@ local by default; they do not publish to PyPI and do not create GitHub releases.
 
 ## Current Release
 
-PyProcore `2.3.0` has been published to PyPI, verified from a clean install,
-tagged as `v2.3.0`, and released on GitHub.
+PyProcore `2.4.0` has been published to PyPI, verified from a clean install,
+tagged as `v2.4.0`, and released on GitHub.
 
-PyProcore `2.2.0` is the previous stable release.
+PyProcore `2.3.0` is the previous stable release.
 
-## Prepared Release: 2.4.0
+## 2.4.0 Release Completed
 
-Package metadata and release notes are prepared for `2.4.0`. This version has
-not yet been published to PyPI or TestPyPI, tagged, or released on GitHub.
-Publishing and release creation require final manual confirmation.
+The `2.4.0` package is available from PyPI, and its `v2.4.0` tag and GitHub
+release have been created. Do not publish the same version or create another
+release for it.
 
-Before publication, verify:
+Verify the published package in a clean environment:
 
 ```bash
-PYTHONPATH=. procore-sdk --version
-python3 scripts/check_release_candidate.py
+python3 -m pip install pyprocore==2.4.0
+procore-sdk --version
 ```
 
 Expected local version output:
@@ -29,11 +29,11 @@ Expected local version output:
 pyprocore 2.4.0
 ```
 
-The prepared release includes Phase 16A-16B, Phase 17A-17E, and Phase
+The release includes Phase 16A-16B, Phase 17A-17E, and Phase
 18A-18F. MCP remains discovery-only, Procore tool execution and write actions
 remain disabled, and maintenance helpers remain local and human-review-first.
 
-## Verify 2.3.0
+## Verify Previous Release 2.3.0
 
 To verify the published package in a clean environment:
 

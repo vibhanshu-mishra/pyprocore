@@ -4,9 +4,9 @@ This page inventories the meaningful capabilities added to PyProcore from its
 initial SDK foundation through Phase 18F. It covers features for SDK users,
 automation authors, maintainers, CLI users, and documentation contributors.
 
-PyProcore `2.3.0` is the latest published stable release. The repository is
-prepared at `2.4.0`; features marked as local maintenance, catalog, trust,
-analytics, or template tooling are included in that prepared release.
+PyProcore `2.4.0` is the latest published stable release. Its local
+maintenance, catalog, trust, analytics, and template tooling remains bounded by
+the safety rules documented below.
 
 ## Safety Boundaries
 

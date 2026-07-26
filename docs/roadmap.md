@@ -57,10 +57,10 @@ Safety status for `v2.3.0`:
 - Local workflow plans, scheduled examples, webhook helpers, Docker templates, and CI examples.
 - Documentation site, recipes, examples, security docs, contributor docs, and release tooling.
 
-## Prepared For v2.4.0
+### v2.4.0
 
-The following completed capabilities are included in the prepared `2.4.0`
-package. Publication and the GitHub release remain manual:
+The following completed capabilities are included in the published `2.4.0`
+package and GitHub release:
 
 - Phase 16A adds read-only Project Tools metadata helpers for listing, getting,
   and finding project tool metadata. It does not execute tools, configure

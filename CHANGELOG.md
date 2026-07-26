@@ -11,8 +11,6 @@ No changes yet.
 
 ## [2.4.0] - 2026-07-24
 
-Prepared for release; not yet published to PyPI or released on GitHub.
-
 PyProcore 2.4.0 is an additive, backward-compatible release focused on safe
 read-only coverage and local, human-review maintenance intelligence.
 

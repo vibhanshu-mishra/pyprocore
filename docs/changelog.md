@@ -14,12 +14,12 @@ The canonical changelog lives in the GitHub repository:
 
 Current release status:
 
-- `2.3.0` is the latest published stable PyPI release.
-- `2.4.0` is prepared in the repository and has not yet been published.
-- `2.3.0` includes expanded read coverage, enterprise hardening, async helpers,
+- `2.4.0` is the latest published stable PyPI release.
+- `2.3.0` is the previous stable release.
+- `2.3.0` introduced expanded read coverage, enterprise hardening, async helpers,
   metadata-only plugins, AI workflow examples, deterministic evals, and
   discovery-only MCP compatibility tooling.
-- The root changelog includes the prepared `2.4.0` work: Phase 16A-16B,
+- The root changelog records the released `2.4.0` work: Phase 16A-16B,
   Phase 17A-17E, and Phase 18A-18F.
 - Phase 18A adds local OAS drift, coverage-gap,
   maintenance-plan, and draft read-only scaffold assistance.
@@ -36,7 +36,7 @@ Current release status:
   metadata and do not certify production compatibility.
 - Phase 18F adds local migration guides,
   deprecation summaries, upgrade/test checklists, and bounded report artifacts.
-- `2.2.0` is the previous stable release.
+- `2.2.0` remains part of the historical release record.
 
 Before cutting a release, update the changelog with concise user-facing notes and
 run the local release checks described in the [Release Guide](release.md).

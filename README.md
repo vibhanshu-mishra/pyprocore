@@ -17,8 +17,7 @@ The SDK is read-oriented and safety-first. It is designed for listing,
 retrieving, searching, downloading, exporting, packaging, and validating Procore
 project data while keeping write and execution surfaces closed by default.
 
-The latest published stable release is `2.3.0`. Version `2.4.0` is prepared in
-this repository but has not yet been published. It adds Project Tools read
+The latest published stable release is `2.4.0`. It adds Project Tools read
 coverage, local plugin trust policy reports, OAS catalog and discovery
 metadata, integration blueprints, local analytics, an optional FastAPI starter,
 and a human-review API maintenance workflow covering drift, impact, migration
@@ -34,17 +33,16 @@ edit customer code, apply patches, run git, call GitHub, or open pull requests.
 Install the current stable release:
 
 ```bash
-python3 -m pip install pyprocore==2.3.0
+python3 -m pip install pyprocore==2.4.0
 ```
 
 Install optional async HTTP support:
 
 ```bash
-python3 -m pip install "pyprocore[async]==2.3.0"
+python3 -m pip install "pyprocore[async]==2.4.0"
 ```
 
-The prepared `2.4.0` package is available from this checkout only until manual
-release publication.
+The `2.4.0` package is available from PyPI and the source repository.
 
 ## Quick Start
 
@@ -287,9 +285,9 @@ private project data.
 Run `make docs-build` to build the MkDocs site or `make docs-serve` to preview
 it locally.
 
-## Prepared For v2.4.0
+## Released In v2.4.0
 
-`v2.4.0` is an additive, backward-compatible release candidate. Highlights:
+`v2.4.0` is an additive, backward-compatible published release. Highlights:
 
 - Read-only Project Tools metadata helpers.
 - Local plugin trust policies and compatibility reports.

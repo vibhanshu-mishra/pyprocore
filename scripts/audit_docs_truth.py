@@ -49,6 +49,10 @@ FAIL_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
         "`2.3.0` is already released, not a release candidate.",
     ),
     (
+        re.compile(r"2\.4\.0 release candidate", re.IGNORECASE),
+        "`2.4.0` is already released, not a release candidate.",
+    ),
+    (
         re.compile(
             r"2\.2\.0[^.\n]*(not published|not been published|has not been published)",
             re.IGNORECASE,
@@ -61,6 +65,13 @@ FAIL_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
             re.IGNORECASE,
         ),
         "`2.3.0` has already been published.",
+    ),
+    (
+        re.compile(
+            r"2\.4\.0[^.\n]*(not published|not been published|has not been published)",
+            re.IGNORECASE,
+        ),
+        "`2.4.0` has already been published.",
     ),
     (
         re.compile(
@@ -78,10 +89,17 @@ FAIL_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = (
     ),
     (
         re.compile(
-            r"(current stable[^.\n]*2\.[12]\.0|2\.[12]\.0[^.\n]*current stable)",
+            r"(prepared for `?2\.4\.0`?|prepared[^.\n]*2\.4\.0|2\.4\.0[^.\n]*prepared)",
             re.IGNORECASE,
         ),
-        "`2.3.0` is the current stable release; earlier versions are historical.",
+        "`2.4.0` is the current stable release, not a prepared release.",
+    ),
+    (
+        re.compile(
+            r"(current stable[^.\n]*2\.[123]\.0|2\.[123]\.0[^.\n]*current stable)",
+            re.IGNORECASE,
+        ),
+        "`2.4.0` is the current stable release; earlier versions are historical.",
     ),
     (
         re.compile(r"GitHub release not yet created[^.\n]*2\.2\.0", re.IGNORECASE),

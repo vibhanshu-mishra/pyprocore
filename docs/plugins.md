@@ -1,7 +1,7 @@
 # Plugin Architecture
 
 Phase 11A through Phase 11D provide safe plugin architecture foundations in the
-current stable `v2.3.0` release: metadata-only manifests, explicit local hooks,
+current stable `v2.4.0` release: metadata-only manifests, explicit local hooks,
 JSON configuration, extension-pack manifests, and plugin developer scaffolding.
 
 ## What This Does

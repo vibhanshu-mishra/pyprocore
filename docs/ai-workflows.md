@@ -5,7 +5,7 @@ AI workflows, but it does not call external AI/model APIs by default. Users
 choose their own model stack, review the data they want to share, and keep human
 review in the loop.
 
-The current published stable release is `2.3.0`. Phase 12 AI workflow examples
+The current published stable release is `2.4.0`. Phase 12 AI workflow examples
 and Phase 13 deterministic evals are included in this release.
 
 ## What This Does

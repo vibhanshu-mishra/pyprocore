@@ -22,7 +22,7 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         return (PROJECT_ROOT / relative_path).read_text(encoding="utf-8")
 
     def test_source_version_is_2_4_0(self) -> None:
-        """Package and pyproject versions should be prepared at 2.4.0."""
+        """Package and pyproject versions should remain at released 2.4.0."""
         pyproject = tomllib.loads(self.read_text("pyproject.toml"))
 
         self.assertEqual(pyprocore.__version__, "2.4.0")
@@ -50,9 +50,8 @@ class DocsTruthAuditTestCase(unittest.TestCase):
 
         self.assertIn("open-source python sdk and automation toolkit", readme_lower)
         self.assertIn("read-oriented procore integrations", readme_lower)
-        self.assertIn("latest published stable release is `2.3.0`", readme)
-        self.assertIn("Version `2.4.0` is prepared", readme)
-        self.assertIn("python3 -m pip install pyprocore==2.3.0", readme)
+        self.assertIn("latest published stable release is `2.4.0`", readme)
+        self.assertIn("python3 -m pip install pyprocore==2.4.0", readme)
         for phrase in (
             "Typed Procore API Access",
             "AI-Ready Local Context Packages",
@@ -71,9 +70,8 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         mkdocs = self.read_text("mkdocs.yml")
         index = self.read_text("docs/index.md")
 
-        self.assertIn("Current stable release: `2.3.0`", status)
-        self.assertIn("Prepared package version: `2.4.0`", status)
-        self.assertIn("Previous stable release: `2.2.0`", status)
+        self.assertIn("Current stable release: `2.4.0`", status)
+        self.assertIn("Previous stable release: `2.3.0`", status)
         self.assertIn("PyPI release completed", self.read_text("docs/release.md"))
         self.assertIn("Tool execution remains disabled", status)
         self.assertIn("MCP adapter remains discovery-only", status)
@@ -111,7 +109,7 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         completed_section = roadmap.split("## Future", 1)[0]
         future_section = roadmap.split("## Future", 1)[1]
         released_section = roadmap.split("### v2.3.0", 1)[1].split("### v2.2.0", 1)[0]
-        prepared_section = roadmap.split("## Prepared For v2.4.0", 1)[1].split("## Future", 1)[0]
+        released_2_4_section = roadmap.split("### v2.4.0", 1)[1].split("## Future", 1)[0]
 
         self.assertIn("### v2.3.0", roadmap)
         self.assertIn("### v2.2.0", roadmap)
@@ -128,7 +126,7 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         self.assertNotIn("Async downloads", future_section)
         self.assertNotIn("Richer async batch orchestration", future_section)
 
-        self.assertIn("Prepared For v2.4.0", completed_section)
+        self.assertIn("### v2.4.0", completed_section)
         for phrase in (
             "Phase 17A",
             "Phase 17B",
@@ -142,7 +140,7 @@ class DocsTruthAuditTestCase(unittest.TestCase):
             "Phase 18E",
             "Phase 18F",
         ):
-            self.assertIn(phrase, prepared_section)
+            self.assertIn(phrase, released_2_4_section)
             self.assertNotIn(phrase, future_section)
 
         for phrase in (
@@ -152,8 +150,8 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         ):
             self.assertIn(phrase.lower(), future_section.lower())
 
-    def test_changelog_has_prepared_2_4_0_section(self) -> None:
-        """Changelog should place new release notes under prepared 2.4.0."""
+    def test_changelog_has_released_2_4_0_section(self) -> None:
+        """Changelog should keep release notes under released 2.4.0."""
         changelog = self.read_text("CHANGELOG.md")
         section_2_4 = changelog.split("## [2.4.0] - 2026-07-24", 1)[1].split(
             "## [2.3.0] - 2026-07-19",
@@ -216,6 +214,9 @@ class DocsTruthAuditTestCase(unittest.TestCase):
         forbidden = (
             "2.2.0 has not been published",
             "2.2.0 is prepared",
+            "2.4.0 has not been published",
+            "2.4.0 is prepared",
+            "2.4.0 release candidate",
             "prepared next release",
             "current stable PyPI release: `2.1.0`",
             "tool execution enabled",
