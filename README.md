@@ -1,6 +1,10 @@
+<div align="center">
+
 # PyProcore
 
 > Open-source Python SDK and automation toolkit for safe, read-oriented Procore integrations.
+
+</div>
 
 <p align="center">
   <img src="https://img.shields.io/pypi/v/pyprocore?style=for-the-badge&logo=pypi&logoColor=white&label=PyPI" alt="PyPI version">
