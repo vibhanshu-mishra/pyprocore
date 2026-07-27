@@ -2,11 +2,24 @@
 
 > Open-source Python SDK and automation toolkit for safe, read-oriented Procore integrations.
 
-[![PyPI](https://img.shields.io/pypi/v/pyprocore.svg)](https://pypi.org/project/pyprocore/)
-![Python](https://img.shields.io/badge/python-3.12%2B-blue.svg)
-[![License](https://img.shields.io/pypi/l/pyprocore.svg)](LICENSE)
-[![Tests](https://github.com/vibhanshu-mishra/pyprocore/actions/workflows/tests.yml/badge.svg)](https://github.com/vibhanshu-mishra/pyprocore/actions/workflows/tests.yml)
-![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)
+<p align="center">
+  <img src="https://img.shields.io/pypi/v/pyprocore?style=for-the-badge&logo=pypi&logoColor=white&label=PyPI" alt="PyPI version">
+  <img src="https://img.shields.io/badge/Python-3.12%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.12+">
+  <img src="https://img.shields.io/github/actions/workflow/status/vibhanshu-mishra/pyprocore/tests.yml?branch=main&style=for-the-badge&logo=github&label=Tests" alt="Tests">
+  <img src="https://img.shields.io/badge/Coverage-90%25-2E8B57?style=for-the-badge" alt="Coverage 90%">
+  <img src="https://img.shields.io/pypi/l/pyprocore?style=for-the-badge&label=License" alt="License">
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Read--Oriented-Safety--First-0B1320?style=for-the-badge" alt="Read-oriented safety-first">
+  <img src="https://img.shields.io/badge/MCP-Discovery--Only-5D2E8C?style=for-the-badge" alt="MCP discovery-only">
+  <img src="https://img.shields.io/badge/API%20Maintenance-Human--Review-D72638?style=for-the-badge" alt="Human-review API maintenance">
+  <img src="https://img.shields.io/badge/Procore%20Writes-Disabled-8B0000?style=for-the-badge" alt="Procore writes disabled">
+</p>
+
+<p align="center">
+  <strong>Read-only Procore SDK · Local exports · OAS intelligence · Human-review API maintenance</strong>
+</p>
 
 PyProcore helps developers, consultants, and construction-tech teams build
 Procore integrations without rebuilding OAuth, token refresh, pagination,
