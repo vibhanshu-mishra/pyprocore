@@ -2,7 +2,7 @@
 
 # PyProcore
 
-> Open-source Python SDK and automation toolkit for safe, read-oriented Procore integrations.
+Open-source Python SDK and automation toolkit for safe, read-oriented Procore integrations.
 
 </div>
 
