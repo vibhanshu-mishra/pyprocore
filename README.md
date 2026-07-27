@@ -17,10 +17,6 @@
   <img src="https://img.shields.io/badge/Procore%20Writes-Disabled-8B0000?style=for-the-badge" alt="Procore writes disabled">
 </p>
 
-<p align="center">
-  <strong>Read-only Procore SDK · Local exports · OAS intelligence · Human-review API maintenance</strong>
-</p>
-
 PyProcore helps developers, consultants, and construction-tech teams build
 Procore integrations without rebuilding OAuth, token refresh, pagination,
 retries, typed response parsing, downloads, exports, and local automation
