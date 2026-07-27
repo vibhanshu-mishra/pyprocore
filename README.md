@@ -15,7 +15,6 @@ Open-source Python SDK and automation toolkit for safe, read-oriented Procore in
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Read--Oriented-Safety--First-0B1320?style=for-the-badge" alt="Read-oriented safety-first">
   <img src="https://img.shields.io/badge/MCP-Discovery--Only-5D2E8C?style=for-the-badge" alt="MCP discovery-only">
   <img src="https://img.shields.io/badge/API%20Maintenance-Human--Review-D72638?style=for-the-badge" alt="Human-review API maintenance">
   <img src="https://img.shields.io/badge/Procore%20Writes-Disabled-8B0000?style=for-the-badge" alt="Procore writes disabled">
