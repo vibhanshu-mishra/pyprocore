@@ -313,6 +313,15 @@ Authorization headers, `.env` files, token stores, or private project data. See
 Maintainers can run `make secret-check` and `make quality-check` before release
 or documentation changes.
 
+## Author
+
+Built by **Vibhanshu Mishra, PE**, Structural Engineer at AG&E Structural Engenuity, Austin, Texas.
+
+- [LinkedIn](https://www.linkedin.com/in/vibhanshu9/)
+- [Procore RFI & Submittal Tracker](https://github.com/vibhanshu-mishra/procore-submittal-rfi-tracker) - A non-API way to access RFIs and Submittals on Procore
+- [RISA-3D MCP Server](https://github.com/vibhanshu-mishra/risa3d-mcp-server)
+- [Tekla Structural Designer MCP Server](https://github.com/vibhanshu-mishra/tsd-mcp)
+
 ## License
 
 PyProcore is released under the [MIT license](LICENSE).
