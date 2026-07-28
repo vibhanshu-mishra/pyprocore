@@ -8,6 +8,7 @@ nav:
   - Home: index.md
   - Getting Started: getting-started.md
   - Authentication: authentication.md
+  - DMSA Connection Profiles: dmsa-connection-profiles.md
   - CLI Usage: cli.md
   - Feature Inventory: features.md
   - API Coverage: api-coverage.md

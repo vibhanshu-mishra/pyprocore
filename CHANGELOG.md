@@ -7,7 +7,20 @@ and this project follows semantic versioning.
 
 ## [Unreleased]
 
-No changes yet.
+### Added
+
+- Phase 19A secret-free local DMSA/client-credentials connection profiles,
+  structural validation, redacted summaries, and lazy `Procore` client
+  factories that reuse existing client-credentials authentication.
+- GC/Owner permission checklists, installation packets, non-executing
+  read-only smoke-check plans, local permission diagnostics, CLI commands,
+  examples `335` through `340`, documentation, and mocked/local tests.
+
+### Security
+
+- DMSA profile templates reference credential environment-variable names
+  instead of storing secrets. Profile tools make no live Procore calls and do
+  not enable write actions, MCP execution, or Procore tool execution.
 
 ## [2.4.0] - 2026-07-24
 

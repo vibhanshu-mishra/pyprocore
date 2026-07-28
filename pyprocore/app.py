@@ -129,6 +129,29 @@ from pyprocore.discovery import (
     search_discovery_capabilities,
     search_oas_catalog_capabilities,
 )
+from pyprocore.dmsa import (
+    DmsaConnectionProfileValidationReport,
+    DmsaConnectionSummary,
+    DmsaInstallationPacket,
+    DmsaPermissionChecklist,
+    DmsaPermissionDiagnosticReport,
+    DmsaSmokeCheckPlan,
+    build_dmsa_installation_packet,
+    build_dmsa_permission_checklist,
+    build_dmsa_smoke_check_plan,
+    diagnose_dmsa_permission_issue,
+    dmsa_connection_summary_to_markdown,
+    dmsa_installation_packet_to_markdown,
+    dmsa_permission_checklist_to_markdown,
+    dmsa_permission_diagnostic_to_markdown,
+    dmsa_report_to_json,
+    dmsa_smoke_check_plan_to_markdown,
+    dmsa_validation_report_to_markdown,
+    load_dmsa_connection_profile,
+    summarize_dmsa_connection_profile,
+    validate_dmsa_connection_profile,
+    write_dmsa_connection_profile_template,
+)
 from pyprocore.evals import (
     EvalBaseline,
     EvalFinding,
@@ -697,6 +720,49 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Print structured JSON output",
     )
+
+    dmsa_parser = subcommands.add_parser(
+        "dmsa",
+        help="Build and inspect local DMSA connection-profile metadata",
+    )
+    dmsa_subcommands = dmsa_parser.add_subparsers(dest="dmsa_command", required=True)
+    dmsa_sample_parser = dmsa_subcommands.add_parser(
+        "sample-profile",
+        help="Write a secret-free local JSON profile template",
+    )
+    dmsa_sample_parser.add_argument("--output", type=Path, required=True)
+    dmsa_sample_parser.add_argument("--overwrite", action="store_true")
+    for command_name, help_text in (
+        ("validate-profile", "Validate local DMSA profile structure"),
+        ("summarize-profile", "Print a redacted local profile summary"),
+        ("smoke-plan", "Build a non-executing read-only smoke-check plan"),
+    ):
+        command_parser = dmsa_subcommands.add_parser(command_name, help=help_text)
+        command_parser.add_argument("profile", type=Path)
+        command_parser.add_argument("--format", choices=["json", "markdown"], default="markdown")
+    checklist_parser = dmsa_subcommands.add_parser(
+        "permission-checklist",
+        help="Build a GC/Owner permission checklist",
+    )
+    checklist_parser.add_argument("--format", choices=["json", "markdown"], default="markdown")
+    packet_parser = dmsa_subcommands.add_parser(
+        "installation-packet",
+        help="Build a plain-English GC/Owner installation packet",
+    )
+    packet_parser.add_argument("--format", choices=["json", "markdown"], default="markdown")
+    packet_parser.add_argument(
+        "--support-contact",
+        default="Contact your integration administrator.",
+    )
+    diagnose_parser = dmsa_subcommands.add_parser(
+        "diagnose",
+        help="Interpret supplied response metadata without calling Procore",
+    )
+    diagnose_parser.add_argument("--status-code", type=int)
+    diagnose_parser.add_argument("--context", default="general")
+    diagnose_parser.add_argument("--empty-result", action="store_true")
+    diagnose_parser.add_argument("--missing-attachments", action="store_true")
+    diagnose_parser.add_argument("--format", choices=["json", "markdown"], default="markdown")
 
     token_store_parser = subcommands.add_parser(
         "token-store",
@@ -4426,6 +4492,31 @@ def run_command(args: argparse.Namespace) -> Any:
             return build_auth_rotation_checklist(args.auth_mode)
         raise ValueError(f"Unsupported auth command: {args.auth_command}")
 
+    if args.command == "dmsa":
+        if args.dmsa_command == "sample-profile":
+            return write_dmsa_connection_profile_template(
+                args.output,
+                overwrite=args.overwrite,
+            )
+        if args.dmsa_command == "validate-profile":
+            return validate_dmsa_connection_profile(load_dmsa_connection_profile(args.profile))
+        if args.dmsa_command == "summarize-profile":
+            return summarize_dmsa_connection_profile(load_dmsa_connection_profile(args.profile))
+        if args.dmsa_command == "permission-checklist":
+            return build_dmsa_permission_checklist()
+        if args.dmsa_command == "installation-packet":
+            return build_dmsa_installation_packet(args.support_contact)
+        if args.dmsa_command == "smoke-plan":
+            return build_dmsa_smoke_check_plan(load_dmsa_connection_profile(args.profile))
+        if args.dmsa_command == "diagnose":
+            return diagnose_dmsa_permission_issue(
+                status_code=args.status_code,
+                context=args.context,
+                empty_result=args.empty_result,
+                missing_attachments=args.missing_attachments,
+            )
+        raise ValueError(f"Unsupported DMSA command: {args.dmsa_command}")
+
     if args.command == "token-store":
         if args.token_store_command in {"status", "inspect"}:
             return inspect_token_store(args.path)
@@ -8001,6 +8092,30 @@ def main() -> None:
     if isinstance(result, AuthExchangeResult):
         print(format_auth_exchange(result))
         raise SystemExit(result.exit_code)
+
+    if args.command == "dmsa":
+        if isinstance(result, Path):
+            print(f"DMSA connection profile template written to: {result}")
+            return
+        if getattr(args, "format", "markdown") == "json":
+            print(dmsa_report_to_json(result))
+        elif isinstance(result, DmsaConnectionProfileValidationReport):
+            print(dmsa_validation_report_to_markdown(result))
+        elif isinstance(result, DmsaConnectionSummary):
+            print(dmsa_connection_summary_to_markdown(result))
+        elif isinstance(result, DmsaPermissionChecklist):
+            print(dmsa_permission_checklist_to_markdown(result))
+        elif isinstance(result, DmsaInstallationPacket):
+            print(dmsa_installation_packet_to_markdown(result))
+        elif isinstance(result, DmsaSmokeCheckPlan):
+            print(dmsa_smoke_check_plan_to_markdown(result))
+        elif isinstance(result, DmsaPermissionDiagnosticReport):
+            print(dmsa_permission_diagnostic_to_markdown(result))
+        else:
+            print(dmsa_report_to_json(result))
+        if isinstance(result, DmsaConnectionProfileValidationReport) and not result.valid:
+            raise SystemExit(1)
+        return
 
     if isinstance(result, AuthClientCredentialsResult):
         print(format_client_credentials_result(result))

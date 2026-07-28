@@ -197,6 +197,31 @@ from pyprocore.discovery import (  # noqa: F401
     search_discovery_capabilities,
     search_oas_catalog_capabilities,
 )
+from pyprocore.dmsa import (  # noqa: F401
+    DmsaConnectionProfile,
+    DmsaConnectionProfileInput,
+    DmsaConnectionProfileValidationFinding,
+    DmsaConnectionProfileValidationReport,
+    DmsaConnectionSummary,
+    DmsaInstallationPacket,
+    DmsaPermissionChecklist,
+    DmsaPermissionChecklistItem,
+    DmsaPermissionDiagnosticFinding,
+    DmsaPermissionDiagnosticReport,
+    DmsaSmokeCheckItem,
+    DmsaSmokeCheckPlan,
+    DmsaSmokeCheckResult,
+    build_dmsa_connection_profile,
+    build_dmsa_installation_packet,
+    build_dmsa_permission_checklist,
+    build_dmsa_smoke_check_plan,
+    diagnose_dmsa_permission_issue,
+    load_dmsa_connection_profile,
+    redact_dmsa_connection_profile,
+    summarize_dmsa_connection_profile,
+    validate_dmsa_connection_profile,
+    write_dmsa_connection_profile_template,
+)
 from pyprocore.evals import (  # noqa: F401
     BASELINE_SCHEMA_VERSION,
     DATASET_SCHEMA_VERSION,
@@ -1492,6 +1517,34 @@ __all__.extend(
         "list_schedule_resource_assignments",
         "list_task_requested_changes",
         "list_tasks",
+    ]
+)
+
+__all__.extend(
+    [
+        "DmsaConnectionProfile",
+        "DmsaConnectionProfileInput",
+        "DmsaConnectionProfileValidationFinding",
+        "DmsaConnectionProfileValidationReport",
+        "DmsaConnectionSummary",
+        "DmsaInstallationPacket",
+        "DmsaPermissionChecklist",
+        "DmsaPermissionChecklistItem",
+        "DmsaPermissionDiagnosticFinding",
+        "DmsaPermissionDiagnosticReport",
+        "DmsaSmokeCheckItem",
+        "DmsaSmokeCheckPlan",
+        "DmsaSmokeCheckResult",
+        "build_dmsa_connection_profile",
+        "build_dmsa_installation_packet",
+        "build_dmsa_permission_checklist",
+        "build_dmsa_smoke_check_plan",
+        "diagnose_dmsa_permission_issue",
+        "load_dmsa_connection_profile",
+        "redact_dmsa_connection_profile",
+        "summarize_dmsa_connection_profile",
+        "validate_dmsa_connection_profile",
+        "write_dmsa_connection_profile_template",
     ]
 )
 

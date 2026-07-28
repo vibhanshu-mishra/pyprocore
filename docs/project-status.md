@@ -21,6 +21,19 @@
 See the [Feature Inventory](features.md) for a phase-by-phase account of
 implemented SDK, workflow, automation, safety, and maintainer capabilities.
 
+## Completed After v2.4.0
+
+Phase 19A adds secret-free local DMSA connection profiles, structural
+validation, redacted summaries, a lazy client factory over the existing
+client-credentials flow, GC/Owner permission checklists and installation
+packets, non-executing smoke-check plans, and local permission diagnostics.
+
+This work is unreleased. PyProcore does not create a DMSA or grant access; the
+GC/Owner controls private-app installation, permitted projects, Read Only RFI
+and Submittal permissions, attachment visibility, and revocation. No live
+Procore checks, external AI/model calls, MCP or Procore tool execution, or
+write actions are enabled by Phase 19A.
+
 ## Current Stable Release: 2.4.0
 
 PyProcore `2.4.0` was released with:

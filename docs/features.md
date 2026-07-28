@@ -386,6 +386,23 @@ the safety rules documented below.
 | Bounded guide artifacts | Optional local JSON Markdown outputs | Save guides only to a user-selected local output location. |
 | Migration lockout | No edits patches git or PRs | Guide generation never edits code, applies patches, creates commits, or opens pull requests. |
 
+## Phase 19A — DMSA Connection Profiles
+
+| Feature | Technical description | Simple description |
+|---|---|---|
+| Secret-free profiles | Local JSON metadata with credential env-var references | Document a GC/Owner-authorized DMSA connection without putting secrets in JSON. |
+| Structural validation | Typed profile findings and redacted summaries | Catch missing company, project, or credential-reference metadata locally. |
+| Lazy client factory | Existing client-credentials settings bound to a `Procore` object client | Create a client without requesting a token until an intentional API operation. |
+| Permission checklist | GC/Owner least-privilege RFI/Submittal checklist | Explain the Read Only permissions and permitted projects the app needs. |
+| Installation packet | JSON and Markdown GC/Owner handoff report | Explain installation, access, attachments, webhooks/polling, safety, and troubleshooting. |
+| Smoke-check plan | Non-executing intended read-check metadata | Plan token, project, RFI, Submittal, and attachment checks without calling Procore. |
+| Permission diagnostics | Local likely-cause and recommended-review mappings | Interpret supplied 401, 403, 404, empty-result, and attachment summaries cautiously. |
+| DMSA CLI | Credential-free local metadata commands | Build, validate, summarize, and report without live access. |
+
+PyProcore does not create a DMSA or grant project access. The GC/Owner controls
+installation, permitted projects, permissions, and revocation. No write actions
+or automatic live smoke execution are enabled.
+
 ## Safety Summary
 
 Every feature above preserves PyProcore's current safety posture. Procore write

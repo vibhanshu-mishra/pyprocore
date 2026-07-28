@@ -773,6 +773,12 @@ The current example set runs from `01_list_companies.py` through
 | `332_maintenance_migration_guide_with_codebase.py` | Add a fake local codebase compatibility review |
 | `333_maintenance_migration_guide_artifacts_dry_run.py` | Preview six migration-guide artifacts without writing |
 | `334_maintenance_upgrade_checklist.py` | Render a human-owned upgrade checklist |
+| `335_dmsa_sample_profile.py` | Build secret-free fake DMSA profile metadata locally |
+| `336_dmsa_validate_profile.py` | Validate the bundled local DMSA profile fixture |
+| `337_dmsa_permission_checklist.py` | Render the GC/Owner Read Only permission checklist |
+| `338_dmsa_installation_packet.py` | Render a plain-English GC/Owner installation packet |
+| `339_dmsa_smoke_check_plan.py` | Build a non-executing read-only DMSA smoke-check plan |
+| `340_dmsa_permission_diagnostics.py` | Interpret a fake 403 response summary locally |
 
 Sample golden datasets live in `examples/golden_datasets/`:
 
@@ -1029,4 +1035,10 @@ Sample webhook payloads live in `examples/webhooks/`:
   summaries, and upgrade checklists. They do not edit code, apply patches, run
   git, call remote services, create commits or pull requests, or enable
   MCP/tool/write execution.
+- Examples `335` through `340` add Phase 19A local DMSA connection-profile,
+  validation, checklist, installation-packet, smoke-plan, and permission
+  diagnostic examples. They use fake metadata only and do not resolve real
+  credentials, request tokens, call Procore or external AI/model APIs, enable
+  MCP/Procore tool execution, create a DMSA, grant permissions, or enable
+  write actions.
 - Keep secrets out of code, screenshots, logs, and issue reports.

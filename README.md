@@ -33,6 +33,8 @@ The latest published stable release is `2.4.0`.
 
 Highlights:
 - Read-only Project Tools coverage
+- Secret-free local DMSA connection profiles, GC/Owner permission checklists,
+  installation packets, smoke-check plans, and permission diagnostics
 - Local analytics and FastAPI starter template
 - OAS catalog and discovery metadata
 - Human-review API maintenance workflows for drift, impact, migration plans, PR drafts, compatibility contracts, and migration guides
@@ -105,6 +107,12 @@ print(result.summary_path)
 
 PyProcore loads `.env` from the current working directory and does not override
 environment variables that are already set.
+
+For a GC/Owner-installed Data Connection App, use a secret-free
+[DMSA connection profile](docs/dmsa-connection-profiles.md) to document the
+company, permitted projects, credential environment-variable names, and
+least-privilege Read Only access. PyProcore does not create a DMSA or grant
+project permissions; the GC/Owner controls installation and access.
 
 ## What You Can Build
 
@@ -239,6 +247,7 @@ private project data.
 | Documentation Home | [docs/index.md](docs/index.md) |
 | Getting Started | [docs/getting-started.md](docs/getting-started.md) |
 | Authentication | [docs/authentication.md](docs/authentication.md) |
+| DMSA Connection Profiles | [docs/dmsa-connection-profiles.md](docs/dmsa-connection-profiles.md) |
 | Complete Feature Inventory | [docs/features.md](docs/features.md) |
 | API Coverage | [docs/api-coverage.md](docs/api-coverage.md) |
 | Workflows | [docs/workflows.md](docs/workflows.md) |

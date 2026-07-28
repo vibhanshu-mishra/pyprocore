@@ -129,6 +129,21 @@ package and GitHub release:
 - Additional Daily Log types with ambiguous or environment-specific endpoint
   shapes remain deferred until safe documented GET/list paths are confirmed.
 
+## Completed After v2.4.0
+
+### Phase 19A — DMSA Connection Profiles
+
+- Secret-free local JSON profiles reference credential environment-variable
+  names instead of storing client secrets.
+- Structural validation, redacted summaries, GC/Owner permission checklists,
+  installation packets, non-executing smoke plans, and likely-cause
+  diagnostics work without credentials or live Procore access.
+- `Procore.from_dmsa_profile(...)` reuses existing client-credentials auth and
+  stays lazy until the user intentionally performs an API operation.
+- PyProcore does not create a DMSA or grant access. The GC/Owner controls
+  installation, permitted projects, Read Only RFI/Submittal permissions, and
+  revocation. No write actions are enabled.
+
 ## Future
 
 ### Additional Read Coverage

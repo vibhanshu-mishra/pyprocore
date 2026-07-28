@@ -103,6 +103,18 @@ This requests and saves a client credentials access token. Procore may omit a
 refresh token for this grant type; PyProcore treats that as normal and requests
 a fresh client credentials token when needed.
 
+## DMSA Connection Profiles
+
+For subcontractor or consultant access to GC/Owner-controlled projects, the
+GC/Owner normally installs and authorizes the private app, assigns permitted
+projects, and grants the DMSA Read Only tool permissions. PyProcore does not
+create the DMSA and does not grant access.
+
+Use a secret-free local [DMSA connection profile](dmsa-connection-profiles.md)
+after that installation. Profiles reference credential environment-variable
+names and reuse the existing `client_credentials` OAuth implementation. Loading
+or validating a profile does not request a token or call Procore.
+
 ## Scheduled Export Planning
 
 For enterprise scheduled exports, prefer `client_credentials` with a Procore

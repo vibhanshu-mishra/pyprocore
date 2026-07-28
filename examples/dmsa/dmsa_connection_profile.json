@@ -1,0 +1,19 @@
+{
+  "profile_name": "example-gc-owner-read-only",
+  "company_id": 123456,
+  "allowed_project_ids": [
+    1001,
+    1002
+  ],
+  "api_base_url": "https://api.procore.com",
+  "login_url": "https://login.procore.com",
+  "client_id_env_var": "PROCORE_CLIENT_ID",
+  "client_secret_env_var": "PROCORE_CLIENT_SECRET",
+  "token_store_backend": "memory",
+  "token_store_path": null,
+  "notes": [
+    "Fake local metadata for documentation and offline examples."
+  ],
+  "created_for": "Example subcontractor",
+  "app_version_key_reference": "Provided separately by the app owner"
+}

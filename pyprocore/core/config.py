@@ -8,10 +8,12 @@ the rest of the SDK uses them.
 from __future__ import annotations
 
 import os
+from contextlib import contextmanager
+from contextvars import ContextVar
 from enum import StrEnum
 from functools import lru_cache
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
 
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field, SecretStr, ValidationError, field_validator, model_validator
@@ -19,6 +21,7 @@ from pydantic import BaseModel, Field, SecretStr, ValidationError, field_validat
 from pyprocore.core.exceptions import ConfigurationError
 
 ENV_FILE_NAME = ".env"
+_BOUND_SETTINGS: ContextVar[ProcoreSettings | None]
 
 
 class AuthMode(StrEnum):
@@ -154,6 +157,19 @@ def _read_environment() -> dict[str, str | None]:
 
 
 @lru_cache(maxsize=1)
+def _get_environment_settings() -> ProcoreSettings:
+    """Load and cache validated environment-backed settings."""
+    _load_dotenv()
+
+    try:
+        return ProcoreSettings.model_validate(_read_environment())
+    except ValidationError as exc:
+        raise ConfigurationError(f"Invalid Procore SDK configuration: {exc}") from exc
+
+
+_BOUND_SETTINGS = ContextVar("pyprocore_bound_settings", default=None)
+
+
 def get_settings() -> ProcoreSettings:
     """Load and validate SDK settings from environment variables.
 
@@ -163,9 +179,21 @@ def get_settings() -> ProcoreSettings:
     Raises:
         ConfigurationError: If any required setting is missing or invalid.
     """
-    _load_dotenv()
+    bound_settings = _BOUND_SETTINGS.get()
+    if bound_settings is not None:
+        return bound_settings
+    return _get_environment_settings()
 
+
+get_settings.cache_clear = _get_environment_settings.cache_clear  # type: ignore[attr-defined]
+get_settings.cache_info = _get_environment_settings.cache_info  # type: ignore[attr-defined]
+
+
+@contextmanager
+def bind_settings(settings: ProcoreSettings) -> Iterator[None]:
+    """Temporarily bind settings for lazy object-client service calls."""
+    token = _BOUND_SETTINGS.set(settings)
     try:
-        return ProcoreSettings.model_validate(_read_environment())
-    except ValidationError as exc:
-        raise ConfigurationError(f"Invalid Procore SDK configuration: {exc}") from exc
+        yield
+    finally:
+        _BOUND_SETTINGS.reset(token)

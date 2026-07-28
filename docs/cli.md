@@ -28,6 +28,26 @@ procore-sdk auth rotation-checklist --auth-mode client_credentials
 setups such as Procore Data Connection Apps. It requests and stores a
 server-to-server access token without using a redirect URI.
 
+## DMSA Connection Profiles
+
+Phase 19A adds local profile, checklist, packet, smoke-plan, and diagnostic
+commands:
+
+```bash
+procore-sdk dmsa sample-profile --output ./local/dmsa-profile.json
+procore-sdk dmsa validate-profile ./local/dmsa-profile.json
+procore-sdk dmsa summarize-profile ./local/dmsa-profile.json --format json
+procore-sdk dmsa permission-checklist --format markdown
+procore-sdk dmsa installation-packet --format markdown
+procore-sdk dmsa smoke-plan ./local/dmsa-profile.json --format markdown
+procore-sdk dmsa diagnose --status-code 403 --context rfis --format markdown
+```
+
+These commands do not need credentials and do not call Procore. The profile
+stores environment-variable names, not secret values. Diagnostics report likely
+causes and recommended review only. The GC/Owner controls DMSA installation,
+permitted projects, Read Only RFI/Submittal permissions, and revocation.
+
 ## Token Store Safety
 
 Phase 9C adds local-only token-store inspection and credential rotation helpers.

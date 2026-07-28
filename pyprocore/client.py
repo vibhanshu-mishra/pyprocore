@@ -14,8 +14,13 @@ from pyprocore.automation import (
     build_submittal_package,
     build_workflow_package,
 )
-from pyprocore.core.config import get_settings
+from pyprocore.core.config import ProcoreSettings, bind_settings, get_settings
 from pyprocore.core.exceptions import ValidationError
+from pyprocore.dmsa.models import DmsaConnectionProfile
+from pyprocore.dmsa.profiles import (
+    load_dmsa_connection_profile,
+    settings_from_dmsa_connection_profile,
+)
 from pyprocore.models import (
     RFI,
     ActionPlan,
@@ -3612,6 +3617,25 @@ class WorkflowsClient:
         )
 
 
+class _SettingsBoundClient:
+    """Bind profile settings around calls made by one grouped service client."""
+
+    def __init__(self, client: object, settings: ProcoreSettings) -> None:
+        self._client = client
+        self._settings = settings
+
+    def __getattr__(self, name: str) -> Any:
+        attribute = getattr(self._client, name)
+        if not callable(attribute):
+            return attribute
+
+        def call_with_settings(*args: Any, **kwargs: Any) -> Any:
+            with bind_settings(self._settings):
+                return attribute(*args, **kwargs)
+
+        return call_with_settings
+
+
 class Procore:
     """Beginner-friendly object-oriented entry point for PyProcore.
 
@@ -3620,8 +3644,13 @@ class Procore:
     as ``client.projects.list(company_id=123456)``.
     """
 
-    def __init__(self) -> None:
-        """Create grouped service clients."""
+    def __init__(self, *, settings: ProcoreSettings | None = None) -> None:
+        """Create grouped service clients.
+
+        Args:
+            settings: Optional settings bound to this object client. Existing
+                ``Procore()`` behavior remains environment-backed when omitted.
+        """
         self.companies = CompaniesClient()
         self.projects = ProjectsClient()
         self.rfis = RFIsClient()
@@ -3672,6 +3701,26 @@ class Procore:
         self.action_plans = ActionPlansClient()
         self.automation = AutomationClient()
         self.workflows = WorkflowsClient()
+        self._settings = settings
+        if settings is not None:
+            for name, value in list(vars(self).items()):
+                if name.startswith("_"):
+                    continue
+                setattr(self, name, _SettingsBoundClient(value, settings))
+
+    @classmethod
+    def from_dmsa_profile(cls, profile: DmsaConnectionProfile) -> "Procore":
+        """Create a lazily authenticated client from safe DMSA profile metadata.
+
+        Credential values are resolved from the environment variables named by
+        the profile. No token request or Procore API call occurs here.
+        """
+        return cls(settings=settings_from_dmsa_connection_profile(profile))
+
+    @classmethod
+    def from_dmsa_profile_file(cls, path: str | Path) -> "Procore":
+        """Load a local JSON DMSA profile and create a lazy object client."""
+        return cls.from_dmsa_profile(load_dmsa_connection_profile(path))
 
 
 __all__ = [
