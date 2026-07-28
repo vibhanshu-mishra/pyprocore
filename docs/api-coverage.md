@@ -58,6 +58,7 @@ Procore environment.
 | Analytics Recipes | Released in v2.4.0 | Local RFI aging, submittal delay, change exposure, Daily Log completeness, project health reports | Local/exported data only. No Procore calls, AI/model calls, dashboard/database dependencies, MCP/tool execution, or write actions. |
 | FastAPI Starter Template | Released in v2.4.0 | Local template inventory, report, dry-run copy, and copy helpers | Optional copied read-only backend example. FastAPI is not a PyProcore dependency. No hosted app, dependency install, database layer, scheduling, Procore calls, MCP/tool execution, external AI/model calls, remote fetch, or write actions. |
 | DMSA Connection Profiles | Unreleased Phase 19A | Local profile validation, summaries, checklists, packets, smoke plans, diagnostics | Reuses existing client-credentials auth. Metadata/reporting only; GC/Owner controls access. No DMSA creation, permission grants, live checks, or writes. |
+| RFI/Submittal Intake Sync | Unreleased Phase 19B | Local planning, mocked normalization, polling state, CSV/JSONL/raw outputs, attachment manifests | No new endpoint coverage. Included commands use local fixtures only, make no live calls or downloads, and enable no Procore writes. |
 
 ## Phase 19A DMSA Connection Notes
 
@@ -70,6 +71,14 @@ Profile validation, reports, examples, tests, and CLI commands make no Procore
 calls. Attachment access remains dependent on permissions and payload
 availability. PyProcore does not create a DMSA, grant permissions, configure
 webhooks, or enable Procore writes.
+
+## Phase 19B Intake Notes
+
+The intake layer adds no Procore endpoint coverage. It normalizes supplied
+local RFI and Submittal dictionaries, filters by update time, tracks polling
+state, and writes optional local audit files. Attachment manifests only report
+metadata and URL presence. GC/Owner permissions and Procore payloads determine
+actual visibility; PyProcore does not grant access or guarantee attachments.
 
 ## Agent Tool Registry
 

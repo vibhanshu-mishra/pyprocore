@@ -15,12 +15,20 @@ and this project follows semantic versioning.
 - GC/Owner permission checklists, installation packets, non-executing
   read-only smoke-check plans, local permission diagnostics, CLI commands,
   examples `335` through `340`, documentation, and mocked/local tests.
+- Phase 19B read-only RFI/Submittal intake planning, tolerant normalization,
+  updated-since filtering, per-project limits, polling state, local CSV/JSONL
+  and raw JSON outputs, attachment metadata manifests, and mocked sync reports.
+- Offline `procore-sdk intake` commands, fake fixtures, examples `341` through
+  `346`, documentation, and mocked/local tests.
 
 ### Security
 
 - DMSA profile templates reference credential environment-variable names
   instead of storing secrets. Profile tools make no live Procore calls and do
   not enable write actions, MCP execution, or Procore tool execution.
+- Intake commands use local records only, contain output paths, refuse
+  overwrites by default, do not download attachments, and do not enable live
+  Procore calls or write actions.
 
 ## [2.4.0] - 2026-07-24
 

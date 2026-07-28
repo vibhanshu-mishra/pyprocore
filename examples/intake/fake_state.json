@@ -1,0 +1,15 @@
+{
+  "schema_version": "1",
+  "profile_name": "example-read-only",
+  "company_id": 123456,
+  "project_ids": [
+    1001
+  ],
+  "last_successful_sync_at": null,
+  "last_attempted_sync_at": null,
+  "per_project_rfi_sync_at": {},
+  "per_project_submittal_sync_at": {},
+  "last_run_status": null,
+  "record_counts": {},
+  "warnings": []
+}

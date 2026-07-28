@@ -201,6 +201,30 @@ from pyprocore.evals import (
     write_regression_report_json,
     write_regression_report_markdown,
 )
+from pyprocore.intake import (
+    IntakeAttachmentManifest,
+    IntakeOutputManifest,
+    IntakeSyncConfig,
+    IntakeSyncPlan,
+    IntakeSyncRunResult,
+    IntakeSyncState,
+    build_initial_intake_sync_state,
+    build_intake_attachment_manifest,
+    build_intake_sync_plan,
+    intake_run_result_to_markdown,
+    intake_state_to_markdown,
+    intake_to_json,
+    intake_validation_to_markdown,
+    load_intake_sync_config,
+    load_intake_sync_state,
+    render_attachment_manifest_markdown,
+    run_intake_sync_with_records,
+    save_intake_sync_state,
+    summarize_intake_sync_plan,
+    validate_intake_sync_config,
+    write_intake_sync_config_template,
+    write_intake_sync_outputs,
+)
 from pyprocore.integrations import (
     IntegrationBlueprint,
     IntegrationReadinessReport,
@@ -763,6 +787,72 @@ def build_parser() -> argparse.ArgumentParser:
     diagnose_parser.add_argument("--empty-result", action="store_true")
     diagnose_parser.add_argument("--missing-attachments", action="store_true")
     diagnose_parser.add_argument("--format", choices=["json", "markdown"], default="markdown")
+
+    intake_parser = subcommands.add_parser(
+        "intake",
+        help="Plan and run local mocked RFI/Submittal intake syncs",
+    )
+    intake_subcommands = intake_parser.add_subparsers(
+        dest="intake_command",
+        required=True,
+    )
+    intake_sample_parser = intake_subcommands.add_parser(
+        "sample-config",
+        help="Write a secret-free local intake JSON template",
+    )
+    intake_sample_parser.add_argument("--output", type=Path, required=True)
+    intake_sample_parser.add_argument("--overwrite", action="store_true")
+    for command_name, help_text in (
+        ("validate-config", "Validate local intake configuration"),
+        ("plan", "Build a non-executing local intake plan"),
+    ):
+        command_parser = intake_subcommands.add_parser(command_name, help=help_text)
+        command_parser.add_argument("config", type=Path)
+        command_parser.add_argument("--format", choices=["json", "markdown"], default="markdown")
+    for command_name, help_text in (
+        ("run-mock", "Run intake against local fake records without writing"),
+        ("write-mock", "Run intake against local fake records and plan/write outputs"),
+    ):
+        command_parser = intake_subcommands.add_parser(command_name, help=help_text)
+        command_parser.add_argument("config", type=Path)
+        command_parser.add_argument("--rfis", type=Path, required=True)
+        command_parser.add_argument("--submittals", type=Path, required=True)
+        command_parser.add_argument("--format", choices=["json", "markdown"], default="markdown")
+        if command_name == "write-mock":
+            command_parser.add_argument("--output-dir", type=Path, required=True)
+            command_parser.add_argument("--dry-run", action="store_true")
+            command_parser.add_argument("--overwrite", action="store_true")
+    attachment_parser = intake_subcommands.add_parser(
+        "attachment-manifest",
+        help="Build attachment metadata from a local JSON fixture",
+    )
+    attachment_parser.add_argument("records", type=Path)
+    attachment_parser.add_argument("--format", choices=["json", "markdown"], default="markdown")
+    intake_state_parser = intake_subcommands.add_parser(
+        "state",
+        help="Initialize or inspect local polling state",
+    )
+    intake_state_subcommands = intake_state_parser.add_subparsers(
+        dest="intake_state_command",
+        required=True,
+    )
+    intake_state_init_parser = intake_state_subcommands.add_parser(
+        "init",
+        help="Write empty local polling state",
+    )
+    intake_state_init_parser.add_argument("--output", type=Path, required=True)
+    intake_state_init_parser.add_argument("--config", type=Path)
+    intake_state_init_parser.add_argument("--overwrite", action="store_true")
+    intake_state_show_parser = intake_state_subcommands.add_parser(
+        "show",
+        help="Show local polling state",
+    )
+    intake_state_show_parser.add_argument("state_path", type=Path)
+    intake_state_show_parser.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="markdown",
+    )
 
     token_store_parser = subcommands.add_parser(
         "token-store",
@@ -4472,6 +4562,69 @@ def _add_webhook_filter_options(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--date")
 
 
+def _load_intake_record_mapping(
+    path: Path,
+) -> dict[int | str, list[dict[str, Any]]]:
+    """Load a project-to-record mapping from a local JSON fixture."""
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except OSError as exc:
+        raise ValidationError(f"Could not read local intake fixture {path}: {exc}") from exc
+    except json.JSONDecodeError as exc:
+        raise ValidationError(f"Local intake fixture {path} is not valid JSON: {exc}") from exc
+    if not isinstance(payload, dict):
+        raise ValidationError("Intake record fixtures must map project IDs to arrays of records.")
+    normalized: dict[int | str, list[dict[str, Any]]] = {}
+    for project_id, records in payload.items():
+        if not isinstance(records, list) or not all(isinstance(record, dict) for record in records):
+            raise ValidationError(
+                f"Intake fixture project {project_id} must contain an array of objects."
+            )
+        normalized[str(project_id)] = records
+    return normalized
+
+
+def _load_intake_attachment_records(
+    path: Path,
+) -> list[tuple[Literal["rfi", "submittal"], int, dict[str, Any]]]:
+    """Load tagged attachment-source records from a local JSON fixture."""
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except OSError as exc:
+        raise ValidationError(f"Could not read local attachment fixture {path}: {exc}") from exc
+    except json.JSONDecodeError as exc:
+        raise ValidationError(f"Local attachment fixture {path} is not valid JSON: {exc}") from exc
+    if not isinstance(payload, list):
+        raise ValidationError("Attachment fixture must contain an array of tagged records.")
+    records: list[tuple[Literal["rfi", "submittal"], int, dict[str, Any]]] = []
+    for item in payload:
+        if not isinstance(item, dict):
+            raise ValidationError("Every attachment fixture item must be an object.")
+        resource = item.get("resource")
+        project_id = item.get("project_id")
+        record = item.get("record")
+        if (
+            resource not in {"rfi", "submittal"}
+            or not isinstance(project_id, int)
+            or not isinstance(record, dict)
+        ):
+            raise ValidationError(
+                "Attachment items require resource, integer project_id, and record object."
+            )
+        records.append((resource, project_id, record))
+    return records
+
+
+def load_intake_sync_config_from_values() -> IntakeSyncConfig:
+    """Build empty local state configuration for the CLI."""
+    return IntakeSyncConfig(
+        profile_name="local-intake",
+        project_ids=[],
+        include_rfis=True,
+        include_submittals=True,
+    )
+
+
 def run_command(args: argparse.Namespace) -> Any:
     """Run a parsed CLI command and return serializable output."""
     if args.command == "doctor":
@@ -4516,6 +4669,50 @@ def run_command(args: argparse.Namespace) -> Any:
                 missing_attachments=args.missing_attachments,
             )
         raise ValueError(f"Unsupported DMSA command: {args.dmsa_command}")
+
+    if args.command == "intake":
+        if args.intake_command == "sample-config":
+            return write_intake_sync_config_template(
+                args.output,
+                overwrite=args.overwrite,
+            )
+        if args.intake_command == "validate-config":
+            return validate_intake_sync_config(load_intake_sync_config(args.config))
+        if args.intake_command == "plan":
+            return build_intake_sync_plan(load_intake_sync_config(args.config))
+        if args.intake_command in {"run-mock", "write-mock"}:
+            intake_config = load_intake_sync_config(args.config)
+            intake_result = run_intake_sync_with_records(
+                intake_config,
+                _load_intake_record_mapping(args.rfis),
+                _load_intake_record_mapping(args.submittals),
+            )
+            if args.intake_command == "write-mock":
+                intake_result.output_manifest = write_intake_sync_outputs(
+                    intake_result,
+                    args.output_dir,
+                    dry_run=args.dry_run or intake_config.dry_run,
+                    overwrite=args.overwrite,
+                )
+            return intake_result
+        if args.intake_command == "attachment-manifest":
+            return build_intake_attachment_manifest(_load_intake_attachment_records(args.records))
+        if args.intake_command == "state":
+            if args.intake_state_command == "init":
+                intake_config = (
+                    load_intake_sync_config(args.config)
+                    if args.config
+                    else load_intake_sync_config_from_values()
+                )
+                state = build_initial_intake_sync_state(intake_config)
+                return save_intake_sync_state(
+                    state,
+                    args.output,
+                    overwrite=args.overwrite,
+                )
+            if args.intake_state_command == "show":
+                return load_intake_sync_state(args.state_path)
+        raise ValueError(f"Unsupported intake command: {args.intake_command}")
 
     if args.command == "token-store":
         if args.token_store_command in {"status", "inspect"}:
@@ -8114,6 +8311,37 @@ def main() -> None:
         else:
             print(dmsa_report_to_json(result))
         if isinstance(result, DmsaConnectionProfileValidationReport) and not result.valid:
+            raise SystemExit(1)
+        return
+
+    if args.command == "intake":
+        if isinstance(result, Path):
+            print(f"Intake local JSON written to: {result}")
+        elif getattr(args, "format", "markdown") == "json":
+            print(intake_to_json(result))
+        elif isinstance(result, IntakeSyncPlan):
+            print(summarize_intake_sync_plan(result))
+        elif isinstance(result, IntakeSyncRunResult):
+            print(intake_run_result_to_markdown(result))
+            if result.output_manifest is not None:
+                print(
+                    f"Local output files "
+                    f"{'planned' if result.output_manifest.dry_run else 'written'}: "
+                    f"{len(result.output_manifest.planned_files)}"
+                )
+        elif isinstance(result, IntakeAttachmentManifest):
+            print(render_attachment_manifest_markdown(result))
+        elif isinstance(result, IntakeSyncState):
+            print(intake_state_to_markdown(result))
+        elif isinstance(result, IntakeOutputManifest):
+            print(intake_to_json(result))
+        elif isinstance(result, list):
+            print(intake_validation_to_markdown(result))
+        else:
+            print(intake_to_json(result))
+        if isinstance(result, list) and any(
+            getattr(item, "level", None) == "error" for item in result
+        ):
             raise SystemExit(1)
         return
 

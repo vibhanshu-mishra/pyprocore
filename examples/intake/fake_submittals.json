@@ -1,0 +1,32 @@
+{
+  "1001": [
+    {
+      "id": 701,
+      "number": "SUB-027",
+      "title": "Structural steel shop drawings",
+      "status": {
+        "name": "Under Review"
+      },
+      "created_at": "2026-01-05T09:00:00Z",
+      "updated_at": "2026-01-11T14:00:00Z",
+      "submitter": {
+        "name": "Example Fabricator"
+      },
+      "approvers": [
+        {
+          "name": "Example Reviewer"
+        }
+      ],
+      "revision": "1",
+      "package": {
+        "name": "Structural Steel"
+      },
+      "files": [
+        {
+          "id": 9101,
+          "name": "shop-drawings.pdf"
+        }
+      ]
+    }
+  ]
+}

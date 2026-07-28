@@ -403,6 +403,21 @@ PyProcore does not create a DMSA or grant project access. The GC/Owner controls
 installation, permitted projects, permissions, and revocation. No write actions
 or automatic live smoke execution are enabled.
 
+## Phase 19B — RFI/Submittal Intake Sync
+
+| Feature | Technical description | Simple description |
+|---|---|---|
+| Intake planning | Typed project/resource/output plan | Review selected projects, resources, files, state, and safety boundaries without credentials or calls. |
+| Tolerant normalization | Flexible RFI/Submittal local record mapping | Convert varying local payloads into consistent rows while reporting missing key fields. |
+| Polling state | JSON-only per-project sync timestamps and counts | Repeat user-scheduled sync runs from a clear local checkpoint. |
+| Local outputs | CSV JSONL Markdown raw JSON and output manifests | Create reviewable local logs without changing Procore. |
+| Attachment manifest | Local metadata and URL-presence report | Plan later user-run downloads without following remote URLs. |
+| Mocked CLI | Credential-free `procore-sdk intake` commands | Test and demonstrate intake safely using fake local fixtures. |
+
+The GC/Owner still controls DMSA installation, permitted projects, and Read
+Only permissions. PyProcore does not grant access, guarantee attachments, call
+Procore from Phase 19B commands, or enable write actions.
+
 ## Safety Summary
 
 Every feature above preserves PyProcore's current safety posture. Procore write

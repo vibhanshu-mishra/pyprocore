@@ -779,6 +779,12 @@ The current example set runs from `01_list_companies.py` through
 | `338_dmsa_installation_packet.py` | Render a plain-English GC/Owner installation packet |
 | `339_dmsa_smoke_check_plan.py` | Build a non-executing read-only DMSA smoke-check plan |
 | `340_dmsa_permission_diagnostics.py` | Interpret a fake 403 response summary locally |
+| `341_intake_sample_config.py` | Build a secret-free fake intake configuration |
+| `342_intake_plan.py` | Plan local RFI/Submittal intake without credentials or writes |
+| `343_intake_mock_sync.py` | Normalize fake local RFI and Submittal records |
+| `344_intake_write_outputs_dry_run.py` | Preview local output paths without writing |
+| `345_intake_attachment_manifest.py` | Build metadata-only attachment candidates without downloads |
+| `346_intake_state_tracking.py` | Inspect fake local polling state |
 
 Sample golden datasets live in `examples/golden_datasets/`:
 
@@ -1041,4 +1047,9 @@ Sample webhook payloads live in `examples/webhooks/`:
   credentials, request tokens, call Procore or external AI/model APIs, enable
   MCP/Procore tool execution, create a DMSA, grant permissions, or enable
   write actions.
+- Examples `341` through `346` add Phase 19B read-only intake planning,
+  mocked normalization, output dry-runs, attachment manifests, and polling
+  state. They use fake local JSON only and do not load credentials, call
+  Procore, download remote attachments, call external AI/model APIs, enable
+  MCP/Procore tool execution, or enable write actions.
 - Keep secrets out of code, screenshots, logs, and issue reports.

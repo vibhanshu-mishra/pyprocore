@@ -115,6 +115,12 @@ after that installation. Profiles reference credential environment-variable
 names and reuse the existing `client_credentials` OAuth implementation. Loading
 or validating a profile does not request a token or call Procore.
 
+Phase 19B's [RFI/Submittal intake workflow](rfi-submittal-intake-sync.md)
+builds on this metadata with mocked/local planning, normalization, polling
+state, and attachment manifests. Its commands do not load credentials or call
+Procore. Any user-authored live integration still depends on GC/Owner-granted
+projects and Read Only permissions.
+
 ## Scheduled Export Planning
 
 For enterprise scheduled exports, prefer `client_credentials` with a Procore

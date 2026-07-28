@@ -1,0 +1,20 @@
+{
+  "profile_path": "./examples/dmsa/dmsa_connection_profile.json",
+  "profile_name": "example-read-only",
+  "company_id": 123456,
+  "project_ids": [
+    1001
+  ],
+  "include_rfis": true,
+  "include_submittals": true,
+  "include_attachments": true,
+  "updated_since": "2026-01-01T00:00:00Z",
+  "output_dir": "./exports/intake",
+  "state_path": "./exports/intake/state/intake_state.json",
+  "max_items_per_project": 100,
+  "dry_run": true,
+  "overwrite": false,
+  "notes": [
+    "Fake local example metadata only."
+  ]
+}

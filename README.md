@@ -35,6 +35,8 @@ Highlights:
 - Read-only Project Tools coverage
 - Secret-free local DMSA connection profiles, GC/Owner permission checklists,
   installation packets, smoke-check plans, and permission diagnostics
+- Mocked/local read-only RFI and Submittal intake sync with normalized logs,
+  polling state, raw audit JSON, and attachment metadata manifests
 - Local analytics and FastAPI starter template
 - OAS catalog and discovery metadata
 - Human-review API maintenance workflows for drift, impact, migration plans, PR drafts, compatibility contracts, and migration guides
@@ -113,6 +115,12 @@ For a GC/Owner-installed Data Connection App, use a secret-free
 company, permitted projects, credential environment-variable names, and
 least-privilege Read Only access. PyProcore does not create a DMSA or grant
 project permissions; the GC/Owner controls installation and access.
+
+Phase 19B builds on those profiles with a
+[read-only RFI/Submittal intake workflow](docs/rfi-submittal-intake-sync.md).
+Its CLI and examples use fake local records to plan polling, normalize logs,
+preserve raw JSON, and prepare attachment manifests without calling Procore or
+downloading remote attachments.
 
 ## What You Can Build
 
@@ -248,6 +256,7 @@ private project data.
 | Getting Started | [docs/getting-started.md](docs/getting-started.md) |
 | Authentication | [docs/authentication.md](docs/authentication.md) |
 | DMSA Connection Profiles | [docs/dmsa-connection-profiles.md](docs/dmsa-connection-profiles.md) |
+| RFI/Submittal Intake Sync | [docs/rfi-submittal-intake-sync.md](docs/rfi-submittal-intake-sync.md) |
 | Complete Feature Inventory | [docs/features.md](docs/features.md) |
 | API Coverage | [docs/api-coverage.md](docs/api-coverage.md) |
 | Workflows | [docs/workflows.md](docs/workflows.md) |

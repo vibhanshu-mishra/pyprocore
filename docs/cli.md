@@ -48,6 +48,32 @@ stores environment-variable names, not secret values. Diagnostics report likely
 causes and recommended review only. The GC/Owner controls DMSA installation,
 permitted projects, Read Only RFI/Submittal permissions, and revocation.
 
+## RFI/Submittal Intake Sync
+
+Phase 19B adds offline commands for planning and running intake against
+mocked/local JSON:
+
+```bash
+procore-sdk intake sample-config --output ./local/intake.json
+procore-sdk intake validate-config ./local/intake.json
+procore-sdk intake plan ./local/intake.json
+procore-sdk intake run-mock ./local/intake.json \
+  --rfis examples/intake/fake_rfis.json \
+  --submittals examples/intake/fake_submittals.json
+procore-sdk intake write-mock ./local/intake.json \
+  --rfis examples/intake/fake_rfis.json \
+  --submittals examples/intake/fake_submittals.json \
+  --output-dir ./exports/intake --dry-run
+procore-sdk intake attachment-manifest \
+  examples/intake/fake_attachment_records.json
+procore-sdk intake state init --output ./local/intake-state.json
+procore-sdk intake state show ./local/intake-state.json
+```
+
+These commands do not load credentials, call Procore, download remote
+attachments, or enable write actions. See
+[RFI/Submittal Intake Sync](rfi-submittal-intake-sync.md).
+
 ## Token Store Safety
 
 Phase 9C adds local-only token-store inspection and credential rotation helpers.

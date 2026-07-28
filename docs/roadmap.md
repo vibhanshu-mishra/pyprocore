@@ -144,6 +144,19 @@ package and GitHub release:
   installation, permitted projects, Read Only RFI/Submittal permissions, and
   revocation. No write actions are enabled.
 
+### Phase 19B — RFI/Submittal Intake Sync
+
+- Local plans select projects, RFIs, Submittals, output files, attachment
+  manifest behavior, and polling state.
+- Mocked/local runners normalize flexible records, filter by update timestamp,
+  enforce per-project limits, preserve raw JSON, and produce CSV/JSONL reports.
+- Attachment manifests report metadata and URL presence only; they do not
+  fetch or download remote files.
+- Offline CLI commands and examples use fake records without credentials or
+  live Procore calls.
+- GC/Owner-granted DMSA visibility remains required for user-authored live
+  integrations. PyProcore does not grant access or enable write actions.
+
 ## Future
 
 ### Additional Read Coverage

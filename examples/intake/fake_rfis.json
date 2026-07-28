@@ -1,0 +1,35 @@
+{
+  "1001": [
+    {
+      "id": 501,
+      "number": "RFI-015",
+      "title": "Clarify beam connection detail",
+      "status": "Open",
+      "created_at": "2026-01-08T10:00:00Z",
+      "updated_at": "2026-01-10T15:30:00Z",
+      "due_date": "2026-01-17T00:00:00Z",
+      "ball_in_court": {
+        "name": "Example Structural Team"
+      },
+      "assignees": [
+        {
+          "name": "Example Engineer"
+        }
+      ],
+      "attachments": [
+        {
+          "id": 9001,
+          "filename": "connection-sketch.pdf",
+          "url": "https://example.invalid/signed/connection-sketch.pdf"
+        }
+      ]
+    },
+    {
+      "id": 502,
+      "number": "RFI-016",
+      "title": "Confirm slab opening",
+      "status": "Closed",
+      "updated_at": "2025-12-20T12:00:00Z"
+    }
+  ]
+}

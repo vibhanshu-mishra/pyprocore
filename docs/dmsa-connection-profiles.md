@@ -81,3 +81,11 @@ edit, submit, approve, close, delete, upload, or modify Procore data.
 
 Examples and tests use fake local data. They make no live Procore calls, do not
 call external AI/model APIs, and do not enable MCP or Procore tool execution.
+
+## Read-Only Intake Sync
+
+Phase 19B reuses profile metadata for local
+[RFI/Submittal intake planning](rfi-submittal-intake-sync.md). The supplied
+commands normalize mocked/local records, track polling state, and build
+attachment manifests. They do not resolve credentials, call Procore, grant
+access, or download attachments.

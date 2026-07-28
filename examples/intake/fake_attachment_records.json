@@ -1,0 +1,31 @@
+[
+  {
+    "resource": "rfi",
+    "project_id": 1001,
+    "record": {
+      "id": 501,
+      "number": "RFI-015",
+      "attachments": [
+        {
+          "id": 9001,
+          "filename": "connection-sketch.pdf",
+          "url": "https://example.invalid/signed/connection-sketch.pdf"
+        }
+      ]
+    }
+  },
+  {
+    "resource": "submittal",
+    "project_id": 1001,
+    "record": {
+      "id": 701,
+      "number": "SUB-027",
+      "documents": [
+        {
+          "id": 9101,
+          "name": "shop-drawings.pdf"
+        }
+      ]
+    }
+  }
+]

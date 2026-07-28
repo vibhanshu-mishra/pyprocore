@@ -34,6 +34,17 @@ and Submittal permissions, attachment visibility, and revocation. No live
 Procore checks, external AI/model calls, MCP or Procore tool execution, or
 write actions are enabled by Phase 19A.
 
+Phase 19B adds mocked/local read-only RFI and Submittal intake planning,
+tolerant normalization, updated-since filtering, per-project record limits,
+polling state, local CSV/JSONL/raw outputs, attachment metadata manifests, and
+offline CLI examples. It reuses Phase 19A connection-profile metadata but does
+not resolve credentials or provide a default live runner.
+
+The GC/Owner still controls access. Attachment visibility depends on DMSA
+permissions and payload availability. Phase 19B makes no live Procore calls or
+remote downloads in its CLI, examples, and tests, and enables no approvals,
+submissions, closes, deletes, uploads, updates, or other write actions.
+
 ## Current Stable Release: 2.4.0
 
 PyProcore `2.4.0` was released with:
@@ -44,7 +55,8 @@ PyProcore `2.4.0` was released with:
   optional copied FastAPI starter helpers;
 - local API drift, codebase impact, migration plan, PR draft, compatibility
   contract, deprecation, and migration-guide reports;
-- examples through `334` and comprehensive mocked/local validation.
+- examples through `334` in the published release; unreleased local examples
+  now continue through `346`.
 
 It is published on PyPI and released on GitHub. MCP remains discovery-only,
 Procore tool execution remains disabled, and no Procore write,

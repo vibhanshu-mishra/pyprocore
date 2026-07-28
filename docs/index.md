@@ -11,6 +11,12 @@ locally. The current workflow examples do not mutate Procore data.
 
 Latest published stable release: `2.4.0`.
 
+Post-release Phase 19 work adds secret-free DMSA connection metadata and a
+mocked/local, read-only [RFI/Submittal intake sync](rfi-submittal-intake-sync.md)
+for normalization, polling state, audit outputs, and attachment manifests.
+These helpers do not grant access, call Procore, download attachments, or
+enable write actions.
+
 PyProcore `2.4.0` includes the completed Phase 7 Agent Layer plus expanded read
 coverage, enterprise hardening, async helpers, plugin metadata/hooks, AI
 workflow examples, deterministic evals, and discovery-only MCP compatibility
