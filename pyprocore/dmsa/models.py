@@ -147,3 +147,134 @@ class DmsaConnectionSummary(ProcoreModel):
     created_for: str | None
     notes: list[str]
     safety_boundaries: list[str]
+
+
+class GcOwnerInstallationPacketOptions(ProcoreModel):
+    """Placeholder-only options for a GC/Owner onboarding packet."""
+
+    consultant_name: str = "[Consultant/Subcontractor Name]"
+    gc_owner_name: str = "[GC/Owner Name]"
+    integration_name: str = "PyProcore read-only RFI/Submittal intake"
+    support_contact: str = "[Integration Support Contact]"
+    include_attachments: bool = True
+    use_webhooks: bool = False
+    include_linked_references: bool = False
+    notes: list[str] = Field(default_factory=list)
+
+
+class GcOwnerPacketSection(ProcoreModel):
+    """One titled section in a GC/Owner installation packet."""
+
+    title: str
+    summary: str
+    items: list[str] = Field(default_factory=list)
+
+
+class GcOwnerPacketArtifact(ProcoreModel):
+    """One local packet artifact and its purpose."""
+
+    filename: str
+    title: str
+    description: str
+
+
+class GcOwnerPermissionRequestItem(ProcoreModel):
+    """One requested permission with explicit necessity and write boundary."""
+
+    resource: str
+    access: str
+    reason: str
+    required: bool
+    write_access_requested: bool = False
+
+
+class GcOwnerPermissionRequest(ProcoreModel):
+    """Least-privilege RFI/Submittal permission request."""
+
+    title: str
+    summary: str
+    required_items: list[GcOwnerPermissionRequestItem]
+    conditional_items: list[GcOwnerPermissionRequestItem]
+    excluded_actions: list[str]
+    gc_owner_control_statement: str
+
+
+class GcOwnerSecurityStatement(ProcoreModel):
+    """Plain-English integration security and data handling statement."""
+
+    title: str
+    statements: list[str]
+    data_handling: list[str]
+    control_and_revocation: list[str]
+    disclaimer: str
+
+
+class GcOwnerInstallChecklistItem(ProcoreModel):
+    """One GC/Owner or sender onboarding checklist item."""
+
+    item_id: str
+    title: str
+    description: str
+    owner: Literal["gc_owner", "consultant"]
+    required: bool = True
+
+
+class GcOwnerInstallChecklist(ProcoreModel):
+    """Admin and consultant checklists for private app onboarding."""
+
+    title: str
+    admin_items: list[GcOwnerInstallChecklistItem]
+    sender_items: list[GcOwnerInstallChecklistItem]
+
+
+class GcOwnerEmailTemplate(ProcoreModel):
+    """One copy-ready, placeholder-based GC/Owner email template."""
+
+    template_id: str
+    title: str
+    subject: str
+    body: str
+
+
+class GcOwnerTroubleshootingFinding(ProcoreModel):
+    """One likely onboarding issue and recommended admin review."""
+
+    code: str
+    symptom: str
+    likely_cause: str
+    recommended_review: str
+
+
+class GcOwnerTroubleshootingGuide(ProcoreModel):
+    """Cautious local troubleshooting guidance for private app onboarding."""
+
+    title: str
+    findings: list[GcOwnerTroubleshootingFinding]
+    disclaimer: str
+
+
+class GcOwnerInstallationPacket(ProcoreModel):
+    """Complete local GC/Owner private app onboarding packet."""
+
+    title: str
+    generated_for: str
+    prepared_by: str
+    executive_summary: str
+    sections: list[GcOwnerPacketSection]
+    permission_request: GcOwnerPermissionRequest
+    security_statement: GcOwnerSecurityStatement
+    install_checklist: GcOwnerInstallChecklist
+    email_templates: list[GcOwnerEmailTemplate]
+    troubleshooting_guide: GcOwnerTroubleshootingGuide
+    artifacts: list[GcOwnerPacketArtifact]
+    support_contact: str
+    safety_boundaries: list[str]
+
+
+class GcOwnerPacketWriteResult(ProcoreModel):
+    """Result of planning or writing packet artifacts locally."""
+
+    output_dir: str
+    dry_run: bool
+    planned_files: list[str] = Field(default_factory=list)
+    written_files: list[str] = Field(default_factory=list)

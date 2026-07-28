@@ -59,6 +59,7 @@ Procore environment.
 | FastAPI Starter Template | Released in v2.4.0 | Local template inventory, report, dry-run copy, and copy helpers | Optional copied read-only backend example. FastAPI is not a PyProcore dependency. No hosted app, dependency install, database layer, scheduling, Procore calls, MCP/tool execution, external AI/model calls, remote fetch, or write actions. |
 | DMSA Connection Profiles | Unreleased Phase 19A | Local profile validation, summaries, checklists, packets, smoke plans, diagnostics | Reuses existing client-credentials auth. Metadata/reporting only; GC/Owner controls access. No DMSA creation, permission grants, live checks, or writes. |
 | RFI/Submittal Intake Sync | Unreleased Phase 19B | Local planning, mocked normalization, polling state, CSV/JSONL/raw outputs, attachment manifests | No new endpoint coverage. Included commands use local fixtures only, make no live calls or downloads, and enable no Procore writes. |
+| GC/Owner Installation Packet | Unreleased Phase 19C | Local permission, security, checklist, email, troubleshooting, and packet artifacts | No endpoint coverage. Template/documentation aid only; no installation, DMSA creation, access grant, Procore calls, or writes. |
 
 ## Phase 19A DMSA Connection Notes
 
@@ -79,6 +80,14 @@ local RFI and Submittal dictionaries, filters by update time, tracks polling
 state, and writes optional local audit files. Attachment manifests only report
 metadata and URL presence. GC/Owner permissions and Procore payloads determine
 actual visibility; PyProcore does not grant access or guarantee attachments.
+
+## Phase 19C Packet Notes
+
+GC/Owner installation packets add no endpoint coverage. They request minimum
+Read Only RFI/Submittal and permitted-project visibility, with conditional
+attachment and webhook review. The GC/Owner controls installation, permissions,
+attachments, webhooks, and revocation. PyProcore performs none of those admin
+actions.
 
 ## Agent Tool Registry
 

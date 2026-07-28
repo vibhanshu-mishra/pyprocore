@@ -17,6 +17,10 @@ for normalization, polling state, audit outputs, and attachment manifests.
 These helpers do not grant access, call Procore, download attachments, or
 enable write actions.
 
+The [GC/Owner installation packet](gc-owner-installation-packet.md) adds
+placeholder-only permission, security, checklist, email, and troubleshooting
+documents. It performs no app installation or access grant.
+
 PyProcore `2.4.0` includes the completed Phase 7 Agent Layer plus expanded read
 coverage, enterprise hardening, async helpers, plugin metadata/hooks, AI
 workflow examples, deterministic evals, and discovery-only MCP compatibility

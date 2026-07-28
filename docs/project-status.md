@@ -45,6 +45,13 @@ permissions and payload availability. Phase 19B makes no live Procore calls or
 remote downloads in its CLI, examples, and tests, and enables no approvals,
 submissions, closes, deletes, uploads, updates, or other write actions.
 
+Phase 19C adds a complete GC/Owner-facing private app installation packet with
+minimum Read Only permission requests, security and data-handling statements,
+admin and sender checklists, email templates, cautious troubleshooting, and
+contained local artifacts. It reuses Phase 19A/19B language and permission
+boundaries without performing installation, DMSA creation, access grants,
+webhook configuration, live calls, or write actions.
+
 ## Current Stable Release: 2.4.0
 
 PyProcore `2.4.0` was released with:
@@ -56,7 +63,7 @@ PyProcore `2.4.0` was released with:
 - local API drift, codebase impact, migration plan, PR draft, compatibility
   contract, deprecation, and migration-guide reports;
 - examples through `334` in the published release; unreleased local examples
-  now continue through `346`.
+  now continue through `352`.
 
 It is published on PyPI and released on GitHub. MCP remains discovery-only,
 Procore tool execution remains disabled, and no Procore write,

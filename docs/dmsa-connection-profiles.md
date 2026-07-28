@@ -89,3 +89,11 @@ Phase 19B reuses profile metadata for local
 commands normalize mocked/local records, track polling state, and build
 attachment manifests. They do not resolve credentials, call Procore, grant
 access, or download attachments.
+
+## GC/Owner Installation Packet
+
+Phase 19C adds a complete
+[private app installation packet](gc-owner-installation-packet.md) with minimum
+Read Only permission requests, checklists, security language, email templates,
+troubleshooting, and local artifacts. It is a template/documentation aid only:
+PyProcore does not install the app, create the DMSA, or grant access.

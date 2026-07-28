@@ -121,6 +121,10 @@ state, and attachment manifests. Its commands do not load credentials or call
 Procore. Any user-authored live integration still depends on GC/Owner-granted
 projects and Read Only permissions.
 
+Use the [GC/Owner installation packet](gc-owner-installation-packet.md) to
+prepare a placeholder-only human review package. Packet generation does not
+read credentials, install the private app, create a DMSA, or grant access.
+
 ## Scheduled Export Planning
 
 For enterprise scheduled exports, prefer `client_credentials` with a Procore

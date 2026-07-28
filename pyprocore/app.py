@@ -136,9 +136,21 @@ from pyprocore.dmsa import (
     DmsaPermissionChecklist,
     DmsaPermissionDiagnosticReport,
     DmsaSmokeCheckPlan,
+    GcOwnerEmailTemplate,
+    GcOwnerInstallationPacket,
+    GcOwnerInstallationPacketOptions,
+    GcOwnerPacketWriteResult,
+    GcOwnerPermissionRequest,
+    GcOwnerSecurityStatement,
+    GcOwnerTroubleshootingGuide,
     build_dmsa_installation_packet,
     build_dmsa_permission_checklist,
     build_dmsa_smoke_check_plan,
+    build_gc_owner_email_templates,
+    build_gc_owner_installation_packet,
+    build_gc_owner_security_statement,
+    build_gc_owner_troubleshooting_guide,
+    build_rfi_submittal_permission_request,
     diagnose_dmsa_permission_issue,
     dmsa_connection_summary_to_markdown,
     dmsa_installation_packet_to_markdown,
@@ -147,10 +159,17 @@ from pyprocore.dmsa import (
     dmsa_report_to_json,
     dmsa_smoke_check_plan_to_markdown,
     dmsa_validation_report_to_markdown,
+    gc_owner_email_templates_to_markdown,
+    gc_owner_installation_packet_to_markdown,
+    gc_owner_packet_write_result_to_markdown,
+    gc_owner_permission_request_to_markdown,
+    gc_owner_security_statement_to_markdown,
+    gc_owner_troubleshooting_guide_to_markdown,
     load_dmsa_connection_profile,
     summarize_dmsa_connection_profile,
     validate_dmsa_connection_profile,
     write_dmsa_connection_profile_template,
+    write_gc_owner_installation_packet,
 )
 from pyprocore.evals import (
     EvalBaseline,
@@ -787,6 +806,39 @@ def build_parser() -> argparse.ArgumentParser:
     diagnose_parser.add_argument("--empty-result", action="store_true")
     diagnose_parser.add_argument("--missing-attachments", action="store_true")
     diagnose_parser.add_argument("--format", choices=["json", "markdown"], default="markdown")
+    for command_name, help_text in (
+        ("gc-owner-packet", "Build a complete local GC/Owner onboarding packet"),
+        ("permission-request", "Build a least-privilege permission request"),
+        ("security-statement", "Build the packet security statement"),
+        ("email-templates", "Build copy-ready GC/Owner email templates"),
+        ("troubleshooting-guide", "Build likely-cause onboarding guidance"),
+    ):
+        command_parser = dmsa_subcommands.add_parser(command_name, help=help_text)
+        command_parser.add_argument(
+            "--format",
+            choices=["json", "markdown"],
+            default="markdown",
+        )
+        command_parser.add_argument(
+            "--support-contact",
+            default="[Integration Support Contact]",
+        )
+    packet_write_parser = dmsa_subcommands.add_parser(
+        "gc-owner-packet-write",
+        help="Plan or write local GC/Owner packet artifacts",
+    )
+    packet_write_parser.add_argument("--output-dir", type=Path, required=True)
+    packet_write_parser.add_argument("--dry-run", action="store_true")
+    packet_write_parser.add_argument("--overwrite", action="store_true")
+    packet_write_parser.add_argument(
+        "--support-contact",
+        default="[Integration Support Contact]",
+    )
+    packet_write_parser.add_argument(
+        "--format",
+        choices=["json", "markdown"],
+        default="markdown",
+    )
 
     intake_parser = subcommands.add_parser(
         "intake",
@@ -4668,6 +4720,32 @@ def run_command(args: argparse.Namespace) -> Any:
                 empty_result=args.empty_result,
                 missing_attachments=args.missing_attachments,
             )
+        if args.dmsa_command in {
+            "gc-owner-packet",
+            "gc-owner-packet-write",
+            "permission-request",
+            "security-statement",
+            "email-templates",
+            "troubleshooting-guide",
+        }:
+            packet_options = GcOwnerInstallationPacketOptions(support_contact=args.support_contact)
+            if args.dmsa_command == "gc-owner-packet":
+                return build_gc_owner_installation_packet(packet_options)
+            if args.dmsa_command == "gc-owner-packet-write":
+                packet = build_gc_owner_installation_packet(packet_options)
+                return write_gc_owner_installation_packet(
+                    packet,
+                    args.output_dir,
+                    dry_run=args.dry_run,
+                    overwrite=args.overwrite,
+                )
+            if args.dmsa_command == "permission-request":
+                return build_rfi_submittal_permission_request(packet_options)
+            if args.dmsa_command == "security-statement":
+                return build_gc_owner_security_statement(packet_options)
+            if args.dmsa_command == "email-templates":
+                return build_gc_owner_email_templates(packet_options)
+            return build_gc_owner_troubleshooting_guide(packet_options)
         raise ValueError(f"Unsupported DMSA command: {args.dmsa_command}")
 
     if args.command == "intake":
@@ -8308,6 +8386,20 @@ def main() -> None:
             print(dmsa_smoke_check_plan_to_markdown(result))
         elif isinstance(result, DmsaPermissionDiagnosticReport):
             print(dmsa_permission_diagnostic_to_markdown(result))
+        elif isinstance(result, GcOwnerInstallationPacket):
+            print(gc_owner_installation_packet_to_markdown(result))
+        elif isinstance(result, GcOwnerPermissionRequest):
+            print(gc_owner_permission_request_to_markdown(result))
+        elif isinstance(result, GcOwnerSecurityStatement):
+            print(gc_owner_security_statement_to_markdown(result))
+        elif isinstance(result, GcOwnerTroubleshootingGuide):
+            print(gc_owner_troubleshooting_guide_to_markdown(result))
+        elif isinstance(result, GcOwnerPacketWriteResult):
+            print(gc_owner_packet_write_result_to_markdown(result))
+        elif isinstance(result, list) and (
+            not result or isinstance(result[0], GcOwnerEmailTemplate)
+        ):
+            print(gc_owner_email_templates_to_markdown(result))
         else:
             print(dmsa_report_to_json(result))
         if isinstance(result, DmsaConnectionProfileValidationReport) and not result.valid:

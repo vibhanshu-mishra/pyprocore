@@ -37,6 +37,8 @@ Highlights:
   installation packets, smoke-check plans, and permission diagnostics
 - Mocked/local read-only RFI and Submittal intake sync with normalized logs,
   polling state, raw audit JSON, and attachment metadata manifests
+- GC/Owner private app installation packets with minimum Read Only permission
+  requests, checklists, security statements, email templates, and diagnostics
 - Local analytics and FastAPI starter template
 - OAS catalog and discovery metadata
 - Human-review API maintenance workflows for drift, impact, migration plans, PR drafts, compatibility contracts, and migration guides
@@ -256,6 +258,7 @@ private project data.
 | Getting Started | [docs/getting-started.md](docs/getting-started.md) |
 | Authentication | [docs/authentication.md](docs/authentication.md) |
 | DMSA Connection Profiles | [docs/dmsa-connection-profiles.md](docs/dmsa-connection-profiles.md) |
+| GC/Owner Installation Packet | [docs/gc-owner-installation-packet.md](docs/gc-owner-installation-packet.md) |
 | RFI/Submittal Intake Sync | [docs/rfi-submittal-intake-sync.md](docs/rfi-submittal-intake-sync.md) |
 | Complete Feature Inventory | [docs/features.md](docs/features.md) |
 | API Coverage | [docs/api-coverage.md](docs/api-coverage.md) |

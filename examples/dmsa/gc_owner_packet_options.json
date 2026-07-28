@@ -1,0 +1,12 @@
+{
+  "consultant_name": "[Consultant/Subcontractor Name]",
+  "gc_owner_name": "[GC/Owner Name]",
+  "integration_name": "Example read-only RFI/Submittal intake",
+  "support_contact": "[Integration Support Contact]",
+  "include_attachments": true,
+  "use_webhooks": false,
+  "include_linked_references": false,
+  "notes": [
+    "Placeholder-only local example."
+  ]
+}

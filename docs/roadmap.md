@@ -157,6 +157,18 @@ package and GitHub release:
 - GC/Owner-granted DMSA visibility remains required for user-authored live
   integrations. PyProcore does not grant access or enable write actions.
 
+### Phase 19C — GC/Owner Private App Installation Packet
+
+- Complete local onboarding packets explain purpose, minimum permissions,
+  non-goals, installation, Permitted Projects, attachments, webhooks/polling,
+  security, revocation, checklists, troubleshooting, and support placeholders.
+- Copy-ready emails support initial requests, installation follow-up,
+  permission clarification, no-access troubleshooting, and offboarding.
+- Dry-run and explicit local writes produce seven bounded Markdown/JSON
+  artifacts with overwrite protection.
+- This remains a template/documentation aid. PyProcore does not install the
+  app, create the DMSA, grant access, call Procore, or enable write actions.
+
 ## Future
 
 ### Additional Read Coverage

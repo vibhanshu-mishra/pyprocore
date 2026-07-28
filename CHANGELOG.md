@@ -20,6 +20,12 @@ and this project follows semantic versioning.
   and raw JSON outputs, attachment metadata manifests, and mocked sync reports.
 - Offline `procore-sdk intake` commands, fake fixtures, examples `341` through
   `346`, documentation, and mocked/local tests.
+- Phase 19C GC/Owner private app installation packets with least-privilege
+  permission requests, security statements, admin/sender checklists, copy-ready
+  email templates, cautious troubleshooting guidance, and contained local
+  artifact writing.
+- Credential-free `procore-sdk dmsa` packet commands, examples `347` through
+  `352`, documentation, and mocked/local tests.
 
 ### Security
 
@@ -29,6 +35,8 @@ and this project follows semantic versioning.
 - Intake commands use local records only, contain output paths, refuse
   overwrites by default, do not download attachments, and do not enable live
   Procore calls or write actions.
+- GC/Owner packet templates use placeholders, make no Procore or remote calls,
+  perform no installation or access grant, and request no write permissions.
 
 ## [2.4.0] - 2026-07-24
 

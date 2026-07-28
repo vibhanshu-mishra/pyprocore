@@ -7,6 +7,8 @@ tests use mocked/local JSON only. They do not call Procore.
 PyProcore does not grant access. A GC/Owner must install and authorize the
 private app or DMSA, select permitted projects, and grant appropriate Read Only
 tool permissions before user-written live integration code can retrieve data.
+The [GC/Owner installation packet](gc-owner-installation-packet.md) provides
+placeholder-based request and review documents for that human-owned process.
 
 ## Local Outputs
 

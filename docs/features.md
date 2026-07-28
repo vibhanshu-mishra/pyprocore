@@ -418,6 +418,21 @@ The GC/Owner still controls DMSA installation, permitted projects, and Read
 Only permissions. PyProcore does not grant access, guarantee attachments, call
 Procore from Phase 19B commands, or enable write actions.
 
+## Phase 19C — GC/Owner Private App Installation Packet
+
+| Feature | Technical description | Simple description |
+|---|---|---|
+| Complete packet | Typed executive summary sections and metadata | Give a GC/Owner admin one coherent review package. |
+| Permission request | Required and conditional least-privilege items | Ask for RFIs and Submittals Read Only without write permissions. |
+| Security statement | Explicit local safety and data-handling boundaries | Explain what the integration does and does not do. |
+| Checklists | GC/Owner admin and consultant sender steps | Keep installation and handoff human-owned and reviewable. |
+| Email templates | Five placeholder-based onboarding messages | Request, clarify, troubleshoot, follow up, or offboard professionally. |
+| Troubleshooting | Likely-cause and recommended-review matrix | Discuss common access issues without claiming live diagnosis. |
+| Artifact writer | Dry-run or contained local Markdown/JSON files | Preview or create packet documents without remote calls. |
+
+This is a template/documentation aid. PyProcore does not install the app,
+create the DMSA, grant access, configure webhooks, or enable write actions.
+
 ## Safety Summary
 
 Every feature above preserves PyProcore's current safety posture. Procore write

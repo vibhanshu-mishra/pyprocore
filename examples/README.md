@@ -785,6 +785,12 @@ The current example set runs from `01_list_companies.py` through
 | `344_intake_write_outputs_dry_run.py` | Preview local output paths without writing |
 | `345_intake_attachment_manifest.py` | Build metadata-only attachment candidates without downloads |
 | `346_intake_state_tracking.py` | Inspect fake local polling state |
+| `347_dmsa_gc_owner_packet.py` | Render the complete placeholder-only GC/Owner packet |
+| `348_dmsa_permission_request.py` | Render the minimum Read Only permission request |
+| `349_dmsa_security_statement.py` | Render conservative security and data-handling language |
+| `350_dmsa_email_templates.py` | Render five copy-ready onboarding email templates |
+| `351_dmsa_troubleshooting_guide.py` | Render likely-cause and recommended-review guidance |
+| `352_dmsa_gc_owner_packet_write_dry_run.py` | Preview seven local packet artifacts without writing |
 
 Sample golden datasets live in `examples/golden_datasets/`:
 
@@ -1052,4 +1058,8 @@ Sample webhook payloads live in `examples/webhooks/`:
   state. They use fake local JSON only and do not load credentials, call
   Procore, download remote attachments, call external AI/model APIs, enable
   MCP/Procore tool execution, or enable write actions.
+- Examples `347` through `352` add Phase 19C GC/Owner packet, permission,
+  security, email, troubleshooting, and artifact dry-run examples. They use
+  placeholders only and do not install an app, create a DMSA, grant access,
+  call Procore or remote services, enable MCP/tool execution, or enable writes.
 - Keep secrets out of code, screenshots, logs, and issue reports.

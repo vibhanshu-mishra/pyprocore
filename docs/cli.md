@@ -48,6 +48,22 @@ stores environment-variable names, not secret values. Diagnostics report likely
 causes and recommended review only. The GC/Owner controls DMSA installation,
 permitted projects, Read Only RFI/Submittal permissions, and revocation.
 
+Phase 19C adds complete local onboarding packet commands:
+
+```bash
+procore-sdk dmsa gc-owner-packet --format markdown
+procore-sdk dmsa permission-request
+procore-sdk dmsa security-statement
+procore-sdk dmsa email-templates
+procore-sdk dmsa troubleshooting-guide
+procore-sdk dmsa gc-owner-packet-write \
+  --output-dir ./exports/gc-owner-packet --dry-run
+```
+
+These are template/documentation commands only. They do not install an app,
+create a DMSA, grant access, call Procore, fetch remote files, or enable write
+actions. See [GC/Owner Installation Packet](gc-owner-installation-packet.md).
+
 ## RFI/Submittal Intake Sync
 
 Phase 19B adds offline commands for planning and running intake against
