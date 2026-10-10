@@ -34,7 +34,7 @@ class SecurityHardeningTestCase(unittest.TestCase):
         """Scanner should fail on likely secrets while hiding the value."""
         with TemporaryDirectory() as temporary_directory:
             secret_file = Path(temporary_directory) / "unsafe.env"
-            secret_value = "REDACTED_TEST_SECRET_VALUE"
+            secret_value = "TEST_SENTINEL_VALUE"
             secret_file.write_text(
                 f"PROCORE_CLIENT_SECRET={secret_value}\n",
                 encoding="utf-8",
