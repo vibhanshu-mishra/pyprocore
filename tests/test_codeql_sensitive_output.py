@@ -37,6 +37,7 @@ from pyprocore.intake import (
     run_intake_sync_with_records,
     write_intake_sync_outputs,
 )
+from pyprocore.models import RFI
 from pyprocore.plugins import (
     PluginTrustFinding,
     PluginTrustPolicy,
@@ -368,9 +369,11 @@ class CodeqlSensitiveOutputTests(unittest.TestCase):
         self.assertNotIn("sk_test_should_not_appear", source)
 
     def test_workflow_exports_redact_values_before_local_storage(self) -> None:
-        """CSV and JSONL export sinks redact credentials and signed URLs."""
+        """CSV and JSONL sinks redact credentials from mappings and SDK models."""
         sensitive_value = secrets.token_urlsafe(24)
         record: dict[str, object] = {
+            "id": 123,
+            "status": "Open",
             "access_token": sensitive_value,
             "notes": f"Authorization: Bearer {sensitive_value}",
             "attachment_url": (
@@ -378,20 +381,42 @@ class CodeqlSensitiveOutputTests(unittest.TestCase):
                 f"{sensitive_value}&download=1"
             ),
         }
+        rfi = RFI(
+            id=123,
+            status="Open",
+            access_token=sensitive_value,
+            questions=[
+                {
+                    "attachments": [
+                        {
+                            "url": (
+                                "https://files.example.test/rfi.pdf?X-Amz-Signature="
+                                f"{sensitive_value}&download=1"
+                            )
+                        }
+                    ]
+                }
+            ],
+        )
 
         with tempfile.TemporaryDirectory() as temporary_directory:
             root = Path(temporary_directory)
             jsonl_path = _write_jsonl([record], root / "records.jsonl")
+            model_jsonl_path = _write_jsonl([rfi], root / "model-records.jsonl")
             csv_path = _write_csv(
                 [record],
                 root / "records.csv",
                 list(record),
                 lambda _: record,
             )
-            rendered = jsonl_path.read_text(encoding="utf-8") + csv_path.read_text(encoding="utf-8")
+            rendered = "\n".join(
+                path.read_text(encoding="utf-8")
+                for path in (jsonl_path, model_jsonl_path, csv_path)
+            )
 
         self.assertNotIn(sensitive_value, rendered)
         self.assertIn(REDACTED, rendered)
+        self.assertIn("Open", rendered)
 
     def test_gc_owner_json_and_markdown_redact_dynamic_values(self) -> None:
         """Packet renderers sanitize user-provided names and support text."""
