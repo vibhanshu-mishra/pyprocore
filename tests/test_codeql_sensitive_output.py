@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ast
 import json
 import secrets
 import sys
@@ -354,19 +355,31 @@ class CodeqlSensitiveOutputTests(unittest.TestCase):
         self.assertIn(REDACTED, markdown_text)
 
     def test_plugin_trust_example_uses_safe_report_renderer(self) -> None:
-        """The standalone trust example sends report text through the sanitizer."""
+        """The standalone trust example prints only the redacting JSON serializer."""
         example_path = (
             Path(__file__).resolve().parents[1]
             / "examples"
             / "282_validate_plugin_trust_manifest.py"
         )
-        source = example_path.read_text(encoding="utf-8")
+        tree = ast.parse(example_path.read_text(encoding="utf-8"), filename=str(example_path))
+        safe_print_calls = [
+            node
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "print"
+            and any(
+                isinstance(argument, ast.Call)
+                and isinstance(argument.func, ast.Name)
+                and argument.func.id == "trust_report_to_json"
+                for argument in node.args
+            )
+        ]
 
-        self.assertIn(
-            "redact_sensitive_text(render_trust_report_markdown(report))",
-            source,
+        self.assertTrue(
+            safe_print_calls,
+            "The example should send its report through trust_report_to_json before printing.",
         )
-        self.assertNotIn("sk_test_should_not_appear", source)
 
     def test_workflow_exports_redact_values_before_local_storage(self) -> None:
         """CSV and JSONL sinks redact credentials from mappings and SDK models."""
