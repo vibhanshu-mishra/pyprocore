@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
+from pyprocore.core.redaction import redact_sensitive_text, safe_for_logging
 from pyprocore.dmsa.checklists import build_dmsa_permission_checklist
 from pyprocore.dmsa.models import (
     DmsaConnectionProfileValidationReport,
@@ -83,7 +84,7 @@ def dmsa_report_to_json(report: Any) -> str:
         payload = report.model_dump(mode="json")
     else:
         payload = report
-    return json.dumps(payload, indent=2, default=str)
+    return json.dumps(safe_for_logging(payload), indent=2, default=str)
 
 
 def dmsa_validation_report_to_markdown(
@@ -97,38 +98,39 @@ def dmsa_validation_report_to_markdown(
         "",
     ]
     if not report.findings:
-        return "\n".join(lines + ["No structural findings."])
+        return redact_sensitive_text("\n".join(lines + ["No structural findings."]))
     lines.append("## Findings")
     for finding in report.findings:
         lines.extend(
             [
                 "",
                 f"### {finding.level.upper()}: {finding.code}",
-                finding.message,
-                f"**Recommended review:** {finding.recommended_review}",
+                redact_sensitive_text(finding.message),
+                "**Recommended review:** " + redact_sensitive_text(finding.recommended_review),
             ]
         )
-    return "\n".join(lines)
+    return redact_sensitive_text("\n".join(lines))
 
 
 def dmsa_connection_summary_to_markdown(report: DmsaConnectionSummary) -> str:
     """Render a redacted connection summary as Markdown."""
     projects = ", ".join(str(item) for item in report.allowed_project_ids) or "None documented"
+    credential_references = safe_for_logging(report.credential_references)
     lines = [
-        f"# DMSA Connection: {report.profile_name}",
+        f"# DMSA Connection: {redact_sensitive_text(report.profile_name)}",
         "",
         f"- Company ID: {report.company_id or 'Not configured'}",
         f"- Allowed project IDs: {projects}",
-        f"- API base: {report.api_base_url}",
-        f"- Login URL: {report.login_url}",
-        f"- Client ID env var: {report.credential_references['client_id_env_var']}",
-        f"- Client secret env var: {report.credential_references['client_secret_env_var']}",
+        f"- API base: {redact_sensitive_text(report.api_base_url)}",
+        f"- Login URL: {redact_sensitive_text(report.login_url)}",
+        f"- Client ID env var: {credential_references['client_id_env_var']}",
+        f"- Client secret env var: {credential_references['client_secret_env_var']}",
         f"- Token store backend: {report.token_store_backend}",
         "",
         "## Safety Boundaries",
     ]
-    lines.extend(f"- {item}" for item in report.safety_boundaries)
-    return "\n".join(lines)
+    lines.extend(f"- {redact_sensitive_text(item)}" for item in report.safety_boundaries)
+    return redact_sensitive_text("\n".join(lines))
 
 
 def dmsa_permission_checklist_to_markdown(report: DmsaPermissionChecklist) -> str:
@@ -137,7 +139,7 @@ def dmsa_permission_checklist_to_markdown(report: DmsaPermissionChecklist) -> st
     for item in report.items:
         requirement = "required" if item.required else "optional"
         lines.append(f"- [ ] **{item.title}** ({requirement}): {item.description}")
-    return "\n".join(lines)
+    return redact_sensitive_text("\n".join(lines))
 
 
 def dmsa_installation_packet_to_markdown(report: DmsaInstallationPacket) -> str:
@@ -167,7 +169,7 @@ def dmsa_installation_packet_to_markdown(report: DmsaInstallationPacket) -> str:
             dmsa_permission_checklist_to_markdown(report.permission_checklist),
         ]
     )
-    return "\n".join(lines)
+    return redact_sensitive_text("\n".join(lines))
 
 
 def dmsa_smoke_check_plan_to_markdown(report: DmsaSmokeCheckPlan) -> str:
@@ -189,7 +191,7 @@ def dmsa_smoke_check_plan_to_markdown(report: DmsaSmokeCheckPlan) -> str:
                 "- Access: Read only",
             ]
         )
-    return "\n".join(lines)
+    return redact_sensitive_text("\n".join(lines))
 
 
 def dmsa_permission_diagnostic_to_markdown(
@@ -211,4 +213,4 @@ def dmsa_permission_diagnostic_to_markdown(
                 "",
             ]
         )
-    return "\n".join(lines).rstrip()
+    return redact_sensitive_text("\n".join(lines).rstrip())

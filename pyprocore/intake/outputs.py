@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from pyprocore.core.exceptions import ValidationError
+from pyprocore.core.redaction import safe_for_logging
 from pyprocore.intake.attachments import (
     render_attachment_manifest_json,
     render_attachment_manifest_markdown,
@@ -84,18 +85,29 @@ def _output_content(result: IntakeSyncRunResult) -> dict[str, str | list[dict[st
         results = [item for item in result.resource_results if item.resource == resource]
         records = _normalized_records(results)
         content[f"{resource}.jsonl"] = "".join(
-            json.dumps(record, sort_keys=True, default=str) + "\n" for record in records
+            json.dumps(safe_for_logging(record), sort_keys=True, default=str) + "\n"
+            for record in records
         )
-        content[f"{resource}.csv"] = records
+        content[f"{resource}.csv"] = [safe_for_logging(record) for record in records]
         for item in results:
             content[f"raw/{resource}_{item.project_id}.json"] = (
-                json.dumps(item.raw_records, indent=2, sort_keys=True, default=str) + "\n"
+                json.dumps(
+                    safe_for_logging(item.raw_records),
+                    indent=2,
+                    sort_keys=True,
+                    default=str,
+                )
+                + "\n"
             )
     return content
 
 
 def _normalized_records(results: list[IntakeSyncResourceResult]) -> list[dict[str, Any]]:
-    return [row.record.model_dump(mode="json") for result in results for row in result.rows]
+    return [
+        safe_for_logging(row.record.model_dump(mode="json"))
+        for result in results
+        for row in result.rows
+    ]
 
 
 def _write_csv(path: Path, records: list[dict[str, Any]]) -> None:

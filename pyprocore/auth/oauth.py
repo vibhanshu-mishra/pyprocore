@@ -14,6 +14,7 @@ from pydantic import BaseModel, ConfigDict, Field, SecretStr, field_validator
 
 from pyprocore.core.config import ProcoreSettings, get_settings
 from pyprocore.core.exceptions import AuthenticationError
+from pyprocore.core.redaction import safe_for_logging, safe_validation_summary
 
 TOKEN_ENDPOINT_PATH = "/oauth/token"
 DEFAULT_TIMEOUT_SECONDS = 30
@@ -168,7 +169,14 @@ class OAuthClient:
         try:
             return OAuthTokenResponse.model_validate(response_data)
         except ValueError as exc:
-            raise AuthenticationError(f"OAuth token response was invalid: {exc}") from exc
+            if hasattr(exc, "errors"):
+                details = safe_validation_summary(
+                    exc.errors(include_input=False, include_context=False)
+                )
+                message = f"OAuth token response was invalid: {details}"
+            else:
+                message = "OAuth token response was invalid."
+            raise AuthenticationError(message) from exc
 
     @staticmethod
     def _format_error_response(response: requests.Response) -> str:
@@ -185,21 +193,7 @@ class OAuthClient:
     @staticmethod
     def _redact_error_body(value: Any) -> Any:
         """Redact credential-like keys from an OAuth error payload."""
-        if isinstance(value, dict):
-            return {
-                key: (
-                    "[REDACTED]"
-                    if any(
-                        marker in str(key).casefold()
-                        for marker in ("token", "secret", "authorization")
-                    )
-                    else OAuthClient._redact_error_body(item)
-                )
-                for key, item in value.items()
-            }
-        if isinstance(value, list):
-            return [OAuthClient._redact_error_body(item) for item in value]
-        return value
+        return safe_for_logging(value)
 
 
 def exchange_authorization_code(authorization_code: str) -> OAuthTokenResponse:

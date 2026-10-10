@@ -6,13 +6,14 @@ import json
 import os
 import re
 from pathlib import Path
-from typing import Any, Literal, cast
+from typing import Any, Literal
 
 from pydantic import SecretStr
 from pydantic import ValidationError as PydanticValidationError
 
 from pyprocore.core.config import AuthMode, ProcoreSettings
 from pyprocore.core.exceptions import ConfigurationError, ValidationError
+from pyprocore.core.redaction import redact_sensitive_mapping, safe_validation_summary
 from pyprocore.dmsa.models import (
     DmsaConnectionProfile,
     DmsaConnectionProfileInput,
@@ -22,10 +23,6 @@ from pyprocore.dmsa.models import (
 )
 
 _ENV_VAR_PATTERN = re.compile(r"^[A-Z_][A-Z0-9_]*$")
-_SENSITIVE_ASSIGNMENT = re.compile(
-    r"(?i)\b(access[_ -]?token|refresh[_ -]?token|client[_ -]?secret|authorization)"
-    r"\s*[:=]\s*\S+"
-)
 
 
 def build_dmsa_connection_profile(
@@ -55,7 +52,8 @@ def load_dmsa_connection_profile(path: str | Path) -> DmsaConnectionProfile:
     try:
         return DmsaConnectionProfile.model_validate(payload)
     except PydanticValidationError as exc:
-        raise ValidationError(f"Invalid DMSA profile {source}: {exc}") from exc
+        details = safe_validation_summary(exc.errors(include_input=False, include_context=False))
+        raise ValidationError(f"Invalid DMSA profile {source}: {details}") from exc
 
 
 def validate_dmsa_connection_profile(
@@ -134,24 +132,7 @@ def validate_dmsa_connection_profile(
 
 def redact_dmsa_connection_profile(profile: DmsaConnectionProfile) -> dict[str, Any]:
     """Return serialized profile metadata with secret-looking text removed."""
-
-    def redact(value: Any, key: str = "") -> Any:
-        key_lower = key.casefold()
-        if isinstance(value, dict):
-            return {item_key: redact(item, item_key) for item_key, item in value.items()}
-        if isinstance(value, list):
-            return [redact(item, key) for item in value]
-        if isinstance(value, str):
-            if (
-                any(marker in key_lower for marker in ("secret", "token", "authorization"))
-                and not key_lower.endswith("_env_var")
-                and key_lower not in {"token_store_backend", "token_store_path"}
-            ):
-                return "[REDACTED]"
-            return _SENSITIVE_ASSIGNMENT.sub(lambda match: f"{match.group(1)}=[REDACTED]", value)
-        return value
-
-    return cast(dict[str, Any], redact(profile.model_dump(mode="json")))
+    return redact_sensitive_mapping(profile.model_dump(mode="json"))
 
 
 def summarize_dmsa_connection_profile(
@@ -160,18 +141,18 @@ def summarize_dmsa_connection_profile(
     """Create a redacted, human-readable profile summary."""
     redacted = redact_dmsa_connection_profile(profile)
     return DmsaConnectionSummary(
-        profile_name=profile.profile_name,
+        profile_name=redacted["profile_name"],
         company_id=profile.company_id,
         allowed_project_ids=profile.allowed_project_ids,
-        api_base_url=profile.api_base_url,
-        login_url=profile.login_url,
+        api_base_url=redacted["api_base_url"],
+        login_url=redacted["login_url"],
         credential_references={
-            "client_id_env_var": profile.client_id_env_var,
-            "client_secret_env_var": profile.client_secret_env_var,
+            "client_id_env_var": redacted["client_id_env_var"],
+            "client_secret_env_var": redacted["client_secret_env_var"],
         },
         token_store_backend=profile.token_store_backend,
         token_store_path=profile.token_store_path,
-        created_for=profile.created_for,
+        created_for=redacted["created_for"],
         notes=list(redacted["notes"]),
         safety_boundaries=[
             "GC/Owner controls installation, permitted projects, and tool permissions.",

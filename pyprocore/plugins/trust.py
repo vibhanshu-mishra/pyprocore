@@ -18,6 +18,7 @@ from pydantic import Field
 from pydantic import ValidationError as PydanticValidationError
 
 from pyprocore.core.exceptions import ValidationError
+from pyprocore.core.redaction import safe_for_logging
 from pyprocore.models.base import ProcoreModel
 from pyprocore.plugins.config import (
     PluginConfig,
@@ -252,12 +253,15 @@ def render_trust_report_markdown(report: PluginTrustReport) -> str:
             f"- **{finding.severity.upper()}** `{finding.code}`: {finding.message}"
             for finding in report.findings
         )
-    return "\n".join(lines) + "\n"
+    return redact_sensitive_text("\n".join(lines) + "\n")
 
 
 def trust_report_to_json(report: PluginTrustReport, *, pretty: bool = True) -> str:
     """Serialize a trust report to JSON."""
-    return json.dumps(report.model_dump(mode="json"), indent=2 if pretty else None)
+    return json.dumps(
+        safe_for_logging(report.model_dump(mode="json")),
+        indent=2 if pretty else None,
+    )
 
 
 def _read_local_json_file(path: Path | str, *, label: str) -> dict[str, Any]:

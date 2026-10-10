@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, Iterable, Literal
 
 from pyprocore.core.exceptions import ValidationError
+from pyprocore.core.redaction import redact_sensitive_text, safe_for_logging
 from pyprocore.intake.models import (
     IntakeAttachmentManifest,
     IntakeAttachmentManifestItem,
@@ -65,7 +66,11 @@ def build_intake_attachment_manifest(
 
 def render_attachment_manifest_json(manifest: IntakeAttachmentManifest) -> str:
     """Render an attachment manifest as JSON."""
-    return json.dumps(manifest.model_dump(mode="json"), indent=2, sort_keys=True)
+    return json.dumps(
+        safe_for_logging(manifest.model_dump(mode="json")),
+        indent=2,
+        sort_keys=True,
+    )
 
 
 def render_attachment_manifest_markdown(manifest: IntakeAttachmentManifest) -> str:
@@ -87,7 +92,7 @@ def render_attachment_manifest_markdown(manifest: IntakeAttachmentManifest) -> s
         )
     if not manifest.items:
         lines.append("| - | - | - | No attachment metadata found | no |")
-    return "\n".join(lines) + "\n"
+    return redact_sensitive_text("\n".join(lines) + "\n")
 
 
 def write_attachment_manifest(

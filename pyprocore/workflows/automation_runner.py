@@ -14,6 +14,11 @@ from uuid import uuid4
 from pydantic import ValidationError as PydanticValidationError
 
 from pyprocore.core.exceptions import ProcoreError, ValidationError
+from pyprocore.core.redaction import (
+    redact_sensitive_mapping,
+    redact_sensitive_text,
+    redact_sensitive_value,
+)
 from pyprocore.workflows.ai_exports import build_ai_prompt_pack, build_ai_review_export
 from pyprocore.workflows.enhanced_rfi import build_enhanced_rfi_package
 from pyprocore.workflows.enhanced_submittal import build_enhanced_submittal_package
@@ -38,7 +43,6 @@ WorkflowFunction = Callable[..., object]
 
 PLACEHOLDER_PATTERN = re.compile(r"\{([^{}]+)\}")
 FULL_PLACEHOLDER_PATTERN = re.compile(r"^\{([^{}]+)\}$")
-SENSITIVE_KEY_PARTS = ("token", "secret", "authorization", "password", "client_secret")
 
 WORKFLOW_DISPATCH: dict[str, WorkflowFunction] = {
     "project_context": build_project_context_package,
@@ -619,45 +623,31 @@ def _run_summary_markdown(manifest: WorkflowRunManifest) -> str:
     if manifest.warnings:
         lines.extend(["", "## Warnings", ""])
         lines.extend(f"- {warning}" for warning in manifest.warnings)
-    return "\n".join(lines).rstrip() + "\n"
+    return redact_sensitive_text("\n".join(lines).rstrip() + "\n")
 
 
 def _redact_mapping(values: Mapping[str, object]) -> dict[str, object]:
     """Return a redacted dictionary."""
-    redacted = _redact_value(dict(values))
-    return redacted if isinstance(redacted, dict) else {}
+    return redact_sensitive_mapping(values)
 
 
 def _redact_value(value: object) -> object:
     """Redact secrets from values written to manifests."""
-    if isinstance(value, Mapping):
-        output: dict[str, object] = {}
-        for key, item in value.items():
-            key_text = str(key)
-            if any(part in key_text.casefold() for part in SENSITIVE_KEY_PARTS):
-                output[key_text] = "***REDACTED***"
-            else:
-                output[key_text] = _redact_value(item)
-        return output
-    if isinstance(value, list):
-        return [_redact_value(item) for item in value]
-    if isinstance(value, tuple):
-        return [_redact_value(item) for item in value]
-    return value
+    return redact_sensitive_value(value)
 
 
 def _friendly_exception_message(exc: Exception) -> str:
     """Return a clear exception message without stack traces or secrets."""
     if isinstance(exc, ProcoreError):
-        return str(exc)
-    return f"{type(exc).__name__}: {exc}"
+        return redact_sensitive_text(str(exc))
+    return redact_sensitive_text(f"{type(exc).__name__}: {exc}")
 
 
 def _write_json(path: Path, payload: object) -> Path:
     """Write JSON and return the path."""
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
-        json.dumps(payload, indent=2, default=json_default, sort_keys=True),
+        json.dumps(_redact_value(payload), indent=2, default=json_default, sort_keys=True),
         encoding="utf-8",
     )
     return path
@@ -666,7 +656,7 @@ def _write_json(path: Path, payload: object) -> Path:
 def _write_markdown(path: Path, content: str) -> Path:
     """Write Markdown and return the path."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(content, encoding="utf-8")
+    path.write_text(redact_sensitive_text(content), encoding="utf-8")
     return path
 
 

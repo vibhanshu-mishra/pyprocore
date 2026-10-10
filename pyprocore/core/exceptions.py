@@ -4,9 +4,15 @@ from __future__ import annotations
 
 from typing import Any
 
+from pyprocore.core.redaction import redact_sensitive_text, safe_for_logging
+
 
 class ProcoreError(Exception):
     """Base exception for all SDK-specific errors."""
+
+    def __init__(self, message: str) -> None:
+        """Initialize an SDK error with credential-like text redacted."""
+        super().__init__(redact_sensitive_text(message))
 
 
 class ConfigurationError(ProcoreError):
@@ -43,7 +49,7 @@ class ProcoreAPIError(ProcoreError):
         """
         super().__init__(message)
         self.status_code = status_code
-        self.response_body = response_body
+        self.response_body = safe_for_logging(response_body)
 
 
 class ResourceNotFoundError(ProcoreAPIError):

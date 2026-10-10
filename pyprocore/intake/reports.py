@@ -5,13 +5,14 @@ from __future__ import annotations
 import json
 from typing import Any
 
+from pyprocore.core.redaction import redact_sensitive_text, safe_for_logging
 from pyprocore.intake.models import IntakeSyncFinding, IntakeSyncRunResult, IntakeSyncState
 
 
 def intake_to_json(value: Any) -> str:
     """Render an intake model or local value as indented JSON."""
     payload = value.model_dump(mode="json") if hasattr(value, "model_dump") else value
-    return json.dumps(payload, indent=2, sort_keys=True, default=str)
+    return json.dumps(safe_for_logging(payload), indent=2, sort_keys=True, default=str)
 
 
 def intake_run_result_to_markdown(result: IntakeSyncRunResult) -> str:
@@ -37,9 +38,10 @@ def intake_run_result_to_markdown(result: IntakeSyncRunResult) -> str:
     if result.findings:
         lines.extend(["", "## Findings"])
         lines.extend(
-            f"- **{item.level}: {item.code}** - {item.message}" for item in result.findings
+            f"- **{item.level}: {item.code}** - {redact_sensitive_text(item.message)}"
+            for item in result.findings
         )
-    return "\n".join(lines) + "\n"
+    return redact_sensitive_text("\n".join(lines) + "\n")
 
 
 def intake_validation_to_markdown(findings: list[IntakeSyncFinding]) -> str:
@@ -55,13 +57,16 @@ def intake_validation_to_markdown(findings: list[IntakeSyncFinding]) -> str:
         lines.append("No findings.")
     else:
         lines.append("## Findings")
-        lines.extend(f"- **{item.level}: {item.code}** - {item.message}" for item in findings)
-    return "\n".join(lines) + "\n"
+        lines.extend(
+            f"- **{item.level}: {item.code}** - {redact_sensitive_text(item.message)}"
+            for item in findings
+        )
+    return redact_sensitive_text("\n".join(lines) + "\n")
 
 
 def intake_state_to_markdown(state: IntakeSyncState) -> str:
     """Render local intake state as Markdown."""
-    return (
+    return redact_sensitive_text(
         "\n".join(
             [
                 "# Intake Sync State",

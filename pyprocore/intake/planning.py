@@ -9,6 +9,11 @@ from typing import Any
 from pydantic import ValidationError as PydanticValidationError
 
 from pyprocore.core.exceptions import ValidationError
+from pyprocore.core.redaction import (
+    redact_sensitive_text,
+    safe_for_logging,
+    safe_validation_summary,
+)
 from pyprocore.intake.models import IntakeSyncConfig, IntakeSyncFinding, IntakeSyncPlan
 
 EXPECTED_OUTPUT_FILES = [
@@ -44,7 +49,8 @@ def load_intake_sync_config(path: str | Path) -> IntakeSyncConfig:
     try:
         return IntakeSyncConfig.model_validate(payload)
     except PydanticValidationError as exc:
-        raise ValidationError(f"Invalid intake config {source}: {exc}") from exc
+        details = safe_validation_summary(exc.errors(include_input=False, include_context=False))
+        raise ValidationError(f"Invalid intake config {source}: {details}") from exc
 
 
 def validate_intake_sync_config(config: IntakeSyncConfig) -> list[IntakeSyncFinding]:
@@ -147,7 +153,7 @@ def summarize_intake_sync_plan(plan: IntakeSyncPlan) -> str:
             f"- **{finding.level}: {finding.code}** - {finding.message}"
             for finding in plan.findings
         )
-    return "\n".join(lines) + "\n"
+    return redact_sensitive_text("\n".join(lines) + "\n")
 
 
 def write_intake_sync_config_template(
@@ -174,7 +180,7 @@ def write_intake_sync_config_template(
         notes=["Replace metadata placeholders with GC/Owner-approved project IDs."],
     )
     destination.write_text(
-        json.dumps(config.model_dump(mode="json"), indent=2) + "\n",
+        json.dumps(safe_for_logging(config.model_dump(mode="json")), indent=2) + "\n",
         encoding="utf-8",
     )
     return destination

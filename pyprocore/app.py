@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import builtins
 import json
 import os
 from ipaddress import ip_address
@@ -109,6 +110,7 @@ from pyprocore.core.exceptions import (
     ResourceNotFoundError,
     ValidationError,
 )
+from pyprocore.core.redaction import redact_sensitive_text, safe_for_logging
 from pyprocore.discovery import (
     DiscoveryBundle,
     DiscoveryCapability,
@@ -4449,7 +4451,7 @@ def _add_maintenance_report_options(parser: argparse.ArgumentParser) -> None:
 def _write_text_output(output_path: Path, content: str) -> Path:
     """Write CLI text output to a path and return the saved path."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    output_path.write_text(content, encoding="utf-8")
+    output_path.write_text(redact_sensitive_text(content), encoding="utf-8")
     return output_path
 
 
@@ -7202,18 +7204,18 @@ def _automation_input(
 
 
 def to_serializable(value: Any) -> Any:
-    """Convert SDK output into JSON-serializable data."""
+    """Convert SDK output into redacted JSON-serializable data."""
     if isinstance(value, BaseModel):
-        return value.model_dump(mode="json")
+        return to_serializable(value.model_dump(mode="json"))
     if isinstance(value, list):
         return [to_serializable(item) for item in value]
     if isinstance(value, tuple):
         return [to_serializable(item) for item in value]
     if isinstance(value, dict):
-        return {key: to_serializable(item) for key, item in value.items()}
+        return safe_for_logging({key: to_serializable(item) for key, item in value.items()})
     if isinstance(value, Path):
         return str(value)
-    return value
+    return safe_for_logging(value)
 
 
 def build_default_plugin_registry() -> PluginRegistry:
@@ -8324,6 +8326,7 @@ def format_webhook_dispatch_summary(result: WebhookDispatchResult) -> str:
 
 def main() -> None:
     """Run the CLI entrypoint."""
+    print = _safe_cli_print
     parser = build_parser()
     args = parser.parse_args()
     try:
@@ -8332,16 +8335,20 @@ def main() -> None:
         print(format_configuration_error(exc))
         raise SystemExit(1) from exc
     except ValidationError as exc:
-        print(f"PyProcore input is invalid.\n\nDetails: {exc}")
+        print(f"PyProcore input is invalid.\n\nDetails: {redact_sensitive_text(str(exc))}")
         raise SystemExit(1) from exc
     except ValueError as exc:
-        print(f"PyProcore input is invalid.\n\nDetails: {exc}")
+        print(f"PyProcore input is invalid.\n\nDetails: {redact_sensitive_text(str(exc))}")
         raise SystemExit(1) from exc
     except AgentToolNotFoundError as exc:
-        print(f"PyProcore agent tool lookup failed.\n\nDetails: {exc}")
+        print(
+            "PyProcore agent tool lookup failed.\n\n" f"Details: {redact_sensitive_text(str(exc))}"
+        )
         raise SystemExit(1) from exc
     except FileNotFoundError as exc:
-        print(f"PyProcore local file was not found.\n\nDetails: {exc}")
+        print(
+            "PyProcore local file was not found.\n\n" f"Details: {redact_sensitive_text(str(exc))}"
+        )
         raise SystemExit(1) from exc
     except (AuthorizationError, ResourceNotFoundError, ProcoreAPIError) as exc:
         print(format_cli_error(exc))
@@ -9116,6 +9123,17 @@ def main() -> None:
     print(json.dumps(to_serializable(result), indent=2, default=str))
 
 
+def _safe_cli_print(*values: Any, **kwargs: Any) -> None:
+    """Print CLI output after sanitizing strings and structured values."""
+    sanitized = []
+    for value in values:
+        if isinstance(value, BaseModel):
+            value = value.model_dump(mode="json")
+        value = safe_for_logging(value)
+        sanitized.append(redact_sensitive_text(value) if isinstance(value, str) else value)
+    builtins.print(*sanitized, **kwargs)
+
+
 def _main() -> int:
     """Run the CLI entrypoint and return an operating-system exit code."""
     main()
@@ -9142,7 +9160,7 @@ def format_configuration_error(exc: ConfigurationError) -> str:
             "- PROCORE_API_BASE",
             "- PROCORE_COMPANY_ID",
             "",
-            f"Details: {exc}",
+            f"Details: {redact_sensitive_text(str(exc))}",
         ]
     )
 
@@ -9205,7 +9223,7 @@ def format_not_found_error(exc: ResourceNotFoundError) -> str:
             "- Confirm production vs sandbox environment",
             "- Confirm the OAuth user has access to the resource",
             "",
-            f"Details: {exc}",
+            f"Details: {redact_sensitive_text(str(exc))}",
         ]
     )
 
@@ -9220,7 +9238,7 @@ def format_procore_api_error(exc: ProcoreAPIError) -> str:
     ]
     if status is not None:
         lines.extend(["", status])
-    lines.extend(["", f"Details: {exc}"])
+    lines.extend(["", f"Details: {redact_sensitive_text(str(exc))}"])
     return "\n".join(lines)
 
 
@@ -9231,9 +9249,9 @@ def _is_app_not_connected_error(exc: AuthorizationError | ProcoreAPIError) -> bo
 
 def _error_text(exc: AuthorizationError | ProcoreAPIError) -> str:
     """Return searchable error text from an SDK exception."""
-    parts = [str(exc)]
+    parts = [redact_sensitive_text(str(exc))]
     if isinstance(exc, ProcoreAPIError) and exc.response_body is not None:
-        parts.append(json.dumps(exc.response_body, default=str))
+        parts.append(json.dumps(safe_for_logging(exc.response_body), default=str))
     return " ".join(parts)
 
 

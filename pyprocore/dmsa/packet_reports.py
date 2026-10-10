@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from pyprocore.core.exceptions import ValidationError
+from pyprocore.core.redaction import redact_sensitive_text, safe_for_logging
 from pyprocore.dmsa.models import (
     GcOwnerEmailTemplate,
     GcOwnerInstallationPacket,
@@ -21,7 +22,7 @@ from pyprocore.dmsa.models import (
 def gc_owner_packet_to_json(value: Any) -> str:
     """Render packet metadata as indented JSON."""
     payload = value.model_dump(mode="json") if hasattr(value, "model_dump") else value
-    return json.dumps(payload, indent=2, sort_keys=True, default=str)
+    return json.dumps(safe_for_logging(payload), indent=2, sort_keys=True, default=str)
 
 
 def gc_owner_permission_request_to_markdown(
@@ -41,21 +42,23 @@ def gc_owner_permission_request_to_markdown(
     lines.extend(["", "## Explicitly Excluded"])
     lines.extend(f"- {item}" for item in request.excluded_actions)
     lines.extend(["", request.gc_owner_control_statement])
-    return "\n".join(lines) + "\n"
+    return redact_sensitive_text("\n".join(lines) + "\n")
 
 
 def gc_owner_security_statement_to_markdown(
     statement: GcOwnerSecurityStatement,
 ) -> str:
     """Render the security statement as Markdown."""
-    return _sectioned_markdown(
-        statement.title,
-        [
-            ("Safety Commitments", statement.statements),
-            ("Data Handling", statement.data_handling),
-            ("Control And Revocation", statement.control_and_revocation),
-        ],
-        footer=statement.disclaimer,
+    return redact_sensitive_text(
+        _sectioned_markdown(
+            statement.title,
+            [
+                ("Safety Commitments", statement.statements),
+                ("Data Handling", statement.data_handling),
+                ("Control And Revocation", statement.control_and_revocation),
+            ],
+            footer=statement.disclaimer,
+        )
     )
 
 
@@ -67,7 +70,7 @@ def gc_owner_install_checklist_to_markdown(
     lines.extend(f"- [ ] **{item.title}:** {item.description}" for item in checklist.admin_items)
     lines.extend(["", "## Consultant/Subcontractor"])
     lines.extend(f"- [ ] **{item.title}:** {item.description}" for item in checklist.sender_items)
-    return "\n".join(lines) + "\n"
+    return redact_sensitive_text("\n".join(lines) + "\n")
 
 
 def gc_owner_email_templates_to_markdown(
@@ -88,7 +91,7 @@ def gc_owner_email_templates_to_markdown(
                 "```",
             ]
         )
-    return "\n".join(lines) + "\n"
+    return redact_sensitive_text("\n".join(lines) + "\n")
 
 
 def gc_owner_troubleshooting_guide_to_markdown(
@@ -107,7 +110,7 @@ def gc_owner_troubleshooting_guide_to_markdown(
         f"| {item.code} | {item.symptom} | {item.likely_cause} | " f"{item.recommended_review} |"
         for item in guide.findings
     )
-    return "\n".join(lines) + "\n"
+    return redact_sensitive_text("\n".join(lines) + "\n")
 
 
 def gc_owner_installation_packet_to_markdown(
@@ -119,17 +122,24 @@ def gc_owner_installation_packet_to_markdown(
         "",
         "**Local template/documentation aid only.**",
         "",
-        f"- Prepared for: {packet.generated_for}",
-        f"- Prepared by: {packet.prepared_by}",
-        f"- Support: {packet.support_contact}",
+        f"- Prepared for: {redact_sensitive_text(packet.generated_for)}",
+        f"- Prepared by: {redact_sensitive_text(packet.prepared_by)}",
+        f"- Support: {redact_sensitive_text(packet.support_contact)}",
         "",
         "## Executive Summary",
         "",
-        packet.executive_summary,
+        redact_sensitive_text(packet.executive_summary),
     ]
     for section in packet.sections:
-        lines.extend(["", f"## {section.title}", "", section.summary])
-        lines.extend(f"- {item}" for item in section.items)
+        lines.extend(
+            [
+                "",
+                f"## {redact_sensitive_text(section.title)}",
+                "",
+                redact_sensitive_text(section.summary),
+            ]
+        )
+        lines.extend(f"- {redact_sensitive_text(item)}" for item in section.items)
     lines.extend(
         [
             "",
@@ -143,7 +153,7 @@ def gc_owner_installation_packet_to_markdown(
             gc_owner_troubleshooting_guide_to_markdown(packet.troubleshooting_guide),
         ]
     )
-    return "\n".join(lines).rstrip() + "\n"
+    return redact_sensitive_text("\n".join(lines).rstrip() + "\n")
 
 
 def gc_owner_packet_write_result_to_markdown(
@@ -165,7 +175,7 @@ def gc_owner_packet_write_result_to_markdown(
         "## Artifacts",
     ]
     lines.extend(f"- `{path}`" for path in paths)
-    return "\n".join(lines) + "\n"
+    return redact_sensitive_text("\n".join(lines) + "\n")
 
 
 def write_gc_owner_installation_packet(

@@ -8,6 +8,7 @@ from pathlib import Path
 from pydantic import ValidationError as PydanticValidationError
 
 from pyprocore.core.exceptions import ValidationError
+from pyprocore.core.redaction import safe_for_logging, safe_validation_summary
 from pyprocore.intake.models import (
     IntakeSyncConfig,
     IntakeSyncRunResult,
@@ -36,7 +37,8 @@ def load_intake_sync_state(path: str | Path) -> IntakeSyncState:
     try:
         return IntakeSyncState.model_validate(payload)
     except PydanticValidationError as exc:
-        raise ValidationError(f"Invalid intake state {source}: {exc}") from exc
+        details = safe_validation_summary(exc.errors(include_input=False, include_context=False))
+        raise ValidationError(f"Invalid intake state {source}: {details}") from exc
 
 
 def save_intake_sync_state(
@@ -54,7 +56,12 @@ def save_intake_sync_state(
         )
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(
-        json.dumps(state.model_dump(mode="json"), indent=2, sort_keys=True) + "\n",
+        json.dumps(
+            safe_for_logging(state.model_dump(mode="json")),
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
         encoding="utf-8",
     )
     return destination

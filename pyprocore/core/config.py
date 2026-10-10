@@ -19,6 +19,7 @@ from dotenv import load_dotenv
 from pydantic import BaseModel, Field, SecretStr, ValidationError, field_validator, model_validator
 
 from pyprocore.core.exceptions import ConfigurationError
+from pyprocore.core.redaction import safe_validation_summary
 
 ENV_FILE_NAME = ".env"
 _BOUND_SETTINGS: ContextVar[ProcoreSettings | None]
@@ -164,7 +165,8 @@ def _get_environment_settings() -> ProcoreSettings:
     try:
         return ProcoreSettings.model_validate(_read_environment())
     except ValidationError as exc:
-        raise ConfigurationError(f"Invalid Procore SDK configuration: {exc}") from exc
+        details = safe_validation_summary(exc.errors(include_input=False, include_context=False))
+        raise ConfigurationError(f"Invalid Procore SDK configuration: {details}") from exc
 
 
 _BOUND_SETTINGS = ContextVar("pyprocore_bound_settings", default=None)

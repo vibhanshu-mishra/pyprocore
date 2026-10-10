@@ -26,6 +26,7 @@ from pyprocore.core.exceptions import (
     TransientAPIError,
 )
 from pyprocore.core.logger import get_logger, log_api_request, log_exception
+from pyprocore.core.redaction import safe_for_logging
 
 DEFAULT_TIMEOUT_SECONDS = 30
 RETRYABLE_STATUS_CODES = {408, 429, 500, 502, 503, 504}
@@ -369,9 +370,9 @@ class ProcoreClient:
     def _safe_response_body(response: requests.Response) -> Any:
         """Return response body content for errors without assuming JSON."""
         try:
-            return response.json()
+            return safe_for_logging(response.json())
         except ValueError:
-            return response.text
+            return safe_for_logging(response.text)
 
     def _response_error_message(self, response: requests.Response) -> str:
         """Build a concise message for an unsuccessful Procore response."""
