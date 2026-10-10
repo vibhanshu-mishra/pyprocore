@@ -34,13 +34,8 @@ class SecurityHardeningTestCase(unittest.TestCase):
         """Scanner should fail on likely secrets while hiding the value."""
         with TemporaryDirectory() as temporary_directory:
             secret_file = Path(temporary_directory) / "unsafe.env"
-<<<<<<< HEAD
-            secret_value = "TEST_SENTINEL_VALUE"
-=======
-            # token_hex may contain only a-f; the trailing digit guarantees
-            # this generated value matches the scanner's letter-and-digit rule.
+            # Always include a digit so the synthetic credential is detected.
             secret_value = "pc_client_secret_" + secrets.token_hex(12) + "0"
->>>>>>> ee7a910 (Fix nondeterministic secret scanner regression test)
             secret_file.write_text(
                 f"PROCORE_CLIENT_SECRET={secret_value}\n",
                 encoding="utf-8",
