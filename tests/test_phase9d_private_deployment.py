@@ -9,6 +9,8 @@ from io import StringIO
 from pathlib import Path
 from unittest.mock import patch
 
+from workflow_pin_test_utils import assert_workflow_changes_are_pin_only
+
 from pyprocore import (
     __version__,
     build_enterprise_readiness_checklist,
@@ -247,14 +249,7 @@ class Phase9DPrivateDeploymentTests(unittest.TestCase):
     def test_safety_boundaries_remain_unchanged(self) -> None:
         """Phase 9D should not change release or execution boundaries."""
         self.assertEqual(__version__, "2.4.0")
-        workflows = subprocess.run(
-            ["git", "status", "--short", ".github/workflows"],
-            cwd=self.root,
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-        self.assertEqual(workflows.stdout.strip(), "")
+        assert_workflow_changes_are_pin_only(self, self.root)
 
         sources = "\n".join(
             path.read_text(encoding="utf-8")

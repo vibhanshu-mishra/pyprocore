@@ -13,6 +13,8 @@ from io import StringIO
 from pathlib import Path
 from unittest.mock import patch
 
+from workflow_pin_test_utils import assert_workflow_changes_are_pin_only
+
 import pyprocore
 from pyprocore.app import (
     format_plugin_scaffold_plan,
@@ -473,16 +475,9 @@ class Phase11DPluginScaffoldingTests(unittest.TestCase):
 
     def test_no_workflow_changes_and_execution_remains_disabled(self) -> None:
         """Phase 11D should not touch workflows or enable tool execution."""
-        workflow_diff = subprocess.run(
-            ["git", "diff", "--name-only", ".github/workflows"],
-            cwd=PROJECT_ROOT,
-            text=True,
-            capture_output=True,
-            check=False,
-        )
         agent_openapi = (PROJECT_ROOT / "pyprocore" / "agent" / "openapi.py").read_text(
             encoding="utf-8"
         )
 
-        self.assertEqual(workflow_diff.stdout.strip(), "")
+        assert_workflow_changes_are_pin_only(self, PROJECT_ROOT)
         self.assertIn('"tool_execution_enabled": False', agent_openapi)

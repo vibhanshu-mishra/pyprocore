@@ -8,6 +8,7 @@ from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
+from pyprocore.core.redaction import safe_for_logging
 from pyprocore.models import (
     RFI,
     ActionPlan,
@@ -2181,7 +2182,7 @@ def _write_csv(
         writer = csv.DictWriter(file_handle, fieldnames=headers)
         writer.writeheader()
         for item in items:
-            writer.writerow(row_builder(item))
+            writer.writerow(safe_for_logging(row_builder(item)))
 
     return path
 
@@ -2193,7 +2194,8 @@ def _write_jsonl(items: Sequence[object], output_path: Path | str) -> Path:
 
     with path.open("w", encoding="utf-8") as file_handle:
         for item in items:
-            file_handle.write(json.dumps(model_to_dict(item), default=str, sort_keys=True))
+            safe_item = safe_for_logging(model_to_dict(item))
+            file_handle.write(json.dumps(safe_item, default=str, sort_keys=True))
             file_handle.write("\n")
 
     return path

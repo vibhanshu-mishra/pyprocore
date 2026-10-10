@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from pyprocore.core.redaction import redact_sensitive_text
 from pyprocore.plugins import (
     load_local_plugin_manifest_file,
     load_trust_policy_from_file,
@@ -26,7 +27,7 @@ def main() -> None:
     manifest = load_local_plugin_manifest_file(manifest_path)
     report = validate_manifest_trust(manifest, policy)
 
-    print(render_trust_report_markdown(report))
+    print(redact_sensitive_text(render_trust_report_markdown(report)))
     if not report.trusted:
         print("The manifest did not satisfy the local trust policy.")
 

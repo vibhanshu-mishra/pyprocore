@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-import subprocess
 import tomllib
 import unittest
 from pathlib import Path
+
+from workflow_pin_test_utils import assert_workflow_changes_are_pin_only
 
 import pyprocore
 
@@ -98,18 +99,9 @@ class VersionReleasePrepTestCase(unittest.TestCase):
         self.assertIn("tagged as `v2.4.0`", docs)
         self.assertIn("released on GitHub", docs)
 
-    def test_github_workflow_files_are_unmodified(self) -> None:
-        """Version docs cleanup should not modify GitHub Actions workflow files."""
-        completed = subprocess.run(
-            ["git", "diff", "--name-only", ".github/workflows"],
-            cwd=PROJECT_ROOT,
-            check=False,
-            capture_output=True,
-            text=True,
-        )
-
-        self.assertEqual(completed.returncode, 0, completed.stderr)
-        self.assertEqual(completed.stdout.strip(), "")
+    def test_workflow_changes_are_only_pinned_action_refs(self) -> None:
+        """Security pin changes must not alter workflow behavior."""
+        assert_workflow_changes_are_pin_only(self, PROJECT_ROOT)
 
 
 if __name__ == "__main__":

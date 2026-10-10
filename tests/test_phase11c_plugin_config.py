@@ -13,6 +13,8 @@ from io import StringIO
 from pathlib import Path
 from unittest.mock import patch
 
+from workflow_pin_test_utils import assert_workflow_changes_are_pin_only
+
 import pyprocore
 from pyprocore.app import (
     format_extension_pack,
@@ -467,15 +469,7 @@ class Phase11CPluginConfigTests(unittest.TestCase):
         after_hooks = len(builtin_hook_registry().list_hooks())
         self.assertEqual(before_hooks, after_hooks)
 
-        workflow_diff = subprocess.run(
-            ["git", "diff", "--name-only", ".github/workflows"],
-            cwd=PROJECT_ROOT,
-            text=True,
-            capture_output=True,
-            check=False,
-        )
-        self.assertEqual(workflow_diff.returncode, 0)
-        self.assertEqual(workflow_diff.stdout.strip(), "")
+        assert_workflow_changes_are_pin_only(self, PROJECT_ROOT)
 
 
 if __name__ == "__main__":

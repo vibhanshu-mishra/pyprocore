@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import secrets
 import sys
 import tempfile
 import unittest
@@ -44,6 +45,7 @@ from pyprocore.plugins import (
     trust_report_to_json,
 )
 from pyprocore.workflows.automation_runner import _write_json, _write_markdown
+from pyprocore.workflows.exports import _write_csv, _write_jsonl
 
 RAW_VALUES = {
     "client_secret": "client_secret_should_not_appear",
@@ -359,8 +361,37 @@ class CodeqlSensitiveOutputTests(unittest.TestCase):
         )
         source = example_path.read_text(encoding="utf-8")
 
-        self.assertIn("render_trust_report_markdown(report)", source)
+        self.assertIn(
+            "redact_sensitive_text(render_trust_report_markdown(report))",
+            source,
+        )
         self.assertNotIn("sk_test_should_not_appear", source)
+
+    def test_workflow_exports_redact_values_before_local_storage(self) -> None:
+        """CSV and JSONL export sinks redact credentials and signed URLs."""
+        sensitive_value = secrets.token_urlsafe(24)
+        record: dict[str, object] = {
+            "access_token": sensitive_value,
+            "notes": f"Authorization: Bearer {sensitive_value}",
+            "attachment_url": (
+                "https://files.example.test/drawing.pdf?X-Amz-Signature="
+                f"{sensitive_value}&download=1"
+            ),
+        }
+
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            jsonl_path = _write_jsonl([record], root / "records.jsonl")
+            csv_path = _write_csv(
+                [record],
+                root / "records.csv",
+                list(record),
+                lambda _: record,
+            )
+            rendered = jsonl_path.read_text(encoding="utf-8") + csv_path.read_text(encoding="utf-8")
+
+        self.assertNotIn(sensitive_value, rendered)
+        self.assertIn(REDACTED, rendered)
 
     def test_gc_owner_json_and_markdown_redact_dynamic_values(self) -> None:
         """Packet renderers sanitize user-provided names and support text."""

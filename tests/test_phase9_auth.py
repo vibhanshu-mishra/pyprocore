@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import secrets
 import tempfile
 import unittest
 from pathlib import Path
@@ -38,7 +39,7 @@ class Phase9AuthTests(unittest.TestCase):
     def test_malformed_store_error_does_not_echo_contents(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "token.json"
-            secret = "secret-token-value"
+            secret = secrets.token_urlsafe(24)
             path.write_text('{"access_token": "' + secret + '"}', encoding="utf-8")
             with self.assertRaises(AuthenticationError) as context:
                 TokenStore(path).load()

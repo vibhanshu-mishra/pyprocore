@@ -12,6 +12,8 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
+from workflow_pin_test_utils import assert_workflow_changes_are_pin_only
+
 import pyprocore
 from pyprocore import app
 from pyprocore.core.exceptions import ValidationError
@@ -332,24 +334,9 @@ class Phase13DModelFixtureEvalTestCase(unittest.TestCase):
             pyprocore.load_model_response_fixture_from_file, load_model_response_fixture_from_file
         )
 
-    def test_workflows_were_not_modified(self) -> None:
-        """Phase 13D should not touch GitHub Actions workflow files."""
-        workflow_status = self.run_git_status_for_workflows()
-        self.assertEqual(workflow_status, "")
-
-    @staticmethod
-    def run_git_status_for_workflows() -> str:
-        """Return porcelain status for workflow files without shelling out in eval code."""
-        from subprocess import run
-
-        result = run(
-            ["git", "status", "--short", ".github/workflows"],
-            cwd=PROJECT_ROOT,
-            capture_output=True,
-            check=True,
-            text=True,
-        )
-        return result.stdout.strip()
+    def test_workflow_changes_are_only_pinned_action_refs(self) -> None:
+        """The requested workflow pinning must not alter workflow behavior."""
+        assert_workflow_changes_are_pin_only(self, PROJECT_ROOT)
 
 
 if __name__ == "__main__":

@@ -8,6 +8,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from workflow_pin_test_utils import assert_workflow_changes_are_pin_only
+
 import pyprocore
 from pyprocore.app import build_parser, run_command
 from pyprocore.core.exceptions import ValidationError
@@ -385,14 +387,7 @@ class Phase16BPluginTrustTests(unittest.TestCase):
         self.assertNotIn("requests.", plugin_source)
         self.assertNotIn("pip install", plugin_source)
 
-        workflow_diff = subprocess.run(
-            ["git", "diff", "--name-only", ".github/workflows"],
-            cwd=PROJECT_ROOT,
-            text=True,
-            capture_output=True,
-            check=False,
-        )
-        self.assertEqual(workflow_diff.stdout.strip(), "")
+        assert_workflow_changes_are_pin_only(self, PROJECT_ROOT)
 
 
 if __name__ == "__main__":
