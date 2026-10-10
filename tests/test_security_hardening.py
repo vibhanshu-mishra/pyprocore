@@ -34,7 +34,13 @@ class SecurityHardeningTestCase(unittest.TestCase):
         """Scanner should fail on likely secrets while hiding the value."""
         with TemporaryDirectory() as temporary_directory:
             secret_file = Path(temporary_directory) / "unsafe.env"
+<<<<<<< HEAD
             secret_value = "TEST_SENTINEL_VALUE"
+=======
+            # token_hex may contain only a-f; the trailing digit guarantees
+            # this generated value matches the scanner's letter-and-digit rule.
+            secret_value = "pc_client_secret_" + secrets.token_hex(12) + "0"
+>>>>>>> ee7a910 (Fix nondeterministic secret scanner regression test)
             secret_file.write_text(
                 f"PROCORE_CLIENT_SECRET={secret_value}\n",
                 encoding="utf-8",
@@ -51,8 +57,10 @@ class SecurityHardeningTestCase(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("FAIL", result.stdout)
         self.assertIn("PROCORE_CLIENT_SECRET", result.stdout)
+        self.assertIn("unsafe.env:1", result.stdout)
         self.assertNotIn(secret_value, result.stdout)
         self.assertNotIn(secret_value, result.stderr)
+        self.assertFalse(secret_file.exists())
 
     def test_check_secrets_ignores_documented_placeholders(self) -> None:
         """Scanner should allow beginner-friendly placeholder values."""
