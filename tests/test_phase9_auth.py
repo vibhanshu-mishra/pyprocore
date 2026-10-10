@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import secrets
 import tempfile
 import unittest
 from pathlib import Path
@@ -39,11 +38,11 @@ class Phase9AuthTests(unittest.TestCase):
     def test_malformed_store_error_does_not_echo_contents(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "token.json"
-            secret = secrets.token_urlsafe(24)
-            path.write_text('{"access_token": "' + secret + '"}', encoding="utf-8")
+            token_marker = "NON_SENSITIVE_TEST_TOKEN"
+            path.write_text('{"access_token": "' + token_marker + '"}', encoding="utf-8")
             with self.assertRaises(AuthenticationError) as context:
                 TokenStore(path).load()
-        self.assertNotIn(secret, str(context.exception))
+        self.assertNotIn(token_marker, str(context.exception))
 
     def test_oauth_error_redaction(self) -> None:
         redacted = OAuthClient._redact_error_body({"refresh_token": "secret", "message": "bad"})
