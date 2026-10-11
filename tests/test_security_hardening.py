@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
 import secrets
 import subprocess
@@ -37,9 +36,9 @@ class SecurityHardeningTestCase(unittest.TestCase):
             secret_file = Path(temporary_directory) / "unsafe.env"
             # Always include a digit so the synthetic credential is detected.
             secret_value = "pc_client_secret_" + secrets.token_hex(12) + "0"
-            stored_secret_value = hashlib.sha256(secret_value.encode("utf-8")).hexdigest()
+            synthetic_secret_placeholder = "pc_client_secret_example_value_0123456789"
             secret_file.write_text(
-                f"PROCORE_CLIENT_SECRET={stored_secret_value}\n",
+                f"PROCORE_CLIENT_SECRET={synthetic_secret_placeholder}\n",
                 encoding="utf-8",
             )
 
