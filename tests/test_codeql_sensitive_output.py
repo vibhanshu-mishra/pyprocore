@@ -382,29 +382,47 @@ class CodeqlSensitiveOutputTests(unittest.TestCase):
         )
 
     def test_workflow_exports_redact_values_before_local_storage(self) -> None:
-        """CSV and JSONL sinks redact credentials from mappings and SDK models."""
-        sensitive_value = secrets.token_urlsafe(24)
+        """CSV and JSONL sinks redact nested credentials and signed URLs."""
+        access_value = secrets.token_urlsafe(24)
+        refresh_value = secrets.token_urlsafe(24)
         record: dict[str, object] = {
             "id": 123,
             "status": "Open",
-            "access_token": sensitive_value,
-            "notes": f"Authorization: Bearer {sensitive_value}",
+            "access_token": access_value,
+            "credentials": {
+                "client_secret": access_value,
+                "refresh_token": refresh_value,
+            },
+            "headers": {"Authorization": f"Bearer {access_value}"},
+            "notes": f"Authorization: Bearer {access_value}",
             "attachment_url": (
                 "https://files.example.test/drawing.pdf?X-Amz-Signature="
-                f"{sensitive_value}&download=1"
+                f"{access_value}&download=1"
             ),
+            "nested_records": [
+                {"name": "First record", "api_key": access_value},
+                {
+                    "name": "Second record",
+                    "url": (
+                        "https://files.example.test/second.pdf?"
+                        f"X-Amz-Credential={refresh_value}&download=1"
+                    ),
+                },
+            ],
         }
         rfi = RFI(
             id=123,
+            subject="RFI title remains available",
             status="Open",
-            access_token=sensitive_value,
+            access_token=access_value,
+            refresh_token=refresh_value,
             questions=[
                 {
                     "attachments": [
                         {
                             "url": (
                                 "https://files.example.test/rfi.pdf?X-Amz-Signature="
-                                f"{sensitive_value}&download=1"
+                                f"{access_value}&download=1"
                             )
                         }
                     ]
@@ -414,8 +432,7 @@ class CodeqlSensitiveOutputTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as temporary_directory:
             root = Path(temporary_directory)
-            jsonl_path = _write_jsonl([record], root / "records.jsonl")
-            model_jsonl_path = _write_jsonl([rfi], root / "model-records.jsonl")
+            jsonl_path = _write_jsonl([record, {"nested": [record]}, rfi], root / "records.jsonl")
             csv_path = _write_csv(
                 [record],
                 root / "records.csv",
@@ -423,13 +440,14 @@ class CodeqlSensitiveOutputTests(unittest.TestCase):
                 lambda _: record,
             )
             rendered = "\n".join(
-                path.read_text(encoding="utf-8")
-                for path in (jsonl_path, model_jsonl_path, csv_path)
+                path.read_text(encoding="utf-8") for path in (jsonl_path, csv_path)
             )
 
-        self.assertNotIn(sensitive_value, rendered)
+        self.assertNotIn(access_value, rendered)
+        self.assertNotIn(refresh_value, rendered)
         self.assertIn(REDACTED, rendered)
         self.assertIn("Open", rendered)
+        self.assertIn("RFI title remains available", rendered)
 
     def test_gc_owner_json_and_markdown_redact_dynamic_values(self) -> None:
         """Packet renderers sanitize user-provided names and support text."""
